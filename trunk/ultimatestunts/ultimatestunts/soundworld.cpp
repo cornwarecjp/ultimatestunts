@@ -34,12 +34,8 @@ bool CSoundWorld::loadObjects()
 	vector<CDataObject *> sounds = theWorld->getObjectArray(CDataObject::eSample);
 	for(unsigned int i=0; i<sounds.size(); i++)
 	{
-		CSndSample *sample = new CSndSample;
-		CDataFile f(sounds[i]->getFilename());
-		printf("   %s\n", f.getName().c_str());
-		sample->loadFromFile(f.useExtern());
-
-		m_Samples.push_back(sample);
+		//TODO: check ID
+		loadObject(sounds[i]->getFilename(), CParamList(), CDataObject::eSample);
 	}
 
 	for(unsigned int i=0; i<m_World->getNumObjects(CDataObject::eMovingObject); i++)
@@ -47,18 +43,16 @@ bool CSoundWorld::loadObjects()
 		const CMovingObject *mo = m_World->getMovingObject(i);
 
 		{ //engine sound
-			CSoundObj *so = new CSoundObj;
-			so->setSample(m_Samples[mo->m_Sounds[0]]);
+			CSoundObj *so = new CSoundObj(i);
+			so->setSample((CSndSample *)getObject(CDataObject::eSample, mo->m_Sounds[0]));
 			so->setPosVel(CVector(0,0,0), CVector(0,0,0));
 			m_Channels.push_back(so);
-			m_ObjIDs.push_back(i);
 		}
 		{ //skid sound
-			CSoundObj *so = new CSoundObj;
-			so->setSample(m_Samples[mo->m_Sounds[1]]);
+			CSoundObj *so = new CSoundObj(i);
+			so->setSample((CSndSample *)getObject(CDataObject::eSample, mo->m_Sounds[1]));
 			so->setPosVel(CVector(0,0,0), CVector(0,0,0));
 			m_Channels.push_back(so);
-			m_ObjIDs.push_back(i);
 		}
 
 		//TODO: load other sounds
@@ -73,10 +67,18 @@ void CSoundWorld::unloadObjects()
 	for(unsigned int i=0; i<m_Channels.size(); i++)
 		delete m_Channels[i];
 
-	for(unsigned int i=0; i<m_Samples.size(); i++)
-		delete m_Samples[i];
-
 	m_Channels.clear();
-	m_Samples.clear();
-	m_ObjIDs.clear();
+
+	unloadAll();
+}
+
+CDataObject *CSoundWorld::createObject(const CString &filename, const CParamList &plist, CDataObject::eDataType type)
+{
+	CDataObject *obj = CDataManager::createObject(filename, plist, type);
+	if(obj != NULL) return obj;
+
+	if(type == CDataObject::eSample)
+		return new CSndSample(this);
+
+	return NULL; //to be overloaded
 }

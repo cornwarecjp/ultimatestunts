@@ -54,7 +54,11 @@ bool CTexture::load(const CString &filename, const CParamList &list)
 
 void CTexture::unload()
 {
+	if(!isLoaded()) return;
+
 	glDeleteTextures(1, &m_Texture);
+	m_Texture = 0;
+
 	CDataObject::unload();
 }
 

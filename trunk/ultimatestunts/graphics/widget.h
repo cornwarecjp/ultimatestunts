@@ -1,8 +1,8 @@
 /***************************************************************************
-                          sndsample.h  -  A 3D sound sample class
+                          widget.h  -  Base-class for all GUI widgets
                              -------------------
-    begin                : di feb 25 2003
-    copyright            : (C) 2003 by CJP
+    begin                : wo dec 15 2004
+    copyright            : (C) 2004 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
 
@@ -15,43 +15,31 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef SNDSAMPLE_H
-#define SNDSAMPLE_H
+#ifndef WIDGET_H
+#define WIDGET_H
 
+#define WIDGET_QUIT  		1
+#define WIDGET_REDRAW		2
+#define WIDGET_CANCELLED	4
 
-/**
-  *@author CJP
-  */
-
-#ifdef HAVE_LIBFMOD
-#ifdef FMOD_HEADER
-#include <fmod/fmod.h>
-#endif
-#endif
-
-#include "cstring.h"
-#include "dataobject.h"
-
-class CSndSample : public CDataObject
-{
+class CWidget {
 public:
-	CSndSample(CDataManager *manager);
-	virtual ~CSndSample();
+	CWidget()
+		{m_W = m_H = 0;}
 
-	virtual bool load(const CString &filename, const CParamList &list);
+	virtual ~CWidget(){;}
 
-	virtual int attachToChannel(int c);
+	virtual int onMouseMove(int x, int y){return 0;}
+	virtual int onMouseClick(int x, int y, unsigned int buttons){return 0;}
+	virtual int onKeyPress(int key){return 0;}
+	virtual int onResize(int w, int h){m_W = w; m_H = h; return WIDGET_REDRAW;}
+	virtual int onRedraw(){return 0;}
+
+	int getW(){return m_W;}
+	int getH(){return m_H;}
+	int m_X, m_Y;
 protected:
-
-#ifdef HAVE_LIBFMOD
-	FSOUND_SAMPLE *m_Sample;
-#endif
-
-#ifdef HAVE_LIBOPENAL
-	unsigned int m_Buffer;
-	bool m_isLoaded;
-#endif
-
+	int m_W, m_H;
 };
 
 #endif

@@ -55,6 +55,7 @@ CDataObject::CDataObject(CDataManager *manager, eDataType type)
 {
 	m_DataManager = manager;
 	m_DataType = type;
+	m_isLoaded = false;
 }
 
 CDataObject::~CDataObject(){

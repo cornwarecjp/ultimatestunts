@@ -23,20 +23,36 @@ namespace std {}
 using namespace std;
 
 #include "lconfig.h"
+#include "widget.h"
 #include "winsystem.h"
 
 /**
   *@author CJP
   */
 
-class CGUI
+class CGUI : public CWidget
 {
 public:
 	CGUI(const CLConfig &conf, CWinSystem *winsys);
-	~CGUI();
+	virtual ~CGUI();
+
+	virtual int onMouseMove(int x, int y);
+	virtual int onMouseClick(int x, int y, unsigned int buttons);
+	virtual int onKeyPress(int key);
+	virtual int onResize(int w, int h);
+	virtual int onRedraw();
+
+	virtual void start(); //returns when an exit command is given
 
 protected:
 	CWinSystem *m_WinSys;
+	CWidget *m_ChildWidget;
+
+	void enter2DMode();
+	void leave2DMode();
+	
+private:
+	bool m_in2DMode;
 };
 
 #endif

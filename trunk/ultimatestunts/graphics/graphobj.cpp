@@ -45,6 +45,8 @@ CGraphObj::CGraphObj(CDataManager *manager, eDataType type) : CDataObject(manage
 		glTexImage2D( GL_TEXTURE_2D, 0, 3, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, notex_img);
 
 	}
+
+	m_ObjListRef = m_ObjList1 = m_ObjList2 = m_ObjList3 = m_ObjList4 = 0;
 }
 
 CGraphObj::~CGraphObj()
@@ -74,6 +76,7 @@ bool CGraphObj::load(const CString &filename, const CParamList &list)
 
 		unsigned int objlist = glGenLists(1);
 		glNewList(objlist, GL_COMPILE);
+		//fprintf(stderr, "Loaded object @ %d\n", objlist);
 
 		switch(lod)
 		{
@@ -247,13 +250,22 @@ bool CGraphObj::load(const CString &filename, const CParamList &list)
 
 void CGraphObj::unload()
 {
+	if(!isLoaded()) return;
+
 	CDataObject::unload();
+
+	//fprintf(stderr, "unload object %d\n", m_ObjListRef);
+	//fprintf(stderr, "unload object %d\n", m_ObjList1);
+	//fprintf(stderr, "unload object %d\n", m_ObjList2);
+	//fprintf(stderr, "unload object %d\n", m_ObjList3);
+	//fprintf(stderr, "unload object %d\n", m_ObjList4);
 
 	glDeleteLists(m_ObjListRef, 1);
 	glDeleteLists(m_ObjList1, 1);
 	glDeleteLists(m_ObjList2, 1);
 	glDeleteLists(m_ObjList3, 1);
 	glDeleteLists(m_ObjList4, 1);
+	m_ObjListRef = m_ObjList1 = m_ObjList2 = m_ObjList3 = m_ObjList4 = 0;
 }
 
 void CGraphObj::draw(int lod) const

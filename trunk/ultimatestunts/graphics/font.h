@@ -38,7 +38,12 @@ public:
 	void disable();
 	void drawString(const CString &str);
 
+	float getFontW(){return m_W;}
+	float getFontH(){return m_H;}
+
 protected:
+	float m_W, m_H;
+
 	unsigned int m_Texture;
 	unsigned int m_BaseDispList;
 };

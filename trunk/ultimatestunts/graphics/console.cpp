@@ -23,23 +23,19 @@
 #include <unistd.h>
 
 #include "console.h"
-#include "datafile.h"
-#include "font.h"
 
-CFont *_ConsoleFont = NULL;
+CFont *theConsoleFont = NULL;
 
-CConsole::CConsole(CWinSystem *winsys)
+CFont *loadConsoleFont()
 {
-	m_WinSystem = winsys;
-
 	//size in pixels:
-	m_fontW = 12.0;
-	m_fontH = 24.0;
+	float fontW = 12.0;
+	float fontH = 24.0;
 
-	if(_ConsoleFont == NULL)
+	if(theConsoleFont == NULL)
 	{
 		CString fontfile = "misc/courier.rgba";
-		_ConsoleFont = new CFont(NULL);
+		theConsoleFont = new CFont(NULL);
 		printf("Loading font from %s\n", fontfile.c_str());
 
 		CParamList plist;
@@ -54,14 +50,22 @@ CConsole::CConsole(CWinSystem *winsys)
 		p.value = true; //TODO?
 		plist.push_back(p);
 		p.name = "wth";
-		p.value = m_fontW;
+		p.value = fontW;
 		plist.push_back(p);
 		p.name = "hth";
-		p.value = m_fontH;
+		p.value = fontH;
 		plist.push_back(p);
-		if(!_ConsoleFont->load(fontfile, plist))
+		if(!theConsoleFont->load(fontfile, plist))
 			printf("Font loading failed!\n");
 	}
+
+	return theConsoleFont;
+}
+
+CConsole::CConsole(CWinSystem *winsys)
+{
+	m_WinSystem = winsys;
+	loadConsoleFont();
 
 	m_WriteMode = false;
 }
@@ -87,7 +91,7 @@ void CConsole::print(const CString &str)
 		m_ScreenContent.push_back(lhs);
 	}
 
-	while(m_fontH * (1 + m_ScreenContent.size()) > m_WinSystem->getHeight())
+	while(theConsoleFont->getFontH() * (1 + m_ScreenContent.size()) > m_WinSystem->getHeight())
 		m_ScreenContent.erase(m_ScreenContent.begin());
 }
 
@@ -213,13 +217,13 @@ void CConsole::draw()
 	if(!wasWriting) enterWriteMode();
 
 	glLoadIdentity();
-	glTranslatef(0.0, m_WinSystem->getHeight() - m_fontH, 0); //set cursor
+	glTranslatef(0.0, m_WinSystem->getHeight() - theConsoleFont->getFontH(), 0); //set cursor
 	for(unsigned int i=0; i < m_ScreenContent.size(); i++)
 	{
 		glPushMatrix();
-		_ConsoleFont->drawString(m_ScreenContent[i]);
+		theConsoleFont->drawString(m_ScreenContent[i]);
 		glPopMatrix();
-		glTranslatef(0,-m_fontH,0); //next line
+		glTranslatef(0,-theConsoleFont->getFontH(),0); //next line
 	}
 
 	if(!wasWriting) leaveWriteMode();
@@ -251,7 +255,7 @@ void CConsole::enterWriteMode()
 	glDisable(GL_LIGHTING);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
 
-	_ConsoleFont->enable();
+	theConsoleFont->enable();
 }
 
 void CConsole::leaveWriteMode()
@@ -263,5 +267,5 @@ void CConsole::leaveWriteMode()
 	if(zEnabled) glEnable(GL_DEPTH_TEST);
 	if(fEnabled) glEnable(GL_FOG);
 
-	_ConsoleFont->disable();
+	theConsoleFont->disable();
 }

@@ -1,8 +1,8 @@
 /***************************************************************************
-                          sndsample.h  -  A 3D sound sample class
+                          guipage.h  -  A page of a menu interface
                              -------------------
-    begin                : di feb 25 2003
-    copyright            : (C) 2003 by CJP
+    begin                : wo dec 15 2004
+    copyright            : (C) 2004 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
 
@@ -15,43 +15,32 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef SNDSAMPLE_H
-#define SNDSAMPLE_H
+#ifndef GUIPAGE_H
+#define GUIPAGE_H
 
+#include <vector>
+namespace std {}
+using namespace std;
+
+#include "widget.h"
+#include "cstring.h"
 
 /**
   *@author CJP
   */
 
-#ifdef HAVE_LIBFMOD
-#ifdef FMOD_HEADER
-#include <fmod/fmod.h>
-#endif
-#endif
+class CGUIPage : public CWidget  {
+public: 
+	CGUIPage();
+	~CGUIPage();
 
-#include "cstring.h"
-#include "dataobject.h"
+	virtual int onKeyPress(int key);
+	virtual int onResize(int w, int h);
+	virtual int onRedraw();
 
-class CSndSample : public CDataObject
-{
-public:
-	CSndSample(CDataManager *manager);
-	virtual ~CSndSample();
-
-	virtual bool load(const CString &filename, const CParamList &list);
-
-	virtual int attachToChannel(int c);
-protected:
-
-#ifdef HAVE_LIBFMOD
-	FSOUND_SAMPLE *m_Sample;
-#endif
-
-#ifdef HAVE_LIBOPENAL
-	unsigned int m_Buffer;
-	bool m_isLoaded;
-#endif
-
+	unsigned int m_Selected;
+	vector<CString> m_Lines;
+	CString m_Title;
 };
 
 #endif

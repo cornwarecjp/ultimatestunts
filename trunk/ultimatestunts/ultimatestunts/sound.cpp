@@ -190,15 +190,14 @@ void CSound::playNextSong()
 		delete m_Music;
 	}
 
-	m_Music = new CMusic;
-	m_MusicObject = new CSoundObj;
+	m_Music = new CMusic(NULL);
+	m_MusicObject = new CSoundObj(-1);
 
 	m_PlaylistItem++;
 	if(m_PlaylistItem >= m_Playlist.size()) m_PlaylistItem = 0;
 
-	CDataFile f(m_Playlist[m_PlaylistItem]);
-	printf("   Loading music file %s\n\n", f.getName().c_str());
-	m_Music->loadFromFile(f.useExtern());
+	//printf("   Loading music file %s\n\n", m_Playlist[m_PlaylistItem].c_str());
+	m_Music->load(m_Playlist[m_PlaylistItem], CParamList());
 
 	//printf("setSample\n");
 	m_MusicObject->setSample(m_Music);
@@ -248,11 +247,11 @@ void CSound::update()
 	//Objects:
 	for(unsigned int i=0; i<m_SoundWorld->m_Channels.size(); i++)
 	{
-		const CMovingObject *o = m_World->getMovingObject(m_SoundWorld->m_ObjIDs[i]);
+		CSoundObj *chn = m_SoundWorld->m_Channels[i];
+		const CMovingObject *o = m_World->getMovingObject(chn->getMovingObjectID());
 		if(o->getType() == CMessageBuffer::car)
 		{
 			CCar *theCar = (CCar *)o;
-			CSoundObj *chn = m_SoundWorld->m_Channels[i];
 			CVector v = theCar->m_Bodies[0].getVelocity();
 			chn->setPosVel(theCar->m_Bodies[0].getPosition(), v);
 

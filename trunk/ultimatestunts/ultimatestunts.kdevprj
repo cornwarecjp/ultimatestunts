@@ -122,7 +122,7 @@ sub_dirs=
 type=static_library
 
 [graphics/Makefile.am]
-files=graphics/winsystem.cpp,graphics/winsystem.h,graphics/graphobj.cpp,graphics/graphobj.h,graphics/image.c,graphics/image.h,graphics/texture.cpp,graphics/texture.h,graphics/renderer.cpp,graphics/renderer.h,graphics/graphicworld.cpp,graphics/graphicworld.h,graphics/gui.cpp,graphics/gui.h,graphics/camera.h,graphics/background.cpp,graphics/background.h,graphics/reflection.cpp,graphics/reflection.h,graphics/console.cpp,graphics/console.h,graphics/font.cpp,graphics/font.h,graphics/lodtexture.cpp,graphics/lodtexture.h
+files=graphics/winsystem.cpp,graphics/winsystem.h,graphics/graphobj.cpp,graphics/graphobj.h,graphics/image.c,graphics/image.h,graphics/texture.cpp,graphics/texture.h,graphics/renderer.cpp,graphics/renderer.h,graphics/graphicworld.cpp,graphics/graphicworld.h,graphics/gui.cpp,graphics/gui.h,graphics/camera.h,graphics/background.cpp,graphics/background.h,graphics/reflection.cpp,graphics/reflection.h,graphics/console.cpp,graphics/console.h,graphics/font.cpp,graphics/font.h,graphics/lodtexture.cpp,graphics/lodtexture.h,graphics/widget.h,graphics/guipage.cpp,graphics/guipage.h
 sub_dirs=
 type=static_library
 
@@ -204,6 +204,18 @@ install=false
 install_location=
 type=HEADER
 
+[graphics/guipage.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[graphics/guipage.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
 [graphics/image.c]
 dist=true
 install=false
@@ -259,6 +271,12 @@ install_location=
 type=SOURCE
 
 [graphics/texture.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[graphics/widget.h]
 dist=true
 install=false
 install_location=

@@ -32,6 +32,10 @@ CUSCore::CUSCore(CGameWinSystem *winsys)
 	m_SoundSystem = new CSound(*theMainConfig);
 
 	m_NumCameras = 0;
+	m_Cameras[0] = NULL;
+	m_Cameras[1] = NULL;
+	m_Cameras[2] = NULL;
+	m_Cameras[3] = NULL;
 }
 
 CUSCore::~CUSCore()
@@ -51,6 +55,7 @@ bool CUSCore::addCamera(unsigned int objid)
 	theCam->setTrackedObject(objid);
 	*(m_Cameras + m_NumCameras) = theCam;
 	m_NumCameras++;
+
 	return true;
 }
 
@@ -115,7 +120,7 @@ bool CUSCore::update()
 	m_Renderer->update();
 	m_Console->draw();
 	m_SoundSystem->update();
-
+	
 	return retval;
 }
 

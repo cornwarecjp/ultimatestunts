@@ -20,7 +20,6 @@
 
 #include "gamewinsystem.h"
 #include "gui.h"
-#include "console.h"
 
 #include "uscore.h"
 #include "player.h"
@@ -36,9 +35,9 @@
 class CGameGUI : public CGUI  {
 public: 
 	CGameGUI(const CLConfig &conf, CGameWinSystem *winsys);
-	~CGameGUI();
+	virtual ~CGameGUI();
 
-	void start(); //returns when an exit command is given
+	virtual void start(); //returns when an exit command is given
 
 
 protected:
@@ -46,8 +45,6 @@ protected:
 	CUSCore *m_GameCore;
 	vector<CPlayer *> m_Players;
 	CUSServer *m_Server;
-
-	CConsole *m_Console;
 
 	//all data of the last times the menus were passed
 	enum eGameType

@@ -25,143 +25,128 @@
 #include <fmod/fmod_errors.h>
 #endif
 
-CSoundObj::CSoundObj()
-{
-  m_Pos.x = m_Pos.y = m_Pos.z = 0;
-  m_Vel.x = m_Vel.y = m_Vel.z = 0;
-}
+#endif
 
-CSoundObj::~CSoundObj()
-{
-	FSOUND_StopSound(m_Channel);
-}
 
-int CSoundObj::setSample(CSndSample *s)
-{
-	m_Channel = s->attachToChannel(FSOUND_FREE);
-	FSOUND_SetPaused(m_Channel, 0);
-	m_OriginalFrequency = FSOUND_GetFrequency(m_Channel);
-
-  return 0;
-}
-
-void CSoundObj::setPos(CVector p)
-{
-    m_Pos = p;
-    float parr[] = {m_Pos.x/10, m_Pos.y/10, m_Pos.z/10};
-    float varr[] = {m_Vel.x/10, m_Vel.y/10, m_Vel.z/10};
-    //printf("Setting sound pos to (%f,%f,%f)\n", p.x, p.y, p.z);
-    FSOUND_3D_SetAttributes(m_Channel, parr, varr);
-}
-
-void CSoundObj::setVel(CVector v)
-{
-  m_Vel = v;
-  float parr[] = {m_Pos.x/10, m_Pos.y/10, m_Pos.z/10};
-  float varr[] = {m_Vel.x/10, m_Vel.y/10, m_Vel.z/10};
-  FSOUND_3D_SetAttributes(m_Channel, parr, varr);
-}
-
-void CSoundObj::setPosVel(CVector p, CVector v)
-{
-	m_Pos = p;
-	m_Vel = v;
-	float parr[] = {m_Pos.x/10, m_Pos.y/10, m_Pos.z/10};
-	float varr[] = {m_Vel.x/10, m_Vel.y/10, m_Vel.z/10};
-	FSOUND_3D_SetAttributes(m_Channel, parr, varr);
-}
-
-void CSoundObj::setFrequency(float f)
-{
-	int freq = (int)(f * m_OriginalFrequency);
-	FSOUND_SetFrequency(m_Channel, freq);
-}
-
-void CSoundObj::setVolume(int v)
-{
-	FSOUND_SetVolume(m_Channel, v);
-}
-
-#elif defined HAVE_LIBOPENAL
+#ifdef HAVE_LIBOPENAL
 
 #ifdef OPENAL_HEADER
 #include <AL/al.h>
 #endif
 
-CSoundObj::CSoundObj()
+#endif
+
+
+CSoundObj::CSoundObj(int movingobjectID)
 {
+	m_MovingObjectID = movingobjectID;
+	m_Pos.x = m_Pos.y = m_Pos.z = 0;
+	m_Vel.x = m_Vel.y = m_Vel.z = 0;
+
+#ifdef HAVE_LIBOPENAL
 	alGenSources(1, &m_Source);
 	alSourcei(m_Source, AL_LOOPING, AL_TRUE);
+#endif
 }
+
 
 CSoundObj::~CSoundObj()
 {
+#ifdef HAVE_LIBFMOD
+	FSOUND_StopSound(m_Channel);
+#endif
+
+#ifdef HAVE_LIBOPENAL
 	alSourceStop(m_Source);
 	alDeleteSources(1, &m_Source);
+#endif
+}
+
+int CSoundObj::setSample(CSndSample *s)
+{
+#ifdef HAVE_LIBFMOD
+	m_Channel = s->attachToChannel(FSOUND_FREE);
+	FSOUND_SetPaused(m_Channel, 0);
+	m_OriginalFrequency = FSOUND_GetFrequency(m_Channel);
+#endif
+
+#ifdef HAVE_LIBOPENAL
+	s->attachToChannel(m_Source);
+	alSourcePlay(m_Source);
+#endif
+
+	return 0;
 }
 
 void CSoundObj::setPos(CVector p)
 {
 	m_Pos = p;
+#ifdef HAVE_LIBFMOD
+	float parr[] = {m_Pos.x/10, m_Pos.y/10, m_Pos.z/10};
+	float varr[] = {m_Vel.x/10, m_Vel.y/10, m_Vel.z/10};
+	//printf("Setting sound pos to (%f,%f,%f)\n", p.x, p.y, p.z);
+	FSOUND_3D_SetAttributes(m_Channel, parr, varr);
+#endif
+
+#ifdef HAVE_LIBOPENAL
 	alSource3f(m_Source, AL_POSITION, p.x/10, p.y/10, p.z/10);
+#endif
 }
 
 void CSoundObj::setVel(CVector v)
 {
 	m_Vel = v;
+#ifdef HAVE_LIBFMOD
+	float parr[] = {m_Pos.x/10, m_Pos.y/10, m_Pos.z/10};
+	float varr[] = {m_Vel.x/10, m_Vel.y/10, m_Vel.z/10};
+	FSOUND_3D_SetAttributes(m_Channel, parr, varr);
+#endif
+
+#ifdef HAVE_LIBOPENAL
 	alSource3f(m_Source, AL_VELOCITY, v.x/10, v.y/10, v.z/10);
+#endif
 }
 
 void CSoundObj::setPosVel(CVector p, CVector v)
 {
+	m_Pos = p;
+	m_Vel = v;
+#ifdef HAVE_LIBFMOD
+	float parr[] = {m_Pos.x/10, m_Pos.y/10, m_Pos.z/10};
+	float varr[] = {m_Vel.x/10, m_Vel.y/10, m_Vel.z/10};
+	FSOUND_3D_SetAttributes(m_Channel, parr, varr);
+#endif
+
+#ifdef HAVE_LIBOPENAL
 	setPos(p);
 	setVel(v);
+#endif
 }
 
 void CSoundObj::setFrequency(float f)
 {
+#ifdef HAVE_LIBFMOD
+	int freq = (int)(f * m_OriginalFrequency);
+	FSOUND_SetFrequency(m_Channel, freq);
+#endif
+
+#ifdef HAVE_LIBOPENAL
 	//F***ing openAL only supports pitch from 0.5 to 2.0!!!
 	if(f < 0.5) f = 0.5;
 	if(f > 2.0) f = 2.0;
 	alSourcef(m_Source, AL_PITCH, f);
+#endif
 }
 
 void CSoundObj::setVolume(int v)
 {
+#ifdef HAVE_LIBFMOD
+	FSOUND_SetVolume(m_Channel, v);
+#endif
+
+#ifdef HAVE_LIBOPENAL
 	alSourcef(m_Source, AL_GAIN, ((float)v) / 255.0);
+#endif
 }
 
-int CSoundObj::setSample(CSndSample *s)
-{
-	s->attachToChannel(m_Source);
-	alSourcePlay(m_Source);
-	return 0;
-}
 
-#else //libfmod and libopenAL
-
-CSoundObj::CSoundObj()
-{;}
-
-CSoundObj::~CSoundObj()
-{;}
-
-void CSoundObj::setPos(CVector p)
-{;}
-
-void CSoundObj::setVel(CVector v)
-{;}
-
-void CSoundObj::setPosVel(CVector p, CVector v)
-{;}
-
-void CSoundObj::setFrequency(float f)
-{;}
-
-void CSoundObj::setVolume(int v)
-{;}
-
-int CSoundObj::setSample(CSndSample *s)
-{return 0;}
-
-#endif //libfmod and libopenAL

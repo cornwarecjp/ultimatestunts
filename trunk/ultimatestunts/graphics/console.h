@@ -24,6 +24,7 @@ using namespace std;
 
 #include "cstring.h"
 #include "winsystem.h"
+#include "font.h"
 
 /**
   *@author CJP
@@ -49,9 +50,11 @@ protected:
 	bool m_WriteMode;
 
 	vector<CString> m_ScreenContent;
-	float m_fontW, m_fontH;
 
 	bool processKey(int key, CString &string);
 };
+
+extern CFont *theConsoleFont;
+CFont *loadConsoleFont();
 
 #endif

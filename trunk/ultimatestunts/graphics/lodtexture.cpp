@@ -31,10 +31,13 @@ CLODTexture::~CLODTexture()
 
 void CLODTexture::unload()
 {
+	if(!isLoaded()) return;
+
 	CTexture::unload();
 	glDeleteTextures(1, &m_Texture2);
 	glDeleteTextures(1, &m_Texture3);
 	glDeleteTextures(1, &m_Texture4);
+	m_Texture2 = m_Texture3 = m_Texture4 = 0;
 }
 
 RGBImageRec *CLODTexture::loadFromImage(RGBImageRec *in_image, int xs, int ys)

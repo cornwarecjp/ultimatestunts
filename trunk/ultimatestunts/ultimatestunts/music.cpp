@@ -15,9 +15,11 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "music.h"
-
 #include <cstdio>
+
+#include "music.h"
+#include "datafile.h"
+
 #ifdef HAVE_LIBFMOD
 
 #ifdef FMOD_HEADER
@@ -40,7 +42,7 @@ signed char endCallback(FSOUND_STREAM *stream, void *buff, int len, void *param)
 	return false;
 }
 
-CMusic::CMusic()
+CMusic::CMusic(CDataManager *manager) : CSndSample(manager)
 {
 	  m_Stream = NULL;
 }
@@ -50,17 +52,20 @@ CMusic::~CMusic()
 	if(m_Stream != NULL) FSOUND_Stream_Close(m_Stream);
 }
 
-int CMusic::loadFromFile(const CString &filename)
+bool CMusic::load(const CString &filename, const CParamList &list)
 {
-	m_Stream = FSOUND_Stream_Open(filename.c_str(), FSOUND_NORMAL, 0, 0);
+	CDataObject::load(filename, list);
+	CDataFile f(m_Filename);
+	
+	m_Stream = FSOUND_Stream_Open(f.useExtern().c_str(), FSOUND_NORMAL, 0, 0);
 
 	if (!m_Stream)
 	{
 		printf("   FMOD error: %s\n", FMOD_ErrorString(FSOUND_GetError()));
-		return 1;
+		return false;
 	}
 
-	return 0;
+	return true;
 }
 
 int CMusic::attachToChannel(int c)
@@ -89,7 +94,7 @@ void CMusic::setEndCallback(void (CALLBACKFUN *endfunc)())
 #include <AL/alut.h>
 #endif
 
-CMusic::CMusic()
+CMusic::CMusic(CDataManager *manager) : CSndSample(manager)
 {
 }
 
@@ -97,10 +102,10 @@ CMusic::~CMusic()
 {
 }
 
-int CMusic::loadFromFile(const CString &filename)
+bool CMusic::load(const CString &filename, const CParamList &list)
 {
 	//TODO: streaming
-	return CSndSample::loadFromFile(filename);
+	return CSndSample::load(filename, list);
 }
 
 int CMusic::attachToChannel(int c)
@@ -113,15 +118,15 @@ void CMusic::setEndCallback(void (CALLBACKFUN *endfunc)())
 
 #else //libfmod and libopenal
 
-CMusic::CMusic()
+CMusic::CMusic(CDataManager *manager) : CSndSample(manager)
 {;}
 
 CMusic::~CMusic()
 {;}
 
-int CMusic::loadFromFile(const CString &filename)
+bool CMusic::load(const CString &filename, const CParamList &list)
 {
-  return 1;
+  return true;
 }
 
 int CMusic::attachToChannel(int c)

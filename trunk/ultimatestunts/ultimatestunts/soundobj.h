@@ -30,7 +30,7 @@
 class CSoundObj
 {
 public:
-	CSoundObj();
+	CSoundObj(int movingobjectID);
 	~CSoundObj();
 	int setSample(CSndSample *s);
 
@@ -41,9 +41,13 @@ public:
 	void setFrequency(float f); //1.0 = original sound
 	void setVolume(int v); //0 - 255
 
+	int getMovingObjectID()
+		{return m_MovingObjectID;}
+
 protected:
 	CVector m_Pos;
 	CVector m_Vel;
+	int m_MovingObjectID;
 
 #ifdef HAVE_LIBFMOD
 	int m_Channel;

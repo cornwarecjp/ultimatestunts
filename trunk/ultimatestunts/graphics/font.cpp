@@ -32,6 +32,9 @@ CFont::~CFont()
 
 void CFont::unload()
 {
+	if(!isLoaded()) return;
+
+	//fprintf(stderr, "unloaded font\n");
 	glDeleteLists(m_BaseDispList, 256);
 	CTexture::unload();
 }
@@ -42,9 +45,12 @@ bool CFont::load(const CString &filename, const CParamList &list)
 
 	float wth = m_ParamList.getValue("wth", "1.0").toFloat();
 	float hth = m_ParamList.getValue("hth", "1.0").toFloat();
+	m_W = wth;
+	m_H = hth;
 
 	m_BaseDispList = glGenLists(256);
 	if(m_BaseDispList == 0) return false;
+	//fprintf(stderr, "Font @ %d\n", m_BaseDispList);
 
 	float dx = 1.0/16.0, dy = 1.0/16.0;
 	for(unsigned int i=0; i < 256; i++)

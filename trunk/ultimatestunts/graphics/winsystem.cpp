@@ -202,6 +202,67 @@ int CWinSystem::runLoop( bool (CALLBACKFUN *loopfunc)(), bool swp)
 	return 0;
 }
 
+bool CWinSystem::runLoop(CWidget *widget)
+{
+	int widgetmessages = widget->onRedraw();
+	swapBuffers();
+
+	while(!(widgetmessages & WIDGET_QUIT))
+	{
+		widgetmessages = 0;
+
+		SDL_Event event;
+
+		while ( SDL_PollEvent(&event) )
+		{
+			switch(event.type)
+			{
+				//Resizing
+				case SDL_VIDEORESIZE:
+					m_Screen = SDL_SetVideoMode(event.resize.w, event.resize.h, m_BPP,
+						SDL_OPENGL|SDL_RESIZABLE);
+					if ( m_Screen )
+					{
+						m_W = m_Screen->w;
+						m_H = m_Screen->h;
+						widgetmessages |= widget->onResize(m_W, m_H);
+					}
+					else
+					{
+						/* Uh oh, we couldn't set the new video mode?? */
+						fprintf(stderr, "Couldn't set %dx%d GL video mode: %s\n",
+							event.resize.w, event.resize.h, SDL_GetError());
+						SDL_Quit();
+						exit(2);
+					}
+					break;
+
+				//Quitting
+				case SDL_QUIT:
+					widgetmessages |= WIDGET_QUIT | WIDGET_CANCELLED;
+					break;
+
+				//Keyboard
+				case SDL_KEYDOWN:
+					if(event.key.keysym.mod & KMOD_SHIFT) //shift key
+						{widgetmessages |= widget->onKeyPress(event.key.keysym.sym-32);}
+					else
+						{widgetmessages |= widget->onKeyPress(event.key.keysym.sym);}
+					break;
+
+			}
+		}
+
+		if(widgetmessages & WIDGET_REDRAW)
+		{
+			widgetmessages |= widget->onRedraw();
+			swapBuffers();
+		}
+	}
+
+	return true;
+}
+
 void CWinSystem::swapBuffers()
 {
 	SDL_GL_SwapBuffers();

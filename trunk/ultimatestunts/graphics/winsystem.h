@@ -23,6 +23,7 @@
 #include "cstring.h"
 #include "usmacros.h"
 #include "lconfig.h"
+#include "widget.h"
 
 /**
   *@author CJP
@@ -34,6 +35,7 @@ public:
 	~CWinSystem();
 
 	int runLoop( bool (CALLBACKFUN *loopfunc)(), bool swp = false);
+	bool runLoop(CWidget *widget);
 
 	void swapBuffers();
 

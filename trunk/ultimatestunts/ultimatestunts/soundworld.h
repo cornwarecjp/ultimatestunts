@@ -26,27 +26,27 @@ using namespace std;
 #include "sndsample.h"
 #include "soundobj.h"
 #include "world.h"
+#include "datamanager.h"
 
 /**
   *@author CJP
   */
 
-class CSoundWorld {
+class CSoundWorld : public CDataManager
+{
 public: 
 	CSoundWorld(const CLConfig &conf);
 	~CSoundWorld();
 
 	const CWorld *m_World;
 
-	//bool loadWorld();
-	//void unloadWorld();
 	bool loadObjects();
 	void unloadObjects();
 
 	vector<CSoundObj *> m_Channels;
-	vector<int> m_ObjIDs;
+protected:
+	virtual CDataObject *createObject(const CString &filename, const CParamList &plist, CDataObject::eDataType type);
 
-	vector<CSndSample *> m_Samples;
 };
 
 #endif

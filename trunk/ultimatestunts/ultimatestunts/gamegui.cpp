@@ -18,6 +18,7 @@
 #include <cstdio>
 
 #include "gamegui.h"
+#include "guipage.h"
 
 #include "objectchoice.h"
 #include "aiplayercar.h"
@@ -25,7 +26,7 @@
 
 #include "datafile.h"
 
-CUSCore *_USGameCore;
+CUSCore *_USGameCore = NULL;
 
 bool game_mainloop()
 {
@@ -39,7 +40,7 @@ CGameGUI::CGameGUI(const CLConfig &conf, CGameWinSystem *winsys) : CGUI(conf, wi
 
 	m_Server = NULL;
 
-	m_Console = new CConsole(winsys);
+	m_ChildWidget = new CGUIPage;
 
 	//default values:
 	m_GameType = LocalGame;
@@ -55,12 +56,12 @@ CGameGUI::~CGameGUI()
 	if(m_Server != NULL)
 		{delete m_Server; m_Server = NULL;}
 
-	delete m_Console;
+	delete m_ChildWidget;
 }
 
 void CGameGUI::start()
 {
-	m_Console->clearScreen();
+	enter2DMode();
 
 	CString section = "mainmenu";
 	while(section != "" && section != "exit")
@@ -78,158 +79,135 @@ void CGameGUI::start()
 		else if(section=="hiscore")
 			section = viewHiscore();
 		else
-			{m_Console->print(CString("Error: unknown menu ") + section.c_str() + "\n"); section = "";}
+			{printf("Error: unknown menu\n");}
 	}
+
+	leave2DMode();
 }
 
 CString CGameGUI::viewMainMenu()
 {
-	CString ret = "incorrect_answer";
-	while(ret == "incorrect_answer")
+	CGUIPage *page = (CGUIPage *)m_ChildWidget;
+	page->m_Selected = 0;
+	page->m_Title = "Main menu";
+	page->m_Lines.clear();
+	page->m_Lines.push_back("Start playing");
+	page->m_Lines.push_back("Set the game type");
+	page->m_Lines.push_back("Select the track");
+	page->m_Lines.push_back("Select the players");
+	page->m_Lines.push_back("Options");
+	page->m_Lines.push_back("Exit");
+	m_WinSys->runLoop(this);
+
+	switch(page->m_Selected)
 	{
-		int input = m_Console->getInput(
-			"Main menu:\n"
-			"  1: Start playing\n"
-			"  2: Set the game type\n"
-			"  3: Select the track\n"
-			"  4: Select the players\n"
-			"  5: Options\n"
-			"  6: Exit\n: "
-		).toInt();
+		case 0:
+			return "playgame";
+		case 1:
+			return "gametypemenu";
+		case 2:
+			return "trackmenu";
+		case 3:
+			return "playermenu";
+		case 4:
+			page->m_Title = "Options";
+			page->m_Lines.clear();
+			page->m_Lines.push_back("Please edit ultimatestunts.conf manually");
+			page->m_Selected = 0;
+			m_WinSys->runLoop(this);
+			return "mainmenu";
+		case 5:
+			return "exit";
+	}
 
-		switch(input)
-		{
-			case 1:
-				return "playgame";
-			case 2:
-				return "gametypemenu";
-			case 3:
-				return "trackmenu";
-			case 4:
-				return "playermenu";
-			case 5:
-				m_Console->print("Please edit ultimatestunts.conf manually\n");
-				return "mainmenu";
-			case 6:
-				return "exit";
-			default:
-				m_Console->print("Incorrect answer\n");
-		}
-
-	} //while
-
-	return ret;
+	return "";
 }
 
 CString CGameGUI::viewGameTypeMenu()
 {
-	CString ret = "incorrect_answer";
-	while(ret == "incorrect_answer")
+	CGUIPage *page = (CGUIPage *)m_ChildWidget;
+	page->m_Selected = 0;
+	page->m_Title = "Select the game type:";
+	page->m_Lines.clear();
+	page->m_Lines.push_back("Local game");
+	page->m_Lines.push_back("Join an existing network game");
+	page->m_Lines.push_back("Start a new network game");
+	m_WinSys->runLoop(this);
+
+	switch(page->m_Selected)
 	{
-		int input = m_Console->getInput(
-			"Game type menu: (network modes do not yet work)\n"
-			"  1: Local game\n"
-			"  2: Join an existing network game\n"
-			"  3: Start a new network game\n: "
-		).toInt();
-
-		switch(input)
-		{
-			case 1:
-				m_GameType = LocalGame;
-				return "mainmenu";
-			case 2:
-				m_GameType = JoinNetwork;
-				m_HostName = m_Console->getInput("Enter the host name: ");
-				m_HostPort = m_Console->getInput("Enter the port number: ").toInt();
-				return "mainmenu";
-			case 3:
-				m_GameType = NewNetwork;
-				m_ServerPort = m_Console->getInput("Enter the port number: ").toInt();
-				return "mainmenu";
-			default:
-				m_Console->print("Incorrect answer\n");
-		}
-
-	} //while
+		case 0:
+			m_GameType = LocalGame;
+			return "mainmenu";
+		case 1:
+			m_GameType = JoinNetwork;
+			//TODO:
+			//m_HostName = m_Console->getInput("Enter the host name: ");
+			//m_HostPort = m_Console->getInput("Enter the port number: ").toInt();
+			return "mainmenu";
+		case 2:
+			m_GameType = NewNetwork;
+			//TODO:
+			//m_ServerPort = m_Console->getInput("Enter the port number: ").toInt();
+			return "mainmenu";
+	}
 
 	return "mainmenu";
 }
 
 CString CGameGUI::viewTrackMenu()
 {
-	m_Console->print("\nTrack menu.");
+	CGUIPage *page = (CGUIPage *)m_ChildWidget;
+	page->m_Selected = 0;
+	page->m_Title = "Select a track:";
+	page->m_Lines = getDirContents("tracks", ".track");
+	m_WinSys->runLoop(this);
 
-	m_TrackFile = "";
-	while(m_TrackFile == "")
-	{
-		m_Console->print("Choose a track from:");
-
-		//list the tracks
-		vector<CString> tracks = getDirContents("tracks", ".track");
-		for(unsigned int i=0; i < tracks.size(); i++)
-			m_Console->print(CString((int)i+1) + ": " + tracks[i]);
-
-		int i = m_Console->getInput("Which track? ").toInt() - 1;
-		if(i >= 0 && i < (int)(tracks.size()))
-			m_TrackFile = CString("tracks/") + tracks[i];
-
-	}
-
+	m_TrackFile = CString("tracks/") + page->m_Lines[page->m_Selected];
 	return "mainmenu";
 }
 
 CString CGameGUI::viewPlayerMenu()
 {
-	CString defaultcar = "diablo.conf";
+	CGUIPage *page = (CGUIPage *)m_ChildWidget;
+
 	m_PlayerDescr.clear();
 
-	m_Console->print("Player menu:\n");
-	CString name = m_Console->getInput("Enter your name: ");
+	CString name = "Player 1";
 
-	CString carfile = "";
-	while(carfile == "")
-	{
-		m_Console->print("Choose a car from:");
-
-		//list the tracks
-		vector<CString> cars = getDirContents("cars", ".conf");
-		for(unsigned int i=0; i < cars.size(); i++)
-			m_Console->print(CString((int)i+1) + ": " + cars[i]);
-
-		int i = m_Console->getInput("Which car? ").toInt() - 1;
-		if(i >= 0 && i < (int)(cars.size()))
-			carfile = CString("cars/") + cars[i];
-
-	}
+	page->m_Selected = 0;
+	page->m_Title = "Select a car for yourself:";
+	page->m_Lines = getDirContents("cars", ".conf");
+	m_WinSys->runLoop(this);
+	CString carfile = CString("cars/") + page->m_Lines[page->m_Selected];
 
 	addPlayer(name, true, carfile);
 
 	while(true)
 	{
-		CString answ = m_Console->getInput("\nDo you want to add a player(y/n)? ");
-		if(!(answ == "y" || answ == "Y")) break;
+		page->m_Selected = 0;
+		page->m_Title = "Do you want to add a player?";
+		page->m_Lines.clear();
+		page->m_Lines.push_back("yes");
+		page->m_Lines.push_back("no");
+		m_WinSys->runLoop(this);
+		if(page->m_Selected == 1) break;
 
-		name = m_Console->getInput("Enter the name: ");
+		name = "Player";
 
-		carfile = "";
-		while(carfile == "")
-		{
-			m_Console->print("Choose a car from:");
+		page->m_Selected = 0;
+		page->m_Title = "Select a car for this player:";
+		page->m_Lines = getDirContents("cars", ".conf");
+		m_WinSys->runLoop(this);
+		CString carfile = CString("cars/") + page->m_Lines[page->m_Selected];
 
-			//list the tracks
-			vector<CString> cars = getDirContents("cars", ".conf");
-			for(unsigned int i=0; i < cars.size(); i++)
-				m_Console->print(CString((int)i+1) + ": " + cars[i]);
-
-			int i = m_Console->getInput("Which car? ").toInt() - 1;
-			if(i >= 0 && i < (int)(cars.size()))
-				carfile = CString("cars/") + cars[i];
-
-		}
-
-		answ = m_Console->getInput("Is it an AI player(y/n)? ");
-		bool isHuman = !(answ == "y" || answ == "Y");
+		page->m_Selected = 0;
+		page->m_Title = "Is it an AI player?";
+		page->m_Lines.clear();
+		page->m_Lines.push_back("yes");
+		page->m_Lines.push_back("no");
+		m_WinSys->runLoop(this);
+		bool isHuman = (page->m_Selected == 1);
 		addPlayer(name, isHuman, carfile);
 	}
 
@@ -248,10 +226,12 @@ void CGameGUI::addPlayer(CString name, bool human, CString carfile)
 CString CGameGUI::playGame()
 {
 	load();
+	leave2DMode();
 
 	_USGameCore = m_GameCore;
 	m_WinSys->runLoop(game_mainloop, true); //true: swap buffers
 
+	enter2DMode();
 	unload();
 
 	return "hiscore";
@@ -259,9 +239,12 @@ CString CGameGUI::playGame()
 
 void CGameGUI::load()
 {
-	m_Console->print("Loading, please wait......");
-	m_Console->clearScreen();
-	m_Console->draw();
+	CGUIPage *page = (CGUIPage *)m_ChildWidget;
+	page->m_Selected = 0;
+	page->m_Title = "Loading";
+	page->m_Lines.clear();
+	page->m_Lines.push_back("please wait......");
+	onRedraw();
 	m_WinSys->swapBuffers();
 
 	unload(); //just in case...
@@ -300,7 +283,11 @@ void CGameGUI::load()
 
 		if(!m_GameCore->addPlayer(p, m_PlayerDescr[i].name, choice))
 		{
-			m_Console->print("Sim doesn't accept player\n");
+			page->m_Title = "Error:";
+			page->m_Lines.clear();
+			page->m_Lines.push_back("Sim doesn't accept player");
+			onRedraw();
+			m_WinSys->swapBuffers();
 			delete p;
 			continue;
 		}
@@ -330,30 +317,25 @@ void CGameGUI::unload()
 
 CString CGameGUI::viewHiscore()
 {
-	CString ret = "incorrect_answer";
-	while(ret == "incorrect_answer")
+	CGUIPage *page = (CGUIPage *)m_ChildWidget;
+	page->m_Selected = 0;
+	page->m_Title = "Hiscore (in future versions)";
+	page->m_Lines.clear();
+	page->m_Lines.push_back("Play again");
+	page->m_Lines.push_back("Return to main menu");
+	m_WinSys->runLoop(this);
+
+	switch(page->m_Selected)
 	{
-		int input = m_Console->getInput(
-			"In the future, here will be the high scores\n"
-			"  1: Play again\n"
-			"  2: Return to main menu\n"
-		).toInt();
+		case 0:
+			return "playgame";
+			break;
+		case 1:
+			if(m_Server != NULL)
+				{delete m_Server; m_Server = NULL;} //stop the server if it's running
+			return "mainmenu";
+			break;
+	}
 
-		switch(input)
-		{
-			case 1:
-				ret = "playgame";
-				break;
-			case 2:
-				if(m_Server != NULL)
-					{delete m_Server; m_Server = NULL;} //stop the server if it's running
-				ret = "mainmenu";
-				break;
-			default:
-				m_Console->print("Incorrect answer\n");
-		}
-
-	} //while
-
-	return ret;
+	return "";
 }

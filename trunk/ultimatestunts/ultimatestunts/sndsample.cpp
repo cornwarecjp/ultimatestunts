@@ -15,11 +15,12 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "sndsample.h"
-
 #include <cstdio>
 #include <cstdlib>
 #include <sys/stat.h>
+
+#include "sndsample.h"
+#include "datafile.h"
 
 #ifdef HAVE_LIBFMOD
 
@@ -28,7 +29,7 @@
 #include <fmod/fmod_errors.h>
 #endif
 
-CSndSample::CSndSample()
+CSndSample::CSndSample(CDataManager *manager) : CDataObject(manager, CDataObject::eSample)
 {
 	  m_Sample = NULL;
 }
@@ -38,21 +39,24 @@ CSndSample::~CSndSample()
 	FSOUND_Sample_Free(m_Sample);
 }
 
-int CSndSample::loadFromFile(const CString &filename)
+bool CSndSample::load(const CString &filename, const CParamList &list)
 {
-	m_Sample = FSOUND_Sample_Load(FSOUND_FREE, filename.c_str(), FSOUND_HW3D, 0, 0);
+	CDataObject::load(filename, list);
+	CDataFile f(m_Filename);
+	
+	m_Sample = FSOUND_Sample_Load(FSOUND_FREE, f.useExtern().c_str(), FSOUND_HW3D, 0, 0);
 
 	if (!m_Sample)
 	{
 		printf("   FMOD error: %s\n", FMOD_ErrorString(FSOUND_GetError()));
-		return 1;
+		return false;
 	}
 
 	// increasing mindistnace makes it louder in 3d space
 	FSOUND_Sample_SetMinMaxDistance((FSOUND_SAMPLE  *)m_Sample, 4.0f, 1000.0f);
 	FSOUND_Sample_SetMode((FSOUND_SAMPLE  *)m_Sample, FSOUND_LOOP_NORMAL);
 
-	return 0;
+	return true;
 }
 
 int CSndSample::attachToChannel(int c)
@@ -71,7 +75,7 @@ int CSndSample::attachToChannel(int c)
 #define VORBISFUNC "alutLoadVorbis_LOKI"
 #define MP3FUNC "alutLoadMP3_LOKI"
 
-CSndSample::CSndSample()
+CSndSample::CSndSample(CDataManager *manager) : CDataObject(manager, CDataObject::eSample)
 {
 	m_Buffer = 0;
 	m_isLoaded = false;
@@ -85,13 +89,17 @@ CSndSample::~CSndSample()
 	}
 }
 
-int CSndSample::loadFromFile(const CString &filename)
+bool CSndSample::load(const CString &filename, const CParamList &list)
 {
+	CDataObject::load(filename, list);
+	CDataFile f(m_Filename);
+	CString realfile = f.useExtern();
+
 	//data
 	void *wave;
 	ALsizei format, size, bits, freq;
 
-	CString extension = filename.mid(filename.length() - 4);
+	CString extension = realfile.mid(realfile.length() - 4);
 	extension.toLower();
 
 	if(extension == ".ogg") //.ogg: load as ogg vorbis file
@@ -104,15 +112,15 @@ int CSndSample::loadFromFile(const CString &filename)
 		{
 			printf("Error: Could not get ogg loading proc.\n"
 				"Maybe you don't use the Loki openAL implementation?\n");
-			return 1;
+			return false;
 		}
 
 		//The data
 		struct stat sbuf;
-		stat(filename.c_str(), &sbuf);
+		stat(realfile.c_str(), &sbuf);
 		size = sbuf.st_size;
 		wave = malloc(size);
-		FILE *fp = fopen(filename.c_str(), "r");
+		FILE *fp = fopen(realfile.c_str(), "r");
 		fread(wave, size, 1, fp);
 		fclose(fp);
 		
@@ -130,15 +138,15 @@ int CSndSample::loadFromFile(const CString &filename)
 		{
 			printf("Error: Could not get MP3 loading proc.\n"
 				"Maybe you don't use the Loki openAL implementation?\n");
-			return 1;
+			return false;
 		}
 
 		//The data
 		struct stat sbuf;
-		stat(filename.c_str(), &sbuf);
+		stat(realfile.c_str(), &sbuf);
 		size = sbuf.st_size;
 		wave = malloc(size);
-		FILE *fp = fopen(filename.c_str(), "r");
+		FILE *fp = fopen(realfile.c_str(), "r");
 		fread(wave, size, 1, fp);
 		fclose(fp);
 
@@ -149,13 +157,13 @@ int CSndSample::loadFromFile(const CString &filename)
 	else //default: load as wave file
 	{
 		alGenBuffers(1, &m_Buffer);
-		alutLoadWAV(filename.c_str(), &wave, &format, &size, &bits, &freq);
+		alutLoadWAV(realfile.c_str(), &wave, &format, &size, &bits, &freq);
 		alBufferData(m_Buffer, format, wave, size, freq);
 	}
 
 	free(wave);
 	m_isLoaded = true;
-	return 0;
+	return true;
 }
 
 int CSndSample::attachToChannel(int c)
@@ -167,20 +175,23 @@ int CSndSample::attachToChannel(int c)
 #else //libfmod and libopenAL
 
 
-CSndSample::CSndSample()
+CSndSample::CSndSample(CDataManager *manager) : CDataObject(manager, CDataObject::eSample)
 {;}
 
 CSndSample::~CSndSample()
 {;}
 
-int CSndSample::loadFromFile(const CString &filename)
+bool CSndSample::load(const CString &filename, const CParamList &list)
 {
-  return 1;
+	CDataObject::load(filename, list);
+	CDataFile f(m_Filename);
+
+	return true;
 }
 
 int CSndSample::attachToChannel(int c)
 {
-  return -1; //no sound implementation
+	return -1; //no sound implementation
 }
 
 #endif //libfmod

@@ -35,10 +35,10 @@
 class CMusic : public CSndSample
 {
   public:
-	CMusic();
+	CMusic(CDataManager *manager);
 	virtual ~CMusic();
 
-	virtual int loadFromFile(const CString &filename);
+	virtual bool load(const CString &filename, const CParamList &list);
 
 	virtual int attachToChannel(int c);
 
