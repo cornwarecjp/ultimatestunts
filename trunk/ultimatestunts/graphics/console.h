@@ -36,9 +36,7 @@ public:
 	virtual ~CConsole();
 
 	virtual void print(const CString &str);
-	virtual CString getInput(const CString &question = "");
 	virtual void clear();
-	virtual void clearScreen();
 	virtual void draw();
 
 	virtual void enterWriteMode();
@@ -50,8 +48,6 @@ protected:
 	bool m_WriteMode;
 
 	vector<CString> m_ScreenContent;
-
-	bool processKey(int key, CString &string);
 };
 
 extern CFont *theConsoleFont;

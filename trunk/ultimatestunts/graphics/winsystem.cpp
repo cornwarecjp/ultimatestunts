@@ -204,7 +204,7 @@ int CWinSystem::runLoop( bool (CALLBACKFUN *loopfunc)(), bool swp)
 
 bool CWinSystem::runLoop(CWidget *widget)
 {
-	int widgetmessages = widget->onRedraw();
+	int widgetmessages = widget->onResize(0, 0, m_W, m_H) | widget->onRedraw();
 	swapBuffers();
 
 	while(!(widgetmessages & WIDGET_QUIT))

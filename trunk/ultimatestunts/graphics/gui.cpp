@@ -19,6 +19,9 @@
 #include <GL/gl.h>
 
 #include "gui.h"
+#include "inputbox.h"
+#include "messagebox.h"
+
 
 CGUI::CGUI(const CLConfig &conf, CWinSystem *winsys)
 {
@@ -110,3 +113,70 @@ int CGUI::onRedraw()
 {
 	return m_ChildWidget->onRedraw();
 }
+
+CString CGUI::showInputBox(const CString &title, const CString &deflt)
+{
+	CInputBox *inputbox = new CInputBox;
+	inputbox->m_Title = title;
+	inputbox->m_Text = deflt;
+	//determine maximum size
+	//unsigned int s = 25;
+	//if(title.length() > s) s = title.length();
+	//if(deflt.length() > s) s = deflt.length();
+
+	inputbox->m_Wrel = 0.5;
+	inputbox->m_Hrel = 0.4;
+	inputbox->m_Xrel = 0.25;
+	inputbox->m_Yrel = 0.3;
+	m_ChildWidget->m_Widgets.push_back(inputbox);
+	m_WinSys->runLoop(this);
+	CString ret = inputbox->m_Text;
+	m_ChildWidget->m_Widgets.resize(m_ChildWidget->m_Widgets.size()-1); //removes inputbox
+	delete inputbox;
+
+	return ret;
+}
+
+bool CGUI::showYNMessageBox(const CString &title)
+{
+	CMessageBox *messagebox = new CMessageBox;
+	messagebox->m_Title = title;
+	messagebox->m_Type = CMessageBox::eYesNo;
+	//determine maximum size
+	//unsigned int s = 25;
+	//if(title.length() > s) s = title.length();
+	//if(deflt.length() > s) s = deflt.length();
+
+	messagebox->m_Wrel = 0.5;
+	messagebox->m_Hrel = 0.4;
+	messagebox->m_Xrel = 0.25;
+	messagebox->m_Yrel = 0.3;
+	m_ChildWidget->m_Widgets.push_back(messagebox);
+	m_WinSys->runLoop(this);
+	bool ret = (messagebox->m_Selected == 0);
+	m_ChildWidget->m_Widgets.resize(m_ChildWidget->m_Widgets.size()-1); //removes messagebox
+	delete messagebox;
+
+	return ret;
+}
+
+void CGUI::showMessageBox(const CString &title)
+{
+	CMessageBox *messagebox = new CMessageBox;
+	messagebox->m_Title = title;
+	messagebox->m_Type = CMessageBox::eOK;
+	//determine maximum size
+	//unsigned int s = 25;
+	//if(title.length() > s) s = title.length();
+	//if(deflt.length() > s) s = deflt.length();
+
+	messagebox->m_Wrel = 0.5;
+	messagebox->m_Hrel = 0.4;
+	messagebox->m_Xrel = 0.25;
+	messagebox->m_Yrel = 0.3;
+	m_ChildWidget->m_Widgets.push_back(messagebox);
+	m_WinSys->runLoop(this);
+	m_ChildWidget->m_Widgets.resize(m_ChildWidget->m_Widgets.size()-1); //removes messagebox
+	delete messagebox;
+}
+

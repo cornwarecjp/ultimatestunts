@@ -24,6 +24,7 @@ using namespace std;
 
 #include "lconfig.h"
 #include "widget.h"
+#include "guipage.h"
 #include "winsystem.h"
 
 /**
@@ -46,10 +47,14 @@ public:
 
 protected:
 	CWinSystem *m_WinSys;
-	CWidget *m_ChildWidget;
+	CGUIPage *m_ChildWidget;
 
 	void enter2DMode();
 	void leave2DMode();
+
+	CString showInputBox(const CString &title, const CString &deflt="");
+	bool showYNMessageBox(const CString &title);
+	void showMessageBox(const CString &title);
 	
 private:
 	bool m_in2DMode;

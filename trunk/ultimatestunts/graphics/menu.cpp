@@ -26,6 +26,7 @@ CMenu::CMenu()
 {
 	loadConsoleFont();
 	m_Selected = 0;
+	m_AlignLeft = false;
 }
 
 CMenu::~CMenu(){
@@ -95,7 +96,10 @@ int CMenu::onRedraw()
 	theConsoleFont->enable();
 
 	int dy = getdy();
-	glTranslatef(m_W/2, m_H - dy, 0); //to the top mid point
+	if(m_AlignLeft)
+		{glTranslatef(0, m_H - dy, 0);} //to the top left point
+	else
+		{glTranslatef(m_W/2, m_H - dy, 0);} //to the top mid point
 
 	//draw the list:
 	for(unsigned int i=0; i < m_Lines.size(); i++)
@@ -108,7 +112,9 @@ int CMenu::onRedraw()
 		else
 			{glColor3f(1,1,1);}
 
-		glTranslatef(-int(m_Lines[i].length())*theConsoleFont->getFontW()/2, 0, 0); //centered
+		if(!m_AlignLeft)
+			{glTranslatef(-int(m_Lines[i].length())*theConsoleFont->getFontW()/2, 0, 0);} //centered
+
 		theConsoleFont->drawString(m_Lines[i]);
 		glPopMatrix();
 		glTranslatef(0, -dy, 0); //next line

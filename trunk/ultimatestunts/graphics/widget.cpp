@@ -18,6 +18,12 @@
  
 #include "widget.h"
 
+CWidget::CWidget()
+{
+	m_W = m_H = m_X = m_Y = 0;
+	m_Xrel = m_Yrel = m_Wrel = m_Hrel = 0.0;
+}
+
 CWidget::~CWidget()
 {;}
 
@@ -49,21 +55,32 @@ int CWidget::onRedraw()
 {
 	glLoadIdentity();
 	glTranslatef(m_X, m_Y, 0);
+	glScissor(m_X, m_Y, m_W, m_H);
+
+	//glClear( GL_COLOR_BUFFER_BIT );
 
 	//the rectangle
 	glColor3f(0.2,0.2,0.2);
 	glBindTexture(GL_TEXTURE_2D, 0); //no texture
 	glBegin(GL_LINE_LOOP);
-	glVertex2f(0,0);
-	glVertex2f(0,m_H);
-	glVertex2f(m_W,m_H);
-	glVertex2f(m_W,0);
+	glVertex2f(1,1);
+	glVertex2f(1,m_H-1);
+	glVertex2f(m_W-1,m_H-1);
+	glVertex2f(m_W-1,1);
 	glEnd();
 	glColor3f(1,1,1);
 
-	glScissor(m_X, m_Y, m_W, m_H);
-
 	return 0;
+}
+
+void CWidget::drawBackground()
+{
+	glBegin(GL_QUADS);
+	glVertex2f(2,2);
+	glVertex2f(m_W-2,2);
+	glVertex2f(m_W-2,m_H-2);
+	glVertex2f(2,m_H-2);
+	glEnd();
 }
 
 bool CWidget::isInWidget(int x, int y)

@@ -15,12 +15,10 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "SDL.h"
 #include <GL/gl.h>
 
 #include <cstdio>
 #include <cstdlib>
-#include <unistd.h>
 
 #include "console.h"
 
@@ -29,8 +27,8 @@ CFont *theConsoleFont = NULL;
 CFont *loadConsoleFont()
 {
 	//size in pixels:
-	float fontW = 12.0;
-	float fontH = 24.0;
+	float fontW = 10.0;
+	float fontH = 20.0;
 
 	if(theConsoleFont == NULL)
 	{
@@ -95,120 +93,9 @@ void CConsole::print(const CString &str)
 		m_ScreenContent.erase(m_ScreenContent.begin());
 }
 
-CString CConsole::getInput(const CString &question)
-{
-	bool wasWriting = m_WriteMode;
-	if(!wasWriting) enterWriteMode();
-
-	print(question);
-
-	CString lastline = m_ScreenContent.back();
-	CString ret;
-
-	clearScreen();
-	draw();
-	m_WinSystem->swapBuffers();
-	bool quit = false;
-	while(!quit)
-	{
-		SDL_Event event;
-
-		while ( SDL_PollEvent(&event) )
-		{
-			usleep(10); //just to save CPU time
-
-			switch(event.type)
-			{
-				//Resizing
-				/*
-				case SDL_VIDEORESIZE:
-					m_Screen = SDL_SetVideoMode(event.resize.w, event.resize.h, m_BPP,
-						SDL_OPENGL|SDL_RESIZABLE);
-					if ( m_Screen )
-					{
-						m_W = m_Screen->w;
-						m_H = m_Screen->h;
-					}
-					else
-					{
-						// Uh oh, we couldn't set the new video mode??
-						fprintf(stderr, "Couldn't set %dx%d GL video mode: %s\n",
-							event.resize.w, event.resize.h, SDL_GetError());
-						SDL_Quit();
-						exit(2);
-					}
-					break;
-				*/
-
-				//Quitting
-				case SDL_QUIT:
-					quit = true;
-					break;
-
-				//Keyboard
-				case SDL_KEYDOWN:
-					if(event.key.keysym.mod & KMOD_SHIFT) //shift key
-						{quit = quit || processKey(event.key.keysym.sym-32, ret);}
-					else
-						{quit = quit || processKey(event.key.keysym.sym, ret);}
-					m_ScreenContent.back() = lastline + ret;
-					clearScreen();
-					draw();
-					m_WinSystem->swapBuffers();
-			}
-		}
-	}
-
-	/*
-	char input[80];
-	fgets(input, 79, stdin);
-	CString ret(input);
-	ret = ret.mid(0, ret.length() - 1); //remove \n
-	*/
-
-	printf("Answer = \"%s\"\n", ret.c_str());
-
-	if(!wasWriting) leaveWriteMode();
-
-	return ret;
-}
-
-bool CConsole::processKey(int key, CString &string)
-{
-	if(key == SDLK_RETURN || key == SDLK_ESCAPE) return true; //quit
-
-	if(key > 255 || key < 0) return false; //ignore key
-
-	if(key == SDLK_BACKSPACE)
-	{
-		if(string.length() > 0)
-			string = string.mid(0, string.length()-1);
-
-		return false;
-	}
-	
-	string += (char)key;
-
-	return false;
-}
-
 void CConsole::clear()
 {
 	m_ScreenContent.clear();
-}
-
-void CConsole::clearScreen()
-{
-	bool wasWriting = m_WriteMode;
-	if(!wasWriting) enterWriteMode();
-
-	float oldClear[4];
-	glGetFloatv(GL_COLOR_CLEAR_VALUE, oldClear);
-	glClearColor(0,0.1,0,1);
-	glClear(GL_COLOR_BUFFER_BIT);
-	glClearColor(oldClear[0],oldClear[1],oldClear[2],oldClear[3]);
-
-	if(!wasWriting) leaveWriteMode();
 }
 
 void CConsole::draw()

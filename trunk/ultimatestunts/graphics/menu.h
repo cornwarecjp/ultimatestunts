@@ -41,6 +41,7 @@ public:
 
 	unsigned int m_Selected;
 	vector<CString> m_Lines;
+	bool m_AlignLeft;
 
 protected:
 	int getdy();

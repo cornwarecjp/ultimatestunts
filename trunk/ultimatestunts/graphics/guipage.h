@@ -40,9 +40,7 @@ public:
 	virtual int onResize(int x, int y, int w, int h);
 	virtual int onRedraw();
 
-	
 	vector<CWidget *> m_Widgets;
-	unsigned int m_FocussedWidget;
 	CString m_Title;
 };
 

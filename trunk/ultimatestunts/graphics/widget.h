@@ -24,8 +24,7 @@
 
 class CWidget {
 public:
-	CWidget()
-		{m_W = m_H = m_X = m_Y = 0;}
+	CWidget();
 	virtual ~CWidget();
 
 	virtual int onMouseMove(int x, int y);
@@ -40,8 +39,12 @@ public:
 	int getY(){return m_Y;}
 	int getW(){return m_W;}
 	int getH(){return m_H;}
+
+	float m_Xrel, m_Yrel, m_Wrel, m_Hrel; //only for use by parent widget
 protected:
 	int m_X, m_Y, m_W, m_H;
+
+	void drawBackground();
 };
 
 #endif

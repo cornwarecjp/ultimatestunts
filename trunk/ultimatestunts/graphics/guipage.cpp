@@ -29,7 +29,6 @@ CGUIPage::CGUIPage()
 {
 	loadConsoleFont();
 
-	m_FocussedWidget = 0;
 	m_Title = "Ultimate Stunts menu";
 
 	if(_thePageBackground == NULL)
@@ -57,19 +56,15 @@ int CGUIPage::onKeyPress(int key)
 {
 	if(m_Widgets.size() == 0) return 0;
 
-	return m_Widgets[m_FocussedWidget]->onKeyPress(key);
+	return m_Widgets[m_Widgets.size()-1]->onKeyPress(key);
 }
 
 int CGUIPage::onMouseMove(int x, int y)
 {
 	if(m_Widgets.size() == 0) return 0;
 
-	for(int i=m_Widgets.size()-1; i >= 0; i--)
-		if(m_Widgets[(unsigned int)i]->isInWidget(x, y))
-		{
-			m_FocussedWidget = (unsigned int)i;
-			return m_Widgets[(unsigned int)i]->onMouseMove(x, y);
-		}
+	if(m_Widgets[m_Widgets.size()-1]->isInWidget(x, y))
+		return m_Widgets[m_Widgets.size()-1]->onMouseMove(x, y);
 
 	return 0;
 }
@@ -78,12 +73,8 @@ int CGUIPage::onMouseClick(int x, int y, unsigned int buttons)
 {
 	if(m_Widgets.size() == 0) return 0;
 
-	for(int i=m_Widgets.size()-1; i >= 0; i--)
-		if(m_Widgets[(unsigned int)i]->isInWidget(x, y))
-		{
-			m_FocussedWidget = (unsigned int)i;
-			return m_Widgets[(unsigned int)i]->onMouseClick(x, y, buttons);
-		}
+	if(m_Widgets[m_Widgets.size()-1]->isInWidget(x, y))
+		return m_Widgets[m_Widgets.size()-1]->onMouseClick(x, y, buttons);
 
 	return 0;
 }
@@ -128,13 +119,17 @@ int CGUIPage::onRedraw()
 
 int CGUIPage::onResize(int x, int y, int w, int h)
 {
-	//TODO
 	int ret = CWidget::onResize(x, y, w, h);
 	
 	if(m_Widgets.size() == 0) return ret;
 
 	for(unsigned int i=0; i < m_Widgets.size(); i++)
-		ret |= m_Widgets[i]->onResize(int(x+0.2*w), int(y+0.2*h), int(0.6*w), int(0.6*h));
+		ret |= m_Widgets[i]->onResize(
+			int(x+m_Widgets[i]->m_Xrel*w),
+			int(y+m_Widgets[i]->m_Yrel*h),
+			int(m_Widgets[i]->m_Wrel*w),
+			int(m_Widgets[i]->m_Hrel*h)
+			);
 
 	return ret;
 }
