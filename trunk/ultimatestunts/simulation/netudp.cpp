@@ -55,7 +55,7 @@ bool CNetUDP::setNetwork(const CIPNumber & localHost, int port) {
 
 CNetUDP::SNetDatagram * CNetUDP::recvData() const {
   int nread = -1;
-  char unsigned msg[UDP_MAX_DATAGRAM];
+  char msg[UDP_MAX_DATAGRAM]; //removed unsigned for Cygwin(!?)
   struct sockaddr_in from;
   socklen_t fromlen = sizeof(from);
   SNetDatagram *res = new SNetDatagram;
@@ -66,11 +66,12 @@ CNetUDP::SNetDatagram * CNetUDP::recvData() const {
   if (nread > 0) {
    char ip[14];
    msg[nread] = 0;
-   if (inet_ntop(AF_INET, (struct sockaddr_in *) &from, ip, sizeof(ip)) != NULL) {
+   //inet_ntop not available in Cygwin(?)
+   //if (inet_ntop(AF_INET, (struct sockaddr_in *) &from, ip, sizeof(ip)) != NULL) {
      res->host = &ip[0];
-   }
+   //}
 
-   res->data = &msg[0];
+//   res->data = &msg[0]; //was giving problems in Cygwin
    return (res);
   }
 

@@ -18,6 +18,7 @@
 #include <GL/gl.h>
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "winsystem.h"
 
@@ -50,6 +51,7 @@ CWinSystem::CWinSystem(const CLConfig &conf)
 			//TODO: support bpp setting
 		}
 	}
+
 	if(cnf == "fullscreen")
 		m_Flags = SDL_OPENGL|SDL_FULLSCREEN;
 
@@ -58,10 +60,15 @@ CWinSystem::CWinSystem(const CLConfig &conf)
 	cnf = conf.getValue("graphics", "visible_tiles");
 	if(cnf != "")
 		m_VisibleTiles = cnf.toInt();
-	printf("Visible tiles: %d\n", m_VisibleTiles);
 
 	//Some code coming from SDL gears
 	SDL_Init(SDL_INIT_VIDEO);
+
+	//SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 8 );
+	//SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, 8 );
+	//SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, 8 );
+	//SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 16 );
+	SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
 
 	m_Screen = SDL_SetVideoMode(m_W, m_H, m_BPP, m_Flags);
 	if ( ! m_Screen ) {
@@ -109,11 +116,16 @@ int CWinSystem::runLoop( bool (CALLBACKFUN *loopfunc)(), bool swp)
 					if ( m_Screen )
 					{
 						reshape(m_Screen->w, m_Screen->h);
-					} else {
-						/* Uh oh, we couldn't set the new video mode?? */;
+					}
+					else
+					{
+						/* Uh oh, we couldn't set the new video mode?? */
+						fprintf(stderr, "Couldn't set %dx%d GL video mode: %s\n",
+							event.resize.w, event.resize.h, SDL_GetError());
+						SDL_Quit();
+						exit(2);
 					}
 					break;
-
 				case SDL_QUIT:
 					quit = true;
 					break;
