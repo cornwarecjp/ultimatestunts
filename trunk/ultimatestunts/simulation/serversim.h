@@ -1,8 +1,8 @@
 /***************************************************************************
-                          simulation.cpp  -  description
+                          serversim.h  -  description
                              -------------------
-    begin                : Wed Dec 4 2002
-    copyright            : (C) 2002 by CJP
+    begin                : wo jan 15 2003
+    copyright            : (C) 2003 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
 
@@ -15,47 +15,30 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <stdio.h>
+#ifndef SERVERSIM_H
+#define SERVERSIM_H
+
+#include <vector>
 #include "simulation.h"
 
-CSimulation::CSimulation(CWorld *w)
-{
-  m_World = w;
-}
+/**
+  *@author CJP
+  */
 
-CSimulation::~CSimulation(){
-}
+class CServerSim : public CSimulation  {
+public: 
+	CServerSim(CWorld *w, int UDPPort);
+	~CServerSim();
 
-int CSimulation::addPlayer(CObjectChoice choice)
-{
-	//Default behaviour: always accept a player
-	return m_World->addMovingObject(choice);
-}
+	virtual int addPlayer(CObjectChoice choice);
+	virtual bool removePlayer(int id);
 
-bool CSimulation::removePlayer(int id)
-{
-	//Should remove car from the world
+	void addSubSim(CSimulation *s);
 
-	return true; //succes
+  virtual void Update();
 
-	//Old code:
-	/*
-  bool ret = false;
-  for(unsigned int i=0; i<m_LocalPlayers.size(); i++)
-  {
-    if(m_LocalPlayers[i]==p)
-    {
-      ret = true;
-//      m_LocalPlayers.erase(&(m_LocalPlayers[i]));    
-      m_LocalPlayers.erase(m_LocalPlayers.begin() + i - 1);     // FIXME: TEST IT!
-      i--;
-    }
-  }
+protected:
+	vector<CSimulation *> m_SubSim;
+};
 
-  if(ret)
-    printf("Removed player: %d players left\n", m_LocalPlayers.size());
-
-  return ret;
-	*/
-
-}
+#endif

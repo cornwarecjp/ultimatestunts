@@ -27,7 +27,7 @@
 
 class CPhysics : public CSimulation {
 public: 
-	CPhysics(CWorld *w, bool leading=true);
+	CPhysics(CWorld *w);
 	virtual ~CPhysics();
 
   //virtual bool addPlayer(CPlayer *p, CObjectChoice choice); //Using the default ones

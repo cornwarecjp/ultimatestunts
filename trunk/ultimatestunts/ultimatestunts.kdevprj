@@ -266,7 +266,7 @@ install_location=
 type=HEADER
 
 [simulation/Makefile.am]
-files=simulation/physics.cpp,simulation/physics.h,simulation/simulation.cpp,simulation/simulation.h,simulation/player.cpp,simulation/player.h,simulation/world.cpp,simulation/world.h,simulation/tile.cpp,simulation/tile.h,simulation/movingobject.cpp,simulation/movingobject.h,simulation/car.cpp,simulation/car.h,simulation/message.cpp,simulation/message.h,simulation/messagebuffer.cpp,simulation/messagebuffer.h,simulation/dynamicobject.cpp,simulation/dynamicobject.h,simulation/objectchoice.cpp,simulation/objectchoice.h,simulation/netudp.h,simulation/netudp.cpp,simulation/netmessage.cpp,simulation/netmessage.h,simulation/carinput.cpp,simulation/carinput.h,simulation/movobjinput.cpp,simulation/movobjinput.h,simulation/aiplayercar.cpp,simulation/aiplayercar.h
+files=simulation/physics.cpp,simulation/physics.h,simulation/simulation.cpp,simulation/simulation.h,simulation/player.cpp,simulation/player.h,simulation/world.cpp,simulation/world.h,simulation/tile.cpp,simulation/tile.h,simulation/movingobject.cpp,simulation/movingobject.h,simulation/car.cpp,simulation/car.h,simulation/message.cpp,simulation/message.h,simulation/messagebuffer.cpp,simulation/messagebuffer.h,simulation/dynamicobject.cpp,simulation/dynamicobject.h,simulation/objectchoice.cpp,simulation/objectchoice.h,simulation/netudp.h,simulation/netudp.cpp,simulation/netmessage.cpp,simulation/netmessage.h,simulation/carinput.cpp,simulation/carinput.h,simulation/movobjinput.cpp,simulation/movobjinput.h,simulation/aiplayercar.cpp,simulation/aiplayercar.h,simulation/clientsim.cpp,simulation/clientsim.h,simulation/serversim.cpp,simulation/serversim.h
 sub_dirs=
 type=static_library
 
@@ -301,6 +301,18 @@ install_location=
 type=SOURCE
 
 [simulation/carinput.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[simulation/clientsim.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[simulation/clientsim.h]
 dist=true
 install=false
 install_location=
@@ -421,6 +433,18 @@ install_location=
 type=SOURCE
 
 [simulation/player.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[simulation/serversim.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[simulation/serversim.h]
 dist=true
 install=false
 install_location=

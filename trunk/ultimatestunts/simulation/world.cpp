@@ -28,15 +28,14 @@ CWorld::~CWorld(){
 
 int CWorld::addMovingObject(CObjectChoice c)
 {
-  //future: selecting, using c
+	//future: selecting, using c
 
-  CMovingObject *m = new CCar;
+	CMovingObject *m = new CCar;
 
-  int s = m_MovObjs.size();
-  m_MovObjs.resize(s+1);
-  m_MovObjs[s] = m;
+	m_MovObjs.push_back(m);
 
-  printf("Added car: total %d moving objects\n", m_MovObjs.size());
+	int s = m_MovObjs.size();
+	printf("Added car: total %d moving objects\n", s);
 
-  return s;
+	return s - 1;
 }

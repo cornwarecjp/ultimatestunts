@@ -1,8 +1,8 @@
 /***************************************************************************
-                          simulation.h  -  description
+                          serversim.cpp  -  description
                              -------------------
-    begin                : Wed Dec 4 2002
-    copyright            : (C) 2002 by CJP
+    begin                : wo jan 15 2003
+    copyright            : (C) 2003 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
 
@@ -15,36 +15,41 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef SIMULATION_H
-#define SIMULATION_H
+#include "serversim.h"
 
+CServerSim::CServerSim(CWorld *w, int UDPPort) : CSimulation(w)
+{
+}
 
-/**
-  *@author CJP
-  */
+CServerSim::~CServerSim()
+{
+}
 
-#include <vector> //STL vector template
-#include "player.h"
-#include "world.h"
-#include "objectchoice.h"
+int CServerSim::addPlayer(CObjectChoice choice)
+{
+	int id = CSimulation::addPlayer(choice);
 
-#include "movingobject.h"
+	//TODO: send player info to clients
 
-class CSimulation {
-public: 
-	CSimulation(CWorld *w);
-	virtual ~CSimulation();
+	return id;
+}
 
-  virtual int addPlayer(CObjectChoice choice);
-  virtual bool removePlayer(int id);
+bool CServerSim::removePlayer(int id)
+{
+	return false;
+}
 
-  virtual void Update() =0;
+void CServerSim::addSubSim(CSimulation *s)
+{
+	m_SubSim.push_back(s);
+}
 
-protected:
+void CServerSim::Update()
+{
+	//TODO: check for incoming data
 
-  //Services of the base-class; derived classes don't have to use these
-  vector<CPlayer *> m_LocalPlayers;
-  CWorld *m_World;
-};
+	for(unsigned int i=0; i<m_SubSim.size(); i++)
+		{(m_SubSim[i])->Update();}
 
-#endif
+	//TODO: send new data
+}

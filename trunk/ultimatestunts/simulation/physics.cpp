@@ -20,7 +20,7 @@
 #include "physics.h"
 #include "carinput.h"
 
-CPhysics::CPhysics(CWorld *w, bool leading) : CSimulation(w, leading)
+CPhysics::CPhysics(CWorld *w) : CSimulation(w)
 {}
 
 CPhysics::~CPhysics(){

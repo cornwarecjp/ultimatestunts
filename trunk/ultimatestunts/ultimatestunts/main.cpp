@@ -24,6 +24,7 @@
 
 #include "world.h"
 #include "simulation.h"
+#include "clientsim.h"
 #include "physics.h"
 
 #include "objectchoice.h"
@@ -70,13 +71,24 @@ bool mainloop()
 
 int main(int argc, char *argv[])
 {
-  printf("Welcome to " PACKAGE " version " VERSION "\n");
+	char inpbuffer[80];
+	printf("Welcome to " PACKAGE " version " VERSION "\n");
 
 	printf("\nCreating world object\n");
 	world = new CWorld;
 
-	printf("\nCreating physics simulation\n");
-	sim = new CPhysics(world);
+	printf("\nDo you want to start a network game session? (y/n)");
+	scanf("%s", inpbuffer);
+	if(inpbuffer[0]=='y' || inpbuffer[0]=='Y')
+	{
+		printf("Creating client-type simulation\n");
+		sim = new CClientSim(world, "localhost", 1500);
+	}
+	else
+	{
+		printf("Creating physics simulation\n");
+		sim = new CPhysics(world);
+	}
 
 	printf("\nCreating 3 AI players\n");
 	player1 = new CAIPlayerCar(world);
