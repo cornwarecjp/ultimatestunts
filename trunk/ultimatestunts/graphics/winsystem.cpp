@@ -18,21 +18,46 @@
 #include <GL/gl.h>
 #include "SDL/SDL.h"
 
+#include <stdio.h>
+
 SDL_Surface *screen;
 
 #include "winsystem.h"
 
-CWinSystem::CWinSystem()
+CWinSystem::CWinSystem(const CLConfig &conf)
 {
-	//Code coming from SDL gears
+	//Default values:
+	Uint32 flags = SDL_OPENGL|SDL_RESIZABLE;
+	int w = 640, h = 480, bpp = 24;
 
-  //Uint8 *keys;
+	CString cnf_display = conf.getValue("graphics","display");
+	printf("Display variable: \"%s\"\n", cnf_display.c_str());
+	unsigned int pos = cnf_display.inStr(':');
+	if(pos > 0 && pos < cnf_display.length()-1) //There is a ':' in cnf_display
+	{
+		CString s = cnf_display.mid(pos+1, cnf_display.length()-pos);
+		cnf_display = cnf_display.mid(0, pos);
+
+
+		pos = s.inStr('x');
+		if(pos > 0 && pos < s.length()-1)
+		{
+			w = s.mid(0, pos).toInt();
+			h = s.mid(pos+1, s.length()-pos).toInt();
+			//TODO: support bpp setting
+		}
+	}
+
+	if(cnf_display == "fullscreen")
+		flags = SDL_OPENGL|SDL_FULLSCREEN;
+
+	//Some code coming from SDL gears
 
   SDL_Init(SDL_INIT_VIDEO);
 
-  screen = SDL_SetVideoMode(300, 300, 16, SDL_OPENGL|SDL_RESIZABLE);
+  screen = SDL_SetVideoMode(w, h, bpp, flags);
   if ( ! screen ) {
-    fprintf(stderr, "Couldn't set 300x300 GL video mode: %s\n", SDL_GetError());
+    fprintf(stderr, "Couldn't set %dx%d GL video mode: %s\n", w, h, SDL_GetError());
     SDL_Quit();
     exit(2);
   }

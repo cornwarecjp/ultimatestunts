@@ -23,6 +23,7 @@
 #include <stdio.h>
 
 #include "cstring.h"
+#include "lconfig.h"
 
 #include "graphicworld.h"
 #include "simulation.h"
@@ -77,7 +78,14 @@ int main(int argc, char *argv[])
 	char inpbuffer[80];
 	printf("Welcome to " PACKAGE " version " VERSION "\n");
 
-	winsys = new CWinSystem;
+	CLConfig conffile;
+	if(!conffile.setFilename("ultimatestunts.conf"))
+	{
+		printf("Error: could not read ultimatestunts.conf\n"); return 1;
+		//TODO: create a default one
+	} else {printf("Using ultimatestunts.conf\n");}
+
+	winsys = new CWinSystem(conffile);
 
 	printf("\nCreating (graphic) world object\n");
 	world = new CGraphicWorld;

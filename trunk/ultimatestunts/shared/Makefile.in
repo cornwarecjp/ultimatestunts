@@ -76,9 +76,9 @@ soundlibs = @soundlibs@
 
 noinst_LIBRARIES = libshared.a
 
-libshared_a_SOURCES = binbuffer.cpp cfile.cpp cstring.cpp hello.cpp matrix.cpp timer.cpp vector.cpp ipnumber.cpp
+libshared_a_SOURCES = binbuffer.cpp cfile.cpp cstring.cpp hello.cpp lconfig.cpp matrix.cpp timer.cpp vector.cpp ipnumber.cpp
 
-EXTRA_DIST = binbuffer.cpp binbuffer.h cfile.cpp cfile.h cstring.cpp cstring.h hello.cpp hello.h matrix.cpp matrix.h timer.cpp timer.h vector.cpp vector.h
+EXTRA_DIST = binbuffer.cpp binbuffer.h cfile.cpp cfile.h cstring.cpp cstring.h hello.cpp hello.h lconfig.cpp lconfig.h matrix.cpp matrix.h timer.cpp timer.h vector.cpp vector.h
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_CLEAN_FILES = 
 LIBRARIES =  $(noinst_LIBRARIES)
@@ -94,8 +94,8 @@ X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_PRE_LIBS = @X_PRE_LIBS@
 libshared_a_LIBADD = 
 libshared_a_OBJECTS =  binbuffer.$(OBJEXT) cfile.$(OBJEXT) \
-cstring.$(OBJEXT) hello.$(OBJEXT) matrix.$(OBJEXT) timer.$(OBJEXT) \
-vector.$(OBJEXT) ipnumber.$(OBJEXT)
+cstring.$(OBJEXT) hello.$(OBJEXT) lconfig.$(OBJEXT) matrix.$(OBJEXT) \
+timer.$(OBJEXT) vector.$(OBJEXT) ipnumber.$(OBJEXT)
 AR = ar
 CXXFLAGS = @CXXFLAGS@
 CXXCOMPILE = $(CXX) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -109,8 +109,8 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 TAR = tar
 GZIP_ENV = --best
 DEP_FILES =  .deps/binbuffer.P .deps/cfile.P .deps/cstring.P \
-.deps/hello.P .deps/ipnumber.P .deps/matrix.P .deps/timer.P \
-.deps/vector.P
+.deps/hello.P .deps/ipnumber.P .deps/lconfig.P .deps/matrix.P \
+.deps/timer.P .deps/vector.P
 SOURCES = $(libshared_a_SOURCES)
 OBJECTS = $(libshared_a_OBJECTS)
 

@@ -70,7 +70,7 @@ bool CGraphObj::loadFromFile(CString filename, CTexture *texarray, int lod)
 			CString line = f.readl();
 			eof = line[0]=='\n';
 
-			int sp = line.instr(' ');
+			int sp = line.inStr(' ');
 			//printf("Spatie op positie %d\n",sp);
 			if(sp>0)
 			{
@@ -108,9 +108,9 @@ bool CGraphObj::loadFromFile(CString filename, CTexture *texarray, int lod)
 					//printf("Color keyword gevonden\n");
 					line = line.mid(sp+1, line.length());
 					float r = line.toFloat();
-					line = line.mid(line.instr(',')+1, line.length());
+					line = line.mid(line.inStr(',')+1, line.length());
 					float g = line.toFloat();
-					line = line.mid(line.instr(',')+1, line.length());
+					line = line.mid(line.inStr(',')+1, line.length());
 					float b = line.toFloat();
 
           if(texture_isenabled) //oplossing van de kleurenbug
@@ -121,9 +121,9 @@ bool CGraphObj::loadFromFile(CString filename, CTexture *texarray, int lod)
 					//printf("Vertex keyword gevonden\n");
 					line = line.mid(sp+1, line.length());
 					float x = line.toFloat();
-					line = line.mid(line.instr(',')+1, line.length());
+					line = line.mid(line.inStr(',')+1, line.length());
 					float y = line.toFloat();
-					line = line.mid(line.instr(',')+1, line.length());
+					line = line.mid(line.inStr(',')+1, line.length());
 					float z = line.toFloat();
 					glVertex3f(x, y, z);
 				}
@@ -132,7 +132,7 @@ bool CGraphObj::loadFromFile(CString filename, CTexture *texarray, int lod)
 					//printf("TexCoord keyword gevonden\n");
 					line = line.mid(sp+1, line.length());
 					float x = line.toFloat();
-					line = line.mid(line.instr(',')+1, line.length());
+					line = line.mid(line.inStr(',')+1, line.length());
 					float y = line.toFloat();
 					glTexCoord2f(x, y);
 				}
@@ -141,9 +141,9 @@ bool CGraphObj::loadFromFile(CString filename, CTexture *texarray, int lod)
 					//printf("Normal keyword gevonden\n");
 					line = line.mid(sp+1, line.length());
 					float x = line.toFloat();
-					line = line.mid(line.instr(',')+1, line.length());
+					line = line.mid(line.inStr(',')+1, line.length());
 					float y = line.toFloat();
-					line = line.mid(line.instr(',')+1, line.length());
+					line = line.mid(line.inStr(',')+1, line.length());
 					float z = line.toFloat();
 					glNormal3f(x, y, z);
 				}

@@ -53,7 +53,6 @@ configure:1217: result: found
 configure:1225: checking for working makeinfo
 configure:1236: result: missing
 configure:1283: checking for gcc
-configure:1298: found /usr/bin/gcc
 configure:1306: result: gcc
 configure:1534: checking for C compiler version
 configure:1537: gcc --version </dev/null >&5
@@ -96,7 +95,7 @@ configure:1792: $? = 0
 configure:1795: test -s conftest.o
 configure:1798: $? = 0
 configure:1808: result: yes
-configure:1835: gcc -c -g -O2  conftest.c >&5
+configure:1835: gcc -c   conftest.c >&5
 conftest.c:2: parse error before `me'
 configure:1838: $? = 1
 configure: failed program was:
@@ -104,28 +103,16 @@ configure: failed program was:
   choke me
 #endif
 configure:1941: checking how to run the C preprocessor
-configure:1967: gcc -E  conftest.c
-configure:1973: $? = 0
-configure:2000: gcc -E  conftest.c
-configure:1997: ac_nonexistent.h: No such file or directory
-configure:2006: $? = 1
-configure: failed program was:
-#line 1996 "configure"
-#include "confdefs.h"
-#include <ac_nonexistent.h>
-configure:2043: result: gcc -E
-configure:2058: gcc -E  conftest.c
+configure:2043: result: cpp
+configure:2058: cpp  conftest.c
 configure:2064: $? = 0
-configure:2091: gcc -E  conftest.c
+configure:2091: cpp  conftest.c
 configure:2088: ac_nonexistent.h: No such file or directory
 configure:2097: $? = 1
 configure: failed program was:
 #line 2087 "configure"
 #include "confdefs.h"
 #include <ac_nonexistent.h>
-configure:2185: checking for g++
-configure:2200: found /usr/bin/g++
-configure:2208: result: g++
 configure:2223: checking for C++ compiler version
 configure:2226: g++ --version </dev/null >&5
 2.95.3
@@ -139,7 +126,7 @@ g++: argument to `-V' missing
 
 configure:2239: $? = 1
 configure:2242: checking whether we are using the GNU C++ compiler
-configure:2263: g++ -c   conftest.cc >&5
+configure:2263: g++ -c -O1   conftest.cc >&5
 configure:2266: $? = 0
 configure:2269: test -s conftest.o
 configure:2272: $? = 0
@@ -150,11 +137,11 @@ configure:2311: $? = 0
 configure:2314: test -s conftest.o
 configure:2317: $? = 0
 configure:2327: result: yes
-configure:2367: g++ -c -g -O2  conftest.cc >&5
+configure:2367: g++ -c -O1   conftest.cc >&5
 configure:2370: $? = 0
 configure:2373: test -s conftest.o
 configure:2376: $? = 0
-configure:2398: g++ -c -g -O2  conftest.cc >&5
+configure:2398: g++ -c -O1   conftest.cc >&5
 configure:2401: $? = 0
 configure:2404: test -s conftest.o
 configure:2407: $? = 0
@@ -184,7 +171,7 @@ configure:2735: checking for ranlib
 configure:2750: found /usr/bin/ranlib
 configure:2759: result: ranlib
 configure:2775: checking for windows.h
-configure:2785: gcc -E  conftest.c
+configure:2785: cpp  conftest.c
 configure:2782: windows.h: No such file or directory
 configure:2791: $? = 1
 configure: failed program was:
@@ -194,48 +181,48 @@ configure: failed program was:
 configure:2810: result: no
 configure:2815: checking for X
 configure:3024: result: libraries /usr/X11R6/lib, headers /usr/X11R6/include
-configure:3163: gcc -o conftest -g -O2   conftest.c   -L/usr/X11R6/lib -lX11 >&5
+configure:3163: gcc -o conftest    conftest.c   -L/usr/X11R6/lib -lX11 >&5
 configure:3166: $? = 0
 configure:3169: test -s conftest
 configure:3172: $? = 0
 configure:3298: checking for gethostbyname
-configure:3335: gcc -o conftest -g -O2   conftest.c  >&5
+configure:3335: gcc -o conftest    conftest.c  >&5
 configure:3338: $? = 0
 configure:3341: test -s conftest
 configure:3344: $? = 0
 configure:3354: result: yes
 configure:3475: checking for connect
-configure:3512: gcc -o conftest -g -O2   conftest.c  >&5
+configure:3512: gcc -o conftest    conftest.c  >&5
 configure:3515: $? = 0
 configure:3518: test -s conftest
 configure:3521: $? = 0
 configure:3531: result: yes
 configure:3591: checking for remove
-configure:3628: gcc -o conftest -g -O2   conftest.c  >&5
+configure:3628: gcc -o conftest    conftest.c  >&5
 configure:3631: $? = 0
 configure:3634: test -s conftest
 configure:3637: $? = 0
 configure:3647: result: yes
 configure:3707: checking for shmat
-configure:3744: gcc -o conftest -g -O2   conftest.c  >&5
+configure:3744: gcc -o conftest    conftest.c  >&5
 configure:3747: $? = 0
 configure:3750: test -s conftest
 configure:3753: $? = 0
 configure:3763: result: yes
 configure:3832: checking for IceConnectionNumber in -lICE
-configure:3859: gcc -o conftest -g -O2   -L/usr/X11R6/lib conftest.c -lICE   >&5
+configure:3859: gcc -o conftest    -L/usr/X11R6/lib conftest.c -lICE   >&5
 configure:3862: $? = 0
 configure:3865: test -s conftest
 configure:3868: $? = 0
 configure:3879: result: yes
 configure:3892: checking for glNewList in -lGL
-configure:3919: gcc -o conftest -g -O2   conftest.c -lGL  -L/usr/X11R6/lib  -lSM -lICE -lX11 -lXi -lXext -lXmu  -lm  >&5
+configure:3919: gcc -o conftest    conftest.c -lGL  -L/usr/X11R6/lib  -lSM -lICE -lX11 -lXi -lXext -lXmu  -lm  >&5
 configure:3922: $? = 0
 configure:3925: test -s conftest
 configure:3928: $? = 0
 configure:3939: result: yes
 configure:4059: checking for gluLookAt in -lGLU
-configure:4086: gcc -o conftest -g -O2   conftest.c -lGLU -lGL  -L/usr/X11R6/lib  -lSM -lICE -lX11 -lXi -lXext -lXmu  -lm  >&5
+configure:4086: gcc -o conftest    conftest.c -lGLU -lGL  -L/usr/X11R6/lib  -lSM -lICE -lX11 -lXi -lXext -lXmu  -lm  >&5
 configure:4089: $? = 0
 configure:4092: test -s conftest
 configure:4095: $? = 0
@@ -250,13 +237,13 @@ configure:4300: checking for sdl-config
 configure:4317: found /usr/bin/sdl-config
 configure:4329: result: /usr/bin/sdl-config
 configure:4337: checking for SDL - version >= 1.1.0
-configure:4423: gcc -o conftest -g -O2 -I/usr/include/SDL -D_REENTRANT   conftest.c  -L/usr/lib -Wl,-rpath,/usr/lib -lSDL -lpthread >&5
+configure:4423: gcc -o conftest  -I/usr/include/SDL -D_REENTRANT   conftest.c  -L/usr/lib -Wl,-rpath,/usr/lib -lSDL -lpthread >&5
 configure:4426: $? = 0
 configure:4428: ./conftest
 configure:4431: $? = 0
 configure:4447: result: yes
 configure:4532: checking for socket in -lsocket
-configure:4559: gcc -o conftest -g -O2 -I/usr/include/SDL -D_REENTRANT   conftest.c -lsocket   >&5
+configure:4559: gcc -o conftest  -I/usr/include/SDL -D_REENTRANT   conftest.c -lsocket   >&5
 /usr/i486-suse-linux/bin/ld: cannot find -lsocket
 collect2: ld returned 1 exit status
 configure:4562: $? = 1
@@ -280,35 +267,35 @@ socket ();
 }
 configure:4579: result: no
 configure:4585: checking for gethostbyname in -lnsl
-configure:4612: gcc -o conftest -g -O2 -I/usr/include/SDL -D_REENTRANT   conftest.c -lnsl   >&5
+configure:4612: gcc -o conftest  -I/usr/include/SDL -D_REENTRANT   conftest.c -lnsl   >&5
 configure:4615: $? = 0
 configure:4618: test -s conftest
 configure:4621: $? = 0
 configure:4632: result: yes
 configure:4638: checking for inet_aton in -lresolv
-configure:4665: gcc -o conftest -g -O2 -I/usr/include/SDL -D_REENTRANT   conftest.c -lresolv   >&5
+configure:4665: gcc -o conftest  -I/usr/include/SDL -D_REENTRANT   conftest.c -lresolv   >&5
 configure:4668: $? = 0
 configure:4671: test -s conftest
 configure:4674: $? = 0
 configure:4685: result: yes
 configure:4691: checking for ANSI C header files
-configure:4705: gcc -E  conftest.c
+configure:4705: cpp  conftest.c
 configure:4711: $? = 0
-configure:4798: gcc -o conftest -g -O2 -I/usr/include/SDL -D_REENTRANT   conftest.c  >&5
+configure:4798: gcc -o conftest  -I/usr/include/SDL -D_REENTRANT   conftest.c  >&5
 configure:4801: $? = 0
 configure:4803: ./conftest
 configure:4806: $? = 0
 configure:4819: result: yes
 configure:4832: checking for GL/gl.h
-configure:4842: gcc -E  conftest.c
+configure:4842: cpp  conftest.c
 configure:4848: $? = 0
 configure:4867: result: yes
 configure:4832: checking for GL/glut.h
-configure:4842: gcc -E  conftest.c
+configure:4842: cpp  conftest.c
 configure:4848: $? = 0
 configure:4867: result: yes
 configure:4877: checking for joystick.h
-configure:4887: gcc -E  conftest.c
+configure:4887: cpp  conftest.c
 configure:4884: joystick.h: No such file or directory
 configure:4893: $? = 1
 configure: failed program was:
@@ -317,17 +304,17 @@ configure: failed program was:
 #include <joystick.h>
 configure:4912: result: no
 configure:4921: checking for linux/joystick.h
-configure:4931: gcc -E  conftest.c
+configure:4931: cpp  conftest.c
 configure:4937: $? = 0
 configure:4956: result: yes
 configure:4965: checking for FSOUND_Close in -lfmod
-configure:4992: gcc -o conftest -g -O2 -I/usr/include/SDL -D_REENTRANT   conftest.c -lfmod   >&5
+configure:4992: gcc -o conftest  -I/usr/include/SDL -D_REENTRANT   conftest.c -lfmod   >&5
 configure:4995: $? = 0
 configure:4998: test -s conftest
 configure:5001: $? = 0
 configure:5012: result: yes
 configure:5018: checking for fmod/fmod.h
-configure:5028: gcc -E  conftest.c
+configure:5028: cpp  conftest.c
 configure:5034: $? = 0
 configure:5053: result: yes
 configure:5188: creating ./config.status
@@ -363,21 +350,21 @@ ac_cv_build=i586-pc-linux-gnu
 ac_cv_build_alias=i586-pc-linux-gnu
 ac_cv_c_compiler_gnu=yes
 ac_cv_cxx_compiler_gnu=yes
-ac_cv_env_CC_set=
-ac_cv_env_CC_value=
-ac_cv_env_CFLAGS_set=
+ac_cv_env_CC_set=set
+ac_cv_env_CC_value=gcc
+ac_cv_env_CFLAGS_set=set
 ac_cv_env_CFLAGS_value=
-ac_cv_env_CPPFLAGS_set=
+ac_cv_env_CPPFLAGS_set=set
 ac_cv_env_CPPFLAGS_value=
-ac_cv_env_CPP_set=
-ac_cv_env_CPP_value=
+ac_cv_env_CPP_set=set
+ac_cv_env_CPP_value=cpp
 ac_cv_env_CXXCPP_set=
 ac_cv_env_CXXCPP_value=
-ac_cv_env_CXXFLAGS_set=
-ac_cv_env_CXXFLAGS_value=
-ac_cv_env_CXX_set=
-ac_cv_env_CXX_value=
-ac_cv_env_LDFLAGS_set=
+ac_cv_env_CXXFLAGS_set=set
+ac_cv_env_CXXFLAGS_value=$'-O1 '
+ac_cv_env_CXX_set=set
+ac_cv_env_CXX_value=g++
+ac_cv_env_LDFLAGS_set=set
 ac_cv_env_LDFLAGS_value=
 ac_cv_env_build_alias_set=
 ac_cv_env_build_alias_value=
@@ -409,10 +396,9 @@ ac_cv_lib_socket_socket=no
 ac_cv_objext=o
 ac_cv_path_SDL_CONFIG=/usr/bin/sdl-config
 ac_cv_path_install=$'/usr/bin/install -c'
-ac_cv_prog_CPP=$'gcc -E'
+ac_cv_prog_CPP=cpp
 ac_cv_prog_CXXCPP=$'g++ -E'
 ac_cv_prog_ac_ct_CC=gcc
-ac_cv_prog_ac_ct_CXX=g++
 ac_cv_prog_ac_ct_RANLIB=ranlib
 ac_cv_prog_cc_g=yes
 ac_cv_prog_cxx_g=yes

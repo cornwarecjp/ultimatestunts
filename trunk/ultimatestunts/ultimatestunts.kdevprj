@@ -27,6 +27,7 @@ path_to_bin_program=.
 [General]
 AMChanged=false
 author=CJP
+configure_args=
 dir_where_make_will_be_called=
 email=cornware-cjp@users.sourceforge.net
 kdevprj_version=1.3
@@ -219,7 +220,7 @@ install_location=
 type=DATA
 
 [shared/Makefile.am]
-files=shared/hello.cpp,shared/hello.h,shared/matrix.cpp,shared/matrix.h,shared/vector.cpp,shared/vector.h,shared/binbuffer.h,shared/cstring.h,shared/binbuffer.cpp,shared/usmacros.h,shared/timer.cpp,shared/timer.h,shared/bthread.h,shared/ipnumber.h,shared/ipnumber.cpp,shared/cstring.cpp,shared/cfile.cpp,shared/cfile.h
+files=shared/hello.cpp,shared/hello.h,shared/matrix.cpp,shared/matrix.h,shared/vector.cpp,shared/vector.h,shared/binbuffer.h,shared/cstring.h,shared/binbuffer.cpp,shared/usmacros.h,shared/timer.cpp,shared/timer.h,shared/bthread.h,shared/ipnumber.h,shared/ipnumber.cpp,shared/cstring.cpp,shared/cfile.cpp,shared/cfile.h,shared/lconfig.cpp,shared/lconfig.h
 sub_dirs=
 type=static_library
 
@@ -284,6 +285,18 @@ install_location=
 type=SOURCE
 
 [shared/ipnumber.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[shared/lconfig.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[shared/lconfig.h]
 dist=true
 install=false
 install_location=

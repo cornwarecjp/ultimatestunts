@@ -237,7 +237,7 @@ CString CString::mid(int i, int l)
         return ret;
 }
 
-int CString::instr(char c)
+int CString::inStr(char c)
 {
     int ret = -1;
     for(unsigned int i=0; i<length(); i++)

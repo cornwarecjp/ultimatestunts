@@ -19,6 +19,7 @@
 #define WINSYSTEM_H
 
 #include "usmacros.h"
+#include "lconfig.h"
 
 /**
   *@author CJP
@@ -26,7 +27,7 @@
 
 class CWinSystem {
 public: 
-	CWinSystem();
+	CWinSystem(const CLConfig &conf);
 	~CWinSystem();
 
 	int runLoop( bool (CALLBACKFUN *loopfunc)() );
