@@ -44,8 +44,16 @@ class CVector
 		CVector const &operator+=(CVector const &val);
 		CVector const operator-() const;
 
+		//vector multiplication
+		float const operator*(CVector const &val) const; //dot product
+		float dotProduct(CVector const &val) const;
+		CVector crossProduct(CVector const &val) const;
+
 		float abs() const;
 		float abs2() const; //square of abs(); less calculation needed
+		void normalise();
+		CVector normal() const;
+		CVector component(CVector const &val) const; //assumes val is normalised
 
 		float x, y, z; //Don't want to follow the naming conventions!
 };

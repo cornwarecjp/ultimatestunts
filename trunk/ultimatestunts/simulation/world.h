@@ -30,6 +30,7 @@ using namespace std;
 #include "shape.h"
 #include "movingobject.h"
 #include "objectchoice.h"
+#include "collisiondata.h"
 
 class CTile {
 public:
@@ -70,6 +71,8 @@ public:
 	vector<CMaterial *> m_MovObjMaterials;
 	vector<CString> m_MovObjSounds;
 
+	//Collision data
+	CCollisionData *m_CollData;
 
 	//Rule data
 	float m_GameStartTime;

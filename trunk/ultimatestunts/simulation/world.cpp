@@ -22,11 +22,14 @@
 
 CWorld::CWorld()
 {
+	m_CollData = new CCollisionData(this);
 }
 
 CWorld::~CWorld(){
 	unloadTrack();
 	unloadMovObjs();
+
+	delete m_CollData;
 }
 
 bool CWorld::loadTrack(CString filename)

@@ -1,7 +1,7 @@
 /***************************************************************************
-                          shape.h  -  Vertex-based collision model
+                          collisiondata.h  -  data describing collision events
                              -------------------
-    begin                : vr jan 24 2003
+    begin                : di sep 23 2003
     copyright            : (C) 2003 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
@@ -15,39 +15,58 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef SHAPE_H
-#define SHAPE_H
+#ifndef COLLISIONDATA_H
+#define COLLISIONDATA_H
+
+
+/**
+  *@author CJP
+  */
 
 #include <vector> //STL vector template
 namespace std {}
 using namespace std;
 
 #include "material.h"
-#include "cstring.h"
+#include "vector.h"
+#include "bound.h"
 
-/**
-  *@author CJP
-  */
+class CWorld;
 
-class CShapeFace {
+class CCollision {
 public:
-	CVector p1, p2, p3;
+	//position relative to body center
+	//normal pointing outwards
+	//momentum transfer to body
+	CVector pos, nor, dp;
+
+	//position correction vector dr = rnew - rold
+	CVector dr;
+
+	const CMaterial *mat1, *mat2; //The two materials
+	int body; //the body that collided
 };
 
-class CShape {
+class CColEvents : public vector<CCollision>
+{
+public:
+	bool isHit;
+};
+
+class CCollisionData {
 public: 
-	CShape();
-	~CShape();
+	CCollisionData(const CWorld *w);
+	~CCollisionData();
 
-	bool loadFromFile(CString filename, CString subset, CMaterial ** matarray);
+	vector<CColEvents> m_Events; //one per dynamic object
 
-	float m_BSphere_r;
-	CVector m_BBox_min, m_BBox_max;
+	void calculateCollisions();
 
-	vector<CShapeFace> m_Faces;
+protected:
+	const CWorld *m_World;
 
-	CString m_Filename;
-	CString m_Subset;
+	void ObjObjTest(int n1, int n2);
+	bool sphereTest(const CVector &p1, const CBound *b1, const CVector &p2, const CBound *b2);
 };
 
 #endif

@@ -66,8 +66,8 @@ bool CGraphicWorld::loadWorld()
 	for(unsigned int i=0; i<m_World->m_TileShapes.size(); i++)
 	{
 		CGraphObj obj;
-		CDataFile f(m_World->m_TileShapes[i]->getFilename());
-		CTexture **subset = getTextureSubset(m_World->m_TileShapes[i]->getSubset());
+		CDataFile f(m_World->m_TileShapes[i]->m_Filename);
+		CTexture **subset = getTextureSubset(m_World->m_TileShapes[i]->m_Subset);
 		printf("   Loading %s:\n", f.getName().c_str());
 		obj.loadFromFile(&f, subset);
 		m_Tiles.push_back(obj);
@@ -93,7 +93,7 @@ bool CGraphicWorld::loadObjects()
 	for(unsigned int i=0; i<m_World->m_MovObjBounds.size(); i++)
 	{
 		CGraphObj obj;
-		CDataFile f(m_World->m_MovObjBounds[i]->getFilename());
+		CDataFile f(m_World->m_MovObjBounds[i]->m_Filename);
 		printf("   Loading from %s\n", f.getName().c_str());
 		obj.loadFromFile(&f, NULL);
 		m_MovingObjects.push_back(obj);

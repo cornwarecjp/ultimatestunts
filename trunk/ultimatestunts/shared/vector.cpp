@@ -120,8 +120,69 @@ CVector const &CVector::operator+=(CVector const &val)
 	return (*this);
 }
 
+float const CVector::operator*(CVector const &val) const
+{
+	return dotProduct(val);
+}
+
+float CVector::dotProduct(CVector const &val) const
+{
+	return x*val.x + y*val.y + z*val.z;
+}
+
+CVector CVector::crossProduct(CVector const &val) const
+{
+	CVector ret;
+	ret.x = y*val.z - z*val.y;
+	ret.y = z*val.x - x*val.z;
+	ret.z = x*val.y - y*val.x;
+	return ret;
+}
+
 float CVector::abs() const
 {return sqrt(abs2());}
 
 float CVector::abs2() const
 {return x*x+y*y+z*z;}
+
+void CVector::normalise()
+{
+	float a = abs();
+	if(a > 0.0)
+	{
+		x /= a;
+		y /= a;
+		z /= a;
+	}
+	else //very small vector->badly defined direction->setting to +x
+	{
+		x = 1.0;
+	}
+}
+
+CVector CVector::normal() const
+{
+	CVector ret;
+	float a = abs();
+	if(a > 0.0)
+	{
+		ret.x = x / a;
+		ret.y = y / a;
+		ret.z = z / a;
+	}
+	else //very small vector->badly defined direction->setting to +x
+	{
+		ret.x = 1.0;
+	}
+	return ret;
+}
+
+CVector CVector::component(CVector const &val) const
+{
+	CVector ret;
+	float comp = x*val.x + y*val.y + z*val.z;
+	ret.x = val.x * comp;
+	ret.y = val.y * comp;
+	ret.z = val.z * comp;
+	return ret;
+}

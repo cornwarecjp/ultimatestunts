@@ -18,7 +18,12 @@
 #ifndef BOUND_H
 #define BOUND_H
 
+#include <vector> //STL vector template
+namespace std {}
+using namespace std;
+
 #include "material.h"
+#include "vector.h"
 #include "cstring.h"
 
 /**
@@ -28,14 +33,15 @@
 class CBound {
 public: 
 	CBound();
-	virtual ~CBound();
+	~CBound();
 
-	virtual bool loadFromFile(CString filename, CMaterial **matarray);
+	bool loadFromFile(CString filename, CMaterial **matarray);
 
-	CString getFilename()
-		{return m_Filename;}
+	float m_BSphere_r;
+	CVector m_BBox_min, m_BBox_max;
 
-protected:
+	vector<CVector> m_Planes;
+
 	CString m_Filename;
 };
 

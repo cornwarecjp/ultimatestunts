@@ -27,5 +27,9 @@ bool CShape::loadFromFile(CString filename, CString subset, CMaterial **matarray
 	m_Filename = filename;
 	m_Subset = subset;
 
+	m_BSphere_r = 5.0;
+	m_BBox_min = CVector(-2.0,-1.0,-2.5);
+	m_BBox_max = CVector(2.0,1.0,2.5);
+
 	return true; //TODO: really load it
 }
