@@ -24,6 +24,8 @@
 #define _(String) gettext (String)
 
 #include "usmisc.h"
+#include "usmacros.h"
+
 #include "cstring.h"
 #include "lconfig.h"
 #include "filecontrol.h"
@@ -55,10 +57,11 @@ void shared_main(int argc, char *argv[])
 
 	//find the absolute path
 	//very long paths might cause segfaults
+	CString absdir;
 	char datadirbuffer[4096];
 	if(realpath(DataDir.c_str(), datadirbuffer) != NULL)
 	{
-		DataDir = CString(datadirbuffer) + "/";
+		absdir = CString(datadirbuffer) + "/";
 	}
 	printf("DataDir is \"%s\"\n", DataDir.c_str());
 
@@ -67,7 +70,27 @@ void shared_main(int argc, char *argv[])
 	fctl->setDataDir(DataDir);
 
 	printf("Enabling localisation\n");
-	setlocale(LC_MESSAGES, "");
-	bindtextdomain(PACKAGE, (DataDir + "lang").c_str());
+
+	//select a language
+	CString conf_lang = theMainConfig->getValue("misc", "language");
+	if(conf_lang == "system")
+	{
+		setlocale(LC_MESSAGES, "");
+	}
+	else
+	{
+		setlocale(LC_MESSAGES, conf_lang.c_str());
+
+#ifdef __CYGWIN__
+        //F* Cygwin doesn't set the locale correctly
+        setenv("LC_MESSAGES", conf_lang.c_str(), 1);
+#endif
+
+	}
+
+	//select the Ultimate Stunts domain
+	//We can only use ISO 8859-1 because of the font texture
+	bindtextdomain(PACKAGE, (absdir + "lang").c_str());
+	bind_textdomain_codeset(PACKAGE, "ISO-8859-1");
 	textdomain(PACKAGE);
 }
