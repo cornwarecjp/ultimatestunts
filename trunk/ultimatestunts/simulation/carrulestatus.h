@@ -1,8 +1,8 @@
 /***************************************************************************
-                          body.h  -  A rigid body (like a wheel or a car's body)
+                          carrulestatus.h  -  Rule status of a racing car
                              -------------------
-    begin                : di okt 7 2003
-    copyright            : (C) 2003 by CJP
+    begin                : wo apr 6 2005
+    copyright            : (C) 2005 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
 
@@ -15,33 +15,37 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef BODY_H
-#define BODY_H
+#ifndef CARRULESTATUS_H
+#define CARRULESTATUS_H
 
-#include <vector>
-namespace std {}
-using namespace std;
-
-#include "collisionmodel.h"
-#include "collisiondata.h"
-#include "vector.h"
-#include "matrix.h"
 
 /**
   *@author CJP
   */
 
+class CCarRuleStatus {
+public: 
+	CCarRuleStatus();
+	~CCarRuleStatus();
 
-class CBody
-{
-public:
-	CVector m_Position;
-	CMatrix m_OrientationMatrix;
+	void start();
+	void finish();
+	void crash();
+	void giveUp();
+	void addPenalty(float time);
 
-	int m_Body; //refers to geometry model
+	float startTime;	//time when it started racing
+	float penaltyTime;	//penalty time accumulated while playing
+	float finishTime;	//time when it finished racing
 
-	//Other data:
-	vector<CCollisionData> m_Collisions; //for usage in the sound subsystem, dust graphics etc.
+	enum
+	{
+		eNotStarted = 0,
+		eRacing = 1,
+		eFinished = 2,
+		eCrashed = 3,
+		eGivenUp = 4
+	} state;
 };
 
 #endif

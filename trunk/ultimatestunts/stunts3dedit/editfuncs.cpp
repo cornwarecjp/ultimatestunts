@@ -46,8 +46,7 @@ void newFunc()
 		vt.tex = getInput("Give texcoord: ").toVector();
 		graphobj->m_Primitives[curr_primitive].m_Vertex.push_back(vt);
 	}
-	else if(graphobj->m_Primitives[curr_primitive].m_Type == CPrimitive::VertexArray &&
-		getInput("Do you want to add a new triangle (y/n)? ") == "y")
+	else if(getInput("Do you want to add a new triangle (y/n)? ") == "y")
 	{
 		CPrimitive &pr = graphobj->m_Primitives[curr_primitive];
 		for(unsigned int i=0; i<pr.m_Vertex.size(); i++)

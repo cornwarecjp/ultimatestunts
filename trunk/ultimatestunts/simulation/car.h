@@ -23,6 +23,7 @@
 
 #include "carengine.h"
 #include "carwheel.h"
+#include "carrulestatus.h"
 
 /**
   *@author CJP
@@ -42,7 +43,7 @@ public:
 	virtual bool setData(const CBinBuffer &b, unsigned int &pos);//override for car-specific data
 	virtual CMessageBuffer::eMessageType getType() const {return CMessageBuffer::car;}
 
-	//CRuleStatus m_RuleStatus;
+	CCarRuleStatus m_RuleStatus;
 
 	virtual void update(CPhysics *simulator, float dt);
 	virtual void correctCollisions(const vector<CCollisionData> &cols);

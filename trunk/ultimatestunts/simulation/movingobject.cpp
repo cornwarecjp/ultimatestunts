@@ -130,17 +130,16 @@ CBinBuffer &CMovingObject::getData(CBinBuffer &b) const
 {
 	b += (Uint8)m_MovObjID;
 
-	//TODO: update this
-
-	for(unsigned int i=0; i < m_Bodies.size(); i++)
-	{
-		CVector
-			p = m_Bodies[i].m_Position,
-			o = m_Bodies[i].m_OrientationMatrix.getRotation();
-
-		b.addVector32(p, 0.001);
-		b.addVector16(o, 0.0002);
-	}
+	CVector
+		p = m_Position,
+		o = m_OrientationMatrix.getRotation(),
+		v = m_Velocity,
+		w = m_AngularVelocity;
+	
+	b.addVector32(p, 0.001);
+	b.addVector16(o, 0.0002);
+	b.addVector16(v, 0.01);
+	b.addVector16(w, 0.01);
 
 	return b;
 }
@@ -150,18 +149,17 @@ bool CMovingObject::setData(const CBinBuffer &b, unsigned int &pos)
 	Uint8 ID = b.getUint8(pos);
 	if(ID != m_MovObjID) return false;
 
-	//TODO: update this
 
-	//TODO: check the number of objects
-	for(unsigned int i=0; i < m_Bodies.size(); i++)
-	{
 		CVector
 			p = b.getVector32(pos, 0.001),
-			o = b.getVector16(pos, 0.0002);
+			o = b.getVector16(pos, 0.0002),
+			v = b.getVector16(pos, 0.01),
+			w = b.getVector16(pos, 0.01);
 
-		m_Bodies[i].m_Position = p;
-		m_Bodies[i].m_OrientationMatrix.setRotation(o);
-	}
+		m_Position = p;
+		m_OrientationMatrix.setRotation(o);
+		m_Velocity = v;
+		m_AngularVelocity = w;
 
 	return true;
 }

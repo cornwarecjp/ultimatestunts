@@ -570,12 +570,12 @@ void CCar::correctCollisions(const vector<CCollisionData> &cols)
 		//no correction towards the ground
 		if(m_Ground.nor.abs2() > 0.25)
 		{
-			if(col.nor.dotProduct(m_Ground.nor) < -0.8) continue;
+			if(col.nor.dotProduct(m_Ground.nor) < -0.9) continue;
 
 			CVector newcolnor = (col.nor - col.nor.component(m_Ground.nor)).normal();
 			
 			float dotpr = newcolnor.dotProduct(col.nor);
-			if(fabs(dotpr) < 0.1) continue;
+			if(fabs(dotpr) < 0.001) continue;
 
 			dr = newcolnor * (col.depth / dotpr);
 		}
@@ -857,12 +857,24 @@ CBinBuffer &CCar::getData(CBinBuffer &b) const
 {
 	CMovingObject::getData(b);
 
-	//TODO: update this
+	//general
+	b.addFloat8(m_DesiredSteering, 0.008);
+	b.addFloat8(m_xAngle, 0.002);
+	b.addFloat8(m_zAngle, 0.002);
 
+	//engine
 	b += Uint8(m_Engine.m_Gear);
 	b.addFloat16(m_Engine.m_MainAxisW, 0.4);
-	b.addFloat8(m_DesiredSteering, 0.008);
 	b.addFloat8(m_Engine.m_Gas, 0.008);
+
+	//wheels
+	for(unsigned int i=0; i < 4; i++)
+	{
+		b.addFloat16(m_Wheel[i].m_w, 0.4);
+		b.addFloat8(m_Wheel[i].m_a, 0.025);
+		b.addFloat8(m_Wheel[i].m_DesiredSt, 0.008);
+		b.addFloat8(m_Wheel[i].m_SkidVolume, 0.008);
+	}
 
 	return b;
 }
@@ -871,12 +883,26 @@ bool CCar::setData(const CBinBuffer &b, unsigned int &pos)
 {
 	if(!CMovingObject::setData(b, pos)) return false;
 
-	//TODO: update this
+	//general
+	m_DesiredSteering = b.getFloat8(pos, 0.008);
+	m_xAngle = b.getFloat8(pos, 0.002);
+	m_zAngle = b.getFloat8(pos, 0.002);
 
+	//engine
 	m_Engine.m_Gear = b.getUint8(pos);
 	m_Engine.m_MainAxisW = b.getFloat16(pos, 0.4);
-	m_DesiredSteering = b.getFloat8(pos, 0.008);
 	m_Engine.m_Gas = b.getFloat8(pos, 0.008);
+
+	//wheels
+	for(unsigned int i=0; i < 4; i++)
+	{
+		m_Wheel[i].m_w = b.getFloat16(pos, 0.4);
+		m_Wheel[i].m_a = b.getFloat8(pos, 0.025);
+		m_Wheel[i].m_DesiredSt = b.getFloat8(pos, 0.008);
+		m_Wheel[i].m_SkidVolume = b.getFloat8(pos, 0.008);
+	}
+
+	placeBodies();
 
 	return true;
 }
