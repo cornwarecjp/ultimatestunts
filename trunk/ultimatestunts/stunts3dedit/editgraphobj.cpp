@@ -21,18 +21,19 @@
 
 CEditGraphObj::CEditGraphObj() : CGraphObj()
 {
-	unsigned int objlist = glGenLists(1);
-	m_ObjList1 = m_ObjList2 = m_ObjList3 = m_ObjList4 = objlist;
+	isRendered = false;
 }
 
 CEditGraphObj::~CEditGraphObj()
 {
-	//TODO: delete list
+	if(isRendered)
+		glDeleteLists(m_ObjList1, 1);
 }
 
 bool CEditGraphObj::loadFromFile(CString filename, CTexture **matarray)
 {
 	m_MatArray = matarray;
+	clear();
 
 	//State variables:
 	CVertex state;
@@ -60,39 +61,14 @@ bool CEditGraphObj::loadFromFile(CString filename, CTexture **matarray)
 			if(lhs == "Texture")
 				texid =rhs.toInt();
 			if(lhs == "Color")
-			{
-				float r = rhs.toFloat();
-				rhs = rhs.mid(rhs.inStr(',')+1, rhs.length());
-				float g = rhs.toFloat();
-				rhs = rhs.mid(rhs.inStr(',')+1, rhs.length());
-				float b = rhs.toFloat();
-				state.col = CVector(r,g,b);
-			}
+				state.col = rhs.toVector();
 			if(lhs == "Normal")
-			{
-				float x = rhs.toFloat();
-				rhs = rhs.mid(rhs.inStr(',')+1, rhs.length());
-				float y = rhs.toFloat();
-				rhs = rhs.mid(rhs.inStr(',')+1, rhs.length());
-				float z = rhs.toFloat();
-				state.nor = CVector(x,y,z);
-			}
+				state.nor = rhs.toVector();
 			if(lhs == "TexCoord")
-			{
-				float x = rhs.toFloat();
-				rhs = rhs.mid(rhs.inStr(',')+1, rhs.length());
-				float y = rhs.toFloat();
-				state.tex = CVector(x,y,0.0);
-			}
+				state.tex = rhs.toVector();
 			if(lhs == "Vertex")
 			{
-				float x = rhs.toFloat();
-				rhs = rhs.mid(rhs.inStr(',')+1, rhs.length());
-				float y = rhs.toFloat();
-				rhs = rhs.mid(rhs.inStr(',')+1, rhs.length());
-				float z = rhs.toFloat();
-				state.pos = CVector(x,y,z);
-
+				state.pos = rhs.toVector();
 				m_Primitives[m_Primitives.size()-1].m_Vertex.push_back(state);
 			}
 
@@ -118,6 +94,14 @@ bool CEditGraphObj::loadFromFile(CString filename, CTexture **matarray)
 				pr.m_Name = name;
 				pr.m_Texture = texid;
 				pr.m_Type = GL_TRIANGLE_STRIP;
+				m_Primitives.push_back(pr);
+			}
+			if(lhs == "Quadstrip")
+			{
+				CPrimitive pr;
+				pr.m_Name = name;
+				pr.m_Texture = texid;
+				pr.m_Type = GL_QUAD_STRIP;
 				m_Primitives.push_back(pr);
 			}
 			if(lhs == "Polygon")
@@ -163,6 +147,14 @@ bool CEditGraphObj::loadFromFile(CString filename, CTexture **matarray)
 				pr.m_Type = GL_TRIANGLE_STRIP;
 				m_Primitives.push_back(pr);
 			}
+			if(lhs == "Quadstrip")
+			{
+				CPrimitive pr;
+				pr.m_Name = name;
+				pr.m_Texture = texid;
+				pr.m_Type = GL_QUAD_STRIP;
+				m_Primitives.push_back(pr);
+			}
 			if(lhs == "Polygon")
 			{
 				CPrimitive pr;
@@ -184,8 +176,106 @@ bool CEditGraphObj::loadFromFile(CString filename, CTexture **matarray)
 	return true;
 }
 
+void CEditGraphObj::clear()
+{
+	m_Primitives.clear();
+}
+
+void CEditGraphObj::saveToFile(CString filename)
+{
+	CFile f(filename, true);
+	f.writel("#CornWare UltimateStunts graphics file");
+	f.writel("#created by the stunts3dedit editor");
+
+	//State variables:
+	CVertex state;
+		state.pos = CVector(0,0,0);
+		state.nor = CVector(0,1,0);
+		state.col = CVector(1,1,1);
+		state.tex = CVector(0,0,0);
+	int texid = -1;
+	CString name = "default-name";
+
+	for(unsigned int i=0; i<m_Primitives.size(); i++)
+	{
+		CPrimitive &pr = m_Primitives[i];
+
+		f.writel(""); //two empty lines
+		f.writel("");
+		if(!(pr.m_Name == name))
+		{
+			name = pr.m_Name;
+			f.writel("#Tedit-name " + name);
+		}
+		if(!(pr.m_Texture == texid))
+		{
+			texid = pr.m_Texture;
+			if(texid < 0)
+				f.writel("Notex");
+			else
+				f.writel(CString("Texture ") + texid);
+		}
+
+		int numvert = 1; //spacing property
+		switch(pr.m_Type)
+		{
+			case GL_QUADS:
+				f.writel("Quads"); numvert = 4; break;
+			case GL_TRIANGLES:
+				f.writel("Triangles"); numvert = 3; break;
+			case GL_TRIANGLE_STRIP:
+				f.writel("Trianglestrip"); break;
+			case GL_QUAD_STRIP:
+				f.writel("Quadstrip"); break;
+			case GL_POLYGON:
+				f.writel("Polygon"); break;
+		}
+
+		for(unsigned int j=0; j<pr.m_Vertex.size(); j++)
+		{
+			if((j % numvert) == 0)
+				f.writel(""); //empty line
+
+			CVertex &vt = pr.m_Vertex[j];
+
+			//color
+			if((vt.col-state.col).abs2() > 0.0001)
+			{
+				f.writel(CString("Color ")+vt.col.x+", "+vt.col.y+", "+vt.col.z);
+				state.col = vt.col;
+			}
+
+			//normal
+			if((vt.nor-state.nor).abs2() > 0.0001)
+			{
+				f.writel(CString("Normal ")+vt.nor.x+", "+vt.nor.y+", "+vt.nor.z);
+				state.nor = vt.nor;
+			}
+
+			//texcoord
+			if((vt.tex-state.tex).abs2() > 0.0001)
+			{
+				f.writel(CString("TexCoord ")+vt.tex.x+", "+vt.tex.y);
+				state.tex = vt.tex;
+			}
+
+			//vertex
+			f.writel(CString("Vertex ")+vt.pos.x+", "+vt.pos.y+", "+vt.pos.z);
+		}
+
+		f.writel("End");
+	}
+
+}
+
 void CEditGraphObj::render()
 {
+	//delete existing list
+	if(isRendered)
+		{printf("Deleting old model...\n"); glDeleteLists(m_ObjList1, 1);}
+
+	printf("Generating model...\n");
+	m_ObjList1 = m_ObjList2 = m_ObjList3 = m_ObjList4 = glGenLists(1);
 	glNewList(m_ObjList1, GL_COMPILE);
 
 	for(unsigned int i=0; i<m_Primitives.size(); i++)
@@ -217,4 +307,6 @@ void CEditGraphObj::render()
 	}
 
 	glEndList();
+
+	isRendered = true;
 }

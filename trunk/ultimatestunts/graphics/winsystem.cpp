@@ -168,7 +168,10 @@ int CWinSystem::runLoop( bool (CALLBACKFUN *loopfunc)(), bool swp)
 
 				//Keyboard
 				case SDL_KEYDOWN:
-					m_WasPressed[event.key.keysym.sym] = true;
+					if(event.key.keysym.mod & KMOD_SHIFT) //shift key
+						m_WasPressed[event.key.keysym.sym-32] = true;
+					else
+						m_WasPressed[event.key.keysym.sym] = true;
 				case SDL_KEYUP:
 					m_KeyState = SDL_GetKeyState(&m_NumKeys);
 					break;

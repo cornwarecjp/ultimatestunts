@@ -22,6 +22,8 @@
 // #include <std/bastring.h>
 #include <string>
 
+#include "vector.h"
+
 //  class CString : public std::basic_string<char>
  class CString : public std::string
  {
@@ -33,6 +35,7 @@
 	//Constructors:
    CString(const char *s);
    CString();
+	CString(const CVector &v);
 
 	//Bones functions:
    CString & trimL();
@@ -53,6 +56,8 @@
 	CString(float val);
 	CString operator+(CString const &val); //std didn't do what I wanted
 	CString operator+(const char *val);
+	bool operator!= (const char *str) const;
+	bool operator!= (const CString &val) const;
 
 	//Don't know how to do these with std::string:
 	CString mid(int i, int l);
@@ -61,6 +66,8 @@
 	//Don't know how to do this with std::string:
 	float toFloat();
 
+	//String->vector conversion:
+	CVector toVector();
 };
 
 CString operator+(const char *val1, CString const &val2);

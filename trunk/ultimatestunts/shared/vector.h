@@ -34,6 +34,7 @@ class CVector
 
 		//scalar multiplication/division
 		CVector const operator*(float const &val) const;
+		CVector const &operator*=(float const &val);
 		CVector const operator/(float const &val) const;
 		CVector const &operator/=(float const &val);
 

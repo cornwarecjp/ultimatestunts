@@ -51,6 +51,12 @@ CString::CString()
 	this->assign("");
 }
 
+CString::CString(const CVector &v)
+{
+	this->assign("");
+	operator= (CString(v.x) + "," + v.y + "," + v.z);
+}
+
 //
 // LTrim: Trim left
 //
@@ -225,6 +231,16 @@ CString operator+(const char *val1, CString const &val2)
 	return ret;
 }
 
+bool CString::operator!= (const char *str) const
+{
+	return !(*this == str);
+}
+
+bool CString::operator!= (const CString &val) const
+{
+	return !(*this == val);
+}
+
 CString CString::mid(int i, int l)
 {
         char *c = new char[l+1];
@@ -253,4 +269,24 @@ float CString::toFloat()
     sscanf(c_str(), " %f ", &ret); //watch the spaces
 
     return ret;
+}
+
+CVector CString::toVector()
+{
+	float x = toFloat();
+
+	int comma = inStr(',');
+	if(comma < 0)
+		return CVector(x, 0.0, 0.0);
+	CString sub = mid(comma+1, length());
+
+	float y = sub.toFloat();
+
+	comma = sub.inStr(',');
+	if(comma < 0)
+		return CVector(x, y, 0.0);
+
+	sub = sub.mid(comma+1, sub.length());
+	float z = sub.toFloat();
+	return CVector(x,y,z);
 }

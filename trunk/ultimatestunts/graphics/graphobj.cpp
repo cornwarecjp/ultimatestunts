@@ -168,6 +168,8 @@ bool CGraphObj::loadFromFile(CString filename, CTexture **matarray)
 					glBegin(GL_TRIANGLES);
 				if(line.mid(0, sp)=="Trianglestrip")
 					glBegin(GL_TRIANGLE_STRIP);
+				if(line.mid(0, sp)=="Quadstrip")
+					glBegin(GL_QUAD_STRIP);
 				if(line.mid(0, sp)=="Polygon")
 					glBegin(GL_POLYGON);
 				if(line.mid(0, sp)=="End")
@@ -183,6 +185,8 @@ bool CGraphObj::loadFromFile(CString filename, CTexture **matarray)
 					glBegin(GL_TRIANGLES);
 				if(line=="Trianglestrip")
 					glBegin(GL_TRIANGLE_STRIP);
+				if(line=="Quadstrip")
+					glBegin(GL_QUAD_STRIP);
 				if(line=="Polygon")
 					glBegin(GL_POLYGON);
 				if(line=="End")

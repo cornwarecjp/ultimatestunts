@@ -68,6 +68,14 @@ CVector const CVector::operator/(CMatrix const &val) const
 CVector const CVector::operator*(float const &val) const
 	{return CVector(x*val,y*val,z*val);}
 
+CVector const &CVector::operator*=(float const &val)
+{
+	x *= val;
+	y *= val;
+	z *= val;
+	return (*this);
+}
+
 CVector const operator*(float const &val1, CVector const &val2)
 	{return CVector(val2.x*val1,val2.y*val1,val2.z*val1);}
 

@@ -45,9 +45,13 @@ public:
 	virtual bool loadFromFile(CString filename, CTexture **matarray);
 	void render(); //updates openGL data when primitives are changed
 
+	void clear();
+	void saveToFile(CString filename);
+
 	vector<CPrimitive> m_Primitives;
 
 protected:
+	bool isRendered;
 	CTexture **m_MatArray;
 };
 
