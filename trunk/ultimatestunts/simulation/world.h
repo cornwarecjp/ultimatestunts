@@ -22,11 +22,23 @@
 /**
   *@author CJP
   */
+#include <vector> //STL vector template
+
+#include "tile.h"
+#include "movingobject.h"
+#include "objectchoice.h"
 
 class CWorld {
 public: 
 	CWorld();
-	~CWorld();
+	virtual ~CWorld();
+
+  CTile *m_Track;
+  int l, w, h;
+  //bool loadFromFile(..);
+
+  vector<CMovingObject *> m_MovObjs;
+  virtual int addMovingObject(CObjectChoice c);
 };
 
 #endif

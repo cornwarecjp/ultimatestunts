@@ -14,10 +14,29 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
+#include <stdio.h>
 
 #include "world.h"
+#include "car.h"
 
 CWorld::CWorld(){
 }
 CWorld::~CWorld(){
+  for(int i=0; i<m_MovObjs.size(); i++)
+    delete m_MovObjs[i];
+}
+
+int CWorld::addMovingObject(CObjectChoice c)
+{
+  //future: selecting, using c
+
+  CMovingObject *m = new CCar;
+
+  int s = m_MovObjs.size();
+  m_MovObjs.resize(s+1);
+  m_MovObjs[s] = m;
+
+  printf("Added car: total %d moving objects\n", m_MovObjs.size());
+
+  return s;
 }

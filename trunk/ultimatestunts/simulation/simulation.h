@@ -25,18 +25,27 @@
 
 #include <vector> //STL vector template
 #include "player.h"
+#include "world.h"
+#include "objectchoice.h"
+
+#include "movingobject.h"
 
 class CSimulation {
 public: 
-	CSimulation();
+	CSimulation(CWorld *w, bool leading=true);
 	virtual ~CSimulation();
 
-  virtual bool addPlayer(CPlayer *p);
+  virtual bool addPlayer(CPlayer *p, CObjectChoice choice);
   virtual bool removePlayer(CPlayer *p);
+
+  virtual void Update();
+
 protected:
 
-  //A service of the base-class; derived classes don't have to use this
+  //Services of the base-class; derived classes don't have to use these
   vector<CPlayer *> m_LocalPlayers;
+  CWorld *m_World;
+  bool m_Leading;
 };
 
 #endif

@@ -1,7 +1,7 @@
 /***************************************************************************
-                          player.cpp  -  description
+                          humanplayer.h  -  description
                              -------------------
-    begin                : Wed Dec 4 2002
+    begin                : Thu Dec 5 2002
     copyright            : (C) 2002 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
@@ -15,25 +15,19 @@
  *                                                                         *
  ***************************************************************************/
 
+#ifndef HUMANPLAYER_H
+#define HUMANPLAYER_H
+
 #include "player.h"
 
-CPlayer::CPlayer()
-{
-  //These have not been set:
-  m_MovingObjectId = -1;
-  m_PlayerId = -1;
-}
+/**
+  *@author CJP
+  */
 
-CPlayer::~CPlayer(){
-}
+class CHumanPlayer : public CPlayer  {
+public: 
+	CHumanPlayer();
+	~CHumanPlayer();
+};
 
-void CPlayer::giveWorld(const CWorld *w)
-{m_World = w;}
-
-const CMessage *CPlayer::getInputData()
-{
-  return NULL; //Base-class doesn't generate input data
-}
-
-bool CPlayer::Update()
-{}
+#endif

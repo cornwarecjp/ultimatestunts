@@ -1,7 +1,7 @@
 /***************************************************************************
-                          player.cpp  -  description
+                          dynamicobject.h  -  description
                              -------------------
-    begin                : Wed Dec 4 2002
+    begin                : Thu Dec 5 2002
     copyright            : (C) 2002 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
@@ -15,25 +15,32 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "player.h"
+#ifndef DYNAMICOBJECT_H
+#define DYNAMICOBJECT_H
 
-CPlayer::CPlayer()
-{
-  //These have not been set:
-  m_MovingObjectId = -1;
-  m_PlayerId = -1;
-}
 
-CPlayer::~CPlayer(){
-}
+/**
+  *@author CJP
+  */
 
-void CPlayer::giveWorld(const CWorld *w)
-{m_World = w;}
+#include "message.h"
 
-const CMessage *CPlayer::getInputData()
-{
-  return NULL; //Base-class doesn't generate input data
-}
+class CDynamicObject {
+public: 
+	CDynamicObject();
+	virtual ~CDynamicObject();
 
-bool CPlayer::Update()
-{}
+  virtual const CMessage *getParameters();
+  virtual void setParameters(const CMessage *m);
+
+  virtual const CMessage *getInputData(); //Used by network
+  virtual void setInputData(const CMessage *m);
+
+  virtual bool hasChanged();
+
+protected:
+  CMessage *m_Parameters;
+  CMessage *m_InputData;
+};
+
+#endif

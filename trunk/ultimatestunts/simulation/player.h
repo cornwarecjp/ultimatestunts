@@ -19,6 +19,7 @@
 #define PLAYER_H
 
 #include "world.h"
+#include "message.h"
 
 /**
   *@author CJP
@@ -29,9 +30,14 @@ public:
 	CPlayer();
 	virtual ~CPlayer();
 
-  virtual void giveWorld(CWorld *w);
+  virtual void giveWorld(const CWorld *w);
+  virtual const CMessage *getInputData();
+  virtual bool Update();
+
+  int m_MovingObjectId;
+  int m_PlayerId;
 protected:
-  CWorld *m_World;
+  const CWorld *m_World;
 };
 
 #endif

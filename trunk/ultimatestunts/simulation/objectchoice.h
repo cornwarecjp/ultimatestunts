@@ -1,7 +1,7 @@
 /***************************************************************************
-                          player.cpp  -  description
+                          objectchoice.h  -  description
                              -------------------
-    begin                : Wed Dec 4 2002
+    begin                : Thu Dec 5 2002
     copyright            : (C) 2002 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
@@ -15,25 +15,25 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "player.h"
+#ifndef OBJECTCHOICE_H
+#define OBJECTCHOICE_H
 
-CPlayer::CPlayer()
-{
-  //These have not been set:
-  m_MovingObjectId = -1;
-  m_PlayerId = -1;
-}
+#include "message.h"
 
-CPlayer::~CPlayer(){
-}
+/**
+  *@author CJP
+  */
 
-void CPlayer::giveWorld(const CWorld *w)
-{m_World = w;}
+class CObjectChoice : public CMessage  {
+public: 
+	CObjectChoice();
+  CObjectChoice(CMessageBuffer b);
+	virtual ~CObjectChoice();
 
-const CMessage *CPlayer::getInputData()
-{
-  return NULL; //Base-class doesn't generate input data
-}
+  virtual CMessageBuffer getBuffer();
+  virtual void setBuffer(CMessageBuffer b);
 
-bool CPlayer::Update()
-{}
+  int m_CarNumber; //temporary; probably replaced by CString
+};
+
+#endif

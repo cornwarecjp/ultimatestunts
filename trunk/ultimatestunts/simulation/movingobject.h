@@ -23,7 +23,9 @@
   *@author CJP
   */
 
-class CMovingObject {
+#include "dynamicobject.h"
+
+class CMovingObject : public CDynamicObject {
 public: 
 	CMovingObject();
 	~CMovingObject();

@@ -18,18 +18,33 @@
 #include <stdio.h>
 #include "simulation.h"
 
-CSimulation::CSimulation(){
+CSimulation::CSimulation(CWorld *w, bool leading)
+{
+  m_World = w;
+  m_Leading = leading;
 }
+
 CSimulation::~CSimulation(){
 }
 
-bool CSimulation::addPlayer(CPlayer *p)
+bool CSimulation::addPlayer(CPlayer *p, CObjectChoice choice)
 {
   int s = m_LocalPlayers.size();
   m_LocalPlayers.resize(s+1);
   m_LocalPlayers[s] = p;
 
   printf("Added player: total %d players\n", m_LocalPlayers.size());
+
+  if(m_Leading)
+  {
+    printf("Giving the player a car\n");
+    p->m_MovingObjectId = m_World->addMovingObject(choice);
+    printf("Car ID: %d\n", p->m_MovingObjectId);
+
+    p->m_PlayerId = s;
+    printf("Player ID: %d\n", p->m_PlayerId);
+  }
+
   return true;
 }
 
@@ -51,3 +66,6 @@ bool CSimulation::removePlayer(CPlayer *p)
 
   return ret;
 }
+
+void CSimulation::Update()
+{} //Base class does nothing

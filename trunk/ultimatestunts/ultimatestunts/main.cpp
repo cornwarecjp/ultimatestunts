@@ -22,48 +22,92 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "world.h"
 #include "player.h"
 #include "simulation.h"
 #include "physics.h"
+#include "objectchoice.h"
+
+#include "humanplayer.h"
+
+CWorld *world;
+CPlayer *player1, *player2, *player3, *player4;
+CSimulation *sim;
+
+bool mainloop()
+{
+  player1->Update(); //Makes moving decisions
+  player2->Update();
+  player3->Update();
+  player4->Update();
+  sim->Update(); //Modifies world object
+
+  //camera->Update();
+  //graphics->Update();
+  //sound->Update();
+
+  return false; //Exit immediately
+}
 
 int main(int argc, char *argv[])
 {
-  printf("Welcome to " PACKAGE " version " VERSION ".\n");
+  printf("Welcome to " PACKAGE " version " VERSION "\n");
 
-  CSimulation *sim = new CPhysics;
-  CPlayer *player1 = new CPlayer;
-  CPlayer *player2 = new CPlayer;
-  CPlayer *player3 = new CPlayer;
+  printf("\nCreating world object\n");
+  world = new CWorld;
 
-  if(!sim->addPlayer(player1))
-    {printf("Sim accepteert player1 NIET\n");}
+  printf("\nCreating physics simulation\n");
+  sim = new CPhysics(world);
 
-  if(!sim->addPlayer(player2))
-    {printf("Sim accepteert player2 NIET\n");}
+  printf("\nCreating 3 players\n");
+  player1 = new CPlayer;
+  player2 = new CPlayer;
+  player3 = new CPlayer;
 
-  if(!sim->addPlayer(player2))
-    {printf("Sim accepteert player2 NIET\n");}
+  printf("\nCreating a human player\n");
+  player4 = new CHumanPlayer;
 
-  if(!sim->addPlayer(player2))
-    {printf("Sim accepteert player2 NIET\n");}
+  printf("\nGiving the world object to the players\n");
+  player1->giveWorld(world);
+  player2->giveWorld(world);
+  player3->giveWorld(world);
+  player4->giveWorld(world);
 
-  if(!sim->addPlayer(player3))
-    {printf("Sim accepteert player3 NIET\n");}
+  printf("\nChoosing cars (or trains, cows, balloons etc)\n");
+  CObjectChoice choice;
 
-  printf("Removing player 2\n");
+  printf("\nRegistering players to server\n");
+  if(!sim->addPlayer(player1, choice))
+    {printf("Sim doesn't accept player1\n");}
+  if(!sim->addPlayer(player2, choice))
+    {printf("Sim doesn't accept player2\n");}
+  if(!sim->addPlayer(player3, choice))
+    {printf("Sim doesn't accept player3\n");}
+  if(!sim->addPlayer(player4, choice))
+    {printf("Sim doesn't accept player4\n");}
+
+  printf("\nEntering mainloop\n");
+  while(mainloop());
+  printf("\nLeaving mainloop\n");
+
+  printf("\nRemoving player 2\n");
   if(!sim->removePlayer(player2))
     printf("Removing 2 failed\n");
+  printf("\nRemoving player 4\n");
+  if(!sim->removePlayer(player4))
+    printf("Removing 4 failed\n");
 
-  printf("Removing player 3\n");
-  if(!sim->removePlayer(player3))
-    printf("Removing 3 failed\n");
-
+  printf("\nDeleting simulation\n");
   delete sim;
 
-  printf("\nThe players still need to be deleted.\n");
+  printf("\nDeleting players\n");
   delete player1;
   delete player2;
   delete player3;
+  delete player4;
+
+  printf("\nDeleting world\n");
+  delete world;
 
   return EXIT_SUCCESS;
 }

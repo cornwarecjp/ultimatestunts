@@ -1,7 +1,7 @@
 /***************************************************************************
-                          player.cpp  -  description
+                          message.h  -  description
                              -------------------
-    begin                : Wed Dec 4 2002
+    begin                : Thu Dec 5 2002
     copyright            : (C) 2002 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
@@ -15,25 +15,24 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "player.h"
+#ifndef MESSAGE_H
+#define MESSAGE_H
 
-CPlayer::CPlayer()
-{
-  //These have not been set:
-  m_MovingObjectId = -1;
-  m_PlayerId = -1;
-}
 
-CPlayer::~CPlayer(){
-}
+/**
+  *@author CJP
+  */
 
-void CPlayer::giveWorld(const CWorld *w)
-{m_World = w;}
+#include "messagebuffer.h"
 
-const CMessage *CPlayer::getInputData()
-{
-  return NULL; //Base-class doesn't generate input data
-}
+class CMessage {
+public: 
+	CMessage();
+  CMessage(CMessageBuffer b);
+	virtual ~CMessage();
 
-bool CPlayer::Update()
-{}
+  virtual CMessageBuffer getBuffer();
+  virtual void setBuffer(CMessageBuffer b);
+};
+
+#endif

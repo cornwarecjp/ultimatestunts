@@ -18,7 +18,13 @@
 
 #include "physics.h"
 
-CPhysics::CPhysics(){
-}
+CPhysics::CPhysics(CWorld *w, bool leading) : CSimulation(w, leading)
+{}
+
 CPhysics::~CPhysics(){
+}
+
+void CPhysics::Update()
+{
+  printf("Now doing physics calculations\n");
 }

@@ -73,9 +73,9 @@ soundlibs = @soundlibs@
 
 noinst_LIBRARIES = libsimulation.a
 
-libsimulation_a_SOURCES = car.cpp movingobject.cpp physics.cpp player.cpp simulation.cpp tile.cpp world.cpp
+libsimulation_a_SOURCES = car.cpp dynamicobject.cpp message.cpp messagebuffer.cpp movingobject.cpp objectchoice.cpp physics.cpp player.cpp simulation.cpp tile.cpp world.cpp
 
-EXTRA_DIST = car.cpp car.h movingobject.cpp movingobject.h physics.cpp physics.h player.cpp player.h simulation.cpp simulation.h tile.cpp tile.h world.cpp world.h
+EXTRA_DIST = car.cpp car.h dynamicobject.cpp dynamicobject.h message.cpp message.h messagebuffer.cpp messagebuffer.h movingobject.cpp movingobject.h objectchoice.cpp objectchoice.h physics.cpp physics.h player.cpp player.h simulation.cpp simulation.h tile.cpp tile.h world.cpp world.h
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_CLEAN_FILES = 
 LIBRARIES =  $(noinst_LIBRARIES)
@@ -90,9 +90,10 @@ X_LIBS = @X_LIBS@
 X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_PRE_LIBS = @X_PRE_LIBS@
 libsimulation_a_LIBADD = 
-libsimulation_a_OBJECTS =  car.$(OBJEXT) movingobject.$(OBJEXT) \
-physics.$(OBJEXT) player.$(OBJEXT) simulation.$(OBJEXT) tile.$(OBJEXT) \
-world.$(OBJEXT)
+libsimulation_a_OBJECTS =  car.$(OBJEXT) dynamicobject.$(OBJEXT) \
+message.$(OBJEXT) messagebuffer.$(OBJEXT) movingobject.$(OBJEXT) \
+objectchoice.$(OBJEXT) physics.$(OBJEXT) player.$(OBJEXT) \
+simulation.$(OBJEXT) tile.$(OBJEXT) world.$(OBJEXT)
 AR = ar
 CXXFLAGS = @CXXFLAGS@
 CXXCOMPILE = $(CXX) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -105,8 +106,10 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
 TAR = tar
 GZIP_ENV = --best
-DEP_FILES =  .deps/car.P .deps/movingobject.P .deps/physics.P \
-.deps/player.P .deps/simulation.P .deps/tile.P .deps/world.P
+DEP_FILES =  .deps/car.P .deps/dynamicobject.P .deps/message.P \
+.deps/messagebuffer.P .deps/movingobject.P .deps/objectchoice.P \
+.deps/physics.P .deps/player.P .deps/simulation.P .deps/tile.P \
+.deps/world.P
 SOURCES = $(libsimulation_a_SOURCES)
 OBJECTS = $(libsimulation_a_OBJECTS)
 
