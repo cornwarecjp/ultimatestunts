@@ -23,7 +23,6 @@ CObjectChoice::CObjectChoice()
 {
 	m_ObjType = CMessageBuffer::movingObject;
 	m_Filename = "not_a_file.conf";
-	this->setType(CMessageBuffer::objectChoice);
 }
 
 CObjectChoice::~CObjectChoice()
@@ -45,5 +44,4 @@ bool CObjectChoice::setData(const CBinBuffer & b)
 	m_Filename = b.getCString(pos);
 	return true;
 }
-
 

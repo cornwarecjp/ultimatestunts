@@ -19,15 +19,32 @@
 #define CLIENTNET_H
 
 #include "cstring.h"
+#include "stuntsnet.h"
+#include "ipnumber.h"
 
 /**
   *@author CJP
   */
 
-class CClientNet { //TODO: derive from CFileCtrl (and CStuntsNet)
+class CClientNet : protected CStuntsNet { //TODO: derive from CFileCtrl
 public: 
 	CClientNet(CString host="localhost", int port=1500);
-	~CClientNet();
+	virtual ~CClientNet();
+
+	virtual bool reveiveData();
+	vector<CMessageBuffer> m_ReceivedData;
+
+	virtual bool sendData(CMessageBuffer &data); //NOT const: it sets IP number and port
+
+	bool sendTextMessage(const CString &msg);
+
+	CString getHost(){return m_Hostname;}
+	unsigned int getPort(){return m_ServerPort;}
+protected:
+	CString m_Hostname;
+	CIPNumber m_ServerIP;
+	int m_ServerPort;
+
 };
 
 #endif

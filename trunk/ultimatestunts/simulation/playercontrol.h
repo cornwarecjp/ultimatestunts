@@ -36,6 +36,7 @@ public:
 
 	virtual int addPlayer(CObjectChoice choice);
 	virtual bool loadObjects();
+	virtual void clearPlayerList();
 
 protected:
 	vector<CObjectChoice> m_LocalChoices;

@@ -15,23 +15,41 @@
  *                                                                         *
  ***************************************************************************/
 
+#include <cstdio>
+
 #include "message.h"
 
-CMessageBuffer & CMessage::getBuffer()
+CMessage::CMessage()
+{}
+
+CMessage::CMessage(const CMessageBuffer & mb)
 {
+	this->setBuffer(mb);
+}
+
+CMessage::~CMessage()
+{}
+
+CMessageBuffer CMessage::getBuffer()
+{
+	CMessageBuffer ret;
 	CBinBuffer b;
-	this->m_Data.setData(this->getData(b));
-	return m_Data;
+	ret.setType(getType());
+	//ret.setAC(getAC());
+	//ret.setCounter(getCounter());
+	ret.setData(this->getData(b));
+	return ret;
 }
  	
 bool CMessage::setBuffer(const CMessageBuffer & b)
 {
-	m_Data = b;
-	this->setData(m_Data.getData());
-	return true;
+	//TODO: check buffer type ID
+	return this->setData(b.getData());
 }
 
-void CMessage::setType(const CMessageBuffer::eMessageType & t) {
+/*
+void CMessage::setType(const CMessageBuffer::eMessageType & t)
+{
 	m_Data.setType(t);
 }
 
@@ -42,16 +60,5 @@ void CMessage::setCounter(const Uint16 & counter) {
 void CMessage::setAC(const bool & ac) {
 	if (ac) m_Data.setAC(1); else m_Data.setAC(0);
 }
-
-
-CMessage::CMessage(){
-}
-
-CMessage::CMessage(const CMessageBuffer & mb)
-{
- this->setBuffer(mb);
-}
-
-CMessage::~CMessage(){
-}
+*/
 

@@ -28,6 +28,9 @@ CClientPlayerControl::~CClientPlayerControl()
 
 int CClientPlayerControl::addPlayer(CObjectChoice choice)
 {
+	CMessageBuffer buf = choice.getBuffer();
+	m_Net->sendData(buf);
+
 	return CPlayerControl::addPlayer(choice);
 }
 

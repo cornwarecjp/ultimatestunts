@@ -45,20 +45,14 @@ public:
 		movingObject = 3,
 		movObjInput = 4,
 		car = 5,
-		carInput = 6
+		carInput = 6,
+		chat = 7,
+		textMessage = 8
 	};
 
-
-private:
-	s_msg_header * getHeader() const;
-	bool setHeader(s_msg_header &);
-
-	CIPNumber m_netIP;      // to be set to tranfer messages over network
-	int m_netPort;        // this can be eigher source or destination address
-
-public:
 	CMessageBuffer(const CMessageBuffer::eMessageType & t);
 	CMessageBuffer();
+	~CMessageBuffer();
 
 	bool setType(const eMessageType t);
 	bool setAC(const Uint8 acflag);
@@ -77,12 +71,18 @@ public:
 
 	bool setBuffer(const CBinBuffer & b);               // restore messagebuffer
 	CBinBuffer & getBuffer();
-	~CMessageBuffer();
 
 	void setIP(const CIPNumber & ip) { m_netIP = ip; }
 	void setPort(const int port) { m_netPort = port; }
-	CIPNumber & getIP() const { return (* new CIPNumber(m_netIP)); }
-	int getPort() const { return (m_netPort); }
+	CIPNumber getIP() const { return m_netIP; }
+	int getPort() const { return m_netPort; }
+
+private:
+	s_msg_header * getHeader() const;
+	bool setHeader(s_msg_header &);
+
+	CIPNumber m_netIP;      // to be set to tranfer messages over network
+	int m_netPort;        // this can be either source or destination address
 };
 
 

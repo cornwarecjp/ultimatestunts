@@ -16,10 +16,44 @@
  ***************************************************************************/
 
 #include "clientnet.h"
+#include "textmessage.h"
 
-CClientNet::CClientNet(CString host, int port)
+CClientNet::CClientNet(CString host, int port) : CStuntsNet(0)
 {
+	m_ServerIP = host;
+	m_ServerPort = port;
+	m_Hostname = host;
+
+	sendTextMessage("JOIN");
 }
 
-CClientNet::~CClientNet(){
+CClientNet::~CClientNet()
+{
+	sendTextMessage("LEAVE");
+}
+
+bool CClientNet::reveiveData()
+{
+	if(!CStuntsNet::receiveData())
+		return false;
+
+	//TODO (maybe) check if the packages come from the server
+	return true;
+}
+
+bool CClientNet::sendData(CMessageBuffer &data)
+{
+	data.setIP(m_ServerIP);
+	data.setPort(m_ServerPort);
+	return CStuntsNet::sendData(data);
+}
+
+bool CClientNet::sendTextMessage(const CString &msg)
+{
+	CTextMessage tm;
+	tm.m_Message = msg;
+	CMessageBuffer buf = tm.getBuffer();
+
+	//TODO: make it a loop, and wait for confirmation
+	return sendData(buf);
 }

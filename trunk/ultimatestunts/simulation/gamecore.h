@@ -50,20 +50,28 @@ public:
 	CGameCore();
 	virtual ~CGameCore();
 
-	//initialise game
+	//step 1: initialise network connection etc.
+	//the last function call defines the current state
 	void initLocalGame(const CString &trackfile);
-	void initClientGame(const CString &host, int port);
+	void initClientGame(const CString &host, unsigned int port);
 
+	//step 2: add players
 	bool addPlayer(CPlayer *p, CString name, CObjectChoice choice);
 
-	virtual void startGame();
+	//step 3: wait for the start signal and load everything
+	virtual void readyAndLoad();
 
+	//step 3: Play
 	virtual bool update(); //true = continue false = leave
 
-	//leave game
-	void leaveGame();
+	//step 4: unload game (go back to step 1 or 2)
+	//this does not undo step 1
+	//to stop a network connection, init a local game
+	void resetGame();
 
 protected:
+	void unloadGame();
+	
 	CWorld *m_World;
 	vector<CPlayer *> m_Players;
 	CPlayerControl *m_PCtrl;

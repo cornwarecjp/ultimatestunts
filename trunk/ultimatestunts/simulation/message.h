@@ -26,9 +26,6 @@
 #include "messagebuffer.h"
 
 class CMessage {
-private:
-	CMessageBuffer m_Data; //Class data plus network header
-
 public:
 	CMessage();
 	CMessage(const CMessageBuffer &);
@@ -40,15 +37,18 @@ public:
 	virtual bool setData(const CBinBuffer &) = 0;
 
 	//Class data plus network header
-	CMessageBuffer & getBuffer();
+	CMessageBuffer getBuffer();
 	bool setBuffer(const CMessageBuffer &);
 
 	// header wrappers
-	void setType(const CMessageBuffer::eMessageType & t);
-	void setCounter(const Uint16 & counter);
-	void setAC(const bool & ac);
-	virtual CMessageBuffer::eMessageType getType() const {return ((CMessageBuffer::eMessageType) m_Data.getType()); }
-	Uint16 getCounter() const { return (m_Data.getCounter()); }
-	Uint8 getAC() const { return (m_Data.getAC()); }
+	//void setType(const CMessageBuffer::eMessageType & t);
+	//void setCounter(const Uint16 & counter);
+	//void setAC(const bool & ac);
+	//Uint16 getCounter() const { return (m_Data.getCounter()); }
+	//Uint8 getAC() const { return (m_Data.getAC()); }
+
+	virtual CMessageBuffer::eMessageType getType() const
+		{return CMessageBuffer::badMessage; } //you should reimplement this in derived classes
+
 };
 #endif

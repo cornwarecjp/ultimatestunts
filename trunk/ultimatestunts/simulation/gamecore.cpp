@@ -24,37 +24,47 @@ CGameCore::CGameCore()
 	m_World = new CWorld();
 	m_PCtrl = NULL;
 	m_ClientNet = NULL;
+	initLocalGame(""); //just to get it into some state
 }
 
 CGameCore::~CGameCore()
 {
-	leaveGame(); //just in case we're in one
+	unloadGame();
+
+	if(m_ClientNet!=NULL)
+		delete m_ClientNet;
 
 	delete m_World;
 }
 
 void CGameCore::initLocalGame(const CString &trackfile)
 {
-	leaveGame(); //just in case we're in one
+	unloadGame();
 
-	m_PCtrl = new CPlayerControl;
-	m_Simulations.push_back(new CRuleControl(m_World));
-	m_Simulations.push_back(new CPhysics(theMainConfig, m_World));
+	//delete client network of previous game sessions
+	if(m_ClientNet!=NULL)
+		delete m_ClientNet;
+	m_ClientNet = NULL;
+	resetGame();
 	m_TrackFile = trackfile;
-	loadTrackData();
 }
 
-void CGameCore::initClientGame(const CString &host, int port)
+void CGameCore::initClientGame(const CString &host, unsigned int port)
 {
-	leaveGame(); //just in case we're in one
+	unloadGame();
 
-	m_ClientNet = new CClientNet;
-	m_PCtrl = new CClientPlayerControl(m_ClientNet);
-	CClientSim *csim = new CClientSim(m_ClientNet, m_World);
-	m_Simulations.push_back(csim);
-	m_Simulations.push_back(new CPhysics(theMainConfig, m_World));
-	m_TrackFile = csim->getTrackname();
-	loadTrackData();
+	//delete old clientnet only if it's different
+	if(m_ClientNet != NULL && !(m_ClientNet->getHost() == host && m_ClientNet->getPort() == port))
+	{
+		delete m_ClientNet;
+		m_ClientNet = NULL;
+	}
+
+	//new clientnet if we don't have one
+	if(m_ClientNet == NULL)
+		{m_ClientNet = new CClientNet(host, port);}
+
+	resetGame();
 }
 
 bool CGameCore::addPlayer(CPlayer *p, CString name, CObjectChoice choice)
@@ -71,8 +81,16 @@ bool CGameCore::addPlayer(CPlayer *p, CString name, CObjectChoice choice)
 	return true;
 }
 
-void CGameCore::startGame()
+void CGameCore::readyAndLoad()
 {
+	if(	m_ClientNet != NULL)
+	{
+		//TODO: send ready, and wait for start
+		CClientSim *csim = (CClientSim *)(m_Simulations[0]);
+		m_TrackFile = csim->getTrackname();
+	}
+	
+	loadTrackData();
 	loadMovObjData();
 }
 
@@ -91,7 +109,25 @@ bool CGameCore::update() //true = continue false = leave
 	return retval;
 }
 
-void CGameCore::leaveGame()
+void CGameCore::resetGame()
+{
+	unloadGame();
+
+	if(m_ClientNet == NULL) //local game
+	{
+		m_PCtrl = new CPlayerControl;
+		m_Simulations.push_back(new CRuleControl(m_World));
+		m_Simulations.push_back(new CPhysics(theMainConfig, m_World));
+	}
+	else
+	{
+		m_PCtrl = new CClientPlayerControl(m_ClientNet);
+		m_Simulations.push_back(new CClientSim(m_ClientNet, m_World));
+		m_Simulations.push_back(new CPhysics(theMainConfig, m_World));
+	}
+}
+
+void CGameCore::unloadGame()
 {
 	for(unsigned int i=0; i<m_Simulations.size(); i++)
 		delete m_Simulations[i];
@@ -102,10 +138,6 @@ void CGameCore::leaveGame()
 	if(m_PCtrl!=NULL)
 		delete m_PCtrl;
 	m_PCtrl = NULL;
-
-	if(m_ClientNet!=NULL)
-		delete m_ClientNet;
-	m_ClientNet = NULL;
 
 	unloadData();
 }

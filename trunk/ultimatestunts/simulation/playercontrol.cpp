@@ -39,7 +39,7 @@ bool CPlayerControl::loadObjects()
 	{
 		//every player's vehicle is a unique object, even if
 		//they are loaded from the same file. That's why we
-		//add a unique parameter for each moving object:
+		//have to add a unique parameter for each moving object:
 		CParamList plist;
 		SParameter p;
 		p.name = "ID";
@@ -49,4 +49,9 @@ bool CPlayerControl::loadObjects()
 	}
 
 	return ret;
+}
+
+void CPlayerControl::clearPlayerList()
+{
+	m_LocalChoices.clear();
 }
