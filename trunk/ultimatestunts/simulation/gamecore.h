@@ -31,11 +31,8 @@ using namespace std;
 //Simulation stuff
 #include "playercontrol.h"
 #include "clientplayercontrol.h"
-#include "clientsim.h"
 #include "rulecontrol.h"
-#include "physics.h"
 #include "world.h"
-#include "car.h"
 
 //Player stuff
 #include "objectchoice.h"
@@ -69,6 +66,10 @@ public:
 	//to stop a network connection, init a local game
 	void resetGame();
 
+
+	//some tools
+	//TODO: place these e.g. in CWorld
+	bool isLocalPlayer(unsigned int ID);
 protected:
 	void unloadGame();
 	

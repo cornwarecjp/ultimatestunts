@@ -21,9 +21,12 @@
 #include "textmessage.h"
 #include "movingobject.h"
 
-CClientSim::CClientSim(CClientNet *net)
+CClientSim::CClientSim(CGameCore *gc, CClientNet *net)
 {
+	m_GameCore = gc;
 	m_Net = net;
+	
+	m_PreviousTime = m_Timer.getTime();
 }
 
 CClientSim::~CClientSim()
@@ -60,12 +63,22 @@ bool CClientSim::update()
 	//the moving objects:
 	vector<CDataObject *> objs = theWorld->getObjectArray(CDataObject::eMovingObject);
 
-	//send input info
-	for(unsigned int j=0; j < objs.size(); j++)
+	//if some amount of time has passed:
+	float now = m_Timer.getTime();
+	if(now > m_PreviousTime + 0.04) //25 times per second
 	{
-		CMovingObject *mo = (CMovingObject *)objs[j];
-		CMessageBuffer b = mo->m_InputData->getBuffer();
-		m_Net->sendData(b);
+		m_PreviousTime = now;
+		
+		//send input info
+		for(unsigned int j=0; j < objs.size(); j++)
+		{
+			CMovingObject *mo = (CMovingObject *)objs[j];
+
+			if( !m_GameCore->isLocalPlayer(mo->getMovObjID()) ) continue; //only local players
+
+			CMessageBuffer b = mo->m_InputData->getBuffer();
+			m_Net->sendData(b);
+		}
 	}
 
 	//receive object info

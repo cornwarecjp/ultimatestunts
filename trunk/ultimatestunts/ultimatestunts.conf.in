@@ -51,7 +51,7 @@ zbuffer = true
 transparency = blend
 
 #Maximum distance for drawing reflection. Transparency must be enabled to get realistic reflection
-reflectiondist = 100.0
+reflectiondist = 50.0
 
 #Reflection update settings:
 #Do you want the reflections to be updated when the objects move?
@@ -90,6 +90,12 @@ fogmode = linear
 #(compiled) vertex arrays
 trackdisplaylist = false
 
+
+#Using the openGL compiled vertex array extension can
+#speed up #transformations of highly detailed models,
+#so it should be enabled by default. You can disable it
+#if it gives compatibility problems for you.
+compiledvertexarray = true
 
 
 #Files section
@@ -131,6 +137,17 @@ dtmin = 0.005
 
 #Maximum simulation steps per graphics frame
 Nmax = 10
+
+
+[misc]
+
+#Language setting. If this is set to "system", then
+#the operating system's settings decide the language.
+#If the language is not supported, then english is
+#used. Hint: use the following format:
+#language_country
+#for intance: nl_NL, pt_BR, hu_HU
+language = system
 
 
 #Global keys

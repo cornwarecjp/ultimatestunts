@@ -48,7 +48,7 @@ bool CGameRenderer::loadTrackData()
 		m_FogColor[3] = 1.0;
 		glClearColor(m_FogColor[0],m_FogColor[1],m_FogColor[2],m_FogColor[3]);
 
-		if(m_FogMode >= 0)
+		if(m_Settings.m_FogMode >= 0)
 			glFogfv(GL_FOG_COLOR, m_FogColor);
 
 		return true;
@@ -108,7 +108,7 @@ void CGameRenderer::update()
 
 void CGameRenderer::clearScreen()
 {
-	if(m_ZBuffer)
+	if(m_Settings.m_ZBuffer)
 		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 	else
 		glClear( GL_COLOR_BUFFER_BIT );
@@ -121,7 +121,7 @@ void CGameRenderer::updateReflections()
 	currentSide++;
 	if(currentSide >= 6) currentSide = 0;
 
-	if(currentSide == 0 || m_UpdRefAllSides)
+	if(currentSide == 0 || m_Settings.m_UpdRefAllSides)
 	{
 		currentObject++;
 		if(currentObject >= (int)(m_NumCameras * m_World->getNumObjects(CDataObject::eMovingObject))) currentObject = 0;
@@ -133,12 +133,12 @@ void CGameRenderer::updateReflections()
 	if(numPresent < numRequired)
 		for(unsigned int i=0; i< (numRequired - numPresent); i++)
 		{
-			CReflection r(m_TexSmooth, m_ReflectionSize);
+			CReflection r(m_Settings.m_TexSmooth, m_Settings.m_ReflectionSize);
 			m_MovingObjectReflections.push_back(r);
 		}
 
 	//Updating the reflection images
-	if(m_UpdRefAllObjs)
+	if(m_Settings.m_UpdRefAllObjs)
 	{
 		for(unsigned int cam=0; cam < m_NumCameras; cam++)
 		{
@@ -150,7 +150,7 @@ void CGameRenderer::updateReflections()
 				CVector pos = mo->m_Bodies[0].getPosition();
 
 				//we don't have to update a reflection that is not visible
-				if((pos - m_Cameras[cam]->getPosition()).abs() > m_ReflectionDist) continue;
+				if((pos - m_Cameras[cam]->getPosition()).abs() > m_Settings.m_ReflectionDist) continue;
 
 				//camera
 				CCamera front;
@@ -162,7 +162,7 @@ void CGameRenderer::updateReflections()
 				m_UpdateBodyReflection = obj;
 				unsigned int index = cam + m_NumCameras * obj;
 
-				if(m_UpdRefAllSides)
+				if(m_Settings.m_UpdRefAllSides)
 					{m_MovingObjectReflections[index].update(this, &front);}
 				else
 					{m_MovingObjectReflections[index].update(this, &front, currentSide);}
@@ -180,7 +180,7 @@ void CGameRenderer::updateReflections()
 		CVector pos = mo->m_Bodies[0].getPosition();
 
 		//we don't have to update a reflection that is not visible
-		if((pos - m_Cameras[cam]->getPosition()).abs() <= m_ReflectionDist)
+		if((pos - m_Cameras[cam]->getPosition()).abs() <= m_Settings.m_ReflectionDist)
 		{
 			//camera
 			CCamera front;
@@ -192,7 +192,7 @@ void CGameRenderer::updateReflections()
 			m_UpdateBodyReflection = obj;
 			unsigned int index = cam + m_NumCameras * obj;
 
-			if(m_UpdRefAllSides)
+			if(m_Settings.m_UpdRefAllSides)
 				{m_MovingObjectReflections[index].update(this, &front);}
 			else
 				{m_MovingObjectReflections[index].update(this, &front, currentSide);}
@@ -228,7 +228,7 @@ void CGameRenderer::selectCamera(unsigned int n)
 
 	float ratio = (float) w / (float) h;
 	GLfloat near = 1.0;
-	GLfloat far = TILESIZE * m_VisibleTiles;
+	GLfloat far = TILESIZE * m_Settings.m_VisibleTiles;
 	float hor_mul = near / 5.0;
 	GLfloat xs = ratio*hor_mul;
 	GLfloat ys = 1.0*hor_mul;
@@ -253,10 +253,10 @@ void CGameRenderer::renderScene()
 	//glLoadIdentity();
 	glLoadMatrixf(cammat.transpose().gl_mtr());
 
-	if(m_UseBackground)
+	if(m_Settings.m_UseBackground)
 	{
 		viewBackground();
-		if(m_ZBuffer)
+		if(m_Settings.m_ZBuffer)
 			glClear( GL_DEPTH_BUFFER_BIT );
 	}
 
@@ -277,35 +277,44 @@ void CGameRenderer::renderScene()
 	camy = (int)(0.5 + (camera.y)/VERTSIZE);
 	camz = (int)(0.5 + (camera.z)/TILESIZE);
 
-	if(m_TrackDisplayList)
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_NORMAL_ARRAY);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+	//Draw the track
+	if(m_Settings.m_TrackDisplayList)
 		{viewTrack_displaylist();}
 	else
 		{viewTrack_normal();}
 
-	if(!m_ReflectionDrawMovingObjects && m_UpdateBodyReflection >= 0)
+	if(!m_Settings.m_ReflectionDrawMovingObjects && m_UpdateBodyReflection >= 0)
 		return; //don't draw moving objects
 
-	//Tijdelijke plaats om auto's te renderen: achteraan
+	//Draw the moving objects
 	//float tobj = _DebugTimer.getTime();
 	int num_objs = m_World->getNumObjects(CDataObject::eMovingObject);
 	for(int i=0; i<num_objs; i++)
 		if(i != m_UpdateBodyReflection) //don't draw the body in its own reflection
 			viewMovObj(i);
 	//fprintf(stderr, "Drawing moving objects: %.5f\n", _DebugTimer.getTime() - tobj);
+
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	glDisableClientState(GL_NORMAL_ARRAY);
+	glDisableClientState(GL_VERTEX_ARRAY);
 }
 
 void CGameRenderer::viewBackground()
 {
 	//if(m_FogMode != -1)
 	//	glDisable(GL_FOG);
-	if(m_ZBuffer)
+	if(m_Settings.m_ZBuffer)
 		glDisable(GL_DEPTH_TEST);
 
 	m_GraphicWorld->m_Background->draw();
 
 	//if(m_FogMode != -1)
 	//	glEnable(GL_FOG);
-	if(m_ZBuffer)
+	if(m_Settings.m_ZBuffer)
 		glEnable(GL_DEPTH_TEST);
 }
 
@@ -358,10 +367,10 @@ void CGameRenderer::viewTrack_normal()
 	//printf ("x,y,z = %d,%d,%d\n",camx,camy,camz);
 
 	//Nu: de dynamische begrenzing om weergavesnelheid te vergroten
-	int xmin = (camx-m_VisibleTiles < 0)? 0 : camx-m_VisibleTiles;
-	int xmax = (camx+m_VisibleTiles > lengte)? lengte : camx+m_VisibleTiles;
-	int zmin = (camz-m_VisibleTiles < 0)? 0 : camz-m_VisibleTiles;
-	int zmax = (camz+m_VisibleTiles > breedte)? breedte : camz+m_VisibleTiles;
+	int xmin = (camx-m_Settings.m_VisibleTiles < 0)? 0 : camx-m_Settings.m_VisibleTiles;
+	int xmax = (camx+m_Settings.m_VisibleTiles > lengte)? lengte : camx+m_Settings.m_VisibleTiles;
+	int zmin = (camz-m_Settings.m_VisibleTiles < 0)? 0 : camz-m_Settings.m_VisibleTiles;
+	int zmax = (camz+m_Settings.m_VisibleTiles > breedte)? breedte : camz+m_Settings.m_VisibleTiles;
 
 	//if(!m_ZBuffer)
 	//always back to front (because of transparency)
@@ -482,7 +491,7 @@ void CGameRenderer::viewPilaar(int x, int y, int cur_zpos)
 						}
 
 						//tekenen
-						m_GraphicWorld->getTile(temp.m_Model)->draw(lod);
+						m_GraphicWorld->getTile(temp.m_Model)->draw(&m_Settings, NULL, lod);
 					}
 				}
 				break;
@@ -500,7 +509,7 @@ void CGameRenderer::viewPilaar(int x, int y, int cur_zpos)
 			}
 
 			//tekenen
-			m_GraphicWorld->getTile(temp.m_Model)->draw(lod);
+			m_GraphicWorld->getTile(temp.m_Model)->draw(&m_Settings, NULL, lod);
 		}
 
 	glPopMatrix();
@@ -516,7 +525,7 @@ void CGameRenderer::viewMovObj(unsigned int n)
 		CVector r = b.getPosition();
 
 		float dist = (m_Camera->getPosition() - r).abs();
-		if(dist > TILESIZE * m_VisibleTiles) continue; //not visible
+		if(dist > TILESIZE * m_Settings.m_VisibleTiles) continue; //not visible
 
 		int lod;
 		if(dist > TILESIZE * 7)
@@ -528,7 +537,7 @@ void CGameRenderer::viewMovObj(unsigned int n)
 		else
 			lod = 1;
 
-		lod += m_MovingObjectLOD;
+		lod += m_Settings.m_MovingObjectLOD;
 		if(lod > 4) lod = 4;
 		if(lod < 1) lod = 1;
 
@@ -537,31 +546,18 @@ void CGameRenderer::viewMovObj(unsigned int n)
 		glMultMatrixf(b.getOrientationMatrix().gl_mtr());
 
 		//The model
-		m_GraphicWorld->getMovObjBound(b.m_Body)->draw(lod);
 
 		//The reflection
-		if(dist < m_ReflectionDist)
+		if(dist < m_Settings.m_ReflectionDist)
 		{
-			glEnable(GL_TEXTURE_2D);
-			glEnable(GL_POLYGON_OFFSET_FILL);
-			glEnable(GL_TEXTURE_GEN_S);
-			glEnable(GL_TEXTURE_GEN_T);
-			glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
-			glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
-			GLfloat oldambient[4];
-			GLfloat newambient[] = {1.0,1.0,1.0,1.0};
-			glGetFloatv(GL_LIGHT_MODEL_AMBIENT, oldambient);
-			glLightModelfv(GL_LIGHT_MODEL_AMBIENT, newambient);
-
-			glPolygonOffset(0.0, -1.0);
-			//m_GraphicWorld->m_EnvMap.draw(1);
-			m_MovingObjectReflections[m_CurrentCamera + m_NumCameras * n].draw();
-			m_GraphicWorld->getMovObjBound(b.m_Body)->draw(0);
-
-			glDisable(GL_POLYGON_OFFSET_FILL);
-			glDisable(GL_TEXTURE_GEN_S);
-			glDisable(GL_TEXTURE_GEN_T);
-			glLightModelfv(GL_LIGHT_MODEL_AMBIENT, oldambient);
+			m_GraphicWorld->getMovObjBound(b.m_Body)->draw(
+				&m_Settings,
+				&m_MovingObjectReflections[m_CurrentCamera + m_NumCameras * n],
+				lod);
+		}
+		else
+		{
+			m_GraphicWorld->getMovObjBound(b.m_Body)->draw(&m_Settings, NULL, lod);
 		}
 
 		glPopMatrix();

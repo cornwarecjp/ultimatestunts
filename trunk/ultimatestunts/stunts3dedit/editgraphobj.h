@@ -24,7 +24,7 @@
 namespace std {}
 using namespace std;
 
-#include "graphobj.h"
+//#include "graphobj.h"
 #include "lodtexture.h"
 
 /**

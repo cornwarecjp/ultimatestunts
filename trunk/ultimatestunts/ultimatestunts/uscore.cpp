@@ -23,6 +23,8 @@
 #include "uscore.h"
 #include "lconfig.h"
 
+#include "car.h"
+
 CUSCore::CUSCore(CGameWinSystem *winsys)
 {
 	m_WinSys = winsys;

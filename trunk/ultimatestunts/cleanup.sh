@@ -17,3 +17,5 @@ rm -f config.status
 
 rm -rf autom4te.cache
 
+rm -f stamp*
+

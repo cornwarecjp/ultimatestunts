@@ -66,7 +66,7 @@ bool CRuleControl::findStartFinish()
 					else
 					{
 						founds = true;
-						m_StartX = x; m_StartY = y; m_StartH = h;
+						m_StartX = x; m_StartY = y; m_StartH = tile.m_Z;
 					}
 
 				if(theWorld->getTileModel(tile.m_Model)->m_isFinish)
@@ -76,7 +76,7 @@ bool CRuleControl::findStartFinish()
 					else
 					{
 						foundf = true;
-						m_FinishX = x; m_FinishY = y; m_FinishH = h;
+						m_FinishX = x; m_FinishY = y; m_FinishH = tile.m_Z;
 					}
 			}
 

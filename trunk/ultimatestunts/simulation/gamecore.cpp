@@ -16,6 +16,10 @@
  ***************************************************************************/
 
 #include <cstdio>
+#include <unistd.h>
+
+#include "clientsim.h"
+#include "physics.h"
 
 #include "gamecore.h"
 
@@ -106,6 +110,7 @@ bool CGameCore::update() //true = continue false = leave
 {
 	if(m_ClientNet != NULL)
 	{
+		usleep(10000); //< 100 fps. Just to give a server process some CPU time
 		m_ClientNet->m_ReceiveBuffer.clear(); //all messages that were not used in the previous turn
 		m_ClientNet->receiveData(1); //1 millisecond
 	}
@@ -136,7 +141,7 @@ void CGameCore::resetGame()
 	else
 	{
 		m_PCtrl = new CClientPlayerControl(m_ClientNet);
-		m_Simulations.push_back(new CClientSim(m_ClientNet));
+		m_Simulations.push_back(new CClientSim(this, m_ClientNet));
 		//m_Simulations.push_back(new CPhysics(theMainConfig));
 		//TODO: CApproximation or CPhysics for slow connections
 	}
@@ -174,4 +179,12 @@ void CGameCore::unloadData()
 {
 	printf("---World data\n");
 	m_World->unloadAll();
+}
+
+bool CGameCore::isLocalPlayer(unsigned int ID)
+{
+	for(unsigned int i=0; i<m_Players.size(); i++)
+		if(m_Players[i]->m_MovingObjectId == (int)ID) return true;
+
+	return false;
 }

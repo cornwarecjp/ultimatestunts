@@ -78,7 +78,6 @@ else
   AM_CONDITIONAL(ENABLE_XMESA_FX, test "no" = "yes")
 fi
 
-
 dnl -------------
 dnl Check for SDL
 dnl -------------
@@ -107,6 +106,8 @@ dnl -----------------------
 AC_HEADER_STDC
 
 AC_CHECK_HEADER(GL/gl.h)
+AC_CHECK_HEADER(GL/glext.h,AC_DEFINE(HAVE_GLEXT_H),[], [#include <GL/gl.h>])
+
 dnl AC_CHECK_HEADER(windows.h, AC_DEFINE(WIN32))
 dnl AC_CHECK_HEADER(joystick.h, AC_DEFINE(JOYSTICK_IS_PRESENT))
 dnl AC_CHECK_HEADER(linux/joystick.h, AC_DEFINE(LINUX_JOYSTICK_IS_PRESENT))

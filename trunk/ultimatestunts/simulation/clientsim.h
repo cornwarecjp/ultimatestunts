@@ -20,6 +20,8 @@
 
 #include "simulation.h"
 #include "clientnet.h"
+#include "gamecore.h"
+#include "timer.h"
 
 /**
   *@author CJP
@@ -27,7 +29,7 @@
 
 class CClientSim : public CSimulation  {
 public: 
-	CClientSim(CClientNet *net);
+	CClientSim(CGameCore *gc, CClientNet *net);
 	~CClientSim();
 
 	CString getTrackname();
@@ -35,6 +37,11 @@ public:
 	virtual bool update();
 protected:
 	CClientNet *m_Net;
+
+	CGameCore *m_GameCore;
+
+	CTimer m_Timer;
+	float m_PreviousTime;
 };
 
 #endif

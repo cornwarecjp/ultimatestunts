@@ -47,7 +47,9 @@ Section "Ultimate Stunts (required)"
   SetOutPath $INSTDIR
   
   ; Put file there
-  File *.exe
+  File stunts3dedit.exe
+  File stuntsserver.exe
+  File ultimatestunts.bat
   File *.dll
   File *.ico
   File *.conf
@@ -55,6 +57,7 @@ Section "Ultimate Stunts (required)"
   File *.txt
   File copying
   File /r data
+  File /r bin
   
   ; Write the installation path into the registry
   WriteRegStr HKLM SOFTWARE\Ultimate_Stunts "Install_Dir" "$INSTDIR"
@@ -73,7 +76,7 @@ Section "Start Menu Shortcuts"
 
   CreateDirectory "$SMPROGRAMS\Ultimate Stunts"
   CreateShortCut "$SMPROGRAMS\Ultimate Stunts\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
-  CreateShortCut "$SMPROGRAMS\Ultimate Stunts\Ultimate Stunts.lnk" "$INSTDIR\ultimatestunts.exe" "" "$INSTDIR\ultimatestunts.ico" 0
+  CreateShortCut "$SMPROGRAMS\Ultimate Stunts\Ultimate Stunts.lnk" "$INSTDIR\ultimatestunts.bat" "" "$INSTDIR\ultimatestunts.ico" 0
   
 SectionEnd
 

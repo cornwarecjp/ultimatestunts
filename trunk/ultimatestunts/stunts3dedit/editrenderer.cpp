@@ -27,10 +27,10 @@ CEditRenderer::CEditRenderer(const CWinSystem *winsys) : CRenderer(winsys)
 	CParamList plist;
 	SParameter p;
 	p.name = "sizex";
-	p.value = m_ReflectionSize;
+	p.value = m_Settings.m_ReflectionSize;
 	plist.push_back(p);
 	p.name = "sizey";
-	p.value = m_ReflectionSize;
+	p.value = m_Settings.m_ReflectionSize;
 	plist.push_back(p);
 	p.name = "smooth";
 	p.value = "true";
@@ -49,7 +49,7 @@ void CEditRenderer::update()
 	//printf("Updating graphics\n");
 
 	//Clear the screen
-	if(m_ZBuffer)
+	if(m_Settings.m_ZBuffer)
 		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 	else
 		glClear( GL_COLOR_BUFFER_BIT );

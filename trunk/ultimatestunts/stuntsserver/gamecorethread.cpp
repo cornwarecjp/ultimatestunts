@@ -97,6 +97,8 @@ void CGamecoreThread::processInputQueue()
 			}
 
 			mo->m_InputData->setBuffer(buffer);
+
+			//consolethread.write(CString("Steering input ") + ID + ":" + mo->m_InputData->m_Right);
 		}
 		m_InputQueue.clear();
 
