@@ -1,7 +1,9 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT(ultimatestunts/main.cpp)
-AM_INIT_AUTOMAKE(ultimatestunts,0.5.0)
+AC_INIT([Ultimate Stunts], [0.5.0], [cornware-cjp@users.sourceforge.net], [ultimatestunts])
+AC_CONFIG_SRCDIR([ultimatestunts/main.cpp])
+AC_CANONICAL_TARGET
+AM_INIT_AUTOMAKE
 
 dnl Checks for programs.
 AC_PROG_CC
@@ -15,6 +17,7 @@ AC_EXEEXT
 AC_OBJEXT
 
 AC_LANG(C++)
+
 
 dnl ----------------------
 dnl Initially no libraries
