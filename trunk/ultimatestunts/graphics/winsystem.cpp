@@ -78,10 +78,15 @@ CWinSystem::CWinSystem(const CLConfig &conf)
 	runLoop(dummy_loopfunc, true); //catch startup-events
 
 	m_KeyState = SDL_GetKeyState(&m_NumKeys);
+	m_WasPressed = new bool[m_NumKeys];
+	for(int i=0; i<m_NumKeys; i++)
+		m_WasPressed[i] = false;
+
 }
 
 CWinSystem::~CWinSystem()
 {
+	delete [] m_WasPressed;
 	SDL_Quit();
 }
 
@@ -114,6 +119,7 @@ int CWinSystem::runLoop( bool (CALLBACKFUN *loopfunc)(), bool swp)
 					break;
 
 				case SDL_KEYDOWN:
+					m_WasPressed[event.key.keysym.sym] = true;
 				case SDL_KEYUP:
 					printf("Something has changed in the keystate\n");
 					m_KeyState = SDL_GetKeyState(&m_NumKeys);
@@ -151,4 +157,11 @@ void CWinSystem::reshape(int w, int h)
 
 	glMatrixMode( GL_MODELVIEW );
 	glLoadIdentity();
+}
+
+bool CWinSystem::wasPressed(int c)
+{
+	bool ret = m_WasPressed[c];
+	m_WasPressed[c] = false;
+	return ret;
 }

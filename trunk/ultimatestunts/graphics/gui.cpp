@@ -18,6 +18,8 @@
 #include <stdio.h>
 
 #include "gui.h"
+#include "usmacros.h"
+#include "cfile.h"
 
 CGUI::CGUI(const CLConfig &conf, CWinSystem *winsys)
 {
@@ -52,6 +54,8 @@ void CGUI::startFrom(CString section)
 			section = viewMainMenu();
 		else if(section=="hostmenu")
 			section = viewHostMenu();
+		else if(section=="playermenu")
+			section = viewPlayerMenu();
 		else
 			{printf("Error: unknown menu %s\n", section.c_str()); section = "";}
 	}
@@ -74,18 +78,30 @@ CString CGUI::getValue(CString section, CString field)
 		if(field=="hostname") return m_HostName;
 		if(field=="portnumber") return m_HostPort;
 	}
+	if(section=="playermenu")
+	{
+		if(field=="number") return (int)(m_PlayerDescr.size());
+		int i = field.toInt();
+		return m_PlayerDescr[i];
+	}
 	return "";
 }
 
 void CGUI::resetSection(CString section)
 {
 	if(section=="") //reset all sections
-		{m_PassedMainMenu = false; m_PassedHostMenu = false;}
+	{
+		m_PassedMainMenu = false;
+		m_PassedHostMenu = false;
+		m_PassedPlayerMenu = false;
+	}
 
 	if(section=="mainmenu")
 		m_PassedMainMenu = false;
 	if(section=="hostmenu")
 		m_PassedHostMenu = false;
+	if(section=="player")
+		m_PassedPlayerMenu = false;
 }
 
 bool CGUI::isPassed(CString section)
@@ -94,6 +110,8 @@ bool CGUI::isPassed(CString section)
 		return m_PassedMainMenu;
 	if(section=="hostmenu")
 		return m_PassedHostMenu;
+	if(section=="playermenu")
+		return m_PassedPlayerMenu;
 
 	return false; //all unknown sections are not passed
 }
@@ -110,14 +128,13 @@ CString CGUI::viewMainMenu()
 			"  \n"
 			"  3: Exit\n"
 		);
-		int input;
-		scanf("%d", &input);
+		int input = getInput().toInt();
 
 		switch(input)
 		{
 			case 1:
 				m_MainMenuInput = LocalGame;
-				ret = ""; //TODO: track menu
+				ret = "playermenu"; //TODO: track menu
 				break;
 			case 2:
 				m_MainMenuInput = JoinNetwork;
@@ -144,12 +161,71 @@ CString CGUI::viewHostMenu()
 		"Host menu:\n"
 		"Enter the server's host name: "
 	);
-	char input[80];
-	scanf("%s", input);
-	m_HostName = input;
+	m_HostName = getInput();
 	printf("Enter the server's UDP port number: ");
-	scanf("%d", &m_HostPort);
+	m_HostPort = getInput().toInt();
 	m_PassedHostMenu = true;
 
-	return ""; //TODO: player menu
+	return "playermenu";
+}
+
+CString CGUI::viewPlayerMenu()
+{
+	m_PlayerDescr.clear();
+
+	printf("Player menu:\n");
+	printf("Enter your name: ");
+	addPlayer(getInput(), true);
+
+	while(true)
+	{
+		printf("\nDo you want to add an AI player(y/n)? ");
+		CString answ = getInput();
+		if(!(answ == "y" || answ == "Y")) break;
+
+		printf("Enter the name: ");
+		addPlayer(getInput(), false);
+	}
+
+	m_PassedPlayerMenu = true;
+
+	return ""; //TODO: loading
+}
+
+void CGUI::addPlayer(CString name, bool human)
+{
+	CString pd = name;
+	if(human)
+		pd = "H" + pd;
+	else
+		pd = "A" + pd;
+
+	m_PlayerDescr.push_back(pd);
+}
+
+CString CGUI::getInput()
+{
+#ifdef __CYGWIN__
+	//as SDL makes it impossible to work with stdio in Cygwin(?),
+	//use this file instead
+	static CFile f("stdin.txt");
+
+	CString in;
+	do
+	{
+		in = f.readl();
+		int pos = in.inStr('#');
+		if(pos >= 0)
+			in = in.subStr(0, pos); //ignore comments
+	}
+	while(in=="");
+
+	printf("%s\n", in.c_str());
+	return in;
+
+#else
+	char input[80];
+	scanf("%s", input);
+	return input;
+#endif
 }

@@ -75,12 +75,17 @@ void CGameCamera::update()
 			tv = to->getVelocity();
 			break;
 		case Tracking:
-			tp = CVector(0.0, 3.0, 15.0);
-			tp *= to->getRotationMatrix();
-			tp += to->getPosition();
-			tv = to->getVelocity();
-			autotarget = true; //point the camera to the object
-			m_Reached = false; //always have "smooth" camera movement
+			{
+				tv = to->getVelocity();
+				float vabs = tv.abs();
+				float z = 0.5 * vabs + 15.0;
+				float y = 0.05 * vabs + 3.0;
+				tp = CVector(0.0, y, z); //further away when going faster
+				tp *= to->getRotationMatrix();
+				tp += to->getPosition();
+				autotarget = true; //point the camera to the object
+				m_Reached = false; //always have "smooth" camera movement
+			}
 			break;
 		case UserDefined:
 		case Top:
@@ -101,7 +106,7 @@ void CGameCamera::update()
 		//damper is needed to prevent real oscillations
 		//critical damping occurs at sqrt(4*FREQ*FREQ) = 2.0
 #define FREQ 1.0
-#define DAMPC 1.1 // a little oscillation
+#define DAMPC 1.5 // a little oscillation
 		CVector a = -DAMPC*vrel - FREQ*FREQ*prel;
 		m_Velocity += a * dt;
 		m_Position += m_Velocity * dt;

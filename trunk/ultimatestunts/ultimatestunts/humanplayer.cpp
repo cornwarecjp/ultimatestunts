@@ -21,9 +21,9 @@
 
 #include "carinput.h"
 
-CHumanPlayer::CHumanPlayer(const CWorld *w) : CPlayer(w)
+CHumanPlayer::CHumanPlayer(const CWorld *w, const CWinSystem *ws) : CPlayer(w)
 {
-	m_KeysAreSet = false;
+	m_WinSys = ws;
 }
 
 CHumanPlayer::~CHumanPlayer(){
@@ -31,8 +31,12 @@ CHumanPlayer::~CHumanPlayer(){
 
 bool CHumanPlayer::update()
 {
-	if(m_KeysAreSet && m_MovingObjectId >= 0)
+	if(m_MovingObjectId >= 0)
 	{
+		const Uint8 *keystate = m_WinSys->getKeyState();
+
+		//This is called 'input', as it is the input of the moving object.
+		//But it is the output of the player.
 		CMessage *input = m_World->m_MovObjs[m_MovingObjectId]->m_InputData;
 
 		if(input->getType() != CMessageBuffer::carInput)
@@ -40,15 +44,13 @@ bool CHumanPlayer::update()
 
 		CCarInput *carin = (CCarInput *)input;
 
-		carin->m_Forward = 1.0 * m_KeyState[SDLK_UP];
-		carin->m_Backward = 1.0 * m_KeyState[SDLK_DOWN];
-		carin->m_Right = 1.0 * m_KeyState[SDLK_RIGHT] - 1.0 * m_KeyState[SDLK_LEFT];
+		carin->m_Forward = 1.0 * keystate[SDLK_UP];
+		carin->m_Backward = 1.0 * keystate[SDLK_DOWN];
+		carin->m_Right = 1.0 * keystate[SDLK_RIGHT] - 1.0 * keystate[SDLK_LEFT];
 		carin->m_Gear = 1;
 		carin->m_CarHorn = true;
 
-		m_KeysAreSet = false;
-
-		return true; //input has changed
+		return true; //input has changed (TODO: make a better system)
 	}
 
 	return false;

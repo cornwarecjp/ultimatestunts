@@ -35,7 +35,7 @@ bool CPhysics::update()
 
 //Dummy physics version 2.0 !!!!
 #define m 1000
-#define cwA 100
+#define cwA 10
 #define gasmax 10000
 #define remmax 10000
 #define invstraal 0.1

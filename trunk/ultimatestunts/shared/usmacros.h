@@ -54,3 +54,21 @@
 */
 
 #endif
+
+#ifndef __CYGWIN__
+#ifdef __CYGWIN32__
+#define __CYGWIN__ __CYGWIN32__
+#endif
+#endif
+
+#ifdef __CYGWIN__
+
+#define NETTYPE char
+#undef UNIX_TREE
+
+#else
+
+#define NETTYPE void
+#define UNIX_TREE //expect and use $HOME, /etc etc.
+
+#endif

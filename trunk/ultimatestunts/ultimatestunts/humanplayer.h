@@ -20,6 +20,7 @@
 
 #include "player.h"
 #include "usmacros.h"
+#include "winsystem.h"
 
 /**
   *@author CJP
@@ -27,16 +28,12 @@
 
 class CHumanPlayer : public CPlayer  {
 public: 
-	CHumanPlayer(const CWorld *w);
+	CHumanPlayer(const CWorld *w, const CWinSystem *ws);
 	~CHumanPlayer();
-
-	void setKeyState(const Uint8 *keystate)
-		{m_KeyState = keystate; m_KeysAreSet = true;}
 
 	virtual bool update();
 protected:
-	const Uint8 *m_KeyState;
-	bool m_KeysAreSet;
+	const CWinSystem *m_WinSys;
 };
 
 #endif

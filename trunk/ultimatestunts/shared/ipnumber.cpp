@@ -16,6 +16,7 @@
  ***************************************************************************/
 
 #include <arpa/inet.h>
+#include <sys/types.h>
 
 #include "ipnumber.h"
 
@@ -41,15 +42,19 @@ Uint8 CIPNumber::operator[] (const Uint8 ix) const {
 
 CIPNumber & CIPNumber::operator = (const char * c)
 {
+	//I commented all inet_pton stuff, as inet_pton is not(?)
+	//available in Cygwin. My network code (network.cpp) in
+	//the old version used gethostbyname.
+
     struct sockaddr_in addr;
-    if (inet_pton(AF_INET, c, &addr) == 1) {
+    //if (inet_pton(AF_INET, c, &addr) == 1) {
       const u_char *p = (const u_char *) &addr;         // this is a very dirty solution
       for (int i=0;i<4;i++) {
         m_IP[i] = p[i];
       }
-    } else {
-      fprintf(stderr, "Warning, bad IP addr: %s\n", c);
-    }
+    //} else {
+    //  fprintf(stderr, "Warning, bad IP addr: %s\n", c);
+    //}
     return (*this);
 }
 

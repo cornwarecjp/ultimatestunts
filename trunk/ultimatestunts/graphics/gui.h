@@ -18,6 +18,8 @@
 #ifndef GUI_H
 #define GUI_H
 
+#include <vector>
+
 #include "lconfig.h"
 #include "winsystem.h"
 
@@ -55,16 +57,23 @@ protected:
 
 	bool m_Stop;
 
-	bool m_PassedMainMenu, m_PassedHostMenu;
+	bool m_PassedMainMenu, m_PassedHostMenu, m_PassedPlayerMenu;
 
 	//all data of the last times the menus were passed
 	eMainMenu m_MainMenuInput;
 	CString m_HostName;
 	int m_HostPort;
+	vector<CString> m_PlayerDescr;
+	
 
 	//The menu code
 	CString viewMainMenu();
 	CString viewHostMenu();
+	CString viewPlayerMenu();
+
+	void addPlayer(CString name, bool human=false);
+
+	CString getInput();
 };
 
 #endif

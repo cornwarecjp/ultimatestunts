@@ -21,6 +21,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <vector>
 
 #include "cstring.h"
 #include "lconfig.h"
@@ -41,7 +42,9 @@
 #include "gamecamera.h"
 
 CGraphicWorld *world;
-CPlayer *player1, *player2, *player3, *player4;
+
+vector<CPlayer *> players;
+
 CSimulation *sim;
 
 CWinSystem *winsys;
@@ -67,19 +70,15 @@ bool mainloop()
 
 	bool retval = true;
 
-	const Uint8 *keystate = winsys->getKeyState();
-	((CHumanPlayer *)player4)->setKeyState(keystate);
-
 	//Escape:
-	retval = retval && (!((bool)keystate['\e']));
+	retval = retval && ( !(bool)(winsys->wasPressed('\e')) );
 
 	//Camera:
-	if(keystate['c']) camera->swithCameraMode();
+	if(winsys->wasPressed('c')) camera->swithCameraMode();
 
-	player1->update(); //Makes moving decisions
-	player2->update();
-	player3->update();
-	player4->update();
+	for(unsigned int i=0; i<players.size(); i++)
+		players[i]->update(); //Makes moving decisions
+
 	retval = retval && sim->update(); //Modifies world object
 
 	camera->update();
@@ -87,6 +86,34 @@ bool mainloop()
 	//sound->update();
 
 	return retval;
+}
+
+bool addPlayer(CString desc)
+{
+	CPlayer *p;
+
+	if(desc[0]=='H')
+		p = new CHumanPlayer(world, winsys);
+	else
+		p = new CAIPlayerCar(world);
+
+	CObjectChoice choice;
+
+	int id = sim->addPlayer(choice);
+	p->m_MovingObjectId = id;
+	p->m_PlayerId = 0;
+	if(id < 0)
+	{
+		printf("Sim doesn't accept player\n");
+		delete p;
+		return false;
+	}
+
+	if(desc[0]=='H') //set the camera to this player:
+		camera->setTrackedObject(id);
+
+	players.push_back(p);
+	return true;
 }
 
 int main(int argc, char *argv[])
@@ -129,10 +156,7 @@ int main(int argc, char *argv[])
 			sim = new CClientSim(world, name, port);
 			break;
 		}
-		case CGUI::NewNetwork:
-		case CGUI::Options:
-		case CGUI::LoadReplay:
-		case CGUI::EditTrack:
+		default:
 		case CGUI::Exit:
 			return 0;
 	}
@@ -146,45 +170,15 @@ int main(int argc, char *argv[])
 	camera = new CGameCamera(world);
 	renderer->setCamera(camera);
 
-	printf("\nCreating 3 AI players\n");
-	player1 = new CAIPlayerCar(world);
-	player2 = new CAIPlayerCar(world);
-	player3 = new CAIPlayerCar(world);
-
-	printf("\nCreating a human player\n");
-	player4 = new CHumanPlayer(world);
-
-	printf("\nChoosing cars (or trains, cows, balloons etc)\n");
-	CObjectChoice choice;
-
-	printf("\nRegistering players to server\n");
-	int id = -1;
-
-	id = sim->addPlayer(choice);
-	if(id < 0)
-		{printf("Sim doesn't accept player1\n");}
-	player1->m_MovingObjectId = id;
-	player1->m_PlayerId = 0;
-
-	id = sim->addPlayer(choice);
-	if(id < 0)
-		{printf("Sim doesn't accept player2\n");}
-	player2->m_MovingObjectId = id;
-	player2->m_PlayerId = 1;
-
-	id = sim->addPlayer(choice);
-	if(id < 0)
-		{printf("Sim doesn't accept player3\n");}
-	player3->m_MovingObjectId = id;
-	player3->m_PlayerId = 2;
-
-	id = sim->addPlayer(choice);
-	if(id < 0)
-		{printf("Sim doesn't accept player4\n");}
-	player4->m_MovingObjectId = id;
-	player4->m_PlayerId = 3;
-	//And set the camera to this player:
-	camera->setTrackedObject(id);
+	while(!( gui->isPassed("playermenu") )); //waiting for input
+	int num_players = gui->getValue("playermenu", "number").toInt();
+	printf("\nNumber of players to be added: %d\n", num_players);
+	for(int i=0; i<num_players; i++)
+	{
+		CString desc = gui->getValue("playermenu", i);
+		printf("%d: \"%s\"\n", i, desc.c_str());
+		addPlayer(desc);
+	}
 
 	if(!sim->loadObjects())
 		{printf("Error while loading moving objects\n");}
@@ -199,11 +193,9 @@ int main(int argc, char *argv[])
 	printf("\nDeleting simulation\n");
 	delete sim;
 
-	printf("\nDeleting players\n");
-	delete player1;
-	delete player2;
-	delete player3;
-	delete player4;
+	for(unsigned int i=0; i<players.size(); i++)
+		delete players[i];
+	players.clear();
 
 	printf("\nDeleting world\n");
 	delete world;

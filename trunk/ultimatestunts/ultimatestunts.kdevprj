@@ -60,7 +60,7 @@ User Interface=*.ui,*.kdevdlg,*.rc,
 groups=Headers,Sources,GNU,Translations,User Interface,Others
 
 [Makefile.am]
-files=ultimatestunts.kdevprj,AUTHORS,COPYING,INSTALL,ChangeLog,README,TODO,acinclude.m4,aclocal.m4,configure.in,install-sh,missing,mkinstalldirs,execselect.sh,execselect.x,restore-am
+files=ultimatestunts.kdevprj,AUTHORS,COPYING,INSTALL,ChangeLog,README,TODO,acinclude.m4,aclocal.m4,configure.in,install-sh,missing,mkinstalldirs,execselect.sh,execselect.x,restore-am,stdin.txt
 sub_dirs=ultimatestunts,shared,filetransfer,graphics,simulation,stuntsai,stuntsserver,tileedit,trackedit,stunts3dedit,__test
 type=normal
 
@@ -672,6 +672,12 @@ dist=true
 install=false
 install_location=
 type=HEADER
+
+[stdin.txt]
+dist=true
+install=false
+install_location=
+type=DATA
 
 [stunts3dedit/Makefile.am]
 files=stunts3dedit/main.cpp,

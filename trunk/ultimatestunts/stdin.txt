@@ -1,0 +1,25 @@
+#This file replaces the standard input on
+#Cygwin-systems. Lines with a # are ignored.
+#
+#Main menu:
+#  1: Play a local game
+#  2: Log in on a remote game
+#
+#  3: Exit
+1
+#
+#Host menu:
+#Enter the server's host name:
+#localhost
+#Enter the server's UDP port number:
+#1500
+#
+#Player menu:
+#Enter your name:
+CJP
+#Do you want to add an AI player(y/n)?
+y
+#Enter the name:
+AI 1
+#Do you want to add an AI player(y/n)?
+n

@@ -19,6 +19,7 @@
 
 
 #include "netudp.h"
+#include "usmacros.h"
 
 
 
@@ -37,7 +38,8 @@ bool CNetUDP::setNetwork(const CIPNumber & localHost, int port) {
     return false;
   }
 
-  bzero(&servaddr, sizeof(servaddr));
+  //Different arg type in Cygwin :-(
+  bzero((NETTYPE *)&servaddr, sizeof(servaddr));
   servaddr.sin_family = AF_INET;
   servaddr.sin_addr.s_addr = htonl(INADDR_ANY);     // fixme: to localhost
   servaddr.sin_port = htons(port);
@@ -105,11 +107,15 @@ bool CNetUDP::sendData(const SNetDatagram & d) const {
   struct sockaddr_in destaddr;
   char *dat = d.data.raw_str();
 
-  bzero(&destaddr, sizeof(destaddr));
+  bzero((NETTYPE *)&destaddr, sizeof(destaddr));
   destaddr.sin_family = AF_INET;
-  inet_pton(AF_INET, d.host.toString().c_str(), &destaddr.sin_addr);
+
+  //removed inet_pton. Explanation in ipnumber.cpp
+  //inet_pton(AF_INET, d.host.toString().c_str(), &destaddr.sin_addr);
   destaddr.sin_port = htons(d.port);
 
+  //I expect a bug here (but it's not tested yet)
+  //CJP
   int res = sendto(sockfd, dat, sizeof(*dat),0, (struct sockaddr *) &destaddr, sizeof(destaddr));
 
   if (res == -1) return (false);
