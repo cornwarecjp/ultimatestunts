@@ -218,7 +218,7 @@ void CSound::update()
 		CVector v = o->getVelocity();
 		chn->setPosVel(o->getPosition(), v);
 		int vol = 20 + (int)(4*v.abs());
-		float freq = 0.1 + 0.1 * v.abs();
+		float freq = 0.05 + 0.05 * v.abs();
 		//printf("Setting vol,freq of %d to %d,%3.3f\n", i, vol, freq);
 		chn->setFrequency(freq);
 		chn->setVolume((vol * m_SoundVolume) >> 8);

@@ -1,7 +1,7 @@
 /***************************************************************************
-                          collisionmodel.h  -  A collision model
+                          collisionface.h  -  description
                              -------------------
-    begin                : wo sep 24 2003
+    begin                : wo nov 26 2003
     copyright            : (C) 2003 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
@@ -15,47 +15,34 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef COLLISIONMODEL_H
-#define COLLISIONMODEL_H
+#ifndef COLLISIONFACE_H
+#define COLLISIONFACE_H
 
-#include "collisionface.h"
-#include "material.h"
-#include "cstring.h"
-#include "cfile.h"
+#include <vector> //STL vector template
+namespace std {}
+using namespace std;
+
+#include "vector.h"
+#include "matrix.h"
 
 /**
   *@author CJP
   */
 
-class CCollisionModel {
+class CCollisionFace : public vector<CVector>  {
 public: 
-	CCollisionModel();
-	virtual ~CCollisionModel();
+	CVector nor;
+	float d;
+	bool reverse; //points are defined clockwise instead of ccw
 
-	virtual bool loadFromFile(CFile *f, CString subset, CMaterial **matarray);
+	CCollisionFace(){;}
+	CCollisionFace(const CCollisionFace &f);
+	const CCollisionFace &operator=(const CCollisionFace &f);
 
-	//Bounded volume data:
-	float m_BSphere_r; //Bounding sphere
-	CVector m_OBB_min, m_OBB_max; //Oriented bounding box
-
-	//The shape itself
-	vector<CCollisionFace> m_Faces;
-
-	CString m_Filename;
-	CString m_Subset;
-
-protected:
-	enum ePrimitiveType {
-		None,
-		Triangles,
-		Quads,
-		Trianglestrip,
-		Quadstrip,
-		Polygon
-	};
-
-	void determineOBVs();
-	void determinePlaneEquations();
+	void cull(const CCollisionFace &plane, const CVector &dr);
+	const CCollisionFace &operator+=(const CVector &r);
+	const CCollisionFace &operator*=(const CMatrix &m);
+	const CCollisionFace &operator/=(const CMatrix &m);
 };
 
 #endif

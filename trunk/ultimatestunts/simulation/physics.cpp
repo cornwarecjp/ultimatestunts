@@ -48,7 +48,7 @@ bool CPhysics::update()
 #endif
 
 #define cwA 10
-#define gasmax 10000
+#define gasmax 25000
 #define remmax 10000
 #define invstraal 0.05
 

@@ -401,7 +401,14 @@ void CCollisionData::ObjTileTest(int nobj, int xtile, int ztile, int htile)
 				}
 				else
 				{ //back side -> cull on position r
-					theFace.cull(b->m_Faces[of], -100.0*dr);
+					theFace.cull(b->m_Faces[of], -dr);
+				}
+
+				if(m_World->printDebug)
+				{
+					m_DebugFile->writel(CString("    Culled by ") + (int)of + ": " + b->m_Faces[of].nor + " d =" + b->m_Faces[of].d);
+					for(unsigned int j=0; j<theFace.size(); j++)
+						m_DebugFile->writel(CString("      ") + theFace[j]);
 				}
 
 				if(theFace.size() < 3) break;
