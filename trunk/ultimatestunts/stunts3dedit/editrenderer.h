@@ -19,7 +19,7 @@
 #define EDITRENDERER_H
 
 #include "renderer.h"
-#include "graphobj.h"
+#include "editgraphobj.h"
 #include "texture.h"
 
 /**
@@ -31,13 +31,13 @@ public:
 	CEditRenderer(const CWinSystem *winsys);
 	virtual ~CEditRenderer();
 
-	void setGraphobj(const CGraphObj *obj)
+	void setGraphobj(const CEditGraphObj *obj)
 		{m_GraphObj = obj;}
 
 	virtual void update();
 
 protected:
-	const CGraphObj *m_GraphObj;
+	const CEditGraphObj *m_GraphObj;
 
 	CTexture *m_EnvMap;
 };

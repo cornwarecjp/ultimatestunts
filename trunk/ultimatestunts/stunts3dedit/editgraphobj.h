@@ -63,14 +63,14 @@ public:
 	float m_StaticFriction, m_DynamicFriction;
 };
 
-class CEditGraphObj : public CGraphObj  {
+class CEditGraphObj  { //no longer derived from CGraphObj
 public: 
 	CEditGraphObj();
 	virtual ~CEditGraphObj();
 
 	/*
 	DON't use load(..) at the moment: use loadFromFile instead.
-	TODO: remove load*File with a load-derived function
+	TODO: replace load*File with a load-derived function
 	*/
 	virtual bool loadGLTFile(CString filename);
 	virtual bool loadGLBFile(CString filename);
@@ -79,7 +79,12 @@ public:
 
 	void merge(const CEditGraphObj &obj, const CString &lods);
 
+	//update the display lists
 	void render(const CString &visibleLODs); //updates openGL data when primitives are changed
+
+	//draw the display lists
+	void draw() const;
+	void drawRef() const;
 
 	void convertToVertexArrays();
 
@@ -91,10 +96,16 @@ public:
 
 	CLODTexture **m_MatArray;
 protected:
+	unsigned int m_ObjList, m_ObjListRef;
+
 	bool isRendered;
 
 	unsigned int findOrAdd(CPrimitive &pr, const CVertex &v, unsigned int &writeIndex);
 	bool isEqual(const CVertex &v1, const CVertex &v2);
+
+	float m_OpacityState;
+	CVector m_ColorState;
+	void setMaterialColor();
 };
 
 #endif

@@ -1,6 +1,8 @@
 # List of source files containing translatable strings.
 
 ultimatestunts/gamegui.cpp
+ultimatestunts/uscore.cpp
+graphics/messagebox.cpp
 shared/hello.cpp
 
 # end of file POTFILE.in

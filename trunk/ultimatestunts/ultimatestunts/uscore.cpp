@@ -17,6 +17,9 @@
 
 #include <cstdio>
 
+#include <libintl.h>
+#define _(String) gettext (String)
+
 #include "uscore.h"
 #include "lconfig.h"
 
@@ -81,8 +84,9 @@ bool CUSCore::update()
 	m_Console->clear();
 	static float topspeed = 0.0;
 
-	m_Console->print(CString("Frame rate: ") + int(m_FPS) + " FPS");
-	m_Console->print(CString("Top speed in this session: ") + (float)(topspeed*3.6) + " km/h");
+	m_Console->print(CString().format( _("Frame rate: %.1f FPS"), 80, m_FPS ));
+	m_Console->print(CString().format( _("Top speed in this session: %.1f km/h"), 80,
+		(float)(topspeed*3.6) ));
 	for(unsigned int i=0; i<m_World->getNumObjects(CDataObject::eMovingObject); i++)
 	{
 		CMovingObject *mo = m_World->getMovingObject(i);
@@ -94,10 +98,9 @@ bool CUSCore::update()
 			float wEngine = theCar->getGearRatio() * theCar->m_MainAxisVelocity;
 				
 			m_Console->print(
-				CString("Car ") + (int)i +
-				" velocity " + (float)(vel * 3.6) + " km/h; "
-				"gear " + (int)(theCar->m_Gear) +
-				"; " + (float)(60.0 * wEngine / 6.28) + " RPM");
+				CString().format( _("Car %d velocity %.1f km/h; gear %d; %.1f RPM"), 100,
+					(int)i, (float)(vel * 3.6), (int)(theCar->m_Gear),
+					(float)(60.0 * wEngine / 6.28) ));
 		}
 	}
 

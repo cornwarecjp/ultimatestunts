@@ -25,15 +25,19 @@
 #include "editgraphobj.h"
 #include "datafile.h"
 
-CEditGraphObj::CEditGraphObj() : CGraphObj(NULL, CDataObject::eMovingObject)
+CEditGraphObj::CEditGraphObj()
 {
+	m_ObjList = m_ObjListRef = 0;
 	isRendered = false;
 }
 
 CEditGraphObj::~CEditGraphObj()
 {
 	if(isRendered)
-		glDeleteLists(m_ObjList1, 1);
+	{
+		glDeleteLists(m_ObjList, 1);
+		glDeleteLists(m_ObjListRef, 1);
+	}
 }
 
 bool CEditGraphObj::loadGLTFile(CString filename)
@@ -887,15 +891,15 @@ void CEditGraphObj::render(const CString &visibleLODs)
 	if(isRendered)
 	{
 		printf("Deleting old model...\n");
-		glDeleteLists(m_ObjList1, 1);
+		glDeleteLists(m_ObjList, 1);
 		glDeleteLists(m_ObjListRef, 1);
 	}
 
 	printf("Generating model...\n");
 
 	//Normal model
-	m_ObjList1 = m_ObjList2 = m_ObjList3 = m_ObjList4 = glGenLists(1);
-	glNewList(m_ObjList1, GL_COMPILE);
+	m_ObjList = glGenLists(1);
+	glNewList(m_ObjList, GL_COMPILE);
 
 	for(unsigned int i=0; i<m_Primitives.size(); i++)
 	{
@@ -1006,4 +1010,20 @@ void CEditGraphObj::render(const CString &visibleLODs)
 
 	
 	isRendered = true;
+}
+
+void CEditGraphObj::draw() const
+{
+	glCallList(m_ObjList);
+}
+
+void CEditGraphObj::drawRef() const
+{
+	glCallList(m_ObjListRef);
+}
+
+void CEditGraphObj::setMaterialColor()
+{
+	float kleur[] = {m_ColorState.x, m_ColorState.y, m_ColorState.z, m_OpacityState};
+	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, kleur);
 }

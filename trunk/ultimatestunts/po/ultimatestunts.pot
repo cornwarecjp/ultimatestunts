@@ -8,13 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-02-02 23:35+0100\n"
+"POT-Creation-Date: 2005-02-03 14:11+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
 #: ultimatestunts/gamegui.cpp:65
 msgid "Main menu"
@@ -90,7 +91,8 @@ msgstr ""
 #, c-format
 msgid " [%d player selected]"
 msgid_plural " [%d players selected]"
-msgstr ""
+msgstr[0] ""
+msgstr[1] ""
 
 #: ultimatestunts/gamegui.cpp:184
 msgid "Local game"
@@ -160,6 +162,33 @@ msgstr ""
 #: ultimatestunts/gamegui.cpp:420
 #, c-format
 msgid "Player %s was refused"
+msgstr ""
+
+#: ultimatestunts/uscore.cpp:87
+#, c-format
+msgid "Frame rate: %.1f FPS"
+msgstr ""
+
+#: ultimatestunts/uscore.cpp:88
+#, c-format
+msgid "Top speed in this session: %.1f km/h"
+msgstr ""
+
+#: ultimatestunts/uscore.cpp:101
+#, c-format
+msgid "Car %d velocity %.1f km/h; gear %d; %.1f RPM"
+msgstr ""
+
+#: graphics/messagebox.cpp:115
+msgid "OK"
+msgstr ""
+
+#: graphics/messagebox.cpp:128
+msgid "Yes"
+msgstr ""
+
+#: graphics/messagebox.cpp:138
+msgid "No"
 msgstr ""
 
 #: shared/hello.cpp:31

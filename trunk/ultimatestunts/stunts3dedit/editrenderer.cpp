@@ -61,7 +61,7 @@ void CEditRenderer::update()
 	glTranslatef (-camera.x, -camera.y, -camera.z);
 
 	//The model
-	m_GraphObj->draw(1);
+	m_GraphObj->draw();
 
 	//The reflection
 	glEnable(GL_TEXTURE_2D);
@@ -77,7 +77,7 @@ void CEditRenderer::update()
 	glPolygonOffset(0.0, -1.0);
 
 	m_EnvMap->draw();
-	m_GraphObj->draw(0);
+	m_GraphObj->drawRef();
 
 	glDisable(GL_POLYGON_OFFSET_FILL);
 	glDisable(GL_TEXTURE_GEN_S);
@@ -87,6 +87,7 @@ void CEditRenderer::update()
 	//The coordinate axes
 	float kleur[] = {1.0, 1.0, 1.0, 1.0};
 	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, kleur);
+	glDisable(GL_TEXTURE_2D);
 
 	glBegin(GL_LINES);
 	glVertex3f(-TILESIZE/2,0.0,0.0);
@@ -99,4 +100,6 @@ void CEditRenderer::update()
 	glVertex3f(0.0,VERTSIZE,0.0);
 
 	glEnd();
+
+	glEnable(GL_TEXTURE_2D);
 }

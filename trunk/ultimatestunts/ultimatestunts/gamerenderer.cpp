@@ -277,7 +277,10 @@ void CGameRenderer::renderScene()
 	camy = (int)(0.5 + (camera.y)/VERTSIZE);
 	camz = (int)(0.5 + (camera.z)/TILESIZE);
 
-	viewTrack_displaylist();
+	if(m_TrackDisplayList)
+		{viewTrack_displaylist();}
+	else
+		{viewTrack_normal();}
 
 	if(!m_ReflectionDrawMovingObjects && m_UpdateBodyReflection >= 0)
 		return; //don't draw moving objects

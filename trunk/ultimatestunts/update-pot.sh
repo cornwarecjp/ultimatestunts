@@ -1,5 +1,5 @@
 #!/bin/sh
 
 cd po
-make ultimatestunts.pot-update
+make update-po
 cd ..

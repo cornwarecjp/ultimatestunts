@@ -22,7 +22,7 @@ background_size = 512
 
 #Reflection map texture size
 #value <= 8: no reflection (NYI!)
-reflection_size = 512
+reflection_size = 256
 
 #Smooth shadows are needed to make round objects look natural.
 #This option also applies to the smoothness fog effect.
@@ -33,12 +33,10 @@ shadows_smooth = true
 #display=window:wxh
 #display=fullscreen
 #display=fullscreen:wxh
-#display=fullscreen:wxh
 #
 #w = width
 #h = height
 #d = color depth (8, 16, 24, 32)
-#f = vertical sync. frequency
 display = window:800x600
 
 #If you are using a software renderer (e.g. with Mesa), saying
@@ -82,6 +80,16 @@ movingobjectlod = 0
 #exp            -> exponential fog
 #exp2           -> square exponential fog
 fogmode = linear
+
+#Some options that might influence rendering speed:
+
+#Use a display list for the track
+#rendering with a display list can be faster, but
+#generating a display list can take some time.
+#enabling this could also be incompatible with
+#(compiled) vertex arrays
+trackdisplaylist = false
+
 
 
 #Files section

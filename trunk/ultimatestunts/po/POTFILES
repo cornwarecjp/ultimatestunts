@@ -1,2 +1,4 @@
      ../ultimatestunts/gamegui.cpp \
+     ../ultimatestunts/uscore.cpp \
+     ../graphics/messagebox.cpp \
      ../shared/hello.cpp
