@@ -17,8 +17,7 @@
 
 #undef USE_SDL
 #ifdef HAVE_SDL
-//#define USE_SDL
-//SDL_getTicks has a problem with usleep??
+#define USE_SDL
 #endif
 
 #ifdef USE_SDL

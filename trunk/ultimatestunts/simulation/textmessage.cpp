@@ -28,9 +28,8 @@ CBinBuffer &CTextMessage::getData(CBinBuffer &b) const
 	return b;
 }
 
-bool CTextMessage::setData(const CBinBuffer &b)
+bool CTextMessage::setData(const CBinBuffer &b, unsigned int &pos)
 {
-	unsigned int pos = 0;
 	m_Message = b.getCString(pos);
 	return true;
 }

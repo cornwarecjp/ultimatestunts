@@ -51,7 +51,7 @@ void CGamecoreThread::threadFunc()
 		}
 
 		//sleep for some time (give some CPU time to e.g. a client)
-		usleep(10);
+		usleep(10000); //< 100 fps
 	}
 }
 

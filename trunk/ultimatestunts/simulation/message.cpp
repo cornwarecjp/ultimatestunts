@@ -44,7 +44,8 @@ CMessageBuffer CMessage::getBuffer()
 bool CMessage::setBuffer(const CMessageBuffer & b)
 {
 	//TODO: check buffer type ID
-	return this->setData(b.getData());
+	unsigned int pos = b.getHeaderLength();
+	return this->setData(b, pos);
 }
 
 /*

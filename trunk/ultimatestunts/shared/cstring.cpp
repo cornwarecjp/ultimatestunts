@@ -200,6 +200,13 @@ CString::CString(int val)
 	assign(c);
 }
 
+CString::CString(unsigned int val)
+{
+	char c[80];
+	sprintf(c, "%d", val);
+	assign(c);
+}
+
 CString::CString(float val)
 {
 	char c[80];

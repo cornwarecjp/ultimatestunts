@@ -116,7 +116,7 @@ void CNetworkThread::threadFunc()
 
 	while(!m_terminate)
 	{
-		usleep(10);
+		usleep(10000); //< 100 fps
 
 		//send data
 		m_OutputBuffer.enter();
@@ -136,7 +136,7 @@ void CNetworkThread::threadFunc()
 					m_Net->sendConfirmation(b, ret);
 			}
 
-				m_Net->m_ReceiveBuffer.clear();
+			m_Net->m_ReceiveBuffer.clear();
 		}
 	}
 
@@ -183,7 +183,7 @@ Uint8 CNetworkThread::processMessage(const CMessageBuffer &buffer)
 			break;
 		case CMessageBuffer::objectChoice:
 		{
-			printf("New player request from client %d\n", ID);
+			consolethread.write(CString("New player request from client ") + ID);
 			CObjectChoice oc;
 			oc.setBuffer(buffer);
 			int ret = Clients.addRequest_safe(ID, oc);
@@ -202,16 +202,16 @@ Uint8 CNetworkThread::processMessage(const CMessageBuffer &buffer)
 		{
 			CChatMessage c;
 			c.setBuffer(buffer);
-			printf("Chat Message from %d: %s\n",
-				ID, c.m_Message.c_str());
+			consolethread.write(CString("Chat Message from ") + ID + c.m_Message.c_str());
 			break;
 		}
 		default:
-			printf("Unknown Message type received:\n");
-			printf("  IP number = %s\n", buffer.getIP().toString().c_str());
-			printf("  Port number = %d\n", buffer.getPort());
-			printf("  Raw data:\n%s\n", buffer.dump().c_str());
-			printf("  type nr = %d\n", buffer.getType());
+			consolethread.write(CString() +
+				"Unknown Message type received:\n" +
+				"  IP number = " + buffer.getIP().toString() + "\n"
+				"  Port number = " + buffer.getPort() + "\n"
+				"  Raw data:\n" + buffer.dump() + "\n"
+				"  type nr = " + buffer.getType() + "\n");
 	}
 
 	return 255;
@@ -243,7 +243,7 @@ void CNetworkThread::addClient(const CIPNumber &ip, unsigned int port)
 	Clients.enter();
 	Clients.push_back(c);
 	Clients.leave();
-	printf("Client added: %s:%d\n", ip.toString().c_str(), port);
+	consolethread.write(CString("Client added: ") + ip.toString() + ":" + port);
 }
 
 Uint8 CNetworkThread::processMessage(int ID, const CString &message)
@@ -251,7 +251,8 @@ Uint8 CNetworkThread::processMessage(int ID, const CString &message)
 	if(message == "LEAVE")
 	{
 		Clients.enter();
-		//TODO
+		Clients.erase(Clients.begin() + ID);
+		//players, moving objects etc. still exist, but the input is not updated anymore
 		Clients.leave();
 	}
 	else if(message == "READY")

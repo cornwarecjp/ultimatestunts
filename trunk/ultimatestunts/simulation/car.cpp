@@ -580,3 +580,27 @@ void CCar::doSteering(float dt)
 	dJointSetHinge2Param(m_joint3, dParamHiStop, m_DesiredSt3+0.00001);
 	dJointSetHinge2Param(m_joint4, dParamHiStop, m_DesiredSt4+0.00001);
 }
+
+CBinBuffer &CCar::getData(CBinBuffer &b) const
+{
+	CMovingObject::getData(b);
+
+	b += Uint8(m_Gear);
+	b.addFloat16(m_MainAxisVelocity, 0.4);
+	b.addFloat8(m_DesiredSteering, 0.008);
+	b.addFloat8(m_gas, 0.008);
+
+	return b;
+}
+
+bool CCar::setData(const CBinBuffer &b, unsigned int &pos)
+{
+	if(!CMovingObject::setData(b, pos)) return false;
+
+	m_Gear = b.getUint8(pos);
+	m_MainAxisVelocity = b.getFloat16(pos, 0.4);
+	m_DesiredSteering = b.getFloat8(pos, 0.008);
+	m_gas = b.getFloat8(pos, 0.008);
+
+	return true;
+}

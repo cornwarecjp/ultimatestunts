@@ -34,7 +34,7 @@ public:
 
 	//Class data as binbuffer
 	virtual CBinBuffer &getData(CBinBuffer &) const = 0; //TODO: make this a little faster
-	virtual bool setData(const CBinBuffer &) = 0;
+	virtual bool setData(const CBinBuffer &, unsigned int &pos) = 0;
 
 	//Class data plus network header
 	CMessageBuffer getBuffer();

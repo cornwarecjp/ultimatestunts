@@ -26,10 +26,8 @@ public:
 	Uint16 m_Counter;
 	Uint8 m_ReturnValue;
 
-	virtual bool setData(const CBinBuffer &b)
+	virtual bool setData(const CBinBuffer &b, unsigned int &pos)
 	{
-		//CBinBuffer bb = b;                           // const!
-		unsigned int pos = 0;
 		m_MessageType = (CMessageBuffer::eMessageType)b.getUint8(pos);
 		m_Counter = b.getUint16(pos);
 		m_ReturnValue = b.getUint8(pos);

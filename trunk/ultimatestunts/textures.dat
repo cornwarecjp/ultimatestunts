@@ -7,7 +7,8 @@ Syntax:
 
 
 BEGIN
-2
+3
 textures/grass2.rgb
-textures/wood.rgb
+textures/concrete2.rgb
+textures/metal.rgb
 END

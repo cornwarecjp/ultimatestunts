@@ -31,6 +31,9 @@ public:
 	//Which methods should be re-implemented?
 	CCarInput(); //Give reasonable start values
 
+	virtual bool setData(const CBinBuffer &, unsigned int &pos);
+	virtual CBinBuffer &getData(CBinBuffer &) const;
+
 	Uint8 m_Gear;
 	bool m_CarHorn;
 };

@@ -23,18 +23,18 @@ using namespace std;
 
 #include "criticalvector.h"
 
-#include "aiplayercar.h"
-#include "remoteplayer.h"
-
 #include "objectchoice.h"
 
 #include "client.h"
 #include "gamecorethread.h"
 #include "networkthread.h"
+#include "consolethread.h"
 
+//allocated in main.cpp:
 extern CCriticalVector<CObjectChoice> ObjectChoices;
 extern CGamecoreThread gamecorethread;
 extern CNetworkThread networkthread;
+extern CConsoleThread consolethread;
 extern CClientList Clients;
 
 #endif

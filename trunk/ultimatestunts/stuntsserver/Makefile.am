@@ -1,11 +1,11 @@
 stuntsdir=@stuntsdir@
 
 stunts_PROGRAMS = stuntsserver
-stuntsserver_SOURCES = gamecorethread.cpp main.cpp networkthread.cpp remoteplayer.cpp
+stuntsserver_SOURCES = consolethread.cpp gamecorethread.cpp main.cpp networkthread.cpp
 stuntsserver_LDADD   = ../simulation/libsimulation.a ../shared/libshared.a @sdllibs@ @netlibs@ @odelibs@
 
 
-EXTRA_DIST = gamecorethread.cpp gamecorethread.h main.cpp networkthread.cpp networkthread.h remoteplayer.cpp remoteplayer.h
+EXTRA_DIST = consolethread.cpp consolethread.h gamecorethread.cpp gamecorethread.h main.cpp networkthread.cpp networkthread.h
 
 # set the include path found by configure
 INCLUDES= $(all_includes) -I../shared -I../simulation

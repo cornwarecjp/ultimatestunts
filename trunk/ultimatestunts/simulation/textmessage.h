@@ -31,8 +31,8 @@ public:
 	virtual ~CTextMessage();
 
 	//For network transfer & other stuff
-	virtual CBinBuffer &getData(CBinBuffer &b) const;       // returns class data as binbuffer
-	virtual bool setData(const CBinBuffer &b);   // rebuild class data from binbuffer
+	virtual CBinBuffer &getData(CBinBuffer &b) const;            // returns class data as binbuffer
+	virtual bool setData(const CBinBuffer &b, unsigned int &pos);// rebuild class data from binbuffer
 
 	virtual CMessageBuffer::eMessageType getType() const
 		{return CMessageBuffer::textMessage;}

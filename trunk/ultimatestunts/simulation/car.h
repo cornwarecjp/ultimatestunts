@@ -34,6 +34,8 @@ public:
 
 	virtual void resetBodyPositions(CVector pos, const CMatrix &ori);
 
+	virtual CBinBuffer &getData(CBinBuffer &b) const;            //override for car-specific data
+	virtual bool setData(const CBinBuffer &b, unsigned int &pos);//override for car-specific data
 	virtual CMessageBuffer::eMessageType getType() const {return CMessageBuffer::car;}
 
 	//CRuleStatus m_RuleStatus;
@@ -50,7 +52,6 @@ public:
 	//State variables:
 	unsigned int m_Gear;
 	float m_MainAxisVelocity;
-	float m_MainAxisTorque;
 	float m_DesiredSteering;
 	float m_gas;
 	
@@ -65,6 +66,9 @@ protected:
 
 	//Cached data about the wheels' axes
 	CVector m_a1, m_a2, m_a3, m_a4;
+
+	//Other temorary data
+	float m_MainAxisTorque;
 
 	//desired steering angles of the wheels
 	float m_DesiredSt1, m_DesiredSt2, m_DesiredSt3, m_DesiredSt4;

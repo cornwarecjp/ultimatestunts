@@ -44,8 +44,8 @@ public:
 	virtual void update(CPhysics *simulator, float dt);
 
 	//For network transfer & other stuff
-	virtual CBinBuffer &getData(CBinBuffer &b) const;   //puts body positions etc. into buffer
-	virtual bool setData(const CBinBuffer &b);          //rebuild class data from binbuffer
+	virtual CBinBuffer &getData(CBinBuffer &b) const;             //puts body positions etc. into buffer
+	virtual bool setData(const CBinBuffer &b, unsigned int &pos); //rebuild class data from binbuffer
 	virtual CMessageBuffer::eMessageType getType() const {return CMessageBuffer::movingObject;}
 
 	//CMessage wrappers:

@@ -33,7 +33,7 @@ public:
 	CObjectChoice();
 	~CObjectChoice();
 
-	bool setData(const CBinBuffer &);
+	bool setData(const CBinBuffer &, unsigned int &pos);
 	CBinBuffer &getData(CBinBuffer &) const;
 
 	CMessageBuffer::eMessageType m_ObjType;

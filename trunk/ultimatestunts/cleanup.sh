@@ -10,8 +10,7 @@ make clean
 rm -f Makefile */Makefile
 rm -rf */.deps
 
-rm -f *.stdout
-rm -f *.stderr
+rm -f *stdout.txt *stderr.txt
 rm -f *debuglog*
 rm -f config.log
 rm -f config.status

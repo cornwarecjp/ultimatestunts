@@ -30,7 +30,8 @@ public:
 	CPlayer();
 	virtual ~CPlayer();
 
-	virtual bool update()=0; //abstract method
+	virtual bool update()
+		{return true;} //default empty implementation
 
 	int m_MovingObjectId;
 	int m_PlayerId;

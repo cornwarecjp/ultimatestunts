@@ -62,7 +62,7 @@ CWinSystem::CWinSystem(const CString &caption, const CLConfig &conf)
 		m_VisibleTiles = cnf.toInt();
 
 	//Some code coming from SDL gears
-	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK);
+	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_TIMER);
 
 	//Minimum values:
 	SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 5);
@@ -235,6 +235,10 @@ bool CWinSystem::runLoop(CWidget *widget)
 						SDL_Quit();
 						exit(2);
 					}
+					break;
+
+				case SDL_VIDEOEXPOSE:
+					widgetmessages |= WIDGET_REDRAW;
 					break;
 
 				//Quitting

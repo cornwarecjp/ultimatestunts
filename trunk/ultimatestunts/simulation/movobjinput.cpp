@@ -31,9 +31,8 @@ CBinBuffer &CMovObjInput::getData(CBinBuffer & b) const
 	return b;
 }
 
-bool CMovObjInput::setData(const CBinBuffer & b)
+bool CMovObjInput::setData(const CBinBuffer & b, unsigned int &pos)
 {
-	unsigned int pos = 0;
 	Uint8 ID = b.getUint8(pos);
 	if(m_MovObjID != ID) return false;
 

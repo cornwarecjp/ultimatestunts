@@ -142,10 +142,10 @@ target_os = @target_os@
 target_vendor = @target_vendor@
 
 stunts_PROGRAMS = stuntsserver
-stuntsserver_SOURCES = gamecorethread.cpp main.cpp networkthread.cpp remoteplayer.cpp
+stuntsserver_SOURCES = consolethread.cpp gamecorethread.cpp main.cpp networkthread.cpp
 stuntsserver_LDADD = ../simulation/libsimulation.a ../shared/libshared.a @sdllibs@ @netlibs@ @odelibs@
 
-EXTRA_DIST = gamecorethread.cpp gamecorethread.h main.cpp networkthread.cpp networkthread.h remoteplayer.cpp remoteplayer.h
+EXTRA_DIST = consolethread.cpp consolethread.h gamecorethread.cpp gamecorethread.h main.cpp networkthread.cpp networkthread.h
 
 # set the include path found by configure
 INCLUDES = $(all_includes) -I../shared -I../simulation
@@ -159,8 +159,8 @@ CONFIG_CLEAN_FILES =
 stunts_PROGRAMS = stuntsserver$(EXEEXT)
 PROGRAMS = $(stunts_PROGRAMS)
 
-am_stuntsserver_OBJECTS = gamecorethread.$(OBJEXT) main.$(OBJEXT) \
-	networkthread.$(OBJEXT) remoteplayer.$(OBJEXT)
+am_stuntsserver_OBJECTS = consolethread.$(OBJEXT) \
+	gamecorethread.$(OBJEXT) main.$(OBJEXT) networkthread.$(OBJEXT)
 stuntsserver_OBJECTS = $(am_stuntsserver_OBJECTS)
 stuntsserver_DEPENDENCIES = ../simulation/libsimulation.a \
 	../shared/libshared.a
@@ -168,9 +168,9 @@ stuntsserver_DEPENDENCIES = ../simulation/libsimulation.a \
 DEFAULT_INCLUDES =  -I. -I$(srcdir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/gamecorethread.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/main.Po ./$(DEPDIR)/networkthread.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/remoteplayer.Po
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/consolethread.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/gamecorethread.Po ./$(DEPDIR)/main.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/networkthread.Po
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 CXXLD = $(CXX)
@@ -223,10 +223,10 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/consolethread.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gamecorethread.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/networkthread.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/remoteplayer.Po@am__quote@
 
 distclean-depend:
 	-rm -rf ./$(DEPDIR)

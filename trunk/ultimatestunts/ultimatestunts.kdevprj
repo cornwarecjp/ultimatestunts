@@ -1059,11 +1059,23 @@ install_location=
 type=SOURCE
 
 [stuntsserver/Makefile.am]
-files=stuntsserver/main.cpp,stuntsserver/gamecorethread.cpp,stuntsserver/gamecorethread.h,stuntsserver/networkthread.cpp,stuntsserver/networkthread.h,stuntsserver/client.h,stuntsserver/remoteplayer.cpp,stuntsserver/remoteplayer.h,stuntsserver/main.h
+files=stuntsserver/main.cpp,stuntsserver/gamecorethread.cpp,stuntsserver/gamecorethread.h,stuntsserver/networkthread.cpp,stuntsserver/networkthread.h,stuntsserver/client.h,stuntsserver/main.h,stuntsserver/consolethread.cpp,stuntsserver/consolethread.h
 sub_dirs=
 type=static_library
 
 [stuntsserver/client.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[stuntsserver/consolethread.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[stuntsserver/consolethread.h]
 dist=true
 install=false
 install_location=
@@ -1100,18 +1112,6 @@ install_location=
 type=SOURCE
 
 [stuntsserver/networkthread.h]
-dist=true
-install=false
-install_location=
-type=HEADER
-
-[stuntsserver/remoteplayer.cpp]
-dist=true
-install=false
-install_location=
-type=SOURCE
-
-[stuntsserver/remoteplayer.h]
 dist=true
 install=false
 install_location=

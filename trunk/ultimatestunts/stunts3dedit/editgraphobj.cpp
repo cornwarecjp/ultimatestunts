@@ -531,7 +531,7 @@ void CEditGraphObj::saveToFile(CString filename)
 			}
 
 			//texcoord
-			if((vt.tex-state.tex).abs2() > 0.001)
+			if((vt.tex-state.tex).abs2() > 0.000001)
 			{
 				f.writel(CString("TexCoord ")+vt.tex.x+", "+vt.tex.y);
 				state.tex = vt.tex;
