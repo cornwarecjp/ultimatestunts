@@ -134,22 +134,30 @@ sbindir = @sbindir@
 sdllibs = @sdllibs@
 sharedstatedir = @sharedstatedir@
 soundlibs = @soundlibs@
+stuntsdir = @stuntsdir@
 sysconfdir = @sysconfdir@
 target = @target@
 target_alias = @target_alias@
 target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
-EXTRA_DIST = ultimatestunts.kdevprj AUTHORS COPYING ChangeLog INSTALL README TODO ultimatestunts.lsm 
+
+bin_SCRIPTS = ultimatestunts.sh
+stunts_DATA = ultimatestunts.conf textures.dat
+EXTRA_DIST = ultimatestunts.conf textures.dat ultimatestunts.kdevprj AUTHORS COPYING ChangeLog INSTALL README TODO ultimatestunts.lsm 
 
 AUTOMAKE_OPTIONS = foreign 1.4
 
-SUBDIRS = shared simulation graphics stuntsserver stuntsai stunts3dedit trackedit ultimatestunts
+SUBDIRS = data shared simulation graphics stuntsserver stuntsai stunts3dedit trackedit ultimatestunts
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
-CONFIG_CLEAN_FILES = ultimatestunts.conf
+CONFIG_CLEAN_FILES = ultimatestunts.conf ultimatestunts.sh
+SCRIPTS = $(bin_SCRIPTS)
+
 DIST_SOURCES =
+DATA = $(stunts_DATA)
+
 
 RECURSIVE_TARGETS = info-recursive dvi-recursive pdf-recursive \
 	ps-recursive install-info-recursive uninstall-info-recursive \
@@ -159,7 +167,8 @@ RECURSIVE_TARGETS = info-recursive dvi-recursive pdf-recursive \
 DIST_COMMON = README AUTHORS COPYING ChangeLog INSTALL Makefile.am \
 	Makefile.in TODO acconfig.h acinclude.m4 aclocal.m4 \
 	config.guess config.sub configure configure.ac depcomp \
-	install-sh missing mkinstalldirs ultimatestunts.conf.in
+	install-sh missing mkinstalldirs ultimatestunts.conf.in \
+	ultimatestunts.sh.in
 DIST_SUBDIRS = $(SUBDIRS)
 all: all-recursive
 
@@ -182,7 +191,47 @@ $(ACLOCAL_M4):  configure.ac acinclude.m4
 	cd $(srcdir) && $(ACLOCAL) $(ACLOCAL_AMFLAGS)
 ultimatestunts.conf: $(top_builddir)/config.status ultimatestunts.conf.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
+ultimatestunts.sh: $(top_builddir)/config.status ultimatestunts.sh.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+binSCRIPT_INSTALL = $(INSTALL_SCRIPT)
+install-binSCRIPTS: $(bin_SCRIPTS)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(DESTDIR)$(bindir)
+	@list='$(bin_SCRIPTS)'; for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  if test -f $$d$$p; then \
+	    f=`echo "$$p" | sed 's|^.*/||;$(transform)'`; \
+	    echo " $(binSCRIPT_INSTALL) $$d$$p $(DESTDIR)$(bindir)/$$f"; \
+	    $(binSCRIPT_INSTALL) $$d$$p $(DESTDIR)$(bindir)/$$f; \
+	  else :; fi; \
+	done
+
+uninstall-binSCRIPTS:
+	@$(NORMAL_UNINSTALL)
+	@list='$(bin_SCRIPTS)'; for p in $$list; do \
+	  f=`echo "$$p" | sed 's|^.*/||;$(transform)'`; \
+	  echo " rm -f $(DESTDIR)$(bindir)/$$f"; \
+	  rm -f $(DESTDIR)$(bindir)/$$f; \
+	done
 uninstall-info-am:
+stuntsDATA_INSTALL = $(INSTALL_DATA)
+install-stuntsDATA: $(stunts_DATA)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(DESTDIR)$(stuntsdir)
+	@list='$(stunts_DATA)'; for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  f="`echo $$p | sed -e 's|^.*/||'`"; \
+	  echo " $(stuntsDATA_INSTALL) $$d$$p $(DESTDIR)$(stuntsdir)/$$f"; \
+	  $(stuntsDATA_INSTALL) $$d$$p $(DESTDIR)$(stuntsdir)/$$f; \
+	done
+
+uninstall-stuntsDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(stunts_DATA)'; for p in $$list; do \
+	  f="`echo $$p | sed -e 's|^.*/||'`"; \
+	  echo " rm -f $(DESTDIR)$(stuntsdir)/$$f"; \
+	  rm -f $(DESTDIR)$(stuntsdir)/$$f; \
+	done
 
 # This directory's subdirectories are mostly independent; you can cd
 # into them and run `make' without going through this Makefile.
@@ -435,9 +484,10 @@ distcleancheck: distclean
 	       exit 1; } >&2
 check-am: all-am
 check: check-recursive
-all-am: Makefile
+all-am: Makefile $(SCRIPTS) $(DATA)
 installdirs: installdirs-recursive
 installdirs-am:
+	$(mkinstalldirs) $(DESTDIR)$(bindir) $(DESTDIR)$(stuntsdir)
 
 install: install-recursive
 install-exec: install-exec-recursive
@@ -479,9 +529,9 @@ info: info-recursive
 
 info-am:
 
-install-data-am:
+install-data-am: install-stuntsDATA
 
-install-exec-am:
+install-exec-am: install-binSCRIPTS
 
 install-info: install-info-recursive
 
@@ -506,7 +556,8 @@ ps: ps-recursive
 
 ps-am:
 
-uninstall-am: uninstall-info-am
+uninstall-am: uninstall-binSCRIPTS uninstall-info-am \
+	uninstall-stuntsDATA
 
 uninstall-info: uninstall-info-recursive
 
@@ -515,17 +566,18 @@ uninstall-info: uninstall-info-recursive
 	dist-all dist-gzip distcheck distclean distclean-generic \
 	distclean-recursive distclean-tags distcleancheck distdir \
 	distuninstallcheck dvi dvi-am dvi-recursive info info-am \
-	info-recursive install install-am install-data install-data-am \
-	install-data-recursive install-exec install-exec-am \
-	install-exec-recursive install-info install-info-am \
-	install-info-recursive install-man install-recursive \
-	install-strip installcheck installcheck-am installdirs \
-	installdirs-am installdirs-recursive maintainer-clean \
-	maintainer-clean-generic maintainer-clean-recursive mostlyclean \
-	mostlyclean-generic mostlyclean-recursive pdf pdf-am \
-	pdf-recursive ps ps-am ps-recursive tags tags-recursive \
-	uninstall uninstall-am uninstall-info-am \
-	uninstall-info-recursive uninstall-recursive
+	info-recursive install install-am install-binSCRIPTS \
+	install-data install-data-am install-data-recursive \
+	install-exec install-exec-am install-exec-recursive \
+	install-info install-info-am install-info-recursive install-man \
+	install-recursive install-strip install-stuntsDATA installcheck \
+	installcheck-am installdirs installdirs-am \
+	installdirs-recursive maintainer-clean maintainer-clean-generic \
+	maintainer-clean-recursive mostlyclean mostlyclean-generic \
+	mostlyclean-recursive pdf pdf-am pdf-recursive ps ps-am \
+	ps-recursive tags tags-recursive uninstall uninstall-am \
+	uninstall-binSCRIPTS uninstall-info-am uninstall-info-recursive \
+	uninstall-recursive uninstall-stuntsDATA
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

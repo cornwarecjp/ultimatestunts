@@ -169,10 +169,11 @@ CFLAGS="-Wall $CFLAGS"
 CXXFLAGS="-Wall $CXXFLAGS"
 
 dnl ------------------
-dnl The data directory
+dnl The directory locations
 dnl ------------------
 dnl TODO: set this with some intelligent script
 datadir="./data/"
+stuntsdir='${prefix}/games/ultimatestunts'
 
 dnl ------
 dnl Output
@@ -185,6 +186,7 @@ echo "Graphics libraries: \"$graphlibs\""
 echo "SDL libraries: \"$sdllibs\""
 echo "ODE libraries: \"$odelibs\""
 echo "datadir: \"$datadir\""
+echo "stuntsdir: \"$stuntsdir\""
 
 dnl -------------
 dnl Some warnings
@@ -224,5 +226,6 @@ AC_SUBST(odelibs)
 
 AC_SUBST(PACKAGE_VERSION)
 AC_SUBST(datadir)
+AC_SUBST(stuntsdir)
 
-AC_OUTPUT(ultimatestunts.conf Makefile shared/Makefile simulation/Makefile graphics/Makefile stuntsserver/Makefile stuntsai/Makefile stunts3dedit/Makefile trackedit/Makefile ultimatestunts/Makefile)
+AC_OUTPUT(ultimatestunts.conf ultimatestunts.sh Makefile data/Makefile shared/Makefile simulation/Makefile graphics/Makefile stuntsserver/Makefile stuntsai/Makefile stunts3dedit/Makefile trackedit/Makefile ultimatestunts/Makefile)

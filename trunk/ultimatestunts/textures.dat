@@ -7,6 +7,7 @@ Syntax:
 
 
 BEGIN
-1
-cars/generic/license.rgb
+2
+textures/grass2.rgb
+textures/wood.rgb
 END

@@ -1,4 +1,6 @@
-bin_PROGRAMS = ultimatestunts
+stuntsdir=@stuntsdir@
+
+stunts_PROGRAMS = ultimatestunts
 ultimatestunts_SOURCES = main.cpp gamecamera.cpp gamegui.cpp gamerenderer.cpp gamewinsystem.cpp humanplayer.cpp music.cpp sndsample.cpp sound.cpp soundobj.cpp soundworld.cpp uscore.cpp usserver.cpp
 ultimatestunts_LDADD   = ../graphics/libgraphics.a ../simulation/libsimulation.a ../shared/libshared.a @sdllibs@ @graphlibs@ @soundlibs@ @netlibs@ @odelibs@
 

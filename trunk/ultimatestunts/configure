@@ -310,7 +310,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM AWK SET_MAKE am__leading_dot CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CPP CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE CXXCPP RANLIB ac_ct_RANLIB EGREP X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS ENABLE_XMESA_FX_TRUE ENABLE_XMESA_FX_FALSE SDL_CONFIG SDL_CFLAGS SDL_LIBS netlibs soundlibs graphlibs sdllibs odelibs LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM AWK SET_MAKE am__leading_dot CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CPP CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE CXXCPP RANLIB ac_ct_RANLIB EGREP X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS ENABLE_XMESA_FX_TRUE ENABLE_XMESA_FX_FALSE SDL_CONFIG SDL_CFLAGS SDL_LIBS netlibs soundlibs graphlibs sdllibs odelibs stuntsdir LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -7238,6 +7238,7 @@ CFLAGS="-Wall $CFLAGS"
 CXXFLAGS="-Wall $CXXFLAGS"
 
 datadir="./data/"
+stuntsdir='${prefix}/games/ultimatestunts'
 
 echo ""
 echo "Some important results:"
@@ -7247,6 +7248,7 @@ echo "Graphics libraries: \"$graphlibs\""
 echo "SDL libraries: \"$sdllibs\""
 echo "ODE libraries: \"$odelibs\""
 echo "datadir: \"$datadir\""
+echo "stuntsdir: \"$stuntsdir\""
 
 if test "x$soundlibs" = "x"; then
   echo ""
@@ -7284,7 +7286,8 @@ echo ""
 
 
 
-                                                                                                    ac_config_files="$ac_config_files ultimatestunts.conf Makefile shared/Makefile simulation/Makefile graphics/Makefile stuntsserver/Makefile stuntsai/Makefile stunts3dedit/Makefile trackedit/Makefile ultimatestunts/Makefile"
+
+                                                                                                                        ac_config_files="$ac_config_files ultimatestunts.conf ultimatestunts.sh Makefile data/Makefile shared/Makefile simulation/Makefile graphics/Makefile stuntsserver/Makefile stuntsai/Makefile stunts3dedit/Makefile trackedit/Makefile ultimatestunts/Makefile"
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure
@@ -7888,7 +7891,9 @@ do
   case "$ac_config_target" in
   # Handling of arguments.
   "ultimatestunts.conf" ) CONFIG_FILES="$CONFIG_FILES ultimatestunts.conf" ;;
+  "ultimatestunts.sh" ) CONFIG_FILES="$CONFIG_FILES ultimatestunts.sh" ;;
   "Makefile" ) CONFIG_FILES="$CONFIG_FILES Makefile" ;;
+  "data/Makefile" ) CONFIG_FILES="$CONFIG_FILES data/Makefile" ;;
   "shared/Makefile" ) CONFIG_FILES="$CONFIG_FILES shared/Makefile" ;;
   "simulation/Makefile" ) CONFIG_FILES="$CONFIG_FILES simulation/Makefile" ;;
   "graphics/Makefile" ) CONFIG_FILES="$CONFIG_FILES graphics/Makefile" ;;
@@ -8054,6 +8059,7 @@ s,@soundlibs@,$soundlibs,;t t
 s,@graphlibs@,$graphlibs,;t t
 s,@sdllibs@,$sdllibs,;t t
 s,@odelibs@,$odelibs,;t t
+s,@stuntsdir@,$stuntsdir,;t t
 s,@LIBOBJS@,$LIBOBJS,;t t
 s,@LTLIBOBJS@,$LTLIBOBJS,;t t
 CEOF

@@ -1,4 +1,6 @@
-bin_PROGRAMS = trackedit
+stuntsdir=@stuntsdir@
+
+stunts_PROGRAMS = trackedit
 trackedit_SOURCES = main.cpp
 trackedit_LDADD   = ../shared/libshared.a ../graphics/libgraphics.a @sdllibs@ @graphlibs@
 

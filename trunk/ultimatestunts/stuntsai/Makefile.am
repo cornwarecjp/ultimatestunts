@@ -1,4 +1,6 @@
-bin_PROGRAMS = stuntsai
+stuntsdir=@stuntsdir@
+
+stunts_PROGRAMS = stuntsai
 stuntsai_SOURCES = main.cpp
 stuntsai_LDADD   = ../shared/libshared.a ../simulation/libsimulation.a @sdllibs@ @netlibs@ @odelibs@
 

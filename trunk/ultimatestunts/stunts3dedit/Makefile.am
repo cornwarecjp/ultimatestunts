@@ -1,4 +1,6 @@
-bin_PROGRAMS = stunts3dedit
+stuntsdir=@stuntsdir@
+
+stunts_PROGRAMS = stunts3dedit
 stunts3dedit_SOURCES = 3ds.cpp editcamera.cpp editgraphobj.cpp editrenderer.cpp main.cpp textureloader.cpp
 stunts3dedit_LDADD   = ../graphics/libgraphics.a ../shared/libshared.a @sdllibs@ @graphlibs@
 
