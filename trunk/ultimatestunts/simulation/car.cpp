@@ -25,6 +25,8 @@ CCar::CCar()
 {
 	m_InputData = new CCarInput;
 
+	m_cwA = 5.0;
+
 	//Five bodies:
 	CBody body, wheel1, wheel2, wheel3, wheel4;
 	body.m_Body = 0;
@@ -41,9 +43,7 @@ CCar::CCar()
 
 
 	//Just guessing the size of the car
-	//It's better to guess too large than too small,
-	//as large values will result in better stability
-	float xs=2.5, ys=1.5, zs=5.0;
+	float xs=2.0, ys=1.3, zs=4.0;
 	m_WheelRadius = 0.35; //meter
 
 	dMass mbody, mwheel;
@@ -53,11 +53,20 @@ CCar::CCar()
 	dBodySetMass(body.m_ODEBody, &mbody);
 
 	dMassSetSphere(&mwheel, 1, m_WheelRadius);
-	dMassAdjust(&mwheel, 10.0);
+	dMassAdjust(&mwheel, 1.0);
 	dBodySetMass(wheel1.m_ODEBody, &mwheel);
 	dBodySetMass(wheel2.m_ODEBody, &mwheel);
 	dBodySetMass(wheel3.m_ODEBody, &mwheel);
 	dBodySetMass(wheel4.m_ODEBody, &mwheel);
+
+	dBodySetFiniteRotationMode(wheel1.m_ODEBody, 1);
+	dBodySetFiniteRotationMode(wheel2.m_ODEBody, 1);
+	dBodySetFiniteRotationMode(wheel3.m_ODEBody, 1);
+	dBodySetFiniteRotationMode(wheel4.m_ODEBody, 1);
+	dBodySetFiniteRotationAxis(wheel1.m_ODEBody, 0, 0, 0);
+	dBodySetFiniteRotationAxis(wheel2.m_ODEBody, 0, 0, 0);
+	dBodySetFiniteRotationAxis(wheel3.m_ODEBody, 0, 0, 0);
+	dBodySetFiniteRotationAxis(wheel4.m_ODEBody, 0, 0, 0);
 
 	m_Bodies.push_back(body);
 	m_Bodies.push_back(wheel1);
@@ -66,8 +75,8 @@ CCar::CCar()
 	m_Bodies.push_back(wheel4);
 
 	//Setting the initial positions
-	m_FrontWheelNeutral = CVector(0.8, -0.4, -1.75);
-	m_BackWheelNeutral = CVector(0.8, -0.4, 1.1);
+	m_FrontWheelNeutral = CVector(0.8, 0.1, -1.75);
+	m_BackWheelNeutral = CVector(0.8, 0.1, 1.1);
 
 	resetBodyPositions(CVector(0,0,0), CMatrix());
 
@@ -96,25 +105,32 @@ CCar::CCar()
 	dJointSetHinge2Axis2(m_joint2, 1,0,0);
 	dJointSetHinge2Axis2(m_joint3, 1,0,0);
 	dJointSetHinge2Axis2(m_joint4, 1,0,0);
-	dJointSetHinge2Param(m_joint1, dParamLoStop, 0);
-	dJointSetHinge2Param(m_joint2, dParamLoStop, 0);
-	dJointSetHinge2Param(m_joint3, dParamLoStop, 0);
-	dJointSetHinge2Param(m_joint4, dParamLoStop, 0);
-	dJointSetHinge2Param(m_joint1, dParamHiStop, 0);
-	dJointSetHinge2Param(m_joint2, dParamHiStop, 0);
-	dJointSetHinge2Param(m_joint3, dParamHiStop, 0);
-	dJointSetHinge2Param(m_joint4, dParamHiStop, 0);
-	dJointSetHinge2Param(m_joint1, dParamSuspensionERP, 0.4);
-	dJointSetHinge2Param(m_joint2, dParamSuspensionERP, 0.4);
-	dJointSetHinge2Param(m_joint3, dParamSuspensionERP, 0.4);
-	dJointSetHinge2Param(m_joint4, dParamSuspensionERP, 0.4);
-	dJointSetHinge2Param(m_joint1, dParamSuspensionCFM, 0.8);
-	dJointSetHinge2Param(m_joint2, dParamSuspensionCFM, 0.8);
-	dJointSetHinge2Param(m_joint3, dParamSuspensionCFM, 0.8);
-	dJointSetHinge2Param(m_joint4, dParamSuspensionCFM, 0.8);
+	dJointSetHinge2Param(m_joint1, dParamLoStop, -0.00001);
+	dJointSetHinge2Param(m_joint2, dParamLoStop, -0.00001);
+	dJointSetHinge2Param(m_joint3, dParamLoStop, -0.00001);
+	dJointSetHinge2Param(m_joint4, dParamLoStop, -0.00001);
+	dJointSetHinge2Param(m_joint1, dParamHiStop, 0.00001);
+	dJointSetHinge2Param(m_joint2, dParamHiStop, 0.00001);
+	dJointSetHinge2Param(m_joint3, dParamHiStop, 0.00001);
+	dJointSetHinge2Param(m_joint4, dParamHiStop, 0.00001);
+	dJointSetHinge2Param(m_joint1, dParamSuspensionERP, 0.99);
+	dJointSetHinge2Param(m_joint2, dParamSuspensionERP, 0.99);
+	dJointSetHinge2Param(m_joint3, dParamSuspensionERP, 0.99);
+	dJointSetHinge2Param(m_joint4, dParamSuspensionERP, 0.99);
+	dJointSetHinge2Param(m_joint1, dParamSuspensionCFM, 0.0001);
+	dJointSetHinge2Param(m_joint2, dParamSuspensionCFM, 0.0001);
+	dJointSetHinge2Param(m_joint3, dParamSuspensionCFM, 0.0001);
+	dJointSetHinge2Param(m_joint4, dParamSuspensionCFM, 0.0001);
 
-	//Temp. collision info
-	m_body = dCreateBox(0, xs, ys, zs);
+	//The collision info
+	dGeomID theBox = dCreateBox(0, xs, ys, zs);
+	dGeomSetPosition(theBox, 0.0, 0.5, 0.0); //relative to transform geom
+	
+	m_body = dCreateGeomTransform(0);
+	dGeomTransformSetGeom(m_body, theBox);
+	dGeomTransformSetCleanup(m_body, 1);
+	dGeomTransformSetInfo(m_body, 1);
+
 	dGeomSetBody(m_body, body.m_ODEBody);
 
 	m_wheel1 = dCreateSphere(0, m_WheelRadius);
@@ -171,35 +187,52 @@ void CCar::resetBodyPositions(CVector pos, const CMatrix &ori)
 	m_Bodies[4].setOrientationMatrix(ori * flipRight);
 }
 
-#define gasmax 5000
-#define remmax 2500
+#define gasmax 2000.0
+#define remmax 10.0
+#define steermax 0.5
 
 void CCar::update(CPhysics *simulator, float dt)
 {
 	CCarInput *input = (CCarInput *)m_InputData;
 
-	float Maxis = gasmax * input->m_Forward - remmax * input->m_Backward;
+	//----------------------
+	//Steering
+	//----------------------
 
-	dReal steer = input->m_Right;
+	dReal steer = steermax * input->m_Right;
 	dReal v1 = steer - dJointGetHinge2Angle1(m_joint1);
 	dReal v2 = steer - dJointGetHinge2Angle1(m_joint2);
-	if(v1 > 1.0) v1 = 1.0;
-	if(v1 < -1.0) v1 = -1.0;
-	if(v2 > 1.0) v2 = 1.0;
-	if(v2 < -1.0) v2 = -1.0;
+	if(v1 > steermax) v1 = steermax;
+	if(v1 < -steermax) v1 = -steermax;
+	if(v2 > steermax) v2 = steermax;
+	if(v2 < -steermax) v2 = -steermax;
 
-	v1 *= 10.0;
-	v2 *= 10.0;
-	dJointSetHinge2Param(m_joint1, dParamVel, v1);
-	dJointSetHinge2Param(m_joint2, dParamVel, v2);
-	dJointSetHinge2Param(m_joint1, dParamFMax, 100.0);
-	dJointSetHinge2Param(m_joint2, dParamFMax, 100.0);
-	dJointSetHinge2Param(m_joint1, dParamLoStop, -0.75);
-	dJointSetHinge2Param(m_joint2, dParamLoStop, -0.75);
-	dJointSetHinge2Param(m_joint1, dParamHiStop, 0.75);
-	dJointSetHinge2Param(m_joint2, dParamHiStop, 0.75);
-	dJointSetHinge2Param(m_joint1, dParamFudgeFactor, 0.1);
-	dJointSetHinge2Param(m_joint2, dParamFudgeFactor, 0.1);
+	dJointSetHinge2Param(m_joint1, dParamVel, 5*v1);
+	dJointSetHinge2Param(m_joint2, dParamVel, 5*v2);
+	dJointSetHinge2Param(m_joint1, dParamFMax, 100000.0);
+	dJointSetHinge2Param(m_joint2, dParamFMax, 100000.0);
+	dJointSetHinge2Param(m_joint1, dParamLoStop, -steermax);
+	dJointSetHinge2Param(m_joint2, dParamLoStop, -steermax);
+	dJointSetHinge2Param(m_joint1, dParamHiStop, steermax);
+	dJointSetHinge2Param(m_joint2, dParamHiStop, steermax);
+
+	/*
+	dJointSetHinge2Param(m_joint1, dParamLoStop, steer - 0.0001);
+	dJointSetHinge2Param(m_joint2, dParamLoStop, steer - 0.0001);
+	dJointSetHinge2Param(m_joint1, dParamHiStop, steer + 0.0001);
+	dJointSetHinge2Param(m_joint2, dParamHiStop, steer + 0.0001);
+	*/
+	
+	//dJointSetHinge2Param(m_joint1, dParamFudgeFactor, 0.1);
+	//dJointSetHinge2Param(m_joint2, dParamFudgeFactor, 0.1);
+	dJointSetHinge2Param(m_joint1, dParamStopERP, 0.99);
+	dJointSetHinge2Param(m_joint2, dParamStopERP, 0.99);
+	dJointSetHinge2Param(m_joint1, dParamStopCFM, 0.0001);
+	dJointSetHinge2Param(m_joint2, dParamStopCFM, 0.0001);
+
+	//----------------------
+	//Gas and brake
+	//----------------------
 
 	//axis directions
 	CVector a1, a2, a3, a4;
@@ -213,12 +246,24 @@ void CCar::update(CPhysics *simulator, float dt)
 	a3 *= ori3;
 	a4 *= ori4;
 
-	//fprintf(stderr, "a1 = %s\n", CString(a1).c_str());
+	//angular velocities
+	dReal w1 = dJointGetHinge2Angle2Rate(m_joint1);
+	dReal w2 = dJointGetHinge2Angle2Rate(m_joint2);
+	dReal w3 = dJointGetHinge2Angle2Rate(m_joint3);
+	dReal w4 = dJointGetHinge2Angle2Rate(m_joint4);
 
-	CVector M1 = -Maxis * a1;
-	CVector M2 = Maxis * a2;
-	CVector M3 = -Maxis * a3;
-	CVector M4 = Maxis * a4;
+	dReal Mgas = gasmax * input->m_Forward;
+	dReal rem = remmax * (0.05 + input->m_Backward);
+
+	dReal m1 = Mgas - rem * w1;
+	dReal m2 = Mgas - rem * w2;
+	dReal m3 = -rem * w3;
+	dReal m4 = -rem * w4;
+
+	CVector M1 = -m1 * a1;
+	CVector M2 = m2 * a2;
+	CVector M3 = -m3 * a3;
+	CVector M4 = m4 * a4;
 
 	CVector Mt = -M1 -M2 -M3 -M4;
 	dBodyAddTorque(m_Bodies[0].m_ODEBody, Mt.x, Mt.y, Mt.z);
@@ -232,25 +277,16 @@ void CCar::update(CPhysics *simulator, float dt)
 	//dJointAddHinge2Torques(m_joint3, 0, Maxis);
 	//dJointAddHinge2Torques(m_joint4, 0, Maxis);
 
+	//----------------------
+	//Air resistance
+	//----------------------
+	const dReal *vptr = dBodyGetLinearVel(m_Bodies[0].m_ODEBody);
+	CVector v(vptr[0], vptr[1], vptr[2]);
+	CVector F = -m_cwA * v.abs() * v;
+	dBodyAddForce(m_Bodies[0].m_ODEBody, F.x, F.y, F.z);
+	
+	//----------------------
+	//Common other things
+	//----------------------
 	CMovingObject::update(simulator, dt);
-}
-
-void CCar::getForces(CVector &Ftot, CVector &Mtot)
-{
-	/*
-	CMovingObject::getForces(Ftot, Mtot);
-
-	CCarInput *input = (CCarInput *)m_InputData;
-
-	//Gas
-	//Ftot += m_OrientationMatrix * CVector(0.0, 0.0, -gasmax * input->m_Forward);
-
-	//Brake
-	CVector direction = getMomentum();
-	direction.normalise();
-	Ftot -= direction * (remmax * input->m_Backward);
-
-	//Steering
-	Mtot += CVector(0,10000.0*input->m_Right,0);
-	*/
 }

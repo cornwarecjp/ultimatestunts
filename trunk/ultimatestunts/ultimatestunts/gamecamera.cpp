@@ -94,7 +94,7 @@ void CGameCamera::update()
 	{
 		case In:
 			//viewpoint is higher than center of mass
-			tp = to->m_Bodies[0].getPosition() + CVector(0.0,0.3,0.0);
+			tp = to->m_Bodies[0].getPosition() + CVector(0.0,0.8,0.0);
 			if(m_Reached)
 				{tm = to->m_Bodies[0].getOrientationMatrix();}
 			//else: autotarget

@@ -37,35 +37,6 @@ public:
 
 	virtual void resetBodyPositions(CVector pos, const CMatrix &ori)=0; //should be called after setting object position, orientation
 
-	//Various gets
-	/*
-	float getInvMass() const {return m_InvMass;}
-	const CMatrix &getInvMomentInertia() const {return m_InvMomentInertia;}
-	const CMatrix &getActualInvMomentInertia() const {return m_ActualInvMomentInertia;}
-
-	CVector getPosition() const {return m_Position;}
-	CVector getMomentum() const {return m_Momentum;}
-	CVector getVelocity() const {return m_InvMass * m_Momentum;}
-
-	CVector getOrientation() const {return m_Orientation;}
-	const CMatrix &getOrientationMatrix() const {return m_OrientationMatrix;}
-	CVector getAngularMomentum() const {return m_AngularMomentum;}
-	CVector getAngularVelocity() const {return getActualInvMomentInertia() * m_AngularMomentum;}
-
-	//Various sets
-	void setPosition(CVector v){m_Position = v;}
-	void setMomentum(CVector v){m_Momentum = v;}
-
-	void setOrientation(CVector v);
-	void setOrientationMatrix(const CMatrix &M);
-	void setAngularMomentum(CVector v){m_AngularMomentum = v;}
-
-	//Old position + orientation sub-API (for collision detection)
-	void rememberCurrentState();
-	CVector getPreviousPosition() const {return m_PreviousPosition;}
-	const CMatrix &getPreviousOrientationMatrix() const {return m_PreviousOrientationMatrix;}
-	*/
-
 	virtual CMessageBuffer::eMessageType getType() const {return CMessageBuffer::movingObject;}
 
 	//Update: physics simulation
@@ -77,30 +48,6 @@ public:
 	//For network transfer & other stuff
 	virtual CBinBuffer &getData(CBinBuffer &b) const;       // returns class data as binbuffer
 	virtual bool setData(const CBinBuffer &b);   // rebuild class data from binbuffer
-
-protected:
-	/*
-	//constant:
-	float m_InvMass;
-	CMatrix m_InvMomentInertia;
-	float cwA;
-
-	//state variables:
-	CVector m_Position, m_Momentum;
-	CVector m_Orientation, m_AngularMomentum;
-
-	//derived variables:
-	CMatrix m_OrientationMatrix, m_ActualInvMomentInertia;
-
-	//Remember for collision detection
-	CVector m_PreviousPosition;
-	CMatrix m_PreviousOrientationMatrix;
-	*/
-
-	virtual void getForces(CVector &Ftot, CVector &Mtot);
-	//void getAllForces(CPhysics *simulator, CVector &Ftot, CVector &Mtot); //including contact forces
-
-	//void updateActualInvMomentInertia();
 };
 
 #endif

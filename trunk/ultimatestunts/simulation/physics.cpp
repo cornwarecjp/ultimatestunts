@@ -39,9 +39,9 @@ static void _nearCallback(void *data, dGeomID o1, dGeomID o2)
 		for(int i=0; i<n; i++)
 		{
 			contact[i].surface.mode = dContactSlip1 | dContactSlip2 | dContactApprox1;
-			contact[i].surface.mu = dInfinity;
-			contact[i].surface.slip1 = 0.001;
-			contact[i].surface.slip2 = 0.001;
+			contact[i].surface.mu = 3.0;
+			contact[i].surface.slip1 = 0.00001;
+			contact[i].surface.slip2 = 0.00001;
 			dJointID c = dJointCreateContact(theWorld->m_ODEWorld, theWorld->m_ContactGroup, &contact[i]);
 			dJointAttach(c, dGeomGetBody(contact[i].geom.g1), dGeomGetBody(contact[i].geom.g2));
 		}

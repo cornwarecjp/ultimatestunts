@@ -106,7 +106,7 @@ void CRuleControl::placeStart()
 	{
 		CVector carPos = CVector(
 			-3.0*(i%2==0) +3.0*(i%2!=0),
-			2.0, //0.8,
+			0.4,
 			6.0*(i-i%2) + 3.0
 		);
 
