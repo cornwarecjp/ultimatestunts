@@ -57,8 +57,8 @@ bool CRuleControl::findStartFinish()
 			{
 				unsigned int i = h + hth*(y + wth*x);
 
-				if(m_World->m_TileShapes[
-					m_World->m_Track[i].m_Shape]->m_isStart)
+				if(m_World->m_TileModels[
+					m_World->m_Track[i].m_Model]->m_isStart)
 
 					if(founds) //more than 1 start position
 						{return false;}
@@ -68,8 +68,8 @@ bool CRuleControl::findStartFinish()
 						m_StartX = x; m_StartY = y; m_StartH = h;
 					}
 
-				if(m_World->m_TileShapes[
-					m_World->m_Track[i].m_Shape]->m_isFinish)
+				if(m_World->m_TileModels[
+					m_World->m_Track[i].m_Model]->m_isFinish)
 
 					if(foundf) //more than 1 finish position
 						{return false;}

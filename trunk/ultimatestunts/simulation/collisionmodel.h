@@ -1,7 +1,7 @@
 /***************************************************************************
-                          shape.h  -  Vertex-based collision model
+                          collisionmodel.h  -  A collision model
                              -------------------
-    begin                : vr jan 24 2003
+    begin                : wo sep 24 2003
     copyright            : (C) 2003 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
@@ -15,39 +15,58 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef SHAPE_H
-#define SHAPE_H
+#ifndef COLLISIONMODEL_H
+#define COLLISIONMODEL_H
 
 #include <vector> //STL vector template
 namespace std {}
 using namespace std;
 
 #include "material.h"
+#include "vector.h"
+#include "matrix.h"
 #include "cstring.h"
+#include "cfile.h"
 
 /**
   *@author CJP
   */
 
-class CShapeFace {
-public:
-	CVector p1, p2, p3;
+class CCollisionFace : public vector<CVector>
+{
+	CVector nor;
+	float d;
 };
 
-class CShape {
+class CCollisionModel {
 public: 
-	CShape();
-	~CShape();
+	CCollisionModel();
+	virtual ~CCollisionModel();
 
-	bool loadFromFile(CString filename, CString subset, CMaterial ** matarray);
+	virtual bool loadFromFile(CFile *f, CString subset, CMaterial **matarray);
 
-	float m_BSphere_r;
-	CVector m_BBox_min, m_BBox_max;
+	//Bounded volume data:
+	float m_BSphere_r; //Bounding sphere
+	CVector m_FBB_min, m_FBB_max; //Fixed bounding box
+	CVector m_OBB_min, m_OBB_max; //Oriented bounding box
 
-	vector<CShapeFace> m_Faces;
+	//The shape itself
+	vector<CCollisionFace> m_Faces;
+
+	virtual void calculateFixedVolumes(const CMatrix &ori);
 
 	CString m_Filename;
 	CString m_Subset;
+
+protected:
+	enum ePrimitiveType {
+		None,
+		Triangles,
+		Quads,
+		Trianglestrip,
+		Quadstrip,
+		Polygon
+	};
 };
 
 #endif

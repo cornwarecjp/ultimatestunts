@@ -35,6 +35,9 @@ class CFile
 		virtual CString readl();
 		virtual void writel(CString l);
 
+		virtual CString getName()
+			{return m_Filename;}
+
 	protected:
 		FILE * fp;
 		CString m_Filename;

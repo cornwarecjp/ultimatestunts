@@ -1,7 +1,7 @@
 /***************************************************************************
-                          shape.cpp  -  Vertex-based collision model
+                          tilemodel.cpp  -  The (collision) model of a tile
                              -------------------
-    begin                : vr jan 24 2003
+    begin                : wo sep 24 2003
     copyright            : (C) 2003 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
@@ -15,21 +15,9 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "shape.h"
+#include "tilemodel.h"
 
-CShape::CShape(){
+CTileModel::CTileModel(){
 }
-CShape::~CShape(){
-}
-
-bool CShape::loadFromFile(CString filename, CString subset, CMaterial **matarray)
-{
-	m_Filename = filename;
-	m_Subset = subset;
-
-	m_BSphere_r = 5.0;
-	m_BBox_min = CVector(-2.0,-1.0,-2.5);
-	m_BBox_max = CVector(2.0,1.0,2.5);
-
-	return true; //TODO: really load it
+CTileModel::~CTileModel(){
 }

@@ -60,6 +60,9 @@ int CSndSample::attachToChannel(int c)
 
 #else //libfmod
 
+CSndSample::CSndSample()
+{;}
+
 CSndSample::~CSndSample()
 {;}
 

@@ -29,7 +29,7 @@ using namespace std;
 
 #include "material.h"
 #include "vector.h"
-#include "bound.h"
+#include "collisionmodel.h"
 
 class CWorld;
 
@@ -66,7 +66,9 @@ protected:
 	const CWorld *m_World;
 
 	void ObjObjTest(int n1, int n2);
-	bool sphereTest(const CVector &p1, const CBound *b1, const CVector &p2, const CBound *b2);
+	void ObjTileTest(int nobj, int xtile, int ztile, int htile);
+
+	bool sphereTest(const CVector &p1, const CCollisionModel *b1, const CVector &p2, const CCollisionModel *b2);
 };
 
 #endif

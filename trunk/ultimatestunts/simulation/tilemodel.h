@@ -1,7 +1,7 @@
 /***************************************************************************
-                          bound.h  -  Plane-based collision model
+                          tilemodel.h  -  The (collision) model of a tile
                              -------------------
-    begin                : vr jan 24 2003
+    begin                : wo sep 24 2003
     copyright            : (C) 2003 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
@@ -15,8 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef BOUND_H
-#define BOUND_H
+#ifndef TILEMODEL_H
+#define TILEMODEL_H
 
 #include "collisionmodel.h"
 
@@ -24,10 +24,13 @@
   *@author CJP
   */
 
-class CBound : public CCollisionModel {
+class CTileModel : public CCollisionModel  {
 public: 
-	CBound();
-	~CBound();
+	CTileModel();
+	~CTileModel();
+
+	bool m_isStart, m_isFinish;
+	float m_Time;
 };
 
 #endif

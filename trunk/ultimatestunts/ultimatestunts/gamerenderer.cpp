@@ -271,7 +271,7 @@ void CGameRenderer::viewPilaar(int x, int y, int cur_zpos)
 					}
 
 					//tekenen
-					m_GraphicWorld->m_Tiles[temp.m_Shape].draw(lod);
+					m_GraphicWorld->m_Tiles[temp.m_Model].draw(lod);
 				}
 				break;
 			}
@@ -288,8 +288,7 @@ void CGameRenderer::viewPilaar(int x, int y, int cur_zpos)
 			}
 
 			//tekenen
-			//((CGraphicShape *)(temp.m_Shape))->draw(lod);
-			m_GraphicWorld->m_Tiles[temp.m_Shape].draw(lod);
+			m_GraphicWorld->m_Tiles[temp.m_Model].draw(lod);
 		}
 
 	glPopMatrix();

@@ -25,6 +25,8 @@
 #define M_PI 3.1415926536
 #endif
 
+#define g 9.81
+
 CPhysics::CPhysics(CWorld *w) : CSimulation(w)
 {}
 
@@ -39,7 +41,6 @@ bool CPhysics::update()
 	if(dt < 0.0001)
 	{
 		printf("Physics debugging message: dt = %f\n", dt);
-		return true;
 	}
 
 #define cwA 10
@@ -65,6 +66,7 @@ bool CPhysics::update()
 			CCar *theCar = (CCar *)mo;
 			CCarInput *input = (CCarInput *)mo->m_InputData;
 
+			//Total force
 			CVector Ftot;
 
 			CMatrix R = mo->getRotationMatrix();
@@ -94,16 +96,19 @@ bool CPhysics::update()
 
 
 			//Gas
-			CVector Fgas = CVector(0,0, -gasmax*gas) * R;
+			CVector Fgas = CVector(0.0, 0.0, -gasmax*gas) * R;
 			Ftot += Fgas;
 
-			//Brake
+			//Brake + friction
 			CVector Frem;
 			if(vabs < 0.001)
 				{Frem = -v;}
 			else
 				{Frem = v * (-(remmax*rem + cwA*v.abs2()) / vabs);}
 			Ftot += Frem;
+
+			//Gravity
+			Ftot += CVector(0.0, -g*m, 0.0);
 
 			//Dummy wheel rotation
 			//positive angle = driving forward = positive vz

@@ -27,22 +27,16 @@ namespace std {}
 using namespace std;
 
 #include "bound.h"
-#include "shape.h"
+#include "tilemodel.h"
 #include "movingobject.h"
 #include "objectchoice.h"
 #include "collisiondata.h"
 
 class CTile {
 public:
-	int m_Shape;
+	int m_Model;
 	int m_Z, m_R; //height, orientation. 0 <= m_R <= 3
 
-	bool m_isStart, m_isFinish;
-	float m_Time;
-};
-
-class CTileShape : public CShape {
-public:
 	bool m_isStart, m_isFinish;
 	float m_Time;
 };
@@ -53,12 +47,12 @@ public:
 	virtual ~CWorld();
 
 	//Track
-	vector<CTile> m_Track; //refer to elements from m_TileShapes
+	vector<CTile> m_Track; //refer to elements from m_TileModels
 	int m_L, m_W, m_H;
 	bool loadTrack(CString filename);
 	void unloadTrack();
 
-	vector<CTileShape *> m_TileShapes;
+	vector<CTileModel *> m_TileModels;
 	vector<CMaterial *> m_TileMaterials;
 
 

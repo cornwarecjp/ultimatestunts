@@ -97,20 +97,22 @@ bool CWorld::loadTrack(CString filename)
 			line = line.mid(0, pos);
 		}
 
-		CTileShape *b = new CTileShape;
+		CTileModel *b = new CTileModel;
 
 		CMaterial **subset = getMaterialSubset(texture_indices);
-		//printf("Loading %s\n", line.c_str());
-		b->loadFromFile(line, texture_indices, subset);
+		{
+			CDataFile f(line);
+			b->loadFromFile(&f, texture_indices, subset);
+		}
 		delete [] subset;
 
 		b->m_isStart = tile_flags.inStr('s') >= 0;
 		b->m_isFinish = tile_flags.inStr('f') >= 0;
 		b->m_Time = 1.0;
 
-		m_TileShapes.push_back(b);
+		m_TileModels.push_back(b);
 	}
-	printf("\n   Loaded %d tile shapes\n\n", m_TileShapes.size());
+	printf("\n   Loaded %d tile models\n\n", m_TileModels.size());
 
 	//Third: initialising track array
 	m_Track.resize(m_L * m_W * m_H);
@@ -129,7 +131,7 @@ bool CWorld::loadTrack(CString filename)
 				line = line.mid(tp+1, line.length());
 
 				CTile t;
-				t.m_Shape = line.toInt();
+				t.m_Model = line.toInt();
 				line = line.mid(line.inStr('/')+1, line.length());
 				t.m_R = line.toInt();
 				line = line.mid(line.inStr('/')+1, line.length());
@@ -159,14 +161,14 @@ void CWorld::unloadTrack()
 	m_Track.clear();
 
 
-	if(m_TileShapes.size() > 0)
+	if(m_TileModels.size() > 0)
 	{
-		//The CShape objects themselves
-		for(unsigned int i=0; i<m_TileShapes.size(); i++)
-			delete m_TileShapes[i];
+		//The CTileModel objects themselves
+		for(unsigned int i=0; i<m_TileModels.size(); i++)
+			delete m_TileModels[i];
 
 		//The array containing them
-		m_TileShapes.clear();
+		m_TileModels.clear();
 	}
 
 	if(m_TileMaterials.size() > 0)
@@ -198,8 +200,9 @@ bool CWorld::loadMovObjs(CString filename)
 	//For example:
 	{
 		CBound *body = new CBound, *wheel = new CBound;
-		body->loadFromFile("cars/body.gl", NULL);
-		wheel->loadFromFile("cars/wheel.gl", NULL);
+		CDataFile bodyf("cars/body.gl"), wheelf("cars/wheel.gl");
+		body->loadFromFile(&bodyf, "", NULL);
+		wheel->loadFromFile(&wheelf, "", NULL);
 		m_MovObjBounds.push_back(body);
 		m_MovObjBounds.push_back(wheel);
 	}

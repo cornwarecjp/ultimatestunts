@@ -19,6 +19,7 @@
 
 #include "collisiondata.h"
 #include "world.h"
+#include "usmacros.h"
 
 CCollisionData::CCollisionData(const CWorld *w)
 {
@@ -43,7 +44,33 @@ void CCollisionData::calculateCollisions()
 	for(unsigned int i=0; i < m_World->m_MovObjs.size()-1; i++)
 		for(unsigned int j=i+1; j < m_World->m_MovObjs.size(); j++)
 			ObjObjTest(i,j);
+
+	//Moving object to tile collisions
+	int lengte = m_World->m_L;
+	int breedte = m_World->m_W;
+	int hoogte = m_World->m_H;
+	for(unsigned int i=0; i < m_World->m_MovObjs.size(); i++)
+	{
+		CVector pos = m_World->m_MovObjs[i]->getPosition();
+		int x = (int)(0.5 + (pos.x)/TILESIZE);
+		int z = (int)(0.5 + (pos.z)/TILESIZE);
+
+		int xmin = (x-1 < 0)? 0 : x-1;
+		int xmax = (x+1 > lengte-1)? lengte-1 : x+1;
+		int zmin = (z-1 < 0)? 0 : z-1;
+		int zmax = (z+1 > breedte-1)? breedte-1 : z+1;
+
+		for(x=xmin; x<=xmax; x++)
+			for(z=zmin; z<=zmax; z++)
+				for(int h=0; h<hoogte; h++)
+				{
+					ObjTileTest(i, x, z, h);
+				}
+	}
 }
+
+#define elasticity 0.6
+#define responsefactor (1.0 + elasticity)
 
 void CCollisionData::ObjObjTest(int n1, int n2)
 {
@@ -89,10 +116,10 @@ void CCollisionData::ObjObjTest(int n1, int n2)
 				{
 					CVector v1 = o1->getVelocity().component(c1.nor);
 					CVector v2 = o2->getVelocity().component(c1.nor);
-					float m1 = o2->m_Mass;
+					float m1 = o1->m_Mass;
 					float m2 = o2->m_Mass;
 					CVector vcg = (m1*v1 + m2*v2)/(m1 + m2);
-					c1.dp = 2.0*m1*(vcg - v1);
+					c1.dp = responsefactor*m1*(vcg - v1);
 
 					c2.dp = -c1.dp;
 				}
@@ -105,7 +132,57 @@ void CCollisionData::ObjObjTest(int n1, int n2)
 		}
 }
 
-bool CCollisionData::sphereTest(const CVector &p1, const CBound *b1, const CVector &p2, const CBound *b2)
+void CCollisionData::ObjTileTest(int nobj, int xtile, int ztile, int htile)
+{
+	int tindex = htile + m_World->m_H*(ztile + m_World->m_W*xtile);
+	const CTile &theTile = m_World->m_Track[tindex];
+	int tmodel = theTile.m_Model;
+	//int trot = theTile.m_R;
+	int thth = theTile.m_Z;
+	CVector tilepos = CVector(xtile*TILESIZE, thth*VERTSIZE, ztile*TILESIZE);
+	CTileModel *tilemodel = m_World->m_TileModels[tmodel];
+
+	CMovingObject *obj = m_World->m_MovObjs[nobj];
+	CVector pos = obj->getPosition();
+	//TODO: per body collision
+	//for(unsigned int i=0; i<obj->m_Bodies.size(); i++)
+	int i=0;
+	{
+		CVector p = pos + obj->m_Bodies[i].m_Position;
+		const CBound *b = m_World->m_MovObjBounds[obj->m_Bodies[i].m_Body];
+		if(sphereTest(p, b, tilepos, tilemodel))
+		{
+			printf("Collision between %d and tile\n", nobj);
+			CCollision c;
+
+			c.nor = tilepos - p;
+			c.nor.normalise();
+
+			c.pos = b->m_BSphere_r * c.nor;
+
+			c.mat1 = NULL;
+
+			c.body = i;
+
+			//position correction
+			float dr = b->m_BSphere_r + tilemodel->m_BSphere_r - (tilepos-p).abs();
+			c.dr = c.nor * -dr;
+
+			//determine momentum transfer
+			{
+				CVector v = obj->getVelocity().component(c.nor);
+				float m = obj->m_Mass;
+				c.dp = -responsefactor*m*v;
+			}
+
+			m_Events[nobj].isHit = true;
+			m_Events[nobj].push_back(c);
+		}
+	}
+
+}
+
+bool CCollisionData::sphereTest(const CVector &p1, const CCollisionModel *b1, const CVector &p2, const CCollisionModel *b2)
 {
 	float abs2 = (p2-p1).abs2();
 	float rsum = b1->m_BSphere_r + b2->m_BSphere_r;

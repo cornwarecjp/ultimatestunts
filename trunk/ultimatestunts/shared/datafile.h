@@ -33,9 +33,6 @@ public:
 
 	virtual bool open(CString filename, bool write=false);
 
-	CString getName()
-		{return m_Filename;}
-
 	CString useExtern();
 };
 
