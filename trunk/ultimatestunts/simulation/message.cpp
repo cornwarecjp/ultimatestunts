@@ -17,16 +17,17 @@
 
 #include "message.h"
 
-CMessageBuffer * CMessage::getBuffer() const {      // fixme: load first
+CMessageBuffer * CMessage::getBuffer() {
+  this->m_Data->setData(this->getData());
   return (this->m_Data);
 }
  	
 bool CMessage::setBuffer(const CMessageBuffer & b) {
  *this->m_Data = b;
+ this->setData(this->m_Data->getData());
  return (true);
 }
 
-	
 void CMessage::setType(const CMessageBuffer::eMessageType & t) {
 	m_Data->setType(t);
 }

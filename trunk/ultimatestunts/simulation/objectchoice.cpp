@@ -15,27 +15,30 @@
  *                                                                         *
  ***************************************************************************/
 
+
+#include "binbuffer.h"
 #include "objectchoice.h"
 
 CObjectChoice::CObjectChoice()
-{m_CarNumber = 0;}
+{
+  m_CarNumber = 0;
+  this->setType(CMessageBuffer::objectChoice);
+}
 
 CObjectChoice::~CObjectChoice()
 {}
 
-CObjectChoice::CObjectChoice(CMessageBuffer b)
-{
-  setBuffer(b);
+
+CBinBuffer & CObjectChoice::getData() const {
+  CBinBuffer *res = new CBinBuffer();
+  (*res)+=m_CarNumber;
+  return (*res);
 }
 
-CMessageBuffer CObjectChoice::getBuffer()
-{
-  CMessageBuffer b;
-  //add m_CarNumber to b
-  return b;
+bool CObjectChoice::setData(const CBinBuffer & b) {
+  CBinBuffer bb = b;                           // const!
+  m_CarNumber = bb.getUint16(0);
+  return (true);
 }
 
-void CObjectChoice::setBuffer(CMessageBuffer b)
-{
-  //get m_CarNumber from b
-}
+

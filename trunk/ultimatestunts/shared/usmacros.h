@@ -1,9 +1,8 @@
 /***************************************************************************
-                          objectchoice.h  -  description
+                          usmacros.h  -  ultimate stunts macros
                              -------------------
-    begin                : Thu Dec 5 2002
-    copyright            : (C) 2002 by CJP
-    email                : cornware-cjp@users.sourceforge.net
+    copyright            : (C) 2002 by bones
+    email                : boesemar@users.sourceforge.net
  ***************************************************************************/
 
 /***************************************************************************
@@ -15,25 +14,23 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef OBJECTCHOICE_H
-#define OBJECTCHOICE_H
+#ifndef _USENDIAN_H
+#define _USENDIAN_H
 
+#include <SDL/SDL_endian.h>
 #include <SDL/SDL.h>
-#include "message.h"
 
-/**
-  *@author bones
-  */
+#if SDL_BYTEORDER == SDL_LIL_ENDIAN
+#define ENDIANFIX16(X)    (X)
+#define ENDIANFIX32(X)    (X)
+#else
+#define ENDIANFIX16(X)    SDL_Swap16(X)
+#define ENDIANFIX32(X)    SDL_Swap32(X)
+#endif
 
-class CObjectChoice : public CMessage  {
-public: 
-  CObjectChoice();
-  ~CObjectChoice();
+#define LOBYTE(w)           ((Uint8)(w))
+#define HIBYTE(w)           ((Uint8)(((Uint16)(w) >> 8) & 0xFF))
 
-  bool setData(const CBinBuffer &);
-  CBinBuffer & getData() const;
 
-  Uint16 m_CarNumber; //temporary; probably replaced by CString
-};
 
 #endif

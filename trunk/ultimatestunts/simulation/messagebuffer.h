@@ -35,7 +35,8 @@ typedef struct _s_msg_header {
 
 
 enum eMessageType {   // more to add
-   dummyMessage = 1
+   dummyMessage = 1,
+   objectChoice = 2
 };
 
 

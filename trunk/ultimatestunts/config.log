@@ -14,42 +14,165 @@ configure:896: checking whether the C compiler (gcc  ) works
 configure:912: gcc -o conftest    conftest.c  1>&5
 configure:938: checking whether the C compiler (gcc  ) is a cross-compiler
 configure:943: checking whether we are using GNU C
+configure:952: gcc -E conftest.c
 configure:971: checking whether gcc accepts -g
 configure:1003: checking how to run the C preprocessor
+configure:1024: gcc -E  conftest.c >/dev/null 2>conftest.out
 configure:1087: checking for c++
 configure:1119: checking whether the C++ compiler (c++  ) works
 configure:1135: c++ -o conftest    conftest.C  1>&5
 configure:1161: checking whether the C++ compiler (c++  ) is a cross-compiler
 configure:1166: checking whether we are using GNU C++
+configure:1175: c++ -E conftest.C
 configure:1194: checking whether c++ accepts -g
 configure:1243: gcc -c -g -O2  conftest.c 1>&5
 configure:1260: gcc -c -g -O2  conftest.c 1>&5
 configure:1277: checking how to run the C++ preprocessor
+configure:1295: c++ -E  conftest.C >/dev/null 2>conftest.out
 configure:1331: checking for a BSD compatible install
 configure:1386: checking for ranlib
 configure:1415: checking for Cygwin environment
+configure:1431: gcc -c -g -O2  conftest.c 1>&5
+configure: In function `main':
+configure:1427: `__CYGWIN32__' undeclared (first use in this function)
+configure:1427: (Each undeclared identifier is reported only once
+configure:1427: for each function it appears in.)
+configure: failed program was:
+#line 1420 "configure"
+#include "confdefs.h"
+
+int main() {
+
+#ifndef __CYGWIN__
+#define __CYGWIN__ __CYGWIN32__
+#endif
+return __CYGWIN__;
+; return 0; }
 configure:1448: checking for mingw32 environment
+configure:1460: gcc -c -g -O2  conftest.c 1>&5
+configure: In function `main':
+configure:1456: `__MINGW32__' undeclared (first use in this function)
+configure:1456: (Each undeclared identifier is reported only once
+configure:1456: for each function it appears in.)
+configure: failed program was:
+#line 1453 "configure"
+#include "confdefs.h"
+
+int main() {
+return __MINGW32__;
+; return 0; }
 configure:1479: checking for executable suffix
+configure:1489: gcc -o conftest -g -O2   conftest.c  1>&5
 configure:1510: checking for object suffix
+configure:1516: gcc -c -g -O2  conftest.c 1>&5
 configure:1538: checking for windows.h
+configure:1548: gcc -E  conftest.c >/dev/null 2>conftest.out
+configure:1544:21: windows.h: No such file or directory
+configure: failed program was:
+#line 1543 "configure"
+#include "confdefs.h"
+#include <windows.h>
 configure:1578: checking for X
 configure:1892: checking for dnet_ntoa in -ldnet
+configure:1911: gcc -o conftest -g -O2   conftest.c -ldnet   1>&5
+/usr/bin/ld: cannot find -ldnet
+collect2: ld returned 1 exit status
+configure: failed program was:
+#line 1900 "configure"
+#include "confdefs.h"
+/* Override any gcc2 internal prototype to avoid an error.  */
+/* We use char because int might match the return type of a gcc2
+    builtin and then its argument prototype would still apply.  */
+char dnet_ntoa();
+
+int main() {
+dnet_ntoa()
+; return 0; }
 configure:1933: checking for dnet_ntoa in -ldnet_stub
+configure:1952: gcc -o conftest -g -O2   conftest.c -ldnet_stub   1>&5
+/usr/bin/ld: cannot find -ldnet_stub
+collect2: ld returned 1 exit status
+configure: failed program was:
+#line 1941 "configure"
+#include "confdefs.h"
+/* Override any gcc2 internal prototype to avoid an error.  */
+/* We use char because int might match the return type of a gcc2
+    builtin and then its argument prototype would still apply.  */
+char dnet_ntoa();
+
+int main() {
+dnet_ntoa()
+; return 0; }
 configure:1981: checking for gethostbyname
+configure:2009: gcc -o conftest -g -O2   conftest.c  1>&5
 configure:2079: checking for connect
+configure:2107: gcc -o conftest -g -O2   conftest.c  1>&5
 configure:2171: checking for remove
+configure:2199: gcc -o conftest -g -O2   conftest.c  1>&5
 configure:2263: checking for shmat
+configure:2291: gcc -o conftest -g -O2   conftest.c  1>&5
 configure:2364: checking for IceConnectionNumber in -lICE
+configure:2383: gcc -o conftest -g -O2   -L/usr/X11R6/lib conftest.c -lICE   1>&5
 configure:2415: checking for glNewList in -lGL
+configure:2434: gcc -o conftest -g -O2   conftest.c -lGL  -L/usr/X11R6/lib  -lSM -lICE -lX11 -lXi -lXext -lXmu  -lm  1>&5
 configure:2554: checking for gluLookAt in -lGLU
+configure:2573: gcc -o conftest -g -O2   conftest.c -lGLU -lGL  -L/usr/X11R6/lib  -lSM -lICE -lX11 -lXi -lXext -lXmu  -lm  1>&5
 configure:2637: checking for glutGetModifiers in -lglut
+configure:2656: gcc -o conftest -g -O2   conftest.c -lglut -lGLU -lGL  -L/usr/X11R6/lib  -lSM -lICE -lX11 -lXi -lXext -lXmu  -lm  1>&5
 configure:2683: checking for socket in -lsocket
+configure:2702: gcc -o conftest -g -O2   conftest.c -lsocket   1>&5
+/usr/bin/ld: cannot find -lsocket
+collect2: ld returned 1 exit status
+configure: failed program was:
+#line 2691 "configure"
+#include "confdefs.h"
+/* Override any gcc2 internal prototype to avoid an error.  */
+/* We use char because int might match the return type of a gcc2
+    builtin and then its argument prototype would still apply.  */
+char socket();
+
+int main() {
+socket()
+; return 0; }
 configure:2723: checking for gethostbyname in -lnsl
+configure:2742: gcc -o conftest -g -O2   conftest.c -lnsl   1>&5
 configure:2763: checking for inet_aton in -lresolv
+configure:2782: gcc -o conftest -g -O2   conftest.c -lresolv   1>&5
 configure:2806: checking for ANSI C header files
+configure:2819: gcc -E  conftest.c >/dev/null 2>conftest.out
+configure:2886: gcc -o conftest -g -O2   conftest.c  1>&5
 configure:2914: checking for GL/gl.h
+configure:2924: gcc -E  conftest.c >/dev/null 2>conftest.out
 configure:2914: checking for GL/glut.h
+configure:2924: gcc -E  conftest.c >/dev/null 2>conftest.out
 configure:2952: checking for joystick.h
+configure:2962: gcc -E  conftest.c >/dev/null 2>conftest.out
+configure:2958:22: joystick.h: No such file or directory
+configure: failed program was:
+#line 2957 "configure"
+#include "confdefs.h"
+#include <joystick.h>
 configure:2988: checking for linux/joystick.h
+configure:2998: gcc -E  conftest.c >/dev/null 2>conftest.out
 configure:3025: checking for FSOUND_Close in -lfmod
+configure:3044: gcc -o conftest -g -O2   conftest.c -lfmod   1>&5
+/usr/bin/ld: cannot find -lfmod
+collect2: ld returned 1 exit status
+configure: failed program was:
+#line 3033 "configure"
+#include "confdefs.h"
+/* Override any gcc2 internal prototype to avoid an error.  */
+/* We use char because int might match the return type of a gcc2
+    builtin and then its argument prototype would still apply.  */
+char FSOUND_Close();
+
+int main() {
+FSOUND_Close()
+; return 0; }
 configure:3066: checking for fmod/fmod.h
+configure:3076: gcc -E  conftest.c >/dev/null 2>conftest.out
+configure:3072:23: fmod/fmod.h: No such file or directory
+configure: failed program was:
+#line 3071 "configure"
+#include "confdefs.h"
+#include <fmod/fmod.h>
