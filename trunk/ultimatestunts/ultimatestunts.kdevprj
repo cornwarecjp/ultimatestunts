@@ -230,7 +230,7 @@ install_location=
 type=HEADER
 
 [simulation/Makefile.am]
-files=simulation/physics.cpp,simulation/physics.h,simulation/simulation.cpp,simulation/simulation.h,simulation/player.cpp,simulation/player.h,simulation/world.cpp,simulation/world.h,simulation/tile.cpp,simulation/tile.h,simulation/movingobject.cpp,simulation/movingobject.h,simulation/car.cpp,simulation/car.h,simulation/message.cpp,simulation/message.h,simulation/messagebuffer.cpp,simulation/messagebuffer.h,simulation/dynamicobject.cpp,simulation/dynamicobject.h,simulation/objectchoice.cpp,simulation/objectchoice.h,
+files=simulation/physics.cpp,simulation/physics.h,simulation/simulation.cpp,simulation/simulation.h,simulation/player.cpp,simulation/player.h,simulation/world.cpp,simulation/world.h,simulation/tile.cpp,simulation/tile.h,simulation/movingobject.cpp,simulation/movingobject.h,simulation/car.cpp,simulation/car.h,simulation/message.cpp,simulation/message.h,simulation/messagebuffer.cpp,simulation/messagebuffer.h,simulation/dynamicobject.cpp,simulation/dynamicobject.h,simulation/objectchoice.cpp,simulation/objectchoice.h,simulation/netudp.h,simulation/netudp.cpp
 sub_dirs=
 type=static_library
 
@@ -289,6 +289,18 @@ install_location=
 type=SOURCE
 
 [simulation/movingobject.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[simulation/netudp.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[simulation/netudp.h]
 dist=true
 install=false
 install_location=

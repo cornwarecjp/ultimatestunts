@@ -40,6 +40,18 @@ class CBinBuffer : public vector<Uint8>
 		return (*this);
 	 }
 
+   CBinBuffer & operator += (const char unsigned * c) {                // c-string
+    for (int i=0; c[i] != 0; i++) { this->push_back((Uint8) c[i]); } 	
+		return (*this);
+	 }
+
+   CBinBuffer & operator = (const char unsigned * c) {
+    this->empty();
+    (*this)+=c;
+		return (*this);
+	 }
+
+
    CBinBuffer & operator += (const Uint16 & i) {
      this->push_back(HIBYTE(i));
      this->push_back(LOBYTE(i));
@@ -110,6 +122,12 @@ class CBinBuffer : public vector<Uint8>
        }
     }
     return (*res);
+   }
+
+   char * raw_str() const {        // NOT zero terminated (use .dump().c_str() to print it)
+     char * res = new char[this->size()+1];
+     for (int unsigned i=0;i<this->size();i++) { res[i]= (char) (*this)[i]; }
+     return (res);
    }
 
 	
