@@ -1,7 +1,7 @@
 /***************************************************************************
-                          clientsim.cpp  -  Client-side networked simulation
+                          rulecontrol.h  -  Check if players follow the rules
                              -------------------
-    begin                : di jan 14 2003
+    begin                : do sep 11 2003
     copyright            : (C) 2003 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
@@ -15,31 +15,27 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "clientsim.h"
+#ifndef RULECONTROL_H
+#define RULECONTROL_H
 
-CClientSim::CClientSim(CClientNet *net, CWorld *w) : CSimulation(w)
-{
-	m_Net = net;
+#include "simulation.h"
 
-	//Temporary dummy implementation
-	m_RuleControl = new CRuleControl(w);
-}
+/**
+  *@author CJP
+  */
 
-CClientSim::~CClientSim()
-{
-	//Temporary dummy implementation
-	delete m_RuleControl;
-}
+class CRuleControl : public CSimulation  {
+public: 
+	CRuleControl(CWorld *w);
+	~CRuleControl();
 
-CString CClientSim::getTrackname()
-{
-	return "tracks/default.track"; //TODO: really find out what track should be used
-}
+	//while playing:
+	virtual bool update();
+protected:
+	bool firstUpdate;
 
-bool CClientSim::update()
-{
-	//TODO: check network for new data, and update the world
+	void placeStart();
+	bool checkFinished();
+};
 
-	//Temporary dummy implementation
-	return m_RuleControl->update();
-}
+#endif

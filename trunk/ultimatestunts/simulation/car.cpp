@@ -19,7 +19,7 @@
 #include "carinput.h"
 CCar::CCar()
 {
-	m_Position = CVector(400.0,0.8,450.0); //TODO: put this somewhere else
+	m_Position = CVector(0.0,0.8,0.0); //vertical position
 
 	m_InputData = new CCarInput;
 

@@ -20,21 +20,8 @@
 
 CSimulation::CSimulation(CWorld *w)
 {
-  m_World = w;
+	m_World = w;
 }
 
 CSimulation::~CSimulation(){
-}
-
-int CSimulation::addPlayer(CObjectChoice choice)
-{
-	//Default behaviour: always accept a player
-	m_LocalChoices.push_back(choice);
-	return m_LocalChoices.size()-1;
-}
-
-bool CSimulation::loadObjects()
-{
-	//Temporary solution: nr of objs put in string
-	return m_World->loadMovObjs((CString)( (int)m_LocalChoices.size() ));
 }

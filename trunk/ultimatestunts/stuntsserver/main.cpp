@@ -22,10 +22,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "simulation.h"
-#include "serversim.h"
+#include "playercontrol.h"
+#include "clientplayercontrol.h"
 #include "clientsim.h"
 #include "physics.h"
+#include "rulecontrol.h"
 
 #include "world.h"
 
@@ -37,7 +38,9 @@
 
 CWorld *world;
 vector<CPlayer *> players;
-CSimulation *sim, *subsim1;
+vector<CSimulation *> simulations;
+CClientNet *clientnet = NULL;
+CPlayerControl *pctrl;
 
 CString getInput(CString question="")
 {
@@ -53,7 +56,7 @@ bool addPlayer()
 
 	CObjectChoice choice;
 
-	int id = sim->addPlayer(choice);
+	int id = pctrl->addPlayer(choice);
 	p->m_MovingObjectId = id;
 	p->m_PlayerId = 0;
 	if(id < 0)
@@ -69,8 +72,7 @@ bool addPlayer()
 
 bool mainloop()
 {
-	/*
- //Debugging 'display'
+	//Debugging 'display'
 	printf("\033[1H");
 	printf("\033[1G");
 	printf("**********\n");
@@ -82,15 +84,17 @@ bool mainloop()
 		printf("Object %d: position (%.2f,%.2f,%.2f), velocity (%.2f,%.2f,%.2f)\n",
 		               i,            r.x, r.y, r.z,       v.x, v.y, v.z);
 	}
-    	printf("**********\n");
-	*/
+	printf("**********\n");
+
+	bool retval = true;
 
 	for(unsigned int i=0; i<players.size(); i++)
 		players[i]->update(); //Makes moving decisions
 
-	sim->update(); //Modifies world object
+	for(unsigned int i=0; i<simulations.size(); i++)
+		retval = retval && simulations[i]->update(); //Modifies world object
 
-	return false; //One loop
+	return retval;
 }
 
 int main(int argc, char *argv[])
@@ -145,13 +149,19 @@ int main(int argc, char *argv[])
 		int p = getInput("Enter the super-server's port number: ").toInt();
 
 		printf("Creating client-type simulation\n");
-		subsim1 = new CClientSim(world, h, p);
-		trackfile = ((CClientSim *)subsim1)->getTrackname();
+		clientnet = new CClientNet(h, p);
+		pctrl = new CClientPlayerControl(clientnet, world);
+		CClientSim *csim = new CClientSim(clientnet, world);
+
+		simulations.push_back(csim);
+		trackfile = csim->getTrackname();
+		simulations.push_back(new CPhysics(world));
 	}
 	else
 	{
-		printf("Creating physics simulation\n");
-		subsim1 = new CPhysics(world);
+		pctrl = new CPlayerControl(world);
+		simulations.push_back(new CRuleControl(world));
+		simulations.push_back(new CPhysics(world));
 
 		trackfile = getInput("Please enter the track file: ");
 		printf("\nYou entered %s\n", trackfile.c_str());
@@ -162,20 +172,13 @@ int main(int argc, char *argv[])
 	ai_players = getInput("Enter the number of AI players: ").toInt();
 	printf("\nYou entered %d\n", ai_players);
 
-	printf("\nCreating server simulation\n");
-	{
-		CServerSim *ssim = new CServerSim(world, port);
-		ssim->addSubSim(subsim1);
-		sim = (CSimulation *)ssim;
-	}
-
 	printf("\nLoading track data\n");
 	world->loadTrack(trackfile);
 
 	for(unsigned int i=0; i<ai_players; i++)
 		addPlayer();
 
-	if(!sim->loadObjects())
+	if(!pctrl->loadObjects())
 		printf("Error while loading moving objects\n");
 
 	printf("\nEntering mainloop\n");
@@ -188,13 +191,22 @@ int main(int argc, char *argv[])
 
 	printf("\nLeaving mainloop\n");
 
-	printf("\nDeleting simulation\n");
-	delete sim;
+	printf("\nDeleting simulations\n");
+	for(unsigned int i=0; i<simulations.size(); i++)
+		delete simulations[i];
+	simulations.clear();
 
 	printf("\nDeleting players\n");
 	for(unsigned int i=0; i<players.size(); i++)
 		delete players[i];
 	players.clear();
+
+	printf("\nDeleting player control\n");
+	delete pctrl;
+
+	printf("\nDeleting superserver network\n");
+	if(clientnet!=NULL)
+		delete clientnet;
 
 	printf("\nDeleting world\n");
 	delete world;

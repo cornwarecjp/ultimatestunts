@@ -1,7 +1,7 @@
 /***************************************************************************
-                          serversim.h  -  Server-side networked simulation
+                          playercontrol.cpp  -  Manage the players
                              -------------------
-    begin                : wo jan 15 2003
+    begin                : do sep 11 2003
     copyright            : (C) 2003 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
@@ -15,32 +15,26 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef SERVERSIM_H
-#define SERVERSIM_H
+#include "playercontrol.h"
 
-#include <vector>
-namespace std {}
-using namespace std;
+CPlayerControl::CPlayerControl(CWorld *w)
+{
+	m_World = w;
+}
 
-#include "simulation.h"
+CPlayerControl::~CPlayerControl()
+{
+}
 
-/**
-  *@author CJP
-  */
+int CPlayerControl::addPlayer(CObjectChoice choice)
+{
+	//Default behaviour: always accept a player
+	m_LocalChoices.push_back(choice);
+	return m_LocalChoices.size()-1;
+}
 
-class CServerSim : public CSimulation  {
-public: 
-	CServerSim(CWorld *w, int UDPPort);
-	~CServerSim();
-
-	virtual bool loadObjects();
-
-	void addSubSim(CSimulation *s);
-
-  virtual bool update();
-
-protected:
-	vector<CSimulation *> m_SubSim;
-};
-
-#endif
+bool CPlayerControl::loadObjects()
+{
+	//Temporary solution: nr of objs put in string
+	return m_World->loadMovObjs((CString)( (int)m_LocalChoices.size() ));
+}

@@ -32,10 +32,12 @@ using namespace std;
 #include "filecontrol.h"
 
 //Simulation stuff
-#include "world.h"
-#include "simulation.h"
+#include "playercontrol.h"
+#include "clientplayercontrol.h"
 #include "clientsim.h"
+#include "rulecontrol.h"
 #include "physics.h"
+#include "world.h"
 
 #include "usserver.h"
 
@@ -57,7 +59,9 @@ CWorld *world = NULL;
 
 vector<CPlayer *> players;
 
-CSimulation *sim = NULL;
+CPlayerControl *pctrl;
+vector<CSimulation *> simulations;
+CClientNet *clientnet = NULL;
 CUSServer *server = NULL;
 
 CWinSystem *winsys = NULL;
@@ -98,7 +102,8 @@ bool mainloop()
 	for(unsigned int i=0; i<players.size(); i++)
 		players[i]->update(); //Makes moving decisions
 
-	retval = retval && sim->update(); //Modifies world object
+	for(unsigned int i=0; i<simulations.size(); i++)
+		retval = retval && simulations[i]->update(); //Modifies world object
 
 	camera->update();
 	renderer->update();
@@ -118,7 +123,7 @@ bool addPlayer(CString desc)
 
 	CObjectChoice choice;
 
-	int id = sim->addPlayer(choice);
+	int id = pctrl->addPlayer(choice);
 	p->m_MovingObjectId = id;
 	p->m_PlayerId = 0;
 	if(id < 0)
@@ -188,14 +193,23 @@ void end() //Last things before exiting
 	printf("---Rendering engine\n");
 	if(renderer!=NULL)
 		delete renderer;
-	printf("---Simulation\n");
-	if(sim!=NULL)
-		delete sim;
+	printf("---Simulations\n");
+	for(unsigned int i=0; i<simulations.size(); i++)
+		delete simulations[i];
+	simulations.clear();
 
 	printf("---Players\n");
 	for(unsigned int i=0; i<players.size(); i++)
 		delete players[i];
 	players.clear();
+
+	printf("---Player control center\n");
+	if(pctrl!=NULL)
+		delete pctrl;
+
+	printf("---Network\n");
+	if(clientnet!=NULL)
+		delete clientnet;
 
 	printf("---World data\n");
 	if(world!=NULL)
@@ -232,8 +246,9 @@ int main(int argc, char *argv[])
 	switch(maininput)
 	{
 		case CGUI::LocalGame:
-			printf("Creating physics simulation\n");
-			sim = new CPhysics(world);
+			pctrl = new CPlayerControl(world);
+			simulations.push_back(new CRuleControl(world));
+			simulations.push_back(new CPhysics(world));
 			while(!( gui->isPassed("trackmenu") )); //waiting for input
 			trackfile = gui->getValue("trackmenu");
 			break;
@@ -250,7 +265,10 @@ int main(int argc, char *argv[])
 
 			server = new CUSServer(port, trackfile);
 			printf("Creating client-type simulation with %s:%d\n", name.c_str(), port);
-			sim = new CClientSim(world, name, port);
+			clientnet = new CClientNet(name, port);
+			pctrl = new CClientPlayerControl(clientnet, world);
+			simulations.push_back(new CClientSim(clientnet, world));
+			simulations.push_back(new CPhysics(world));
 			break;
 		}
 		case CGUI::JoinNetwork:
@@ -259,8 +277,12 @@ int main(int argc, char *argv[])
 			CString name = gui->getValue("hostmenu", "hostname");
 			int port = gui->getValue("hostmenu", "portnumber").toInt();
 			printf("Creating client-type simulation with %s:%d\n", name.c_str(), port);
-			sim = new CClientSim(world, name, port);
-			trackfile = ((CClientSim *)sim)->getTrackname();
+			clientnet = new CClientNet(name, port);
+			pctrl = new CClientPlayerControl(clientnet, world);
+			CClientSim *csim = new CClientSim(clientnet, world);
+			trackfile = csim->getTrackname();
+			simulations.push_back(csim);
+			simulations.push_back(new CPhysics(world));
 			break;
 		}
 		default:
@@ -284,7 +306,7 @@ int main(int argc, char *argv[])
 	}
 
 	printf("\nLoading moving objects\n");
-	if(!sim->loadObjects())
+	if(!pctrl->loadObjects())
 		{printf("Error while loading moving objects\n");}
 	if(!renderer->loadObjData())
 		{printf("Error while loading object graphics\n");}

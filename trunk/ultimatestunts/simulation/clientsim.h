@@ -21,26 +21,26 @@
 #include "simulation.h"
 #include "clientnet.h"
 
+//Temporary dummy implementation
+#include "rulecontrol.h"
+
 /**
   *@author CJP
   */
 
 class CClientSim : public CSimulation  {
 public: 
-	CClientSim(CWorld *w, CString HostName, int UDPPort);
+	CClientSim(CClientNet *net, CWorld *w);
 	~CClientSim();
 
 	CString getTrackname();
 
-	virtual int addPlayer(CObjectChoice choice);
-	virtual bool loadObjects();
-
 	virtual bool update();
-
 protected:
-	CSimulation *m_SubSim;
+	CClientNet *m_Net;
 
-	CClientNet *m_Network;
+	//Temporary dummy implementation
+	CRuleControl *m_RuleControl;
 };
 
 #endif

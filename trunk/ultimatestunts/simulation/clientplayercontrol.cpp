@@ -1,7 +1,7 @@
 /***************************************************************************
-                          clientsim.cpp  -  Client-side networked simulation
+                          clientplayercontrol.cpp  -  Remote player management
                              -------------------
-    begin                : di jan 14 2003
+    begin                : do sep 11 2003
     copyright            : (C) 2003 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
@@ -15,31 +15,23 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "clientsim.h"
+#include "clientplayercontrol.h"
 
-CClientSim::CClientSim(CClientNet *net, CWorld *w) : CSimulation(w)
+CClientPlayerControl::CClientPlayerControl(CClientNet *net, CWorld *w) : CPlayerControl(w)
 {
 	m_Net = net;
-
-	//Temporary dummy implementation
-	m_RuleControl = new CRuleControl(w);
 }
 
-CClientSim::~CClientSim()
+CClientPlayerControl::~CClientPlayerControl()
 {
-	//Temporary dummy implementation
-	delete m_RuleControl;
 }
 
-CString CClientSim::getTrackname()
+int CClientPlayerControl::addPlayer(CObjectChoice choice)
 {
-	return "tracks/default.track"; //TODO: really find out what track should be used
+	return CPlayerControl::addPlayer(choice);
 }
 
-bool CClientSim::update()
+bool CClientPlayerControl::loadObjects()
 {
-	//TODO: check network for new data, and update the world
-
-	//Temporary dummy implementation
-	return m_RuleControl->update();
+	return CPlayerControl::loadObjects();
 }

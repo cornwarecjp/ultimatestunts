@@ -1,7 +1,7 @@
 /***************************************************************************
-                          serversim.cpp  -  Server-side networked simulation
+                          playercontrol.h  -  Manage the players
                              -------------------
-    begin                : wo jan 15 2003
+    begin                : do sep 11 2003
     copyright            : (C) 2003 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
@@ -15,38 +15,33 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "serversim.h"
+#ifndef PLAYERCONTROL_H
+#define PLAYERCONTROL_H
 
-CServerSim::CServerSim(CWorld *w, int UDPPort) : CSimulation(w)
-{
-}
+#include <vector> //STL vector template
+namespace std {}
+using namespace std;
 
-CServerSim::~CServerSim()
-{
-}
+#include "player.h"
+#include "world.h"
+#include "objectchoice.h"
 
-bool CServerSim::loadObjects()
-{
-	//TODO: send clients the player-information
+/**
+  *@author CJP
+  */
 
-	return CSimulation::loadObjects();
-}
+class CPlayerControl {
+public: 
+	CPlayerControl(CWorld *w);
+	virtual ~CPlayerControl();
 
-void CServerSim::addSubSim(CSimulation *s)
-{
-	m_SubSim.push_back(s);
-}
+	virtual int addPlayer(CObjectChoice choice);
+	virtual bool loadObjects();
 
-bool CServerSim::update()
-{
-	bool cont_game = true;
+protected:
+	vector<CObjectChoice> m_LocalChoices;
 
-	//TODO: check for incoming data
+	CWorld *m_World;
+};
 
-	for(unsigned int i=0; i<m_SubSim.size(); i++)
-		{cont_game = (m_SubSim[i])->update() && cont_game;}
-
-	//TODO: send new data
-
-	return cont_game;
-}
+#endif
