@@ -15,36 +15,56 @@
  *                                                                         *
  ***************************************************************************/
 #include "matrix.h"
-//#include <stdio.h>
 #include <math.h>
+
+//#include <stdio.h>
+//#include "cstring.h" //debugging
 
 CMatrix::CMatrix()
 {
     m_M = new float[16];
-
     reset();
 }
 
 CMatrix::CMatrix(CVector v)
 {
 	m_M = new float[16];
+	reset();
 
-	//This function is NOT finished.
-	//It currently only handles rotations around the x- and y-axis.
-	CMatrix tmp;
-	tmp.rotY(v.y);
-	rotX(v.x);
-	operator*=(tmp);
 
-	setElement(3,0,0.0);
-	setElement(3,1,0.0);
-	setElement(3,2,0.0);
+	//the idea is to rotate forward using a matrix A
+	//so that v points into the z direction.
+	//then rotate around the z axis by the angle |v|
+	//then rotate backward using Ainv
+	CMatrix A, rot;
 
-	setElement(0,3,0.0);
-	setElement(1,3,0.0);
-	setElement(2,3,0.0);
+	//the collumn vectors of A are v1, v2 and v3
+	CVector v1, v2, v3;
+	v3 = v.normal();
 
-	setElement(3,3,1.0);
+	if(v3.z < 0.75 && v3.z > -0.75) //not parallel to 0,0,1
+		{v2 = CVector(v3.y,-v3.x,0);} //cross product with 0,0,1
+	else
+		{v2 = CVector(0,v3.z,-v3.y);} //cross product with 1,0,0
+
+	v2.normalise();
+	v1 = v3.crossProduct(v2);
+	A.setElement(0,0,v1.x);
+	A.setElement(1,0,v1.y);
+	A.setElement(2,0,v1.z);
+	A.setElement(0,1,v2.x);
+	A.setElement(1,1,v2.y);
+	A.setElement(2,1,v2.z);
+	A.setElement(0,2,v3.x);
+	A.setElement(1,2,v3.y);
+	A.setElement(2,2,v3.z);
+
+
+	rot.rotZ(v.abs());
+
+	this->operator*=(A);
+	this->operator*=(rot);
+	this->operator/=(A);
 }
 
 CMatrix::CMatrix(CMatrix const &val)
@@ -78,13 +98,28 @@ CMatrix const &CMatrix::operator*=(CMatrix const &val)
 	for (int i=0; i<3; i++)
 		for (int j=0; j<3; j++)
 			temp.setElement(i,j,
-        Element(i,0) * val.Element(0,j) +
-        Element(i,1) * val.Element(1,j) +
-        Element(i,2) * val.Element(2,j)
-      );
+				Element(i,0) * val.Element(0,j) +
+				Element(i,1) * val.Element(1,j) +
+				Element(i,2) * val.Element(2,j)
+			);
 
-  *this = temp;
+	*this = temp;
+	return (*this);
+}
 
+CMatrix const &CMatrix::operator/=(CMatrix const &val)
+{
+	CMatrix temp = *this;
+
+	for (int i=0; i<3; i++)
+		for (int j=0; j<3; j++)
+			temp.setElement(i,j,
+				Element(i,0) * val.Element(j,0) +
+				Element(i,1) * val.Element(j,1) +
+				Element(i,2) * val.Element(j,2)
+			);
+
+	*this = temp;
 	return (*this);
 }
 

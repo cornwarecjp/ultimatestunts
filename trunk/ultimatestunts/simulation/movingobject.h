@@ -66,6 +66,7 @@ class CMovingObject : public CDynamicObject
 
 		//constant:
 		float m_Mass;
+		CMatrix m_InvMomentInertia;
 	protected:
 		CVector m_Position,
 			m_PreviousPosition,

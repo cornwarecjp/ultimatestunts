@@ -18,6 +18,8 @@
 #include "movingobject.h"
 #include "movobjinput.h"
 
+#define DBLPI 6.283185307
+
 CMovingObject::CMovingObject()
 {
 	m_InputData = new CMovObjInput;
@@ -36,8 +38,16 @@ void CMovingObject::rememberCurrentState()
 
 void CMovingObject::setOrientationVector(CVector v)
 {
-	m_OrientationVector = v;
-	m_Orientation = CMatrix(v);
+	float vabs = v.abs();
+	if(vabs < DBLPI)
+		{m_OrientationVector = v;}
+	else
+	{
+		float vabsmod = vabs - DBLPI * (int)(vabs / DBLPI);
+		m_OrientationVector = v * (vabsmod / vabs);
+	}
+
+	m_Orientation = CMatrix(m_OrientationVector);
 }
 
 void CMovingObject::setOrientation(const CMatrix &M)

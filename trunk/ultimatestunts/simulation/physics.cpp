@@ -50,14 +50,14 @@ bool CPhysics::update()
 #define cwA 10
 #define gasmax 25000
 #define remmax 10000
-#define invstraal 0.05
 
-	//Standard movement
+	//Standard movement + rotation
 	for(unsigned int i=0; i < (m_World->m_MovObjs.size()); i++)
 	{
 		CMovingObject *mo =m_World->m_MovObjs[i];
 		mo->rememberCurrentState();
 		mo->setPosition(mo->getPosition() + mo->getVelocity() * dt);
+		mo->setOrientationVector(mo->getOrientationVector() + mo->getAngularVelocity() * dt);
 	}
 
 	//Update body data
@@ -77,23 +77,21 @@ bool CPhysics::update()
 			CCar *theCar = (CCar *)mo;
 			CCarInput *input = (CCarInput *)mo->m_InputData;
 
-			//Total force
-			CVector Ftot;
+			//Total force & torque
+			CVector Ftot, Mtot;
 
 			CMatrix R = mo->getOrientation();
-			float m = mo->m_Mass;
+			const float m = mo->m_Mass;
+			const CMatrix &Iinv = mo->m_InvMomentInertia;
 
 			float gas = input->m_Forward;
 			float rem = input->m_Backward;
-
-			CVector r = mo->getPosition();
-			CVector v = mo->getVelocity();
-			float vabs = v.abs();
 
 			//Collision response
 			if(m_World->m_CollData->m_Events[i].isHit)
 			{
 				CVector dr_min, dp_min, dr_max, dp_max;
+				CVector dL; //rotational momentum change
 				const CColEvents &e = m_World->m_CollData->m_Events[i];
 				for(unsigned int j=0; j<e.size(); j++)
 				{
@@ -114,6 +112,8 @@ bool CPhysics::update()
 					if(c.dp.x < dr_min.x) dp_min.x = c.dp.x;
 					if(c.dp.y < dr_min.y) dp_min.y = c.dp.y;
 					if(c.dp.z < dr_min.z) dp_min.z = c.dp.z;
+
+					dL += 0.1 * c.dp.crossProduct(c.pos); //TODO: remove 0.1
 				}
 
 				//quick&dirty:
@@ -125,9 +125,9 @@ bool CPhysics::update()
 				dp.y = (dp_max.y > -dp_min.y)? dp_max.y : dp_min.y;
 				dp.z = (dp_max.z > -dp_min.z)? dp_max.z : dp_min.z;
 
-				r += dr; //place back
-				mo->setPosition(r);
+				mo->setPosition(mo->getPosition() + dr); //place back
 				Ftot += dp/dt; //collision force
+				Mtot += dL/dt; //collision torque
 			}
 
 
@@ -136,12 +136,24 @@ bool CPhysics::update()
 			Ftot += Fgas;
 
 			//Brake + friction
+			CVector v = mo->getVelocity();
+			float vabs = v.abs();
 			CVector Frem;
 			if(vabs < 0.001)
 				{Frem = -v;}
 			else
 				{Frem = v * (-(remmax*rem + cwA*v.abs2()) / vabs);}
 			Ftot += Frem;
+
+			//rotational air friction
+			CVector w = mo->getAngularVelocity();
+			float wabs = w.abs();
+			CVector Mrem;
+			if(wabs < 0.001)
+				{Mrem = -w;}
+			else
+				{Mrem = w * (-cwA*w.abs2() / wabs);}
+			Mtot += Mrem;
 
 			//Gravity
 			Ftot += CVector(0.0, -g*m, 0.0);
@@ -153,14 +165,13 @@ bool CPhysics::update()
 
 			//Dummy roteer-functie:
 			float stuur = input->m_Right;
-			CMatrix dR;
-			dR.rotY(stuur*invstraal*vabs*dt);
-			R *= dR;
-			mo->setOrientation(R);
+			Mtot += CVector(0,10000*stuur*dt,0);
 
 			//standard acceleration:
-			v += Ftot * dt/m;
-			mo->setVelocity(v);
+			mo->setVelocity(mo->getVelocity() + Ftot * dt/m);
+
+			//standard rotation
+			mo->setAngularVelocity(mo->getAngularVelocity() + dt*Mtot*Iinv);
 		}
 		else
 			{printf("Error: object %d is not a car\n", i);}

@@ -35,6 +35,9 @@ CCar::CCar()
 	m_FrontWheelNeutral = CVector(0.8, -0.4, -1.75);
 	m_BackWheelNeutral = CVector(0.8, -0.4, 1.1);
 	m_Mass = 1000.0; //kilogram
+	m_InvMomentInertia.setElement(0,0,1.0/m_Mass);
+	m_InvMomentInertia.setElement(1,1,1.0/m_Mass);
+	m_InvMomentInertia.setElement(2,2,1.0/m_Mass);
 	m_WheelRadius = 0.35; //meter
 
 	m_WheelVelocity =  m_WheelAngle = 0.0;

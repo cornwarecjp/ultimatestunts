@@ -210,8 +210,9 @@ void CCollisionData::ObjTrackBoundTest(int n)
 		}
 }
 
-#define elasticity 0.6
+#define elasticity 0.3
 #define responsefactor (1.0 + elasticity)
+#define dynfriction 100
 
 void CCollisionData::ObjObjTest(int n1, int n2)
 {
@@ -451,9 +452,15 @@ void CCollisionData::ObjTileTest(int nobj, int xtile, int ztile, int htile)
 
 			//determine momentum transfer
 			{
-				CVector v = obj->getVelocity().component(c.nor);
-				float m = obj->m_Mass;
-				c.dp = -responsefactor*m*v;
+				CVector v = obj->getVelocity()
+					+ c.pos.crossProduct(obj->getAngularVelocity()); //or wxr
+				CVector vvert = v.component(c.nor);
+				CVector vhor = v - vvert;
+				float minv = 1.0 / obj->m_Mass;
+				float mrotinv = (c.pos * obj->m_InvMomentInertia).dotProduct(c.pos); //just a guess
+				float meff = 1.0 / (minv + mrotinv);
+				c.dp = -responsefactor*meff*vvert
+				- dynfriction*vhor; //dummy dynamic friction
 			}
 
 			m_Events[nobj].isHit = true;
