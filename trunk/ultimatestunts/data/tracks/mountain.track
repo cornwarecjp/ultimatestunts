@@ -36,7 +36,7 @@ tiles/diag2.glb 0
 tiles/roaddiag.glb 0 1
 tiles/diag1.glb 0
 tiles/jump1.glb 0 4 2
-tiles/bridgeroad1.glb 4 5
+tiles/bridgeroad2.glb 4 5
 tiles/splitsleft1.glb 0 1 7
 tiles/splitsright1.glb 0 1 7
 tiles/tunnelin1.glb 0 4 6 2

@@ -15,6 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
+#include <cmath>
+
 #include "collisionface.h"
 
 CCollisionFace::CCollisionFace()
@@ -141,4 +143,26 @@ const CCollisionFace &CCollisionFace::operator/=(const CMatrix &m)
 	nor /= m;
 
 	return *this;
+}
+
+bool CCollisionFace::isInside(const CVector &pt) const
+{
+	float angle = 0.0;
+	for(unsigned int j=1; j<size(); j++)
+	{
+		CVector p1 = (*this)[j] - pt;
+		CVector p2 = (*this)[j-1] - pt;
+		float inpr = p1.dotProduct(p2);
+		inpr /= (p1.abs() * p2.abs());
+		angle += acos(inpr);
+	}
+	{
+		CVector p1 = (*this)[0] - pt;
+		CVector p2 = back() - pt;
+		float inpr = p1.dotProduct(p2);
+		inpr /= (p1.abs() * p2.abs());
+		angle += acos(inpr);
+	}
+
+	return (angle > 6.2831 && angle < 6.2832); //!= 2*pi: outside face
 }

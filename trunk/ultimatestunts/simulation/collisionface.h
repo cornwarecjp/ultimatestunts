@@ -49,6 +49,8 @@ public:
 	const CCollisionFace &operator+=(const CVector &r);
 	const CCollisionFace &operator*=(const CMatrix &m);
 	const CCollisionFace &operator/=(const CMatrix &m);
+
+	bool isInside(const CVector &pt) const;
 };
 
 #endif

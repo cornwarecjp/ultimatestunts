@@ -47,6 +47,8 @@ public:
 	//settings:
 	float m_Radius;
 	float m_Iinv_eff;
+	float m_suspk;
+	float m_tractionStiffness, m_cornerStiffness;
 
 	CVector m_NeutralPos; //in car coordinates
 	float m_Mu; //static friction limit on asphalt

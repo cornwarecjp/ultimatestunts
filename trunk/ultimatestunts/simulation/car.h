@@ -45,6 +45,7 @@ public:
 	//CRuleStatus m_RuleStatus;
 
 	virtual void update(CPhysics *simulator, float dt);
+	virtual void correctCollisions(const vector<CCollisionData> &cols);
 
 	//sub objects:
 	CCarEngine m_Engine;
@@ -68,7 +69,8 @@ protected:
 	void addDownforce();         //aerodynamic downforce
 	void doSteering(float dt);
 
-	const CCollisionFace *m_Ground; //the ground face, or NULL
+	CCollisionFace m_Ground; //the ground plane ( |normal| < 0.5 is no plane)
+	void determineGroundPlane(CPhysics *simulator);
 	void placeOnGround();
 
 	virtual void placeBodies();

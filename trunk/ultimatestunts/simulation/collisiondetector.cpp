@@ -177,24 +177,7 @@ const CCollisionFace *CCollisionDetector::getTileGround(int xtile, int ztile, in
 
 		//Test if the closest point is inside the face:
 		CVector cpos = r - ddiff * theFace.nor; //the closest point inside the plane
-		float angle = 0.0;
-		for(unsigned int j=1; j<theFace.size(); j++)
-		{
-			CVector p1 = theFace[j] - cpos;
-			CVector p2 = theFace[j-1] - cpos;
-			float inpr = p1.dotProduct(p2);
-			inpr /= (p1.abs() * p2.abs());
-			angle += acos(inpr);
-		}
-		{
-			CVector p1 = theFace[0] - cpos;
-			CVector p2 = theFace.back() - cpos;
-			float inpr = p1.dotProduct(p2);
-			inpr /= (p1.abs() * p2.abs());
-			angle += acos(inpr);
-		}
-		if(angle < 6.0 || angle > 6.2832) //!= 2*pi: outside face
-			continue;
+		if(!theFace.isInside(cpos)) continue;
 
 		//fprintf(stderr, "Test 7: WE HAVE A GROUND PLANE!\n");
 		dmax = ddiff;

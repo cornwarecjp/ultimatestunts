@@ -35,7 +35,7 @@ CCarWheel::CCarWheel()
 	m_SkidVolume = 0.0;
 
 	m_Radius = 0.35;
-	m_Iinv_eff = 5.0 * m_Radius * m_Radius; //assume the mass to be 5.0 to 10.0 kg
+	m_Iinv_eff = 1.0 / (5.0 * m_Radius * m_Radius); //assume the mass to be 5.0 to 10.0 kg
 }
 
 CCarWheel::~CCarWheel(){
@@ -105,14 +105,10 @@ angular velocities are in rads per second (rad/s)
 */
 CVector CCarWheel::getGroundForce(float &groundM, float vlong, float vlat, float contactMu)
 {
-	//The contact parameters:
-	float stiffness = 1.0; //normalised
-	//float mrotf = 1000.0;
-
 	float vlong_rel = vlong + m_Radius * m_w;
 
-	float Flong_norm = -stiffness * vlong_rel;
-	float Flat_norm = -stiffness * vlat;
+	float Flong_norm = -m_tractionStiffness * vlong_rel;
+	float Flat_norm = -m_cornerStiffness * vlat;
 
 	CVector Fhor(Flat_norm, 0.0, Flong_norm);
 	staticlimit(contactMu, Fhor, m_SkidVolume);

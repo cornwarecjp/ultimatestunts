@@ -26,6 +26,8 @@
 #include "movobjinput.h"
 #include "dataobject.h"
 
+#include "collisiondata.h"
+
 #include "vector.h"
 #include "matrix.h"
 #include "body.h"
@@ -40,8 +42,11 @@ public:
 
 	virtual bool load(const CString &filename, const CParamList &list);
 	virtual void unload();
-	//Update: physics simulation
+	
+	//physics simulation
 	virtual void update(CPhysics *simulator, float dt);
+	//collision response
+	virtual void correctCollisions(const vector<CCollisionData> &cols);
 
 	//For network transfer & other stuff
 	virtual CBinBuffer &getData(CBinBuffer &b) const;             //puts body positions etc. into buffer

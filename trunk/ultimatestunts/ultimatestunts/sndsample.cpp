@@ -95,9 +95,13 @@ bool CSndSample::load(const CString &filename, const CParamList &list)
 	CDataFile f(m_Filename);
 	CString realfile = f.useExtern();
 
-	//data
-	void *wave;
-	ALsizei format, size, bits, freq;
+	//data (and default values)
+	void *wave = NULL;
+	ALsizei
+		format = AL_FORMAT_MONO16,
+		size = 0,
+		bits = 0,
+		freq = 44100;
 
 	CString extension = realfile.mid(realfile.length() - 4);
 	extension.toLower();

@@ -107,6 +107,25 @@ void CMovingObject::update(CPhysics *simulator, float dt)
 	m_Mtot = CVector (0,0,0);
 }
 
+void CMovingObject::correctCollisions(const vector<CCollisionData> &cols)
+{
+	for(unsigned int c=0; c < cols.size(); c++)
+	{
+		CCollisionData col = cols[c];
+
+		//printf("depth = %.3f\n", col.depth);
+		CVector dr = col.nor * col.depth;
+
+		//correct the position
+		m_Position += dr;
+
+		//set the collision velocity to zero
+		float radcomp = m_Velocity.dotProduct(col.nor);
+		if(radcomp < 0.0)
+			m_Velocity -= radcomp * col.nor;
+	}
+}
+
 CBinBuffer &CMovingObject::getData(CBinBuffer &b) const
 {
 	b += (Uint8)m_MovObjID;

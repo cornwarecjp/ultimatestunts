@@ -35,7 +35,7 @@
 
 CCar::CCar(CDataManager *manager) : CMovingObject(manager)
 {
-	m_Ground = NULL;
+	m_Ground.nor = CVector(0,0,0);
 }
 
 CCar::~CCar()
@@ -50,7 +50,7 @@ bool CCar::load(const CString &filename, const CParamList &list)
 	m_DesiredSteering = 0.0;
 	m_xAngle = 0.0;
 	m_zAngle = 0.0;
-	m_Ground = NULL;
+	m_Ground.nor = CVector(0,0,0);
 
 	CDataFile dfile(getFilename());
 	CLConfig cfile(dfile.useExtern());
@@ -71,8 +71,16 @@ bool CCar::load(const CString &filename, const CParamList &list)
 	//wheels
 	CString frontwheelgeomfile = cfile.getValue("frontwheels", "geometry");
 	CString rearwheelgeomfile = cfile.getValue("rearwheels", "geometry");
+	float FrontWheelMass = cfile.getValue("frontwheels", "mass").toFloat();
+	float RearWheelMass = cfile.getValue("rearwheels", "mass").toFloat();
 	float FrontWheelMu = cfile.getValue("frontwheels", "mu").toFloat();
 	float RearWheelMu = cfile.getValue("rearwheels", "mu").toFloat();
+	float FrontWheelsuspk = cfile.getValue("frontwheels", "suspk").toFloat();
+	float RearWheelsuspk = cfile.getValue("rearwheels", "suspk").toFloat();
+	float FrontWheeltractionstiffness = cfile.getValue("frontwheels", "tractionstiffness").toFloat();
+	float RearWheeltractionstiffness = cfile.getValue("rearwheels", "tractionstiffness").toFloat();
+	float FrontWheelcornerstiffness = cfile.getValue("frontwheels", "cornerstiffness").toFloat();
+	float RearWheelcornerstiffness = cfile.getValue("rearwheels", "cornerstiffness").toFloat();
 	CVector FrontWheelNeutral = cfile.getValue("frontwheels", "position").toVector();
 	CVector RearWheelNeutral = cfile.getValue("rearwheels", "position").toVector();
 	m_FrontBrakeMax = cfile.getValue("frontwheels", "brakemax").toFloat();
@@ -159,10 +167,27 @@ bool CCar::load(const CString &filename, const CParamList &list)
 		m_Wheel[0].m_Radius - m_Wheel[0].m_NeutralPos.y +
 		m_Wheel[2].m_Radius - m_Wheel[2].m_NeutralPos.y);
 
+	m_Wheel[0].m_Iinv_eff = 1.0 / (0.5 * FrontWheelMass * m_Wheel[0].m_Radius * m_Wheel[0].m_Radius);
+	m_Wheel[1].m_Iinv_eff = 1.0 / (0.5 * FrontWheelMass * m_Wheel[1].m_Radius * m_Wheel[1].m_Radius);
+	m_Wheel[2].m_Iinv_eff = 1.0 / (0.5 * RearWheelMass * m_Wheel[2].m_Radius * m_Wheel[2].m_Radius);
+	m_Wheel[3].m_Iinv_eff = 1.0 / (0.5 * RearWheelMass * m_Wheel[3].m_Radius * m_Wheel[3].m_Radius);
+
 	m_Wheel[0].m_Mu = FrontWheelMu;
 	m_Wheel[1].m_Mu = FrontWheelMu;
 	m_Wheel[2].m_Mu = RearWheelMu;
 	m_Wheel[3].m_Mu = RearWheelMu;
+	m_Wheel[0].m_suspk = FrontWheelsuspk;
+	m_Wheel[1].m_suspk = FrontWheelsuspk;
+	m_Wheel[2].m_suspk = RearWheelsuspk;
+	m_Wheel[3].m_suspk = RearWheelsuspk;
+	m_Wheel[0].m_tractionStiffness = FrontWheeltractionstiffness;
+	m_Wheel[1].m_tractionStiffness = FrontWheeltractionstiffness;
+	m_Wheel[2].m_tractionStiffness = RearWheeltractionstiffness;
+	m_Wheel[3].m_tractionStiffness = RearWheeltractionstiffness;
+	m_Wheel[0].m_cornerStiffness = FrontWheelcornerstiffness;
+	m_Wheel[1].m_cornerStiffness = FrontWheelcornerstiffness;
+	m_Wheel[2].m_cornerStiffness = RearWheelcornerstiffness;
+	m_Wheel[3].m_cornerStiffness = RearWheelcornerstiffness;
 
 	//Setting the initial positions
 	resetBodyPositions(CVector(0,0,0), CMatrix());
@@ -215,9 +240,234 @@ void CCar::placeBodies()
 	}
 }
 
+void CCar::determineGroundPlane(CPhysics *simulator)
+{
+	vector<CCollisionFace> wheelGround;
+	vector<CVector> contactPoint;
+
+	//fprintf(stderr, "\n\ndetermineGroundPlane\n");
+
+	//get the ground faces for the wheels
+	for(unsigned int i=0; i < 4; i++)
+	{
+		CVector pos = m_OrientationMatrix * m_Wheel[i].m_NeutralPos;
+		//fprintf(stderr, "Wheel %d height: %.3f\n", i, (pos + m_Position).y);
+
+		const CCollisionFace * theFace = simulator->getGroundFace(pos + m_Position);
+		if(theFace != NULL)
+		{
+			CCollisionFace cf = *theFace;
+
+			//relative to the car center:
+			cf.d -= m_Position.dotProduct(cf.nor);
+			float dpos = pos.dotProduct(cf.nor);
+
+			//check if it's close enough to the wheel
+			if(dpos - cf.d > 1.5 * m_Wheel[i].m_Radius)
+				continue;
+
+			//fprintf(stderr, "  -> on the ground\n");
+
+			//contact position
+			pos += (cf.d - dpos) * cf.nor;
+
+			contactPoint.push_back(pos);
+			wheelGround.push_back(cf);
+		}
+	}
+
+	switch(wheelGround.size())
+	{
+	case 4:
+	{
+		//a plane through each combination of 3 wheels
+		CCollisionFace planes[4];
+
+		for(unsigned int i=0; i < 4; i++)
+		{
+			int indices[3]; //the 3 points
+
+			//only the points that are not i
+			int count = 0;
+			for(unsigned int j=0; j < 4; j++)
+				if(j != i)
+				{
+					indices[count] = j;
+					count++;
+				}
+
+			CVector line1 = contactPoint[indices[1]] - contactPoint[indices[0]];
+			CVector line2 = contactPoint[indices[2]] - contactPoint[indices[0]];
+			
+			planes[i].nor = line1.crossProduct(line2).normal();
+
+			CVector norsum =
+				wheelGround[indices[0]].nor +
+				wheelGround[indices[1]].nor +
+				wheelGround[indices[2]].nor;
+
+			if(norsum.dotProduct(planes[i].nor) < 0.0) //the real normals point to the other side
+				planes[i].nor = -planes[i].nor;
+
+			planes[i].d = contactPoint[indices[0]].dotProduct(planes[i].nor);
+		}
+
+		//now choose a plane. The other wheel should be as much above its own plane as possible
+		//so its contact point should be as much below the chosen plane as possible
+
+		//to make the simulation more continuous, we don't choose, but
+		//we use the height as a weight
+
+		m_Ground.nor = CVector(0,0,0);
+		m_Ground.d = 0.0;
+
+		float weight[4];
+		for(unsigned int i=0; i < 4; i++)
+		{
+			float height = contactPoint[i].dotProduct(planes[i].nor) - planes[i].d;
+			if(height < 0.0)
+				{weight[i] = 1.0;}
+			else
+				{weight[i] = 0.1;}
+			//weight[i] =  exp(-height); //always positive, >> 0 for height = 0
+
+			m_Ground.nor += weight[i] * planes[i].nor;
+			m_Ground.d += weight[i] * planes[i].d;
+		}
+		float weightsum = weight[0] + weight[1] + weight[2] + weight[3];
+		if(fabs(weightsum) > 0.01)
+		{
+			m_Ground.d /= weightsum;
+		}
+		else
+		{
+			m_Ground.d = 0.0;
+		}
+		m_Ground.nor.normalise();
+
+		float norcomp0, norcomp1, norcomp2, norcomp3;
+		norcomp0 = wheelGround[0].nor.dotProduct(m_Ground.nor);
+		norcomp1 = wheelGround[1].nor.dotProduct(m_Ground.nor);
+		norcomp2 = wheelGround[2].nor.dotProduct(m_Ground.nor);
+		norcomp3 = wheelGround[3].nor.dotProduct(m_Ground.nor);
+
+		if(norcomp0 > norcomp1 && norcomp0 > norcomp2 && norcomp0 > norcomp3)
+		{
+			m_Ground.material = wheelGround[0].material;
+			m_Ground.isSurface = wheelGround[0].isSurface;
+			m_Ground.isWater = wheelGround[0].isWater;
+		}
+		else if(norcomp1 > norcomp2 && norcomp1 > norcomp3)
+		{
+			m_Ground.material = wheelGround[1].material;
+			m_Ground.isSurface = wheelGround[1].isSurface;
+			m_Ground.isWater = wheelGround[1].isWater;
+		}
+		else if(norcomp2 > norcomp3)
+		{
+			m_Ground.material = wheelGround[2].material;
+			m_Ground.isSurface = wheelGround[2].isSurface;
+			m_Ground.isWater = wheelGround[2].isWater;
+		}
+		else
+		{
+			m_Ground.material = wheelGround[3].material;
+			m_Ground.isSurface = wheelGround[3].isSurface;
+			m_Ground.isWater = wheelGround[3].isWater;
+		}
+
+		break;
+	}
+	case 3:
+	{
+		CVector line1 = contactPoint[1] - contactPoint[0];
+		CVector line2 = contactPoint[2] - contactPoint[0];
+
+		m_Ground.nor = line1.crossProduct(line2).normal();
+
+		CVector norsum = wheelGround[0].nor + wheelGround[1].nor + wheelGround[2].nor;
+
+		if(norsum.dotProduct(m_Ground.nor) < 0.0) //the real normals point to the other side
+			m_Ground.nor = -m_Ground.nor;
+
+		m_Ground.d = contactPoint[0].dotProduct(m_Ground.nor);
+
+		float norcomp0, norcomp1, norcomp2;
+		norcomp0 = wheelGround[0].nor.dotProduct(m_Ground.nor);
+		norcomp1 = wheelGround[1].nor.dotProduct(m_Ground.nor);
+		norcomp2 = wheelGround[2].nor.dotProduct(m_Ground.nor);
+
+		if(norcomp0 > norcomp1 && norcomp0 > norcomp2)
+		{
+			m_Ground.material = wheelGround[0].material;
+			m_Ground.isSurface = wheelGround[0].isSurface;
+			m_Ground.isWater = wheelGround[0].isWater;
+		}
+		else if(norcomp1 > norcomp2)
+		{
+			m_Ground.material = wheelGround[1].material;
+			m_Ground.isSurface = wheelGround[1].isSurface;
+			m_Ground.isWater = wheelGround[1].isWater;
+		}
+		else
+		{
+			m_Ground.material = wheelGround[2].material;
+			m_Ground.isSurface = wheelGround[2].isSurface;
+			m_Ground.isWater = wheelGround[2].isWater;
+		}
+
+		break;
+	}
+	case 2:
+	{
+		CVector line = (contactPoint[1] - contactPoint[0]).normal();
+
+		CVector nor0_comp = wheelGround[0].nor - wheelGround[0].nor.component(line);
+		CVector nor1_comp = wheelGround[1].nor - wheelGround[1].nor.component(line);
+
+		m_Ground.nor = (nor0_comp + nor1_comp).normal();
+		m_Ground.d = contactPoint[0].dotProduct(m_Ground.nor);
+
+		if(nor0_comp.abs2() > nor1_comp.abs2())
+		{
+			m_Ground.material = wheelGround[0].material;
+			m_Ground.isSurface = wheelGround[0].isSurface;
+			m_Ground.isWater = wheelGround[0].isWater;
+		}
+		else
+		{
+			m_Ground.material = wheelGround[1].material;
+			m_Ground.isSurface = wheelGround[1].isSurface;
+			m_Ground.isWater = wheelGround[1].isWater;
+		}
+
+		break;
+	}
+	case 1:
+	{
+		m_Ground = wheelGround[0];
+		break;
+	}
+	case 0:
+	{
+		m_Ground.nor = CVector(0,0,0);
+		break;
+	}
+	}
+
+	//back to absolute coordinates:
+	m_Ground.d += m_Position.dotProduct(m_Ground.nor);
+}
+
 void CCar::placeOnGround()
 {
-	if(m_Ground == NULL) return;
+	/*
+	All models are wrong, but some are useful.
+	G.E.P. Box
+	*/
+
+	
+	if(m_Ground.nor.abs2() < 0.25) return;
 
 	//fprintf(stderr, "ground normal = %s\n", CString(m_Ground->nor).c_str());
 
@@ -229,7 +479,7 @@ void CCar::placeOnGround()
 	ynu.y = Mnu.Element(1,1);
 	ynu.z = Mnu.Element(1,2);
 
-	CVector ystr = m_Ground->nor;
+	CVector ystr = m_Ground.nor;
 	CVector cp = ystr.crossProduct(ynu);
 	
 	float abscp = cp.abs();
@@ -243,18 +493,18 @@ void CCar::placeOnGround()
 	//The right position:
 
 	CVector &pos = m_Position;
-	float dobj = pos.dotProduct(m_Ground->nor) - m_Ground->d;
-	pos -= (dobj - m_PositionAboveGround) * m_Ground->nor;
+	float dobj = pos.dotProduct(m_Ground.nor) - m_Ground.d;
+	pos -= (dobj - m_PositionAboveGround) * m_Ground.nor;
 	
 	//align the linear velocity:
-	float vvert = m_Velocity.dotProduct(m_Ground->nor);
+	float vvert = m_Velocity.dotProduct(m_Ground.nor);
 	if(vvert < 0.0)
 	{
-		m_Velocity -= vvert * m_Ground->nor;
+		m_Velocity -= vvert * m_Ground.nor;
 	}
 
 	//align the angular velocity
-	m_AngularVelocity = m_AngularVelocity.component(m_Ground->nor);
+	m_AngularVelocity = m_AngularVelocity.component(m_Ground.nor);
 
 	//placeBodies(); //not needed
 }
@@ -267,19 +517,19 @@ void CCar::update(CPhysics *simulator, float dt)
 
 	doSteering(dt);
 
-	m_Ground = simulator->getGroundFace(m_Position);
+	determineGroundPlane(simulator);
 
 	simulateGeneral(simulator, dt);
-	if(m_Ground == NULL)
+	if(m_Ground.nor.abs2() < 0.25)
 	{
 		//fprintf(stderr, "ground plane NOT found\n");
 		simulateAir(simulator, dt);
 	}
 	else
 	{
-		float vvert = m_Velocity.dotProduct(m_Ground->nor);
-		float dobj = m_Bodies[0].m_Position.dotProduct(m_Ground->nor) - m_Ground->d;
-		if(vvert > 0.1 || dobj > 1.1 * m_PositionAboveGround)
+		float vvert = m_Velocity.dotProduct(m_Ground.nor);
+		float dobj = m_Bodies[0].m_Position.dotProduct(m_Ground.nor) - m_Ground.d;
+		if(vvert > 0.1 || dobj > 10.0)
 		{
 			//fprintf(stderr, "ground plane far below\n");
 			simulateAir(simulator, dt);
@@ -306,6 +556,38 @@ void CCar::update(CPhysics *simulator, float dt)
 	//Integration step and other general things
 	//----------------------
 	CMovingObject::update(simulator, dt);
+}
+
+void CCar::correctCollisions(const vector<CCollisionData> &cols)
+{
+	for(unsigned int c=0; c < cols.size(); c++)
+	{
+		CCollisionData col = cols[c];
+
+		//printf("depth = %.3f\n", col.depth);
+		CVector dr = col.nor * col.depth;
+
+		//no correction towards the ground
+		if(m_Ground.nor.abs2() > 0.25)
+		{
+			if(col.nor.dotProduct(m_Ground.nor) < -0.8) continue;
+
+			CVector newcolnor = (col.nor - col.nor.component(m_Ground.nor)).normal();
+			
+			float dotpr = newcolnor.dotProduct(col.nor);
+			if(fabs(dotpr) < 0.1) continue;
+
+			dr = newcolnor * (col.depth / dotpr);
+		}
+
+		//correct the position
+		m_Position += dr;
+
+		//set the collision velocity to zero
+		float radcomp = m_Velocity.dotProduct(col.nor);
+		if(radcomp < 0.0)
+			m_Velocity -= radcomp * col.nor;
+	}
 }
 
 void CCar::simulateGeneral(CPhysics *simulator, float dt)
@@ -517,7 +799,7 @@ void CCar::calculateNormalForces()
 		//y difference:
 		float dy = r.y - r0.y;
 
-		m_Wheel[i].m_Fnormal = wf[i] * Fy_tot - 100000.0 * dy; //TODO: variable k
+		m_Wheel[i].m_Fnormal = wf[i] * Fy_tot - m_Wheel[i].m_suspk * dy;
 		if(m_Wheel[i].m_Fnormal < 0.0) m_Wheel[i].m_Fnormal = 0.0; //no "glue" forces
 	}
 }
@@ -525,8 +807,8 @@ void CCar::calculateNormalForces()
 void CCar::applyWheelForces()
 {
 	float muGround = 1.0;
-	if(m_Ground != NULL && m_Ground->material != NULL)
-		muGround = m_Ground->material->m_Mu;
+	if(m_Ground.nor.abs2() > 0.25 && m_Ground.material != NULL)
+		muGround = m_Ground.material->m_Mu;
 
 	//This function mainly works in the car coordinate system
 	CMatrix Rmat_inv = m_OrientationMatrix.transpose();
