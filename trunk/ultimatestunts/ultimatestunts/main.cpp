@@ -33,12 +33,6 @@ using namespace std;
 #include "usmacros.h"
 
 //Simulation stuff
-#include "playercontrol.h"
-#include "clientplayercontrol.h"
-#include "clientsim.h"
-#include "rulecontrol.h"
-#include "physics.h"
-#include "world.h"
 #include "car.h"
 
 #include "usserver.h"
@@ -48,93 +42,23 @@ using namespace std;
 #include "aiplayercar.h"
 #include "humanplayer.h"
 
-//Graphics stuff
-#include "gamewinsystem.h"
-#include "gamerenderer.h"
-#include "gui.h"
-#include "gamecamera.h"
+#include "gamegui.h"
 
-//Sound stuff
-#include "sound.h"
+#include "uscore.h"
 
-CWorld *world = NULL;
+CUSCore *gamecore = NULL;
+CGameGUI *gui = NULL;
 
 vector<CPlayer *> players;
+unsigned int numHumanPlayers = 0;
 
-CPlayerControl *pctrl;
-vector<CSimulation *> simulations;
-CClientNet *clientnet = NULL;
 CUSServer *server = NULL;
 
 CGameWinSystem *winsys = NULL;
-CGameRenderer *renderer = NULL;
-CGUI *gui = NULL;
-
-CCamera *cameras[16]; //max. 16 cameras should be enough
-unsigned int numCameras = 0;
-
-CSound *soundsystem = NULL;
-
-float topspeed = 0.0;
 
 bool mainloop()
 {
-#ifdef DEBUGMSG
- //Debugging 'display'
-	printf("\033[1H");
-	printf("\033[1G");
-	printf("**********\n");
-	for(unsigned int i=0; i<world->m_MovObjs.size(); i++)
-	{
-		CMovingObject *mo = world->m_MovObjs[i];
-		if(mo->getType() == CMessageBuffer::car)
-		{
-			CCar * theCar = (CCar *)mo;
-			float vel = theCar->m_Bodies[0].getVelocity().abs();
-			if(vel > topspeed) topspeed = vel;
-			float wEngine = theCar->getGearRatio() * theCar->m_MainAxisVelocity;
-			printf("Top speed in this session: %.2f km/h\n", topspeed * 3.6);
-			printf("Car %d: velocity %.2f km/h; gear %d; %.2f RPM\n"
-					"wheel %.2f rad/s; axis %.2f rad/s; engine %.2f rad/s\n",
-						i,          vel * 3.6, theCar->m_Gear, 60.0 * wEngine / 6.28,
-						vel / 0.35, theCar->m_MainAxisVelocity, wEngine);
-		}
-	}
-	printf("**********\n");
-#endif
-
-	bool retval = true;
-
-	//Escape:
-	retval = retval && ( !(winsys->globalKeyWasPressed(eExit)) );
-
-	//Cameras:
-	for(unsigned int i=0; i < numCameras; i++)
-	{
-		CGameCamera *theCam = (CGameCamera *)cameras[i];
-		if(winsys->playerKeyWasPressed(eCameraChange, i)) theCam->swithCameraMode();
-		if(winsys->playerKeyWasPressed(eCameraToggle, i)) theCam->switchTrackedObject();
-	}
-
-	//Next song:
-	if(winsys->globalKeyWasPressed(eNextSong)) soundsystem->playNextSong();
-
-	//Debug messages
-	world->printDebug = winsys->getKeyState('d');
-
-	for(unsigned int i=0; i<players.size(); i++)
-		players[i]->update(); //Makes moving decisions
-
-	for(unsigned int i=0; i<simulations.size(); i++)
-		retval = retval && simulations[i]->update(); //Modifies world object
-
-	for(unsigned int i=0; i < numCameras; i++)
-		cameras[i]->update();
-
-	renderer->update();
-	soundsystem->update();
-
-	return retval;
+	return gamecore->update();
 }
 
 bool addPlayer(bool isHuman, CString name, CObjectChoice choice)
@@ -142,26 +66,21 @@ bool addPlayer(bool isHuman, CString name, CObjectChoice choice)
 	CPlayer *p;
 
 	if(isHuman)
-		p = new CHumanPlayer(winsys, numCameras);
+		p = new CHumanPlayer(winsys, numHumanPlayers);
 	else
 		p = new CAIPlayerCar();
 
-	int id = pctrl->addPlayer(choice);
-	p->m_MovingObjectId = id;
-	p->m_PlayerId = 0;
-	if(id < 0)
+	if(!gamecore->addPlayer(p, name, choice))
 	{
 		printf("Sim doesn't accept player\n");
 		delete p;
 		return false;
 	}
 
-	if(isHuman) //set the camera to this player:
+	if(isHuman) //set a camera to this player:
 	{
-		CGameCamera *theCam = new CGameCamera(world);
-		theCam->setTrackedObject(id);
-		*(cameras + numCameras) = theCam;
-		numCameras++;
+		gamecore->addCamera(p->m_MovingObjectId);
+		numHumanPlayers++;
 	}
 
 	players.push_back(p);
@@ -196,53 +115,25 @@ void start(int argc, char *argv[]) //first things before becoming interactive
 	printf("Initialising Ultimate Stunts:\n---Window system\n");
 	winsys = new CGameWinSystem("Ultimate Stunts", *theMainConfig);
 
-	world = new CWorld();
-
 	printf("---GUI\n");
-	gui = new CGUI(*theMainConfig, winsys);
+	gui = new CGameGUI(*theMainConfig, winsys);
 
-	printf("---Sound system\n");
-	soundsystem = new CSound(*theMainConfig);
-
-	printf("---Rendering engine\n");
-	renderer = new CGameRenderer(winsys);
+	printf("---Game core\n");
+	gamecore = new CUSCore(winsys);
 }
 
 void end() //Last things before exiting
 {
-	printf("Unloading Ultimate Stunts:\n---Sound system\n");
-	if(soundsystem!=NULL)
-		delete soundsystem;
-	printf("---Rendering engine\n");
-	if(renderer!=NULL)
-		delete renderer;
-	printf("---Cameras\n");
-	if(cameras != NULL)
-	{
-		for(unsigned int i=0; i < numCameras; i++)
-			delete *(cameras+i);
-	}
-	printf("---Simulations\n");
-	for(unsigned int i=0; i<simulations.size(); i++)
-		delete simulations[i];
-	simulations.clear();
+	printf("Unloading Ultimate Stunts:\n\n");
+	
+	printf("---Game core\n");
+	if(gamecore != NULL)
+		delete gamecore;
 
 	printf("---Players\n");
 	for(unsigned int i=0; i<players.size(); i++)
 		delete players[i];
 	players.clear();
-
-	printf("---Player control center\n");
-	if(pctrl!=NULL)
-		delete pctrl;
-
-	printf("---Network\n");
-	if(clientnet!=NULL)
-		delete clientnet;
-
-	printf("---World data\n");
-	if(world!=NULL)
-		delete world;
 
 	printf("---Server\n");
 	if(server!=NULL)
@@ -269,60 +160,48 @@ int main(int argc, char *argv[])
 	//MENU SECTION:
 	gui->startFrom("mainmenu");
 	while(!( gui->isPassed("mainmenu") )); //waiting for input
-	CGUI::eMainMenu maininput =
-		(CGUI::eMainMenu)gui->getValue("mainmenu").toInt();
+	CGameGUI::eMainMenu maininput =
+		(CGameGUI::eMainMenu)gui->getValue("mainmenu").toInt();
 
 	switch(maininput)
 	{
-		case CGUI::LocalGame:
-			pctrl = new CPlayerControl;
-			simulations.push_back(new CRuleControl(world));
-			simulations.push_back(new CPhysics(theMainConfig, world));
+		case CGameGUI::LocalGame:
 			while(!( gui->isPassed("trackmenu") )); //waiting for input
-			trackfile = gui->getValue("trackmenu");
+			gamecore->initLocalGame(gui->getValue("trackmenu"));
 			break;
-		case CGUI::NewNetwork:
+		case CGameGUI::NewNetwork:
 		{
 			//Server menu:
 			while(!( gui->isPassed("servermenu") )); //waiting for input
-			CString name = "localhost";
-			int port = gui->getValue("servermenu", "portnumber").toInt();
 
 			//Track menu:
 			while(!( gui->isPassed("trackmenu") )); //waiting for input
+
+			CString name = "localhost";
+			int port = gui->getValue("servermenu", "portnumber").toInt();
+
 			trackfile = gui->getValue("trackmenu");
 
 			server = new CUSServer(port, trackfile);
 			printf("Creating client-type simulation with %s:%d\n", name.c_str(), port);
-			clientnet = new CClientNet(name, port);
-			pctrl = new CClientPlayerControl(clientnet);
-			simulations.push_back(new CClientSim(clientnet, world));
-			simulations.push_back(new CPhysics(theMainConfig, world));
+
+			gamecore->initClientGame(name, port);
 			break;
 		}
-		case CGUI::JoinNetwork:
+		case CGameGUI::JoinNetwork:
 		{
 			while(!( gui->isPassed("hostmenu") )); //waiting for input
 			CString name = gui->getValue("hostmenu", "hostname");
 			int port = gui->getValue("hostmenu", "portnumber").toInt();
 			printf("Creating client-type simulation with %s:%d\n", name.c_str(), port);
-			clientnet = new CClientNet(name, port);
-			pctrl = new CClientPlayerControl(clientnet);
-			CClientSim *csim = new CClientSim(clientnet, world);
-			trackfile = csim->getTrackname();
-			simulations.push_back(csim);
-			simulations.push_back(new CPhysics(theMainConfig, world));
+			gamecore->initClientGame(name, port);
 			break;
 		}
 		default:
-		case CGUI::Exit:
+		case CGameGUI::Exit:
 			end();
 			return EXIT_SUCCESS;
 	}
-
-	printf("\nLoading the track\n");
-	world->loadTrack(trackfile);
-	renderer->loadTrackData();
 
 	//Set up the players
 	while(!( gui->isPassed("playermenu") )); //waiting for input
@@ -339,19 +218,8 @@ int main(int argc, char *argv[])
 		addPlayer(isHuman, name, oc);
 	}
 
-	//Now the players are set, we can give the cameras to the renderer and sound system:
-	renderer->setCameras(cameras, numCameras);
-	soundsystem->setCamera(cameras[0]); //first camera
-
-	printf("\nLoading moving objects\n");
-	if(!pctrl->loadObjects())
-		{printf("Error while loading moving objects\n");}
-	if(!renderer->loadObjData())
-		{printf("Error while loading object graphics\n");}
-
-
-	printf("\nLoading the sound samples\n");
-	soundsystem->load();
+	printf("\nStarting the game\n");
+	gamecore->startGame();
 
 	printf("\nEntering mainloop\n");
 	//Creating some white space

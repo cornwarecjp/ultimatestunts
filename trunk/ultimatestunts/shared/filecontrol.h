@@ -17,6 +17,9 @@
 
 #include "cstring.h"
 
+#ifndef FILECONTROL_H
+#define FILECONTROL_H
+
 class CFileControl
 {
 public:
@@ -25,3 +28,5 @@ public:
 
 	void setDataDir(const CString &dir);
 };
+
+#endif

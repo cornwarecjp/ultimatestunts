@@ -1,8 +1,8 @@
 /***************************************************************************
-                          gui.h  -  The graphical user interface: menu's etc.
+                          uscore.h  -  Game core plus graphics, sound and input
                              -------------------
-    begin                : vr jan 31 2003
-    copyright            : (C) 2003 by CJP
+    begin                : vr okt 15 2004
+    copyright            : (C) 2004 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
 
@@ -15,30 +15,46 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GUI_H
-#define GUI_H
+#ifndef USCORE_H
+#define USCORE_H
 
-#include <vector>
-namespace std {}
-using namespace std;
+#include "gamecore.h"
 
-#include "lconfig.h"
-#include "winsystem.h"
+//Graphics stuff
+#include "gamewinsystem.h"
+#include "gamerenderer.h"
+#include "gamecamera.h"
+
+//Sound stuff
+#include "sound.h"
 
 /**
   *@author CJP
   */
 
-class CGUI //derived from CBThread in the future
-{
-public:
-	CGUI(const CLConfig &conf, CWinSystem *winsys);
-	~CGUI();
+class CUSCore : public CGameCore  {
+public: 
+	CUSCore(CGameWinSystem *winsys);
+	virtual ~CUSCore();
+
+	bool addCamera(unsigned int objid);
+
+	virtual bool update(); //true = continue false = leave
+
+	virtual void startGame();
 
 protected:
-	CWinSystem *m_WinSys;
+	CGameWinSystem *m_WinSys;
+	CGameRenderer *m_Renderer;
 
-	CString getInput();
+	CCamera *m_Cameras[4]; //max. 4 cameras should be enough
+	unsigned int m_NumCameras;
+
+	CSound *m_SoundSystem;
+
+	virtual void loadTrackData();
+	virtual void loadMovObjData();
+	virtual void unloadData();
 };
 
 #endif

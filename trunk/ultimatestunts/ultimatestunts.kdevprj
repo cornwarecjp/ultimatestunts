@@ -432,7 +432,7 @@ install_location=
 type=HEADER
 
 [simulation/Makefile.am]
-files=simulation/physics.cpp,simulation/physics.h,simulation/simulation.cpp,simulation/simulation.h,simulation/player.cpp,simulation/player.h,simulation/world.cpp,simulation/world.h,simulation/movingobject.cpp,simulation/movingobject.h,simulation/car.cpp,simulation/car.h,simulation/message.cpp,simulation/message.h,simulation/messagebuffer.cpp,simulation/messagebuffer.h,simulation/dynamicobject.cpp,simulation/dynamicobject.h,simulation/objectchoice.cpp,simulation/objectchoice.h,simulation/netudp.h,simulation/netudp.cpp,simulation/netmessage.cpp,simulation/netmessage.h,simulation/carinput.cpp,simulation/carinput.h,simulation/movobjinput.cpp,simulation/movobjinput.h,simulation/aiplayercar.cpp,simulation/aiplayercar.h,simulation/clientsim.cpp,simulation/clientsim.h,simulation/bound.cpp,simulation/bound.h,simulation/material.h,simulation/clientnet.cpp,simulation/clientnet.h,simulation/rulecontrol.cpp,simulation/rulecontrol.h,simulation/playercontrol.cpp,simulation/playercontrol.h,simulation/clientplayercontrol.cpp,simulation/clientplayercontrol.h,simulation/collisionmodel.cpp,simulation/collisionmodel.h,simulation/tilemodel.cpp,simulation/tilemodel.h,simulation/body.cpp,simulation/body.h,simulation/collisionface.cpp,simulation/collisionface.h,simulation/collision.h,simulation/collisiondetector.cpp,simulation/collisiondetector.h,simulation/collisiondata.cpp,simulation/collisiondata.h
+files=simulation/physics.cpp,simulation/physics.h,simulation/simulation.cpp,simulation/simulation.h,simulation/player.cpp,simulation/player.h,simulation/world.cpp,simulation/world.h,simulation/movingobject.cpp,simulation/movingobject.h,simulation/car.cpp,simulation/car.h,simulation/message.cpp,simulation/message.h,simulation/messagebuffer.cpp,simulation/messagebuffer.h,simulation/dynamicobject.cpp,simulation/dynamicobject.h,simulation/objectchoice.cpp,simulation/objectchoice.h,simulation/netudp.h,simulation/netudp.cpp,simulation/netmessage.cpp,simulation/netmessage.h,simulation/carinput.cpp,simulation/carinput.h,simulation/movobjinput.cpp,simulation/movobjinput.h,simulation/aiplayercar.cpp,simulation/aiplayercar.h,simulation/clientsim.cpp,simulation/clientsim.h,simulation/bound.cpp,simulation/bound.h,simulation/material.h,simulation/clientnet.cpp,simulation/clientnet.h,simulation/rulecontrol.cpp,simulation/rulecontrol.h,simulation/playercontrol.cpp,simulation/playercontrol.h,simulation/clientplayercontrol.cpp,simulation/clientplayercontrol.h,simulation/collisionmodel.cpp,simulation/collisionmodel.h,simulation/tilemodel.cpp,simulation/tilemodel.h,simulation/body.cpp,simulation/body.h,simulation/collisionface.cpp,simulation/collisionface.h,simulation/collision.h,simulation/collisiondetector.cpp,simulation/collisiondetector.h,simulation/collisiondata.cpp,simulation/collisiondata.h,simulation/gamecore.cpp,simulation/gamecore.h
 sub_dirs=
 type=static_library
 
@@ -593,6 +593,18 @@ install_location=
 type=SOURCE
 
 [simulation/dynamicobject.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[simulation/gamecore.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[simulation/gamecore.h]
 dist=true
 install=false
 install_location=
@@ -924,7 +936,7 @@ install_location=
 type=DATA
 
 [ultimatestunts/Makefile.am]
-files=ultimatestunts/main.cpp,ultimatestunts/humanplayer.cpp,ultimatestunts/humanplayer.h,ultimatestunts/gamecamera.cpp,ultimatestunts/gamecamera.h,ultimatestunts/sound.cpp,ultimatestunts/sound.h,ultimatestunts/sndsample.cpp,ultimatestunts/sndsample.h,ultimatestunts/soundobj.cpp,ultimatestunts/soundobj.h,ultimatestunts/gamerenderer.cpp,ultimatestunts/gamerenderer.h,ultimatestunts/usserver.cpp,ultimatestunts/usserver.h,ultimatestunts/soundworld.cpp,ultimatestunts/soundworld.h,ultimatestunts/music.cpp,ultimatestunts/music.h,ultimatestunts/gamewinsystem.cpp,ultimatestunts/gamewinsystem.h
+files=ultimatestunts/main.cpp,ultimatestunts/humanplayer.cpp,ultimatestunts/humanplayer.h,ultimatestunts/gamecamera.cpp,ultimatestunts/gamecamera.h,ultimatestunts/sound.cpp,ultimatestunts/sound.h,ultimatestunts/sndsample.cpp,ultimatestunts/sndsample.h,ultimatestunts/soundobj.cpp,ultimatestunts/soundobj.h,ultimatestunts/gamerenderer.cpp,ultimatestunts/gamerenderer.h,ultimatestunts/usserver.cpp,ultimatestunts/usserver.h,ultimatestunts/soundworld.cpp,ultimatestunts/soundworld.h,ultimatestunts/music.cpp,ultimatestunts/music.h,ultimatestunts/gamewinsystem.cpp,ultimatestunts/gamewinsystem.h,ultimatestunts/gamegui.cpp,ultimatestunts/gamegui.h,ultimatestunts/uscore.cpp,ultimatestunts/uscore.h
 sub_dirs=
 type=prog_main
 
@@ -935,6 +947,18 @@ install_location=
 type=SOURCE
 
 [ultimatestunts/gamecamera.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[ultimatestunts/gamegui.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[ultimatestunts/gamegui.h]
 dist=true
 install=false
 install_location=
@@ -1037,6 +1061,18 @@ install_location=
 type=SOURCE
 
 [ultimatestunts/soundworld.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[ultimatestunts/uscore.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[ultimatestunts/uscore.h]
 dist=true
 install=false
 install_location=

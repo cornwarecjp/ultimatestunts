@@ -39,6 +39,10 @@ CUSServer::CUSServer(int port, CString trackfile)
 	fprintf(m_ServerInput, "%d\n", 1);
 	//Enter the number of AI players:
 	fprintf(m_ServerInput, "%d\n", 1);
+
+	//Enter the AI player:
+	fprintf(m_ServerInput, "AI Player on server\n");
+	fprintf(m_ServerInput, "cars/porsche928.conf\n");
 }
 
 CUSServer::~CUSServer()

@@ -22,13 +22,7 @@
 #include <cstdlib>
 #include <cstdio>
 
-#include "playercontrol.h"
-#include "clientplayercontrol.h"
-#include "clientsim.h"
-#include "physics.h"
-#include "rulecontrol.h"
-
-#include "world.h"
+#include "gamecore.h"
 
 #include "objectchoice.h"
 #include "aiplayercar.h"
@@ -36,11 +30,8 @@
 #include "lconfig.h"
 #include "filecontrol.h"
 
-CWorld *world;
 vector<CPlayer *> players;
-vector<CSimulation *> simulations;
-CClientNet *clientnet = NULL;
-CPlayerControl *pctrl;
+CGameCore *gamecore = NULL;
 
 CString getInput(CString question="")
 {
@@ -54,12 +45,15 @@ bool addPlayer()
 {
 	CPlayer *p = new CAIPlayerCar();
 
-	CObjectChoice choice;
+	CString name = getInput("Enter name: ");
+	printf("You entered %s\n", name.c_str());
+	CString car = getInput("Enter the car: ");
+	printf("You entered %s\n", car.c_str());
 
-	int id = pctrl->addPlayer(choice);
-	p->m_MovingObjectId = id;
-	p->m_PlayerId = 0;
-	if(id < 0)
+	CObjectChoice choice;
+	choice.m_Filename = car;
+
+	if(!gamecore->addPlayer(p, "defaultname", choice))
 	{
 		printf("Sim doesn't accept player\n");
 		delete p;
@@ -72,29 +66,7 @@ bool addPlayer()
 
 bool mainloop()
 {
-	//Debugging 'display'
-	printf("\033[1H");
-	printf("\033[1G");
-	printf("**********\n");
-	for(unsigned int i=0; i<world->m_MovObjs.size(); i++)
-	{
-		CMovingObject *mo = world->m_MovObjs[i];
-		CVector r = mo->m_Bodies[0].getPosition();
-		//CVector v = mo->getVelocity();
-		printf("Object %d: position (%.2f,%.2f,%.2f)\n",
-		               i,            r.x, r.y, r.z);
-	}
-	printf("**********\n");
-
-	bool retval = true;
-
-	for(unsigned int i=0; i<players.size(); i++)
-		players[i]->update(); //Makes moving decisions
-
-	for(unsigned int i=0; i<simulations.size(); i++)
-		retval = retval && simulations[i]->update(); //Modifies world object
-
-	return retval;
+	return gamecore->update();
 }
 
 int main(int argc, char *argv[])
@@ -138,8 +110,9 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	printf("Creating world object\n");
-	world = new CWorld();
+	printf("---Game core\n");
+	//world = new CWorld();
+	gamecore = new CGameCore;
 
 	CString answ = getInput("Do you want to use a \"super-server\" (y/n)? ");
 	printf("\nYou entered %c\n", answ[0]);
@@ -149,22 +122,13 @@ int main(int argc, char *argv[])
 		int p = getInput("Enter the super-server's port number: ").toInt();
 
 		printf("Creating client-type simulation\n");
-		clientnet = new CClientNet(h, p);
-		pctrl = new CClientPlayerControl(clientnet);
-		CClientSim *csim = new CClientSim(clientnet, world);
-
-		simulations.push_back(csim);
-		trackfile = csim->getTrackname();
-		simulations.push_back(new CPhysics(theMainConfig, world));
+		gamecore->initClientGame(h, p);
 	}
 	else
 	{
-		pctrl = new CPlayerControl;
-		simulations.push_back(new CRuleControl(world));
-		simulations.push_back(new CPhysics(theMainConfig, world));
-
 		trackfile = getInput("Please enter the track file: ");
 		printf("\nYou entered %s\n", trackfile.c_str());
+		gamecore->initLocalGame(trackfile);
 	}
 
 	remote_players = getInput("Enter the number of remote players: ").toInt();
@@ -172,14 +136,10 @@ int main(int argc, char *argv[])
 	ai_players = getInput("Enter the number of AI players: ").toInt();
 	printf("\nYou entered %d\n", ai_players);
 
-	printf("\nLoading track data\n");
-	world->loadTrack(trackfile);
-
 	for(unsigned int i=0; i<ai_players; i++)
 		addPlayer();
 
-	if(!pctrl->loadObjects())
-		printf("Error while loading moving objects\n");
+	gamecore->startGame();
 
 	printf("\nEntering mainloop\n");
 
@@ -191,25 +151,13 @@ int main(int argc, char *argv[])
 
 	printf("\nLeaving mainloop\n");
 
-	printf("\nDeleting simulations\n");
-	for(unsigned int i=0; i<simulations.size(); i++)
-		delete simulations[i];
-	simulations.clear();
+	printf("\n---Game core\n");
+	delete gamecore;
 
-	printf("\nDeleting players\n");
+	printf("\n---Players\n");
 	for(unsigned int i=0; i<players.size(); i++)
 		delete players[i];
 	players.clear();
 
-	printf("\nDeleting player control\n");
-	delete pctrl;
-
-	printf("\nDeleting superserver network\n");
-	if(clientnet!=NULL)
-		delete clientnet;
-
-	printf("\nDeleting world\n");
-	delete world;
-
-  return EXIT_SUCCESS;
+	return EXIT_SUCCESS;
 }

@@ -3,5 +3,21 @@
 <KDevPrjSession>
  <LastCompileConfig>(Standaard)</LastCompileConfig>
  <Mainframe MaximizeMode="0" />
- <DocsAndViews NumberOfDocuments="0" />
+ <DocsAndViews NumberOfDocuments="5" >
+  <Doc0 CursorPosLine="227" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/corne/programma-src/vrije-tijd/ultimatestunts/ultimatestunts/main.cpp" >
+   <View0 Top="0" Width="962" Attach="1" Height="473" Left="0" Focus="1" Type="KWriteView" MinMaxMode="0" />
+  </Doc0>
+  <Doc1 CursorPosLine="40" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/corne/programma-src/vrije-tijd/ultimatestunts/graphics/gui.h" >
+   <View0 Top="0" Width="962" Attach="1" Height="473" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  </Doc1>
+  <Doc2 CursorPosLine="31" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/corne/programma-src/vrije-tijd/ultimatestunts/graphics/gui.cpp" >
+   <View0 Top="0" Width="962" Attach="1" Height="473" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  </Doc2>
+  <Doc3 CursorPosLine="57" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/corne/programma-src/vrije-tijd/ultimatestunts/ultimatestunts/gamegui.h" >
+   <View0 Top="0" Width="962" Attach="1" Height="473" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  </Doc3>
+  <Doc4 CursorPosLine="74" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/corne/programma-src/vrije-tijd/ultimatestunts/ultimatestunts/gamegui.cpp" >
+   <View0 Top="0" Width="962" Attach="1" Height="473" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  </Doc4>
+ </DocsAndViews>
 </KDevPrjSession>
