@@ -35,7 +35,7 @@ CEditGraphObj::~CEditGraphObj()
 		glDeleteLists(m_ObjList1, 1);
 }
 
-bool CEditGraphObj::loadFromFile(CString filename, CTexture **matarray)
+bool CEditGraphObj::loadFromFile(CString filename, CLODTexture **matarray)
 {
 	m_MatArray = matarray;
 	clear();
@@ -198,7 +198,7 @@ bool CEditGraphObj::loadFromFile(CString filename, CTexture **matarray)
 	return true;
 }
 
-bool CEditGraphObj::import_raw(CString filename, CTexture **matarray)
+bool CEditGraphObj::import_raw(CString filename, CLODTexture **matarray)
 {
 	m_MatArray = matarray;
 	clear();
@@ -246,7 +246,7 @@ bool CEditGraphObj::import_raw(CString filename, CTexture **matarray)
 	return true;
 }
 
-bool CEditGraphObj::import_3ds(CString filename, CTexture **matarray)
+bool CEditGraphObj::import_3ds(CString filename, CLODTexture **matarray)
 {
 	m_MatArray = matarray;
 	clear();

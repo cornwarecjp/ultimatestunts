@@ -18,7 +18,7 @@
 #ifndef TEXTURELOADER_H
 #define TEXTURELOADER_H
 
-#include "texture.h"
+#include "lodtexture.h"
 #include "cstring.h"
 #include "lconfig.h"
 
@@ -31,7 +31,7 @@ public:
 	CTextureLoader(const CLConfig &conf, CString texdatfile);
 	~CTextureLoader();
 
-	CTexture ** m_TexArray;
+	CLODTexture ** m_TexArray;
 	int m_N;
 
 protected:

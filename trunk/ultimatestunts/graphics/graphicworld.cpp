@@ -51,7 +51,7 @@ bool CGraphicWorld::loadWorld()
 	printf("  Loading tile textures:\n");
 	for(unsigned int i=0; i<m_World->m_TileMaterials.size(); i++)
 	{
-		CTexture t;
+		CLODTexture t;
 		CDataFile f(m_World->m_TileMaterials[i]->m_Filename);
 		int mul = m_World->m_TileMaterials[i]->m_Mul;
 		printf("   Loading %s with mul=%d:\n", f.getName().c_str(), mul);
@@ -67,7 +67,7 @@ bool CGraphicWorld::loadWorld()
 	{
 		CGraphObj obj;
 		CFile f(m_World->m_TileModels[i]->m_Filename);
-		CTexture **subset = getTextureSubset(m_World->m_TileModels[i]->m_Subset);
+		CLODTexture **subset = getTextureSubset(m_World->m_TileModels[i]->m_Subset);
 		printf("   Loading %s:\n", f.getName().c_str());
 		obj.loadFromFile(&f, subset);
 		m_Tiles.push_back(obj);
@@ -135,10 +135,10 @@ void CGraphicWorld::unloadObjects()
 	m_MovingObjects.clear();
 }
 
-CTexture **CGraphicWorld::getTextureSubset(CString indices)
+CLODTexture **CGraphicWorld::getTextureSubset(CString indices)
 {
 	//printf("Indices: \"%s\"\n", indices.c_str());
-	CTexture **ret = new (CTexture *)[1+indices.length()/2]; //We don't need more
+	CLODTexture **ret = new (CLODTexture *)[1+indices.length()/2]; //We don't need more
 	int i=0;
 	while(true)
 	{
@@ -148,13 +148,13 @@ CTexture **CGraphicWorld::getTextureSubset(CString indices)
 			int n = indices.mid(0,sp).toInt();
 			indices= indices.mid(sp+1, indices.length()-sp-1);
 			//printf("    Adding %d\n", n);
-			CTexture *tex = &(m_TileTextures[n]);
+			CLODTexture *tex = &(m_TileTextures[n]);
 			*(ret+i) = tex;
 		}
 		else
 		{
 			//printf("    Adding %d\n", indices.toInt());
-			CTexture *tex = &(m_TileTextures[indices.toInt()]); //the last index
+			CLODTexture *tex = &(m_TileTextures[indices.toInt()]); //the last index
 			*(ret+i) = tex;
 			break;
 		}

@@ -23,6 +23,8 @@
 #include "aiplayercar.h"
 #include "humanplayer.h"
 
+#include "datafile.h"
+
 CUSCore *_USGameCore;
 
 bool game_mainloop()
@@ -39,7 +41,7 @@ CGameGUI::CGameGUI(const CLConfig &conf, CGameWinSystem *winsys) : CGUI(conf, wi
 
 	m_Console = new CConsole(winsys);
 
-	//default values:
+	//default values: (currently unused)
 	m_TrackFile = "tracks/default.track";
 	addPlayer("CJP", true, "cars/diablo.conf");
 	addPlayer("AI", false, "cars/f1.conf");
@@ -141,23 +143,51 @@ CString CGameGUI::viewHostMenu()
 
 CString CGameGUI::viewTrackMenu()
 {
-	CString defaulttrack = "tracks/default.track";
-	m_Console->print("Track menu:\n");
-	m_TrackFile = m_Console->getInput(CString("Enter the track filename (default is ") + defaulttrack.c_str() + "): ");
-	if(m_TrackFile == "") m_TrackFile = defaulttrack;
+	m_Console->print("\nTrack menu.");
+
+	m_TrackFile = "";
+	while(m_TrackFile == "")
+	{
+		m_Console->print("Choose a track from:");
+
+		//list the tracks
+		vector<CString> tracks = getDirContents("tracks", ".track");
+		for(unsigned int i=0; i < tracks.size(); i++)
+			m_Console->print(CString((int)i+1) + ": " + tracks[i]);
+
+		int i = m_Console->getInput("Which track? ").toInt() - 1;
+		if(i >= 0 && i < (int)(tracks.size()))
+			m_TrackFile = CString("tracks/") + tracks[i];
+
+	}
 
 	return "playermenu";
 }
 
 CString CGameGUI::viewPlayerMenu()
 {
-	CString defaultcar = "cars/diablo.conf";
+	CString defaultcar = "diablo.conf";
 	m_PlayerDescr.clear();
 
 	m_Console->print("Player menu:\n");
 	CString name = m_Console->getInput("Enter your name: ");
-	CString carfile = m_Console->getInput(CString("Enter your car file (default is ") + defaultcar.c_str() + "): ");
-	if(carfile == "") carfile = defaultcar;
+
+	CString carfile = "";
+	while(carfile == "")
+	{
+		m_Console->print("Choose a car from:");
+
+		//list the tracks
+		vector<CString> cars = getDirContents("cars", ".conf");
+		for(unsigned int i=0; i < cars.size(); i++)
+			m_Console->print(CString((int)i+1) + ": " + cars[i]);
+
+		int i = m_Console->getInput("Which car? ").toInt() - 1;
+		if(i >= 0 && i < (int)(cars.size()))
+			carfile = CString("cars/") + cars[i];
+
+	}
+
 	addPlayer(name, true, carfile);
 
 	while(true)
@@ -166,8 +196,23 @@ CString CGameGUI::viewPlayerMenu()
 		if(!(answ == "y" || answ == "Y")) break;
 
 		name = m_Console->getInput("Enter the name: ");
-		carfile = m_Console->getInput(CString("Enter the car file (default is ") + defaultcar + "): ");
-		if(carfile == "") carfile = defaultcar;
+
+		carfile = "";
+		while(carfile == "")
+		{
+			m_Console->print("Choose a car from:");
+
+			//list the tracks
+			vector<CString> cars = getDirContents("cars", ".conf");
+			for(unsigned int i=0; i < cars.size(); i++)
+				m_Console->print(CString((int)i+1) + ": " + cars[i]);
+
+			int i = m_Console->getInput("Which car? ").toInt() - 1;
+			if(i >= 0 && i < (int)(cars.size()))
+				carfile = CString("cars/") + cars[i];
+
+		}
+
 		answ = m_Console->getInput("Is it an AI player(y/n)? ");
 		bool isHuman = !(answ == "y" || answ == "Y");
 		addPlayer(name, isHuman, carfile);
@@ -189,13 +234,8 @@ CString CGameGUI::playGame()
 {
 	load();
 
-	//white space between loading and game messages
-	m_Console->print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-
 	_USGameCore = m_GameCore;
 	m_WinSys->runLoop(game_mainloop, true); //true: swap buffers
-
-	m_Console->print("\n\n\n");
 
 	unload();
 

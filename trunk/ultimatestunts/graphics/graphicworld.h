@@ -18,7 +18,7 @@
 #ifndef GRAPHICWORLD_H
 #define GRAPHICWORLD_H
 
-#include "texture.h"
+#include "lodtexture.h"
 #include "graphobj.h"
 #include "background.h"
 #include "world.h"
@@ -46,10 +46,10 @@ public:
 	CBackground m_Background;
 	CTexture m_EnvMap;
 protected:
-	CTexture **getTextureSubset(CString indices);
+	CLODTexture **getTextureSubset(CString indices);
 
-	vector<CTexture> m_TileTextures;
-	vector<CTexture> m_MovingObjectTextures;
+	vector<CLODTexture> m_TileTextures;
+	vector<CLODTexture> m_MovingObjectTextures;
 
 	const CWorld *m_World;
 	int m_TexMaxSize;

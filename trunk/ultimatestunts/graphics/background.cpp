@@ -41,14 +41,14 @@ void CBackground::draw() const
 	float drift = t - (float)((int)t);
 
 	GLfloat color[] = {1.0, 1.0, 1.0};
-	if(getSizeX(1) <=4 || getSizeY(1) <= 4)
+	if(getSizeX() <=4 || getSizeY() <= 4)
 	{
 		color[0] = m_Color.x;
 		color[1] = m_Color.y;
 		color[2] = m_Color.z;
 	}
 	else
-		{CTexture::draw(1);}
+		{CTexture::draw();}
 
 	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, color);
 

@@ -17,7 +17,7 @@
 #ifndef GRAPHOBJ_H
 #define GRAPHOBJ_H
 
-#include "texture.h"
+#include "lodtexture.h"
 #include "cstring.h"
 #include "cfile.h"
 
@@ -26,7 +26,7 @@ class CGraphObj
 	public:
 		CGraphObj();
 		virtual ~CGraphObj();
-		virtual bool loadFromFile(CFile *f, CTexture **matarray, int lod_offset = 0);
+		virtual bool loadFromFile(CFile *f, CLODTexture **matarray, int lod_offset = 0);
 		void unload();
 
 		void draw(int lod) const;

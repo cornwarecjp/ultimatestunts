@@ -20,6 +20,10 @@
 
 #include "cfile.h"
 
+#include <vector>
+namespace std {}
+using namespace std;
+
 /**
   *@author CJP
   */
@@ -37,5 +41,7 @@ public:
 };
 
 CString getShortName(const CString &longname);
+
+vector<CString> getDirContents(const CString &dir, const CString &ext = "");
 
 #endif

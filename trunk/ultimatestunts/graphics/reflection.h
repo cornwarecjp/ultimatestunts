@@ -1,5 +1,5 @@
 /***************************************************************************
-                          reflection.h  -  description
+                          reflection.h  -  A dynamic reflection map
                              -------------------
     begin                : ma sep 20 2004
     copyright            : (C) 2004 by CJP

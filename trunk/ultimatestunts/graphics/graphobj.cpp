@@ -55,7 +55,7 @@ void CGraphObj::unload()
 	glDeleteLists(m_ObjList4, 1);
 }
 
-bool CGraphObj::loadFromFile(CFile *f, CTexture **matarray, int lod_offset)
+bool CGraphObj::loadFromFile(CFile *f, CLODTexture **matarray, int lod_offset)
 {
 	int startlod = lod_offset + 1;
 	int stoplod = lod_offset + 4;
@@ -134,7 +134,7 @@ bool CGraphObj::loadFromFile(CFile *f, CTexture **matarray, int lod_offset)
 				{
 					int t = rhs.toInt();
 
-					CTexture *tex = *(matarray+t);
+					CLODTexture *tex = *(matarray+t);
 					if(tex->getSizeX(lod) <=4 || tex->getSizeY(lod) <= 4)
 					{
 						if(texture_isenabled)

@@ -65,7 +65,7 @@ void CEditRenderer::update()
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, newambient);
 	glPolygonOffset(0.0, -1.0);
 
-	m_EnvMap->draw(1);
+	m_EnvMap->draw();
 	m_GraphObj->draw(0);
 
 	glDisable(GL_POLYGON_OFFSET_FILL);

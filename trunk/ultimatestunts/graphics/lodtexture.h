@@ -1,8 +1,8 @@
 /***************************************************************************
-                          texture.h  -  A texture class
+                          lodtexture.h  -  Texture with multiple Levels Of Detail
                              -------------------
-    begin                : Tue Jun 18 2002
-    copyright            : (C) 2002 by CJP
+    begin                : do okt 28 2004
+    copyright            : (C) 2004 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
 
@@ -14,42 +14,37 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#ifndef TEXTURE_H
-#define TEXTURE_H
-#include "image.h"
-#include "vector.h"
 
-#include "cstring.h"
+#ifndef LODTEXTURE_H
+#define LODTEXTURE_H
 
-class CTexture
-{
-public:
-	CTexture();
-	void setTextureSmooth(bool texture_smooth)
-		{m_TextureSmooth = texture_smooth;}
+#include "texture.h"
 
-	virtual bool loadFromFile(CString filename, int xs, int ys);
+/**
+  *@author CJP
+  */
+
+class CLODTexture : public CTexture  {
+public: 
+	CLODTexture();
+	virtual ~CLODTexture();
+
 	virtual void unload();
 
-	int getSizeX() const;
-	int getSizeY() const;
-	CVector getColor() const;
+	int getSizeX(int i) const;
+	int getSizeY(int i) const;
+	void draw(int lod) const;
 
-	void draw() const;
 protected:
-	RGBImageRec *loadImage(CString filename);
+	unsigned int m_Texture2;
+	unsigned int m_Texture3;
+	unsigned int m_Texture4;
+
+	int sizex2,sizey2,
+			sizex3,sizey3,
+			sizex4,sizey4;
+
 	virtual RGBImageRec *loadFromImage(RGBImageRec *in_image, int xs, int ys);
-	void freeImage(RGBImageRec *image);
-
-	RGBImageRec *scaleImage(RGBImageRec *in, int xs, int ys);
-
-	bool m_TextureSmooth;
-
-	unsigned int m_Texture;
-
-	int sizex,sizey;
-
-	CVector m_Color;
 };
 
 #endif

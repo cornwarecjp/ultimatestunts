@@ -263,8 +263,8 @@ void CGameRenderer::renderScene()
 	//fprintf(stderr, "renderTrack start: %.3f\n", _DebugTimer.getTime());
 
 	//Lighting:
-	GLfloat sun_diffuse[] = {0.9, 1.0, 0.75, 1.0};  /* Yellow 'sun' diffuse light. */
-	GLfloat sun_position[] = {0.69, 0.2, 0.7, 0.0};  /* Infinite light location. */
+	GLfloat sun_diffuse[] = {1.0, 1.0, 0.8, 1.0};  /* Yellow 'sun' diffuse light. */
+	GLfloat sun_position[] = {0.69, 0.7, 0.2, 0.0};  /* Infinite light location. */
 
 	glLightfv(GL_LIGHT0, GL_POSITION, sun_position);
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, sun_diffuse);

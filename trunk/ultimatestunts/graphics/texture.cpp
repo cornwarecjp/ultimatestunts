@@ -27,13 +27,24 @@ CTexture::CTexture()
 	m_Color = CVector(0,0,0);
 	m_TextureSmooth = true; //default
 
-	m_Texture = m_Texture2 = m_Texture3 = m_Texture4 = 0;
+	m_Texture = 0;
 }
 
 bool CTexture::loadFromFile(CString filename, int xs, int ys)
 {
-	RGBImageRec *in_image = RGBImageLoad(filename.c_str());
+	RGBImageRec *in_image = loadImage(filename);
+	in_image = loadFromImage(in_image, xs, ys);
+	freeImage(in_image);
+	return true;
+}
 
+RGBImageRec *CTexture::loadImage(CString filename)
+{
+	return RGBImageLoad(filename.c_str());
+}
+
+RGBImageRec *CTexture::loadFromImage(RGBImageRec *in_image, int xs, int ys)
+{
 	RGBImageRec *image = scaleImage(in_image, xs, ys);
 	if(image==NULL)
 	{
@@ -66,213 +77,60 @@ bool CTexture::loadFromFile(CString filename, int xs, int ys)
 	sizex = image->sizeX;
 	sizey = image->sizeY;
 
-	if(in_image != NULL)
-	{
-		free(in_image->data);
-		free(in_image);
-	}
-	in_image = image;
+	freeImage(in_image);
 
-	image = scaleImage(in_image, xs/2, ys/2);
-	if(image==NULL)
-	{
-		m_Texture2 = m_Texture;
-		sizex2 = sizex;
-		sizey2 = sizey;
-	}
-	else
-	{
-		glGenTextures(1, &m_Texture2);
-		glBindTexture(GL_TEXTURE_2D, m_Texture2);
-
-		if(image->format == 1) //RGBA
-			{glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA8, image->sizeX, image->sizeY, 0, GL_RGBA, GL_UNSIGNED_BYTE, image->data);}
-		else //Assume RGB
-			{glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB8,  image->sizeX, image->sizeY, 0, GL_RGB,  GL_UNSIGNED_BYTE, image->data);}
-
-		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
-		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
-
-		if(m_TextureSmooth)
-		{
-			glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-			glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-		}
-		else
-		{
-			glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-			glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-		}
-
-		sizex2 = image->sizeX;
-		sizey2 = image->sizeY;
-
-		free(in_image->data);
-		free(in_image);
-		in_image = image;
-	}
-
-	image = scaleImage(in_image, xs/4,ys/4);
-	if(image==NULL)
-	{
-		m_Texture3 = m_Texture2;
-		sizex3 = sizex2;
-		sizey3 = sizey2;
-	}
-	else
-	{
-		glGenTextures(1, &m_Texture3);
-		glBindTexture(GL_TEXTURE_2D, m_Texture3);
-
-		if(image->format == 1) //RGBA
-			{glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA8, image->sizeX, image->sizeY, 0, GL_RGBA, GL_UNSIGNED_BYTE, image->data);}
-		else //Assume RGB
-			{glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB8,  image->sizeX, image->sizeY, 0, GL_RGB,  GL_UNSIGNED_BYTE, image->data);}
-
-		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
-		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
-
-		if(m_TextureSmooth)
-		{
-			glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-			glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-		}
-		else
-		{
-			glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-			glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-		}
-
-		sizex3 = image->sizeX;
-		sizey3 = image->sizeY;
-
-		free(in_image->data);
-		free(in_image);
-		in_image = image;
-	}
-
-	image = scaleImage(in_image, xs/8,ys/8);
-	if(image==NULL)
-	{
-		m_Texture4 = m_Texture3;
-		sizex4 = sizex3;
-		sizey4 = sizey3;
-	}
-	else
-	{
-		glGenTextures(1, &m_Texture4);
-		glBindTexture(GL_TEXTURE_2D, m_Texture4);
-
-		if(image->format == 1) //RGBA
-			{glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA8, image->sizeX, image->sizeY, 0, GL_RGBA, GL_UNSIGNED_BYTE, image->data);}
-		else //Assume RGB
-			{glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB8,  image->sizeX, image->sizeY, 0, GL_RGB,  GL_UNSIGNED_BYTE, image->data);}
-
-		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
-		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
-
-		if(m_TextureSmooth)
-		{
-			glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-			glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-		}
-		else
-		{
-			glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-			glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-		}
-
-		sizex4 = image->sizeX;
-		sizey4 = image->sizeY;
-
-		free(in_image->data);
-		free(in_image);
-		in_image = image;
-	}
-
-	image = scaleImage(in_image, 1,1);
-	if(image==NULL)
-	{
-		m_Color.x = (float)*(in_image->data  ) / 255;
-		m_Color.y = (float)*(in_image->data+1) / 255;
-		m_Color.z = (float)*(in_image->data+2) / 255;
-	}
-	else
+	//determine color
+	RGBImageRec *image2 = scaleImage(image, 1,1);
+	if(image2==NULL)
 	{
 		m_Color.x = (float)*(image->data  ) / 255;
 		m_Color.y = (float)*(image->data+1) / 255;
 		m_Color.z = (float)*(image->data+2) / 255;
+	}
+	else
+	{
+		m_Color.x = (float)*(image2->data  ) / 255;
+		m_Color.y = (float)*(image2->data+1) / 255;
+		m_Color.z = (float)*(image2->data+2) / 255;
 
-		free(image->data);
-		free(image);
+		freeImage(image2);
 	}
 
-	free(in_image->data);
-	free(in_image);
-
-	return true;
+	return image;
 }
+
+void CTexture::freeImage(RGBImageRec *image)
+{
+	if(image != NULL)
+	{
+		if(image->data != NULL) free(image->data);
+		free(image);
+	}
+}
+
 
 void CTexture::unload()
 {
 	glDeleteTextures(1, &m_Texture);
-	glDeleteTextures(1, &m_Texture2);
-	glDeleteTextures(1, &m_Texture3);
-	glDeleteTextures(1, &m_Texture4);
 }
 
-void CTexture::draw(int lod) const
+void CTexture::draw() const
 {
-  if (getSizeX(lod) <= 4 || getSizeY(lod) <= 4)
+  if (getSizeX() <= 4 || getSizeY() <= 4)
     {printf("   Error: trying to draw a too small texture:\n"
-		"   lod=%d, x=%d, y=%d\n", lod, getSizeX(lod), getSizeY(lod)); return;}
+		"   x=%d, y=%d\n", getSizeX(), getSizeY()); return;}
 
-  switch(lod)
-  {
-    case 1:
-      glBindTexture(GL_TEXTURE_2D, m_Texture );
-      break;
-    case 2:
-      glBindTexture(GL_TEXTURE_2D, m_Texture2);
-      break;
-    case 3:
-      glBindTexture(GL_TEXTURE_2D, m_Texture3);
-      break;
-    case 4:
-      glBindTexture(GL_TEXTURE_2D, m_Texture4);
-  }
+	glBindTexture(GL_TEXTURE_2D, m_Texture );
 }
 
-int CTexture::getSizeX(int i) const
+int CTexture::getSizeX() const
 {
-	switch(i)
-	{
-		case 1:
-			return sizex;
-		case 2:
-			return sizex2;
-		case 3:
-			return sizex3;
-		case 4:
-			return sizex4;
-	}
-  return 0;
+	return sizex;
 }
 
-int CTexture::getSizeY(int i) const
+int CTexture::getSizeY() const
 {
-	switch(i)
-	{
-		case 1:
-			return sizey;
-		case 2:
-			return sizey2;
-		case 3:
-			return sizey3;
-		case 4:
-			return sizey4;
-	}
-  return 0;
+	return sizey;
 }
 
 CVector CTexture::getColor() const

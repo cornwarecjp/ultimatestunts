@@ -81,7 +81,7 @@ void CFont::enable()
 {
 	glPushAttrib(GL_LIST_BIT);
 	glListBase(m_BaseDispList);
-	CTexture::draw(1);
+	CTexture::draw();
 }
 
 void CFont::disable()

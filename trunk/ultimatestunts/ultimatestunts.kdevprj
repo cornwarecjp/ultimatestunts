@@ -63,7 +63,7 @@ User Interface=*.ui,*.kdevdlg,*.rc,
 groups=Headers,Sources,GNU,Translations,User Interface,Others
 
 [Makefile.am]
-files=ultimatestunts.kdevprj,AUTHORS,COPYING,INSTALL,ChangeLog,README,TODO,acinclude.m4,aclocal.m4,configure.in,install-sh,missing,mkinstalldirs,execselect.sh,execselect.x,restore-am,stdin.txt,textures.dat,ultimatestunts.conf
+files=ultimatestunts.kdevprj,AUTHORS,COPYING,INSTALL,ChangeLog,README,TODO,acinclude.m4,aclocal.m4,configure.in,install-sh,missing,mkinstalldirs,execselect.sh,execselect.x,restore-am,textures.dat,ultimatestunts.conf
 sub_dirs=ultimatestunts,shared,filetransfer,graphics,simulation,stuntsai,stuntsserver,tileedit,trackedit,stunts3dedit,__test
 type=normal
 
@@ -122,7 +122,7 @@ sub_dirs=
 type=static_library
 
 [graphics/Makefile.am]
-files=graphics/winsystem.cpp,graphics/winsystem.h,graphics/graphobj.cpp,graphics/graphobj.h,graphics/image.c,graphics/image.h,graphics/texture.cpp,graphics/texture.h,graphics/renderer.cpp,graphics/renderer.h,graphics/graphicworld.cpp,graphics/graphicworld.h,graphics/gui.cpp,graphics/gui.h,graphics/camera.h,graphics/background.cpp,graphics/background.h,graphics/reflection.cpp,graphics/reflection.h,graphics/console.cpp,graphics/console.h,graphics/font.cpp,graphics/font.h
+files=graphics/winsystem.cpp,graphics/winsystem.h,graphics/graphobj.cpp,graphics/graphobj.h,graphics/image.c,graphics/image.h,graphics/texture.cpp,graphics/texture.h,graphics/renderer.cpp,graphics/renderer.h,graphics/graphicworld.cpp,graphics/graphicworld.h,graphics/gui.cpp,graphics/gui.h,graphics/camera.h,graphics/background.cpp,graphics/background.h,graphics/reflection.cpp,graphics/reflection.h,graphics/console.cpp,graphics/console.h,graphics/font.cpp,graphics/font.h,graphics/lodtexture.cpp,graphics/lodtexture.h
 sub_dirs=
 type=static_library
 
@@ -211,6 +211,18 @@ install_location=
 type=SOURCE
 
 [graphics/image.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[graphics/lodtexture.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[graphics/lodtexture.h]
 dist=true
 install=false
 install_location=
@@ -807,12 +819,6 @@ dist=true
 install=false
 install_location=
 type=HEADER
-
-[stdin.txt]
-dist=true
-install=false
-install_location=
-type=DATA
 
 [stunts3dedit/3ds.cpp]
 dist=true

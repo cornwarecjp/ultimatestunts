@@ -45,9 +45,9 @@ class CEditGraphObj : public CGraphObj  {
 public: 
 	CEditGraphObj();
 	virtual ~CEditGraphObj();
-	virtual bool loadFromFile(CString filename, CTexture **matarray);
-	bool import_raw(CString filename, CTexture **matarray);
-	bool import_3ds(CString filename, CTexture **matarray);
+	virtual bool loadFromFile(CString filename, CLODTexture **matarray);
+	bool import_raw(CString filename, CLODTexture **matarray);
+	bool import_3ds(CString filename, CLODTexture **matarray);
 
 	void merge(const CEditGraphObj &obj, const CString &lods);
 
@@ -60,7 +60,7 @@ public:
 
 protected:
 	bool isRendered;
-	CTexture **m_MatArray;
+	CLODTexture **m_MatArray;
 };
 
 #endif

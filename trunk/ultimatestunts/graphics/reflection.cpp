@@ -1,5 +1,5 @@
 /***************************************************************************
-                          reflection.cpp  -  description
+                          reflection.cpp  -  A dynamic reflection map
                              -------------------
     begin                : ma sep 20 2004
     copyright            : (C) 2004 by CJP
@@ -22,6 +22,15 @@
 #include <GL/glu.h>
 #include <cstdlib>
 #include <cstdio>
+
+//Reflection method:
+#define USECOPYTEXSUB
+
+#ifdef USECOPYTEXSUB
+#define CopyToTexture(size) glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, (size), (size))
+#else
+#define CopyToTexture(size) glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 0, 0, (size), (size), 0)
+#endif
 
 //TODO: remove this when not debugging
 #include "timer.h"
@@ -408,7 +417,7 @@ void CReflection::update(CRenderer *renderer, CCamera *cam, int side)
 		//fprintf(stderr, "Front side 2: %.5f\n", _DebugTimer_refl.getTime() - tstart);
 		glBindTexture(GL_TEXTURE_2D, m_ReflectionTexture[eFront] );
 		//fprintf(stderr, "Front side 3: %.5f\n", _DebugTimer_refl.getTime() - tstart);
-		glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 0, 0, m_Size/2, m_Size/2, 0);
+		CopyToTexture(m_Size/2);
 		//fprintf(stderr, "Front side 4: %.5f\n", _DebugTimer_refl.getTime() - tstart);
 
 		//we want to know the central pixel color
@@ -432,7 +441,7 @@ void CReflection::update(CRenderer *renderer, CCamera *cam, int side)
 			//copy image to texture
 			glBindTexture(GL_TEXTURE_2D, m_ReflectionTexture[i] );
 			//fprintf(stderr, "One side 3: %.5f\n", _DebugTimer_refl.getTime() - tcopy);
-			glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 0, 0, m_Size/2, m_Size/2, 0);
+			CopyToTexture(m_Size/2);
 			//fprintf(stderr, "One side 4: %.5f\n", _DebugTimer_refl.getTime() - tcopy);
 			//tcopy = _DebugTimer_refl.getTime();
 		}
@@ -476,7 +485,7 @@ void CReflection::update(CRenderer *renderer, CCamera *cam, int side)
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
 	glBindTexture(GL_TEXTURE_2D, m_Texture);
-	glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 0, 0, m_Size, m_Size, 0);
+	CopyToTexture(m_Size);
 
 	glClearColor(oldClear[0],oldClear[1],oldClear[2],oldClear[3]);
 	if(zEnabled) glEnable(GL_DEPTH_TEST);

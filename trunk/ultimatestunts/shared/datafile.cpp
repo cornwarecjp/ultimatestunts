@@ -15,6 +15,9 @@
  *                                                                         *
  ***************************************************************************/
 
+#include <dirent.h>
+#include <cstdio>
+
 #include "filecontrol.h"
 #include "datafile.h"
 
@@ -65,4 +68,29 @@ CString getShortName(const CString &longname)
 	if(pos < 0) return "";
 
 	return longname.mid(pos + filecontroldatadir.length());
+}
+
+vector<CString> getDirContents(const CString &dir, const CString &ext)
+{
+	vector<CString> ret;
+
+	CString fullname = filecontroldatadir + dir;
+
+	DIR *theDir = opendir(fullname.c_str());
+
+	if(theDir == NULL) return ret;
+
+	while(true)
+	{
+		struct dirent *entry = readdir(theDir);
+		if(entry == NULL) break;
+
+		CString entname = entry->d_name;
+		//file extension check:
+		if(ext == "" || entname.inStr(ext) == (int)(entname.length() - ext.length()))
+			ret.push_back(entname);
+	}
+
+	closedir(theDir);
+	return ret;
 }
