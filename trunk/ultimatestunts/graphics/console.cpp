@@ -144,7 +144,6 @@ CString CConsole::getInput(const CString &question)
 	ret = ret.mid(0, ret.length() - 1); //remove \n
 	*/
 
-	print(ret);
 	printf("Answer = \"%s\"\n", ret.c_str());
 
 	if(!wasWriting) leaveWriteMode();
