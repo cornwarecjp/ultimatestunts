@@ -64,8 +64,8 @@ CDataObject::~CDataObject(){
 bool CDataObject::load(const CString &filename, const CParamList &list)
 {
 	printf("   Loading file %s\n", filename.c_str());
-	//for(unsigned int i=0; i < list.size(); i++)
-	//	printf("     %s = \"%s\"\n", list[i].name.c_str(), list[i].value.c_str());
+	for(unsigned int i=0; i < list.size(); i++)
+		printf("     %s = \"%s\"\n", list[i].name.c_str(), list[i].value.c_str());
 
 	if(m_isLoaded) unload();
 	m_isLoaded = true;
