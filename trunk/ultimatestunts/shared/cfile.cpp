@@ -103,6 +103,9 @@ void CFile::writel(CString l)
 
 CBinBuffer CFile::readBytes(unsigned int maxlen)
 {
+	if(fp==NULL)
+		return CBinBuffer();
+
 	Uint8 buffer[maxlen];
 
 	unsigned int size = fread(buffer, 1, maxlen, fp);
@@ -116,6 +119,9 @@ CBinBuffer CFile::readBytes(unsigned int maxlen)
 
 void CFile::writeBytes(const CBinBuffer &b)
 {
+	if(fp==NULL)
+		return;
+
 	Uint8 buffer[b.size()];
 	for(unsigned int i=0; i < b.size(); i++)
 		buffer[i] = b[i];

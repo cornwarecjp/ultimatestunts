@@ -66,7 +66,8 @@
 	int inStr(char c) const;
 	int inStr(const CString &s) const;
 
-	//Don't know how to do this with std::string:
+	CString &format(const char *format, int maxsize, ...);
+
 	float toFloat();
 
 	//String->vector conversion:

@@ -16,6 +16,7 @@
  ***************************************************************************/
 #include <cstdio>
 #include <cstdlib>
+#include <cstdarg>
 
 #include "cstring.h"
 
@@ -296,6 +297,19 @@ int CString::inStr(char c) const
 int CString::inStr(const CString &s) const
 {
 	return find(s);
+}
+
+CString &CString::format(const char *format, int maxsize, ...)
+{
+	char buffer[maxsize];
+
+	va_list ap;
+	va_start(ap, maxsize);
+	vsnprintf(buffer, maxsize, format, ap);
+	va_end(ap);
+
+	assign(buffer);
+	return *this;
 }
 
 float CString::toFloat()

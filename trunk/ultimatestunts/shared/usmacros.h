@@ -14,6 +14,10 @@
  *                                                                         *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #if defined(_WIN32) // && !defined(_WINGDI_) && !defined(MESA)
 #define CALLBACKFUN __cdecl
 #else

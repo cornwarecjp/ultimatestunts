@@ -15,6 +15,10 @@
  *                                                                         *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #undef USE_SDL
 #ifdef HAVE_SDL
 #define USE_SDL

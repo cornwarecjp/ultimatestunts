@@ -14,6 +14,10 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
+
+#include <libintl.h>
+#define _(String) gettext (String)
+
 #include <cstdio>
 
 #include "hello.h"
@@ -24,5 +28,5 @@ hello::~hello(){
 }
 void hello::writeHello()
 {
-  printf("Hello, world!\n");
+  printf(_("Hello, world!\n"));
 }
