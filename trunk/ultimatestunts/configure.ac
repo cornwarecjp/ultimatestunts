@@ -168,6 +168,11 @@ fi
 CFLAGS="-Wall $CFLAGS"
 CXXFLAGS="-Wall $CXXFLAGS"
 
+dnl ------------------
+dnl The data directory
+dnl ------------------
+dnl TODO: set this with some intelligent script
+datadir="./data/"
 
 dnl ------
 dnl Output
@@ -179,6 +184,7 @@ echo "Sound libraries: \"$soundlibs\""
 echo "Graphics libraries: \"$graphlibs\""
 echo "SDL libraries: \"$sdllibs\""
 echo "ODE libraries: \"$odelibs\""
+echo "datadir: \"$datadir\""
 
 dnl -------------
 dnl Some warnings
@@ -216,4 +222,7 @@ AC_SUBST(graphlibs)
 AC_SUBST(sdllibs)
 AC_SUBST(odelibs)
 
-AC_OUTPUT(Makefile shared/Makefile simulation/Makefile graphics/Makefile stuntsserver/Makefile stuntsai/Makefile stunts3dedit/Makefile trackedit/Makefile ultimatestunts/Makefile)
+AC_SUBST(PACKAGE_VERSION)
+AC_SUBST(datadir)
+
+AC_OUTPUT(ultimatestunts.conf Makefile shared/Makefile simulation/Makefile graphics/Makefile stuntsserver/Makefile stuntsai/Makefile stunts3dedit/Makefile trackedit/Makefile ultimatestunts/Makefile)

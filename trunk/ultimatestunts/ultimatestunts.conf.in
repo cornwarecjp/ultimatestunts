@@ -1,0 +1,182 @@
+#UltimateStunts version @PACKAGE_VERSION@ configuration file
+
+#Section names are placed within [] brackets
+#Comment begins with a # or a \
+
+#Graphics settings
+[graphics]
+
+#Number of visible tiles
+visible_tiles = 7
+
+#Smooth textures?
+texture_smooth = true
+
+#Maximum texture size
+#value <= 4: no texture
+texture_maxsize = 512
+
+#Background texture size
+#value <= 4: no background
+background_size = 512
+
+#Reflection map texture size
+#value <= 8: no reflection (NYI!)
+reflection_size = 512
+
+#Smooth shadows are needed to make round objects look natural.
+#This option also applies to the smoothness fog effect.
+shadows_smooth = true
+
+#Display option. possible syntax:
+#display=window
+#display=window:wxh
+#display=fullscreen
+#display=fullscreen:wxh
+#display=fullscreen:wxh
+#
+#w = width
+#h = height
+#d = color depth (8, 16, 24, 32)
+#f = vertical sync. frequency
+display = window:800x600
+
+#If you are using a software renderer (e.g. with Mesa), saying
+#zbuffer=true will increase your framerate. It causes the game not
+#to use the openGL z-buffer algoritm, but an internal tile-sorting
+#algoritm.
+zbuffer = true
+
+#Transparency setting. options are:
+#off            -> transparent objects are drawn non-transparent (fast)
+#blend          -> transparent objects are drawn using blending (high quality)
+transparency = blend
+
+#Maximum distance for drawing reflection. Transparency must be enabled to get realistic reflection
+reflectiondist = 100.0
+
+#Reflection update settings:
+#Do you want the reflections to be updated when the objects move?
+updatereflection = true
+#Do you want to update all sides of a reflection in all frames?
+updatereflectionallsides = true
+#Do you want to update the reflection of all objects in all frames?
+updatereflectionallobjects = false
+#Draw moving objects in reflections
+reflectiondrawmovingobjects = false
+
+#Default LOD level for moving objects (like cars). Meaning:
+# <=-3: use LOD 1
+#   -2: use LOD 1 and 2
+#   -1: use LOD 1, 2 and 3
+#    0: use LOD 1, 2, 3 and 4
+#    1: use LOD 2, 3 and 4
+#    2: use LOD 3 and 4
+# >= 3: use LOD 4
+#4 = ugly and fast, 1 = beautiful and slow
+movingobjectlod = 0
+
+#Do you want fog? options are:
+#off            -> no fog
+#linear         -> linear fog
+#exp            -> exponential fog
+#exp2           -> square exponential fog
+fogmode = linear
+
+
+#Files section
+[files]
+datadir = @datadir@
+
+#Sound section
+[sound]
+
+#FMOD driver to use. Options are:
+# windowsdriver:
+#		directsound -> DirectSound driver (reccommended if you have DirectX)
+#		winmm       -> Windows MultiMedia driver (if you have nothing else)
+#		a3d         -> A3D driver
+#		nosound     -> No Sound driver (Don't you have a sound card??)
+#linuxdriver:
+#		oss         -> Open Sound System driver (reccommended if you don't know)
+#		alsa        -> Advanced Linux Sound Architecture driver (reccommended if you have ALSA)
+#		esd         -> Enlightenment Sound Daemon driver
+#		nosound     -> No Sound driver (Don't you have a sound card??)
+windowsdriver = directsound
+linuxdriver = oss
+
+#FMOD sub driver: on some systems, like DirectSound, FMOD can use
+#different devices. If this string matches any of them, that one is used.
+subdriver = ThIsIsNoTrEcOgNiSeDaSaDeViCe
+
+#Volumes [0..255]
+musicvolume = 168
+soundvolume = 128
+
+#Music play list file
+playlist = music/playlist.txt
+
+[simulation]
+
+#Minimum time per simulation step
+dtmin = 0.005
+
+#Maximum simulation steps per graphics frame
+Nmax = 10
+
+
+#Global keys
+[input_global]
+
+exit = escape
+nextsong = f1
+
+#Player keys
+[input_player0]
+
+up = up
+down = down
+left = left
+right = right
+shiftup = rshift
+shiftdown = rctrl
+horn = enter
+camerachange = ralt
+cameratoggle = /
+
+[input_player1]
+
+up = joy0up
+down = joy0down
+left = joy0left
+right = joy0right
+shiftup = joy0button0
+shiftdown = joy0button1
+horn = kp-
+camerachange = joy0button2
+cameratoggle = joy0button3
+
+[input_player2]
+
+up = kp8
+down = kp5
+left = kp4
+right = kp6
+shiftup = kp9
+shiftdown = kp7
+horn = kp0
+camerachange = kpenter
+cameratoggle = kp.
+
+
+[input_player3]
+
+up = w
+down = s
+left = a
+right = d
+shiftup = e
+shiftdown = q
+horn = lalt
+camerachange = lctrl
+cameratoggle = lshift
