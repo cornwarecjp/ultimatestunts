@@ -20,31 +20,47 @@
 
 CFile::CFile(CString filename, bool write)
 {
-	const char *fn = filename.c_str();
+	open(filename, write);
+}
 
-  if(write)
-  {
-  	fp = fopen(fn,"w");
-
-	  if(fp==NULL)
-		  printf("Error: could not write to %s\n", fn);
-  }
-  else
-  {
-  	fp = fopen(fn,"r");
-
-	  if(fp==NULL)
-		  printf("Error: could not read from %s\n", fn);
-  }
-
+CFile::CFile()
+{
+	fp = NULL; //closed
 }
 
 CFile::~CFile()
 {
-	if(fp==NULL) return;
-	fclose(fp);
+	close();
 }
 
+bool CFile::open(CString filename, bool write)
+{
+	const char *fn = filename.c_str();
+
+	if(write)
+	{
+		fp = fopen(fn,"w");
+
+		if(fp==NULL)
+		{printf("Error: could not write to %s\n", fn); return false;}
+	}
+	else
+	{
+		fp = fopen(fn,"r");
+
+		if(fp==NULL)
+			{printf("Error: could not read from %s\n", fn); return false;}
+	}
+
+	return true;
+}
+
+void CFile::close()
+{
+	if(fp==NULL) return;
+	fclose(fp);
+	fp = NULL;
+}
 
 CString CFile::readl()
 {

@@ -87,8 +87,8 @@ bool CGraphObj::loadFromFile(CString filename, CTexture **matarray)
 			{
 				if(line.mid(0, sp)=="Texture")
 				{
-					line = line.mid(sp+1, line.length());
-					int t = (int)line.toFloat();
+					line = line.mid(sp+1);
+					int t = line.toInt();
 
 					//printf("  Using texture %d\n", t);
 					CTexture *tex = *(matarray+t);
@@ -121,46 +121,30 @@ bool CGraphObj::loadFromFile(CString filename, CTexture **matarray)
 				if(line.mid(0, sp)=="Color")
 				{
 					//printf("Color keyword gevonden\n");
-					line = line.mid(sp+1, line.length());
-					float r = line.toFloat();
-					line = line.mid(line.inStr(',')+1, line.length());
-					float g = line.toFloat();
-					line = line.mid(line.inStr(',')+1, line.length());
-					float b = line.toFloat();
-
+					line = line.mid(sp+1);
 					if(texture_isenabled) //oplossing van de kleurenbug
-						setMaterialColor(CVector(r,g,b));
+						setMaterialColor(line.toVector());
 				}
 				if(line.mid(0, sp)=="Vertex")
 				{
 					//printf("Vertex keyword gevonden\n");
-					line = line.mid(sp+1, line.length());
-					float x = line.toFloat();
-					line = line.mid(line.inStr(',')+1, line.length());
-					float y = line.toFloat();
-					line = line.mid(line.inStr(',')+1, line.length());
-					float z = line.toFloat();
-					glVertex3f(x, y, z);
+					line = line.mid(sp+1);
+					CVector v = line.toVector();
+					glVertex3f(v.x, v.y, v.z);
 				}
 				if(line.mid(0, sp)=="TexCoord")
 				{
 					//printf("TexCoord keyword gevonden\n");
-					line = line.mid(sp+1, line.length());
-					float x = line.toFloat();
-					line = line.mid(line.inStr(',')+1, line.length());
-					float y = line.toFloat();
-					glTexCoord2f(x, y);
+					line = line.mid(sp+1);
+					CVector v = line.toVector();
+					glTexCoord2f(v.x, v.y);
 				}
 				if(line.mid(0, sp)=="Normal")
 				{
 					//printf("Normal keyword gevonden\n");
-					line = line.mid(sp+1, line.length());
-					float x = line.toFloat();
-					line = line.mid(line.inStr(',')+1, line.length());
-					float y = line.toFloat();
-					line = line.mid(line.inStr(',')+1, line.length());
-					float z = line.toFloat();
-					glNormal3f(x, y, z);
+					line = line.mid(sp+1);
+					CVector v = line.toVector();
+					glNormal3f(v.x, v.y, v.z);
 				}
 				if(line.mid(0, sp)=="Quads")
 					glBegin(GL_QUADS);

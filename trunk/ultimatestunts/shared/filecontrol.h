@@ -1,8 +1,8 @@
 /***************************************************************************
-                          cfile.h  -  CJP's file class
+                          filecontrol.h  -  Controlling the behaviour of datafiles
                              -------------------
-    begin                : Thu May 23 2002
-    copyright            : (C) 2002 by CJP
+    begin                : do mei 1 2003
+    copyright            : (C) 2003 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
 
@@ -14,28 +14,3 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-
-#ifndef CFILE_H
-#define CFILE_H
-
-#include <stdio.h> //voor FILE type
-#include "cstring.h"
-
-class CFile
-{
-	public:
-		CFile(CString filename, bool write=false);
-		CFile();
-		virtual ~CFile();
-
-		virtual bool open(CString filename, bool write=false);
-		virtual void close();
-
-		virtual CString readl();
-		virtual void writel(CString l);
-
-	protected:
-		FILE * fp;
-};
-
-#endif

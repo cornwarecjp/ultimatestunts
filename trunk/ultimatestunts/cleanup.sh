@@ -9,3 +9,6 @@
 make clean
 rm -f Makefile */Makefile
 rm -rf */.deps
+
+rm -f *.stdout
+rm -f *.stderr

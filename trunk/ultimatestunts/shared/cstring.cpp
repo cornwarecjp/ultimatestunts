@@ -127,17 +127,6 @@ CString & CString::toLower()
   return *this;
 }
 
-CString & CString::subStr(const int unsigned pos, const int n) const
-{
- CString *res = new CString("");
- if (pos <= this->length()) {
-    int len = n;
-    if (len == -1) { len = this->size() -pos; }
-    res->assign(*this, pos, len);
- }
- return (*res);
-}
-
 CString & CString::operator= (const char *str)
 {
    this->assign(str);
@@ -241,16 +230,39 @@ bool CString::operator!= (const CString &val) const
 	return !(*this == val);
 }
 
-CString CString::mid(int i, int l)
+CString CString::mid(unsigned int i, int l)
 {
-        char *c = new char[l+1];
-        strncpy(c, c_str()+i, l);
-        *(c+l) = '\0';
+	if(i > length())
+		return "";
+	if (l == -1)
+		{ l = length() - i;}
 
-        CString ret;
-        ret = c;
-        delete [] c;
-        return ret;
+	CString ret;
+	ret.assign(*this, i, l);
+	return ret;
+
+	/*
+	char *c = new char[l+1];
+	strncpy(c, c_str()+i, l);
+	*(c+l) = '\0';
+
+	CString ret;
+	ret = c;
+	delete [] c;
+	return ret;
+	*/
+}
+
+//actually the same as mid:
+CString & CString::subStr(const int unsigned pos, const int n) const
+{
+ CString *res = new CString("");
+ if (pos <= this->length()) {
+    int len = n;
+    if (len == -1) { len = this->size() -pos; }
+    res->assign(*this, pos, len);
+ }
+ return (*res);
 }
 
 int CString::inStr(char c)
@@ -278,7 +290,7 @@ CVector CString::toVector()
 	int comma = inStr(',');
 	if(comma < 0)
 		return CVector(x, 0.0, 0.0);
-	CString sub = mid(comma+1, length());
+	CString sub = mid(comma+1);
 
 	float y = sub.toFloat();
 
@@ -286,7 +298,7 @@ CVector CString::toVector()
 	if(comma < 0)
 		return CVector(x, y, 0.0);
 
-	sub = sub.mid(comma+1, sub.length());
+	sub = sub.mid(comma+1);
 	float z = sub.toFloat();
 	return CVector(x,y,z);
 }

@@ -1,7 +1,7 @@
 /***************************************************************************
-                          clientsim.h  -  Client-side networked simulation
+                          usserver.cpp  -  interface to a local server process
                              -------------------
-    begin                : di jan 14 2003
+    begin                : do mei 1 2003
     copyright            : (C) 2003 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
@@ -14,33 +14,34 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
+#include <stdio.h>
 
-#ifndef CLIENTSIM_H
-#define CLIENTSIM_H
+#include "usserver.h"
 
-#include "simulation.h"
-#include "clientnet.h"
+CUSServer::CUSServer(int port, CString trackfile)
+{
+	printf("Starting a server process @ port %d with track \"%s\"\n",
+		port, trackfile.c_str());
 
-/**
-  *@author CJP
-  */
+	CString cmd = CString("stuntsserver")
+		+ " port=" + port
+		+ " > server.stdout 2> server.stderr";
 
-class CClientSim : public CSimulation  {
-public: 
-	CClientSim(CWorld *w, CString HostName, int UDPPort);
-	~CClientSim();
+	printf("Command is: \"%s\"\n", cmd.c_str());
 
-	CString getTrackname();
+	m_ServerInput = popen(cmd.c_str(), "w");
 
-	virtual int addPlayer(CObjectChoice choice);
-	virtual bool loadObjects();
+	//We don't want to use a super-server
+	fprintf(m_ServerInput, "n\n");
+	//Enter the track file:
+	fprintf(m_ServerInput, "%s\n", trackfile.c_str());
+	//Enter the number of remote players:
+	fprintf(m_ServerInput, "%d\n", 1);
+	//Enter the number of AI players:
+	fprintf(m_ServerInput, "%d\n", 1);
+}
 
-	virtual bool update();
-
-protected:
-	CSimulation *m_SubSim;
-
-	CClientNet *m_Network;
-};
-
-#endif
+CUSServer::~CUSServer()
+{
+	pclose(m_ServerInput);
+}

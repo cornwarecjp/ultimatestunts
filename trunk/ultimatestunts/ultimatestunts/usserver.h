@@ -1,8 +1,8 @@
 /***************************************************************************
-                          cfile.h  -  CJP's file class
+                          usserver.h  -  interface to a local server process
                              -------------------
-    begin                : Thu May 23 2002
-    copyright            : (C) 2002 by CJP
+    begin                : do mei 1 2003
+    copyright            : (C) 2003 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
 
@@ -15,27 +15,23 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef CFILE_H
-#define CFILE_H
+#ifndef USSERVER_H
+#define USSERVER_H
 
-#include <stdio.h> //voor FILE type
+#include <stdio.h> //for FILE
 #include "cstring.h"
 
-class CFile
-{
-	public:
-		CFile(CString filename, bool write=false);
-		CFile();
-		virtual ~CFile();
+/**
+  *@author CJP
+  */
 
-		virtual bool open(CString filename, bool write=false);
-		virtual void close();
+class CUSServer {
+public: 
+	CUSServer(int port, CString trackfile="tracks/default.track");
+	~CUSServer();
 
-		virtual CString readl();
-		virtual void writel(CString l);
-
-	protected:
-		FILE * fp;
+protected:
+	FILE *m_ServerInput;
 };
 
 #endif

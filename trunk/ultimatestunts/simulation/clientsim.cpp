@@ -36,6 +36,11 @@ CClientSim::~CClientSim()
 	delete m_SubSim;
 }
 
+CString CClientSim::getTrackname()
+{
+	return "tracks/default.track"; //TODO: really find out what track should be used
+}
+
 int CClientSim::addPlayer(CObjectChoice choice)
 {
 	//TODO: Register player via network and check if the player is accepted

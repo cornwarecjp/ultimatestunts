@@ -76,10 +76,10 @@ sdllibs = @sdllibs@
 soundlibs = @soundlibs@
 
 bin_PROGRAMS = ultimatestunts
-ultimatestunts_SOURCES = main.cpp gamecamera.cpp gamerenderer.cpp humanplayer.cpp sndsample.cpp sound.cpp soundobj.cpp
+ultimatestunts_SOURCES = main.cpp gamecamera.cpp gamerenderer.cpp humanplayer.cpp sndsample.cpp sound.cpp soundobj.cpp usserver.cpp
 ultimatestunts_LDADD = ../graphics/libgraphics.a ../filetransfer/libfiletransfer.a ../simulation/libsimulation.a ../shared/libshared.a @sdllibs@ @graphlibs@ @soundlibs@ @netlibs@
 
-EXTRA_DIST = main.cpp gamecamera.cpp gamecamera.h gamerenderer.cpp gamerenderer.h humanplayer.cpp humanplayer.h sndsample.cpp sndsample.h sound.cpp sound.h soundobj.cpp soundobj.h
+EXTRA_DIST = main.cpp gamecamera.cpp gamecamera.h gamerenderer.cpp gamerenderer.h humanplayer.cpp humanplayer.h sndsample.cpp sndsample.h sound.cpp sound.h soundobj.cpp soundobj.h usserver.cpp usserver.h
 
 # set the include path found by configure
 INCLUDES = $(all_includes) -I../shared -I../simulation -I../filetransfer -I../graphics
@@ -102,7 +102,7 @@ X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_PRE_LIBS = @X_PRE_LIBS@
 ultimatestunts_OBJECTS =  main.$(OBJEXT) gamecamera.$(OBJEXT) \
 gamerenderer.$(OBJEXT) humanplayer.$(OBJEXT) sndsample.$(OBJEXT) \
-sound.$(OBJEXT) soundobj.$(OBJEXT)
+sound.$(OBJEXT) soundobj.$(OBJEXT) usserver.$(OBJEXT)
 ultimatestunts_DEPENDENCIES =  ../graphics/libgraphics.a \
 ../filetransfer/libfiletransfer.a ../simulation/libsimulation.a \
 ../shared/libshared.a
@@ -118,7 +118,8 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 TAR = tar
 GZIP_ENV = --best
 DEP_FILES =  .deps/gamecamera.P .deps/gamerenderer.P .deps/humanplayer.P \
-.deps/main.P .deps/sndsample.P .deps/sound.P .deps/soundobj.P
+.deps/main.P .deps/sndsample.P .deps/sound.P .deps/soundobj.P \
+.deps/usserver.P
 SOURCES = $(ultimatestunts_SOURCES)
 OBJECTS = $(ultimatestunts_OBJECTS)
 

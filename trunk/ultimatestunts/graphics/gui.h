@@ -48,7 +48,7 @@ public:
 	void stop();
 
 	//new interface:
-	CString getValue(CString section, CString field);
+	CString getValue(CString section, CString field="");
 	void resetSection(CString section="");
 	bool isPassed(CString section);
 
@@ -57,18 +57,26 @@ protected:
 
 	bool m_Stop;
 
-	bool m_PassedMainMenu, m_PassedHostMenu, m_PassedPlayerMenu;
+	bool	m_PassedMainMenu,
+				m_PassedHostMenu,
+				m_PassedServerMenu,
+				m_PassedTrackMenu,
+				m_PassedPlayerMenu;
 
 	//all data of the last times the menus were passed
 	eMainMenu m_MainMenuInput;
 	CString m_HostName;
 	int m_HostPort;
+	int m_ServerPort;
+	CString m_TrackFile;
 	vector<CString> m_PlayerDescr;
 	
 
 	//The menu code
 	CString viewMainMenu();
 	CString viewHostMenu();
+	CString viewServerMenu();
+	CString viewTrackMenu();
 	CString viewPlayerMenu();
 
 	void addPlayer(CString name, bool human=false);

@@ -35,11 +35,40 @@
 #include "lconfig.h"
 
 CWorld *world;
-CPlayer *player1, *player2, *player3;
+vector<CPlayer *> players;
 CSimulation *sim, *subsim1;
+
+CString getInput(CString question="")
+{
+	printf("%s", question.c_str());
+	char input[80];
+	scanf("%s", input);
+	return input;
+}
+
+bool addPlayer()
+{
+	CPlayer *p = new CAIPlayerCar(world);
+
+	CObjectChoice choice;
+
+	int id = sim->addPlayer(choice);
+	p->m_MovingObjectId = id;
+	p->m_PlayerId = 0;
+	if(id < 0)
+	{
+		printf("Sim doesn't accept player\n");
+		delete p;
+		return false;
+	}
+
+	players.push_back(p);
+	return true;
+}
 
 bool mainloop()
 {
+	/*
  //Debugging 'display'
 	printf("\033[1H");
 	printf("\033[1G");
@@ -53,76 +82,83 @@ bool mainloop()
 		               i,            r.x, r.y, r.z,       v.x, v.y, v.z);
 	}
     	printf("**********\n");
+	*/
 
-  player1->update(); //Makes moving decisions
-  player2->update();
-  player3->update();
+	for(unsigned int i=0; i<players.size(); i++)
+		players[i]->update(); //Makes moving decisions
 
-  sim->update(); //Modifies world object
+	sim->update(); //Modifies world object
 
-  return true; //Infinite loop
+	return false; //One loop
 }
 
 int main(int argc, char *argv[])
 {
-	char inpbuffer[80];
 	printf("Welcome to the " PACKAGE " server version " VERSION "\n");
 
-	CLConfig conffile;
+	int port = 1500;
+	CString trackfile;
+	unsigned int remote_players;
+	unsigned int ai_players;
+
+	printf("Loading configuration file\n");
+	CLConfig conffile(argc, argv);
 	conffile.setFilename("ultimatestunts.conf");
 
-	printf("\nCreating world object\n");
+	printf("Parsing input arguments\n");
+	for(int i=0; i<argc; i++)
+	{
+		CString arg = argv[i];
+		int is = arg.inStr('=');
+		if(is > 0)
+		{
+			CString lhs = arg.mid(0,is);
+			CString rhs = arg.mid(is+1);
+			if(lhs == "port")
+				port = rhs.toInt();
+		}
+	}
+
+	printf("Creating world object\n");
 	world = new CWorld(conffile);
 
-	world->loadTrack("tracks/default.track");
-
-	printf("\nDo you want to use the server to act as a client? (y/n)");
-	scanf("%s", inpbuffer);
-	if(inpbuffer[0]=='y' || inpbuffer[0]=='Y')
+	CString answ = getInput("Do you want to use a \"super-server\" (y/n)? ");
+	printf("\nYou entered %c\n", answ[0]);
+	if(answ[0]=='y' || answ[0]=='Y')
 	{
+		CString h = getInput("Enter the super-server's hostname: ");
+		int p = getInput("Enter the super-server's port number: ").toInt();
+
 		printf("Creating client-type simulation\n");
-		subsim1 = new CClientSim(world, "localhost", 1500);
+		subsim1 = new CClientSim(world, h, p);
+		trackfile = ((CClientSim *)subsim1)->getTrackname();
 	}
 	else
 	{
 		printf("Creating physics simulation\n");
 		subsim1 = new CPhysics(world);
+
+		trackfile = getInput("Please enter the track file: ");
+		printf("\nYou entered %s\n", trackfile.c_str());
 	}
+
+	remote_players = getInput("Enter the number of remote players: ").toInt();
+	printf("\nYou entered %d\n", remote_players);
+	ai_players = getInput("Enter the number of AI players: ").toInt();
+	printf("\nYou entered %d\n", ai_players);
+
 	printf("\nCreating server simulation\n");
 	{
-		CServerSim *ssim = new CServerSim(world, 1500);
+		CServerSim *ssim = new CServerSim(world, port);
 		ssim->addSubSim(subsim1);
 		sim = (CSimulation *)ssim;
 	}
 
-	printf("\nCreating 3 AI players\n");
-	player1 = new CAIPlayerCar(world);
-	player2 = new CAIPlayerCar(world);
-	player3 = new CAIPlayerCar(world);
+	printf("\nLoading track data\n");
+	world->loadTrack(trackfile);
 
-	printf("\nChoosing cars (or trains, cows, balloons etc)\n");
-	CObjectChoice choice;
-
-	printf("\nRegistering players to server\n");
-	int id = -1;
-
-	id = sim->addPlayer(choice);
-	if(id < 0)
-		{printf("Sim doesn't accept player1\n");}
-	player1->m_MovingObjectId = id;
-	player1->m_PlayerId = 0;
-
-	id = sim->addPlayer(choice);
-	if(id < 0)
-		{printf("Sim doesn't accept player2\n");}
-	player2->m_MovingObjectId = id;
-	player2->m_PlayerId = 1;
-
-	id = sim->addPlayer(choice);
-	if(id < 0)
-		{printf("Sim doesn't accept player3\n");}
-	player3->m_MovingObjectId = id;
-	player3->m_PlayerId = 2;
+	for(unsigned int i=0; i<ai_players; i++)
+		addPlayer();
 
 	if(!sim->loadObjects())
 		printf("Error while loading moving objects\n");
@@ -141,9 +177,9 @@ int main(int argc, char *argv[])
 	delete sim;
 
 	printf("\nDeleting players\n");
-	delete player1;
-	delete player2;
-	delete player3;
+	for(unsigned int i=0; i<players.size(); i++)
+		delete players[i];
+	players.clear();
 
 	printf("\nDeleting world\n");
 	delete world;

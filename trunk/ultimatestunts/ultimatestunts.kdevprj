@@ -262,7 +262,7 @@ install_location=
 type=DATA
 
 [shared/Makefile.am]
-files=shared/hello.cpp,shared/hello.h,shared/matrix.cpp,shared/matrix.h,shared/vector.cpp,shared/vector.h,shared/binbuffer.h,shared/cstring.h,shared/binbuffer.cpp,shared/usmacros.h,shared/timer.cpp,shared/timer.h,shared/bthread.h,shared/ipnumber.h,shared/ipnumber.cpp,shared/cstring.cpp,shared/cfile.cpp,shared/cfile.h,shared/lconfig.cpp,shared/lconfig.h
+files=shared/hello.cpp,shared/hello.h,shared/matrix.cpp,shared/matrix.h,shared/vector.cpp,shared/vector.h,shared/binbuffer.h,shared/cstring.h,shared/binbuffer.cpp,shared/usmacros.h,shared/timer.cpp,shared/timer.h,shared/bthread.h,shared/ipnumber.h,shared/ipnumber.cpp,shared/cstring.cpp,shared/cfile.cpp,shared/cfile.h,shared/lconfig.cpp,shared/lconfig.h,shared/datafile.cpp,shared/datafile.h,shared/filecontrol.h
 sub_dirs=
 type=static_library
 
@@ -303,6 +303,24 @@ install_location=
 type=SOURCE
 
 [shared/cstring.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[shared/datafile.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[shared/datafile.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[shared/filecontrol.h]
 dist=true
 install=false
 install_location=
@@ -771,7 +789,7 @@ install_location=
 type=DATA
 
 [ultimatestunts/Makefile.am]
-files=ultimatestunts/main.cpp,ultimatestunts/humanplayer.cpp,ultimatestunts/humanplayer.h,ultimatestunts/gamecamera.cpp,ultimatestunts/gamecamera.h,ultimatestunts/sound.cpp,ultimatestunts/sound.h,ultimatestunts/sndsample.cpp,ultimatestunts/sndsample.h,ultimatestunts/soundobj.cpp,ultimatestunts/soundobj.h,ultimatestunts/gamerenderer.cpp,ultimatestunts/gamerenderer.h
+files=ultimatestunts/main.cpp,ultimatestunts/humanplayer.cpp,ultimatestunts/humanplayer.h,ultimatestunts/gamecamera.cpp,ultimatestunts/gamecamera.h,ultimatestunts/sound.cpp,ultimatestunts/sound.h,ultimatestunts/sndsample.cpp,ultimatestunts/sndsample.h,ultimatestunts/soundobj.cpp,ultimatestunts/soundobj.h,ultimatestunts/gamerenderer.cpp,ultimatestunts/gamerenderer.h,ultimatestunts/usserver.cpp,ultimatestunts/usserver.h
 sub_dirs=
 type=prog_main
 
@@ -848,6 +866,18 @@ install_location=
 type=SOURCE
 
 [ultimatestunts/soundobj.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[ultimatestunts/usserver.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[ultimatestunts/usserver.h]
 dist=true
 install=false
 install_location=

@@ -54,11 +54,16 @@ void CGUI::startFrom(CString section)
 			section = viewMainMenu();
 		else if(section=="hostmenu")
 			section = viewHostMenu();
+		else if(section=="servermenu")
+			section = viewServerMenu();
+		else if(section=="trackmenu")
+			section = viewTrackMenu();
 		else if(section=="playermenu")
 			section = viewPlayerMenu();
 		else
 			{printf("Error: unknown menu %s\n", section.c_str()); section = "";}
 	}
+	printf("\nEnd of the \"GUI\"\n");
 }
 
 void CGUI::stop()
@@ -70,14 +75,20 @@ void CGUI::stop()
 CString CGUI::getValue(CString section, CString field)
 {
 	if(section=="mainmenu")
-	{
-		if(field=="choice") return m_MainMenuInput;
-	}
+		if(field=="") return m_MainMenuInput;
+
 	if(section=="hostmenu")
 	{
 		if(field=="hostname") return m_HostName;
 		if(field=="portnumber") return m_HostPort;
 	}
+	if(section=="servermenu")
+	{
+		if(field=="portnumber") return m_ServerPort;
+	}
+	if(section=="trackmenu")
+		if(field=="") return m_TrackFile;
+
 	if(section=="playermenu")
 	{
 		if(field=="number") return (int)(m_PlayerDescr.size());
@@ -93,6 +104,8 @@ void CGUI::resetSection(CString section)
 	{
 		m_PassedMainMenu = false;
 		m_PassedHostMenu = false;
+		m_PassedServerMenu = false;
+		m_PassedTrackMenu = false;
 		m_PassedPlayerMenu = false;
 	}
 
@@ -100,6 +113,10 @@ void CGUI::resetSection(CString section)
 		m_PassedMainMenu = false;
 	if(section=="hostmenu")
 		m_PassedHostMenu = false;
+	if(section=="servermenu")
+		m_PassedServerMenu = false;
+	if(section=="trackmenu")
+		m_PassedTrackMenu = false;
 	if(section=="player")
 		m_PassedPlayerMenu = false;
 }
@@ -110,6 +127,10 @@ bool CGUI::isPassed(CString section)
 		return m_PassedMainMenu;
 	if(section=="hostmenu")
 		return m_PassedHostMenu;
+	if(section=="servermenu")
+		return m_PassedServerMenu;
+	if(section=="trackmenu")
+		return m_PassedTrackMenu;
 	if(section=="playermenu")
 		return m_PassedPlayerMenu;
 
@@ -124,9 +145,10 @@ CString CGUI::viewMainMenu()
 		printf(
 			"Main menu:\n"
 			"  1: Play a local game\n"
-			"  2: Log in on a remote game\n"
+			"  2: Start a new network game\n"
+			"  3: Log in on a remote network game\n"
 			"  \n"
-			"  3: Exit\n"
+			"  4: Exit\n"
 		);
 		int input = getInput().toInt();
 
@@ -134,13 +156,17 @@ CString CGUI::viewMainMenu()
 		{
 			case 1:
 				m_MainMenuInput = LocalGame;
-				ret = "playermenu"; //TODO: track menu
+				ret = "trackmenu"; //TODO: track menu
 				break;
 			case 2:
+				m_MainMenuInput = NewNetwork;
+				ret = "servermenu";
+				break;
+			case 3:
 				m_MainMenuInput = JoinNetwork;
 				ret = "hostmenu";
 				break;
-			case 3:
+			case 4:
 				m_MainMenuInput = Exit;
 				ret = "";
 				break;
@@ -154,6 +180,15 @@ CString CGUI::viewMainMenu()
 	return ret;
 }
 
+CString CGUI::viewServerMenu()
+{
+	printf("Server menu:\n");
+	printf("Enter the port number: ");
+	m_ServerPort = getInput().toInt();
+
+	m_PassedServerMenu = true;
+	return "trackmenu";
+}
 
 CString CGUI::viewHostMenu()
 {
@@ -164,8 +199,18 @@ CString CGUI::viewHostMenu()
 	m_HostName = getInput();
 	printf("Enter the server's UDP port number: ");
 	m_HostPort = getInput().toInt();
-	m_PassedHostMenu = true;
 
+	m_PassedHostMenu = true;
+	return "playermenu";
+}
+
+CString CGUI::viewTrackMenu()
+{
+	printf("Track menu:\n");
+	printf("Enter the track filename (relative to the data files directory): ");
+	m_TrackFile = getInput();
+
+	m_PassedTrackMenu = true;
 	return "playermenu";
 }
 
@@ -188,7 +233,6 @@ CString CGUI::viewPlayerMenu()
 	}
 
 	m_PassedPlayerMenu = true;
-
 	return ""; //TODO: loading
 }
 

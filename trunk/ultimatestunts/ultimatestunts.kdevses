@@ -3,12 +3,5 @@
 <KDevPrjSession>
  <LastCompileConfig>(Standaard)</LastCompileConfig>
  <Mainframe MaximizeMode="0" />
- <DocsAndViews NumberOfDocuments="2" >
-  <Doc0 CursorPosLine="317" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/corne/programma-src/vrije-tijd/ultimatestunts/stunts3dedit/main.cpp" >
-   <View0 Top="0" Width="588" Attach="1" Height="228" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
-  </Doc0>
-  <Doc1 CursorPosLine="0" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/corne/programma-src/vrije-tijd/ultimatestunts/stunts3dedit/editgraphobj.cpp" >
-   <View0 Top="0" Width="588" Attach="1" Height="228" Left="0" Focus="1" Type="KWriteView" MinMaxMode="0" />
-  </Doc1>
- </DocsAndViews>
+ <DocsAndViews NumberOfDocuments="0" />
 </KDevPrjSession>

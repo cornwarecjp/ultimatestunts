@@ -34,6 +34,8 @@
 #include "clientsim.h"
 #include "physics.h"
 
+#include "usserver.h"
+
 //Player stuff
 #include "objectchoice.h"
 #include "aiplayercar.h"
@@ -48,18 +50,19 @@
 //Sound stuff
 #include "sound.h"
 
-CWorld *world;
+CWorld *world = NULL;
 
 vector<CPlayer *> players;
 
-CSimulation *sim;
+CSimulation *sim = NULL;
+CUSServer *server = NULL;
 
-CWinSystem *winsys;
-CGameRenderer *renderer;
-CGUI *gui;
-CGameCamera *camera;
+CWinSystem *winsys = NULL;
+CGameRenderer *renderer = NULL;
+CGUI *gui = NULL;
+CGameCamera *camera = NULL;
 
-CSound *soundsystem;
+CSound *soundsystem = NULL;
 
 bool mainloop()
 {
@@ -148,17 +151,39 @@ int main(int argc, char *argv[])
 	printf("\nSetting up the sound\n");
 	soundsystem = new CSound(conffile, world);
 
+	//The track filename:
+	CString trackfile = "tracks/default.track";
+
+	//MENU SECTION:
 	gui->startFrom("mainmenu");
 	while(!( gui->isPassed("mainmenu") )); //waiting for input
 	CGUI::eMainMenu maininput =
-		(CGUI::eMainMenu)gui->getValue("mainmenu", "choice").toInt();
+		(CGUI::eMainMenu)gui->getValue("mainmenu").toInt();
 
 	switch(maininput)
 	{
 		case CGUI::LocalGame:
 			printf("Creating physics simulation\n");
 			sim = new CPhysics(world);
+			while(!( gui->isPassed("trackmenu") )); //waiting for input
+			trackfile = gui->getValue("trackmenu");
 			break;
+		case CGUI::NewNetwork:
+		{
+			//Server menu:
+			while(!( gui->isPassed("servermenu") )); //waiting for input
+			CString name = "localhost";
+			int port = gui->getValue("servermenu", "portnumber").toInt();
+
+			//Track menu:
+			while(!( gui->isPassed("trackmenu") )); //waiting for input
+			trackfile = gui->getValue("trackmenu");
+
+			server = new CUSServer(port, trackfile);
+			printf("Creating client-type simulation with %s:%d\n", name.c_str(), port);
+			sim = new CClientSim(world, name, port);
+			break;
+		}
 		case CGUI::JoinNetwork:
 		{
 			while(!( gui->isPassed("hostmenu") )); //waiting for input
@@ -166,6 +191,7 @@ int main(int argc, char *argv[])
 			int port = gui->getValue("hostmenu", "portnumber").toInt();
 			printf("Creating client-type simulation with %s:%d\n", name.c_str(), port);
 			sim = new CClientSim(world, name, port);
+			trackfile = ((CClientSim *)sim)->getTrackname();
 			break;
 		}
 		default:
@@ -173,9 +199,8 @@ int main(int argc, char *argv[])
 			return 0;
 	}
 
-
 	printf("\nLoading the track\n");
-	world->loadTrack("tracks/default.track");
+	world->loadTrack(trackfile);
 
 	printf("\nInitialising the rendering engine\n");
 	renderer = new CGameRenderer(conffile, world);
@@ -211,17 +236,32 @@ int main(int argc, char *argv[])
 	winsys->runLoop(mainloop, true); //true: swap buffers
 	printf("\nLeaving mainloop\n");
 
-	delete soundsystem;
-	delete renderer;
-	delete sim;
+	printf("Unloading sound system\n");
+	if(soundsystem!=NULL)
+		delete soundsystem;
+	printf("Unloading renderer\n");
+	if(renderer!=NULL)
+		delete renderer;
+	printf("Unloading simulation\n");
+	if(sim!=NULL)
+		delete sim;
 
+	printf("Unloading players\n");
 	for(unsigned int i=0; i<players.size(); i++)
 		delete players[i];
 	players.clear();
 
-	delete world;
+	printf("Unloading world data\n");
+	if(world!=NULL)
+		delete world;
 
-	delete winsys; //Important; don't remove: this calls SDL_Quit!!!
+	printf("Unloading the server\n");
+	if(server!=NULL)
+		delete server; //also stops the server process (if existing)
+
+	printf("Unloading the window system\n");
+	if(winsys!=NULL)
+		delete winsys; //Important; don't remove: this calls SDL_Quit!!!
 
 	printf("\nProgram finished succesfully\n");
 

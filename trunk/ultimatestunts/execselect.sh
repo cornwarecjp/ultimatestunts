@@ -4,8 +4,11 @@
 #Purpose: choose between binaries
 #Fill in the applications below
 
-stunts3dedit/stunts3dedit
-#ultimatestunts/ultimatestunts
+
+PATH="./ultimatestunts:./stuntsserver:./stuntsai:./stunts3dedit:./trackedit:$PATH"
+#stuntsserver
+#stunts3dedit
+ultimatestunts
 
 echo "Program stopped. Press Enter."
 read

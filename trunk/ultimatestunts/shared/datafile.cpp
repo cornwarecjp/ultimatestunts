@@ -1,8 +1,8 @@
 /***************************************************************************
-                          cfile.h  -  CJP's file class
+                          datafile.cpp  -  datafile + filecontrol implementations
                              -------------------
-    begin                : Thu May 23 2002
-    copyright            : (C) 2002 by CJP
+    begin                : do mei 1 2003
+    copyright            : (C) 2003 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
 
@@ -15,27 +15,21 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef CFILE_H
-#define CFILE_H
+#include "datafile.h"
 
-#include <stdio.h> //voor FILE type
-#include "cstring.h"
-
-class CFile
+CDataFile::CDataFile(CString filename, bool write)
 {
-	public:
-		CFile(CString filename, bool write=false);
-		CFile();
-		virtual ~CFile();
+	open(filename, write);
+}
 
-		virtual bool open(CString filename, bool write=false);
-		virtual void close();
+CDataFile::~CDataFile()
+{
+	//I gues it's already being closed by CFile
+}
 
-		virtual CString readl();
-		virtual void writel(CString l);
+bool CDataFile::open(CString filename, bool write=false)
+{
+	//Do something special
+	CFile::open(filename, write);
+}
 
-	protected:
-		FILE * fp;
-};
-
-#endif
