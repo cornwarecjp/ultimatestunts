@@ -55,19 +55,19 @@ CBinBuffer & CBinBuffer::operator += (const CString & bs) {
   return (*this);
 }
 
-Uint8 CBinBuffer::getUint8(const int unsigned pos=0, int *newpos = NULL) const {
+Uint8 CBinBuffer::getUint8(const int unsigned pos, int *newpos) const {
 	if (pos > this->size()-1) throw(eEndOfBuffer);
 	if (newpos != NULL) *newpos = pos+1;
 	return ((Uint8) (*this)[pos]);
 }
 
-Uint16 CBinBuffer::getUint16(const int unsigned pos=0, int *newpos = NULL) const {
+Uint16 CBinBuffer::getUint16(const int unsigned pos, int *newpos) const {
 	if (pos > this->size()-2) throw(eEndOfBuffer);
 	if (newpos !=NULL) *newpos = pos+2;
 	return (((*this)[pos] << 8) + (*this)[pos+1]);
 }
 
-CString & CBinBuffer::getCString(const int unsigned pos=0, int *newpos = NULL) const {
+CString & CBinBuffer::getCString(const int unsigned pos, int *newpos) const {
 	CString *res = new CString();
 	if (pos > this->size()-1) throw(eEndOfBuffer);
 	Uint8 ssize = (*this)[pos];
@@ -97,7 +97,7 @@ CString & CBinBuffer::dump() const {
 	return (*res);
 }
 
-CBinBuffer & CBinBuffer::substr(const int unsigned pos = 0, const int n = -1) const {
+CBinBuffer & CBinBuffer::substr(const int unsigned pos, const int n) const {
 	CBinBuffer *res = new CBinBuffer();
 	if (pos <= this->size()) {
 		int len = n;

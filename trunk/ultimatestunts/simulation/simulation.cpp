@@ -56,7 +56,8 @@ bool CSimulation::removePlayer(CPlayer *p)
     if(m_LocalPlayers[i]==p)
     {
       ret = true;
-      m_LocalPlayers.erase(&(m_LocalPlayers[i]));
+//      m_LocalPlayers.erase(&(m_LocalPlayers[i]));    
+      m_LocalPlayers.erase(m_LocalPlayers.begin() + i - 1);     // FIXME: TEST IT!
       i--;
     }
   }

@@ -77,7 +77,7 @@ CNetUDP::SNetDatagram * CNetUDP::recvData() const {
 }
 
 // check socket for read-, writablillity
-bool CNetUDP::select(const bool sockread=false, const bool sockwrite=false, const int utimeout=500000) const
+bool CNetUDP::select(const bool sockread, const bool sockwrite, const int utimeout) const
 {
   struct timeval selecttimeout;
   fd_set allset;

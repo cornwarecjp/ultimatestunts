@@ -36,7 +36,7 @@ sed 's/%@/@@/; s/@%/@@/; s/%g$/@g/; /@g$/s/[\\&%]/\\&/g;
 /^[ 	]*VPATH[ 	]*=[^:]*$/d
 
 s%@SHELL@%/bin/sh%g
-s%@CFLAGS@%-Wall -g -O2%g
+s%@CFLAGS@%-Wall %g
 s%@CPPFLAGS@%%g
 s%@CXXFLAGS@%-Wall -g -O2%g
 s%@FFLAGS@%%g
