@@ -58,7 +58,7 @@ CTextureLoader::CTextureLoader(const CLConfig &conf, CString texdatfile)
 
 	line=f.readl();  //# of textures
 	m_N = line.toInt();
-	m_TexArray = new (CLODTexture *)[m_N];
+	m_TexArray = new CLODTexture *[m_N];
 
 	for(int i=0; i<m_N; i++) //textures
 	{

@@ -122,7 +122,7 @@ sub_dirs=
 type=static_library
 
 [graphics/Makefile.am]
-files=graphics/winsystem.cpp,graphics/winsystem.h,graphics/graphobj.cpp,graphics/graphobj.h,graphics/image.c,graphics/image.h,graphics/texture.cpp,graphics/texture.h,graphics/renderer.cpp,graphics/renderer.h,graphics/graphicworld.cpp,graphics/graphicworld.h,graphics/gui.cpp,graphics/gui.h,graphics/camera.h,graphics/background.cpp,graphics/background.h,graphics/reflection.cpp,graphics/reflection.h,graphics/console.cpp,graphics/console.h,graphics/font.cpp,graphics/font.h,graphics/lodtexture.cpp,graphics/lodtexture.h,graphics/widget.h,graphics/guipage.cpp,graphics/guipage.h,graphics/menu.cpp,graphics/menu.h,graphics/widget.cpp
+files=graphics/winsystem.cpp,graphics/winsystem.h,graphics/graphobj.cpp,graphics/graphobj.h,graphics/image.c,graphics/image.h,graphics/texture.cpp,graphics/texture.h,graphics/renderer.cpp,graphics/renderer.h,graphics/graphicworld.cpp,graphics/graphicworld.h,graphics/gui.cpp,graphics/gui.h,graphics/camera.h,graphics/background.cpp,graphics/background.h,graphics/reflection.cpp,graphics/reflection.h,graphics/console.cpp,graphics/console.h,graphics/font.cpp,graphics/font.h,graphics/lodtexture.cpp,graphics/lodtexture.h,graphics/widget.h,graphics/guipage.cpp,graphics/guipage.h,graphics/menu.cpp,graphics/menu.h,graphics/widget.cpp,graphics/inputbox.cpp,graphics/inputbox.h,graphics/messagebox.cpp,graphics/messagebox.h
 sub_dirs=
 type=static_library
 
@@ -228,6 +228,18 @@ install=false
 install_location=
 type=HEADER
 
+[graphics/inputbox.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[graphics/inputbox.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
 [graphics/lodtexture.cpp]
 dist=true
 install=false
@@ -247,6 +259,18 @@ install_location=
 type=SOURCE
 
 [graphics/menu.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[graphics/messagebox.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[graphics/messagebox.h]
 dist=true
 install=false
 install_location=
@@ -337,7 +361,7 @@ install_location=
 type=DATA
 
 [shared/Makefile.am]
-files=shared/hello.cpp,shared/hello.h,shared/matrix.cpp,shared/matrix.h,shared/vector.cpp,shared/vector.h,shared/binbuffer.h,shared/cstring.h,shared/binbuffer.cpp,shared/usmacros.h,shared/timer.cpp,shared/timer.h,shared/bthread.h,shared/ipnumber.h,shared/ipnumber.cpp,shared/cstring.cpp,shared/cfile.cpp,shared/cfile.h,shared/lconfig.cpp,shared/lconfig.h,shared/datafile.cpp,shared/datafile.h,shared/filecontrol.h,shared/generalmatrix.cpp,shared/generalmatrix.h,shared/generalvector.cpp,shared/generalvector.h,shared/dataobject.cpp,shared/dataobject.h,shared/datamanager.cpp,shared/datamanager.h
+files=shared/hello.cpp,shared/hello.h,shared/matrix.cpp,shared/matrix.h,shared/vector.cpp,shared/vector.h,shared/binbuffer.h,shared/cstring.h,shared/binbuffer.cpp,shared/usmacros.h,shared/timer.cpp,shared/timer.h,shared/bthread.h,shared/ipnumber.h,shared/ipnumber.cpp,shared/cstring.cpp,shared/cfile.cpp,shared/cfile.h,shared/lconfig.cpp,shared/lconfig.h,shared/datafile.cpp,shared/datafile.h,shared/filecontrol.h,shared/generalmatrix.cpp,shared/generalmatrix.h,shared/generalvector.cpp,shared/generalvector.h,shared/dataobject.cpp,shared/dataobject.h,shared/datamanager.cpp,shared/datamanager.h,shared/bthread.cpp
 sub_dirs=
 type=static_library
 
@@ -352,6 +376,12 @@ dist=true
 install=false
 install_location=
 type=HEADER
+
+[shared/bthread.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
 
 [shared/bthread.h]
 dist=true
@@ -528,7 +558,7 @@ install_location=
 type=HEADER
 
 [simulation/Makefile.am]
-files=simulation/physics.cpp,simulation/physics.h,simulation/simulation.cpp,simulation/simulation.h,simulation/player.cpp,simulation/player.h,simulation/world.cpp,simulation/world.h,simulation/movingobject.cpp,simulation/movingobject.h,simulation/car.cpp,simulation/car.h,simulation/message.cpp,simulation/message.h,simulation/messagebuffer.cpp,simulation/messagebuffer.h,simulation/objectchoice.cpp,simulation/objectchoice.h,simulation/netudp.h,simulation/netudp.cpp,simulation/netmessage.cpp,simulation/netmessage.h,simulation/carinput.cpp,simulation/carinput.h,simulation/movobjinput.cpp,simulation/movobjinput.h,simulation/aiplayercar.cpp,simulation/aiplayercar.h,simulation/clientsim.cpp,simulation/clientsim.h,simulation/bound.cpp,simulation/bound.h,simulation/material.h,simulation/clientnet.cpp,simulation/clientnet.h,simulation/rulecontrol.cpp,simulation/rulecontrol.h,simulation/playercontrol.cpp,simulation/playercontrol.h,simulation/clientplayercontrol.cpp,simulation/clientplayercontrol.h,simulation/collisionmodel.cpp,simulation/collisionmodel.h,simulation/tilemodel.cpp,simulation/tilemodel.h,simulation/body.cpp,simulation/body.h,simulation/collisionface.cpp,simulation/collisionface.h,simulation/collision.h,simulation/collisiondetector.cpp,simulation/collisiondetector.h,simulation/collisiondata.cpp,simulation/collisiondata.h,simulation/gamecore.cpp,simulation/gamecore.h,simulation/material.cpp,simulation/track.cpp,simulation/track.h
+files=simulation/physics.cpp,simulation/physics.h,simulation/simulation.cpp,simulation/simulation.h,simulation/player.cpp,simulation/player.h,simulation/world.cpp,simulation/world.h,simulation/movingobject.cpp,simulation/movingobject.h,simulation/car.cpp,simulation/car.h,simulation/message.cpp,simulation/message.h,simulation/messagebuffer.cpp,simulation/messagebuffer.h,simulation/objectchoice.cpp,simulation/objectchoice.h,simulation/netudp.h,simulation/netudp.cpp,simulation/netmessage.cpp,simulation/netmessage.h,simulation/carinput.cpp,simulation/carinput.h,simulation/movobjinput.cpp,simulation/movobjinput.h,simulation/aiplayercar.cpp,simulation/aiplayercar.h,simulation/clientsim.cpp,simulation/clientsim.h,simulation/bound.cpp,simulation/bound.h,simulation/material.h,simulation/clientnet.cpp,simulation/clientnet.h,simulation/rulecontrol.cpp,simulation/rulecontrol.h,simulation/playercontrol.cpp,simulation/playercontrol.h,simulation/clientplayercontrol.cpp,simulation/clientplayercontrol.h,simulation/collisionmodel.cpp,simulation/collisionmodel.h,simulation/tilemodel.cpp,simulation/tilemodel.h,simulation/body.cpp,simulation/body.h,simulation/collisionface.cpp,simulation/collisionface.h,simulation/collision.h,simulation/collisiondetector.cpp,simulation/collisiondetector.h,simulation/collisiondata.cpp,simulation/collisiondata.h,simulation/gamecore.cpp,simulation/gamecore.h,simulation/material.cpp,simulation/track.cpp,simulation/track.h,simulation/stuntsnet.cpp,simulation/stuntsnet.h,simulation/chatmessage.cpp,simulation/chatmessage.h,simulation/textmessage.cpp,simulation/textmessage.h
 sub_dirs=
 type=static_library
 
@@ -587,6 +617,18 @@ install_location=
 type=SOURCE
 
 [simulation/carinput.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[simulation/chatmessage.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[simulation/chatmessage.h]
 dist=true
 install=false
 install_location=
@@ -850,6 +892,30 @@ install=false
 install_location=
 type=HEADER
 
+[simulation/stuntsnet.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[simulation/stuntsnet.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[simulation/textmessage.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[simulation/textmessage.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
 [simulation/tilemodel.cpp]
 dist=true
 install=false
@@ -993,15 +1059,45 @@ install_location=
 type=SOURCE
 
 [stuntsserver/Makefile.am]
-files=stuntsserver/main.cpp,
+files=stuntsserver/main.cpp,stuntsserver/gamecorethread.cpp,stuntsserver/gamecorethread.h,stuntsserver/networkthread.cpp,stuntsserver/networkthread.h,stuntsserver/client.h
 sub_dirs=
 type=static_library
+
+[stuntsserver/client.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[stuntsserver/gamecorethread.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[stuntsserver/gamecorethread.h]
+dist=true
+install=false
+install_location=
+type=HEADER
 
 [stuntsserver/main.cpp]
 dist=true
 install=false
 install_location=
 type=SOURCE
+
+[stuntsserver/networkthread.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[stuntsserver/networkthread.h]
+dist=true
+install=false
+install_location=
+type=HEADER
 
 [textures.dat]
 dist=true
