@@ -1,0 +1,13 @@
+#!/bin/bash
+
+#File written by CJP
+#Purpose: restore Makefile.am's from Makefile.am.old's
+
+
+for i in *; do
+    if test -e $i/Makefile.am.old; then
+        echo "Found $i/Makefile.am.old"
+        mv -f $i/Makefile.am $i/Makefile.am.bak
+	mv $i/Makefile.am.old $i/Makefile.am
+    fi
+done

@@ -1,0 +1,53 @@
+This file contains any messages produced by compilers while
+running configure, to aid debugging if configure makes a mistake.
+
+configure:558: checking for a BSD compatible install
+configure:611: checking whether build environment is sane
+configure:668: checking whether make sets ${MAKE}
+configure:714: checking for working aclocal
+configure:727: checking for working autoconf
+configure:740: checking for working automake
+configure:753: checking for working autoheader
+configure:766: checking for working makeinfo
+configure:783: checking for gcc
+configure:896: checking whether the C compiler (gcc  ) works
+configure:912: gcc -o conftest    conftest.c  1>&5
+configure:938: checking whether the C compiler (gcc  ) is a cross-compiler
+configure:943: checking whether we are using GNU C
+configure:971: checking whether gcc accepts -g
+configure:1003: checking how to run the C preprocessor
+configure:1087: checking for c++
+configure:1119: checking whether the C++ compiler (c++  ) works
+configure:1135: c++ -o conftest    conftest.C  1>&5
+configure:1161: checking whether the C++ compiler (c++  ) is a cross-compiler
+configure:1166: checking whether we are using GNU C++
+configure:1194: checking whether c++ accepts -g
+configure:1226: checking how to run the C++ preprocessor
+configure:1280: checking for a BSD compatible install
+configure:1335: checking for ranlib
+configure:1364: checking for Cygwin environment
+configure:1397: checking for mingw32 environment
+configure:1428: checking for executable suffix
+configure:1459: checking for object suffix
+configure:1487: checking for windows.h
+configure:1527: checking for X
+configure:1841: checking for dnet_ntoa in -ldnet
+configure:1882: checking for dnet_ntoa in -ldnet_stub
+configure:1930: checking for gethostbyname
+configure:2028: checking for connect
+configure:2120: checking for remove
+configure:2212: checking for shmat
+configure:2313: checking for IceConnectionNumber in -lICE
+configure:2364: checking for glNewList in -lGL
+configure:2503: checking for gluLookAt in -lGLU
+configure:2586: checking for glutGetModifiers in -lglut
+configure:2632: checking for socket in -lsocket
+configure:2672: checking for gethostbyname in -lnsl
+configure:2712: checking for inet_aton in -lresolv
+configure:2755: checking for ANSI C header files
+configure:2863: checking for GL/gl.h
+configure:2863: checking for GL/glut.h
+configure:2901: checking for joystick.h
+configure:2937: checking for linux/joystick.h
+configure:2974: checking for FSOUND_Close in -lfmod
+configure:3015: checking for fmod/fmod.h
