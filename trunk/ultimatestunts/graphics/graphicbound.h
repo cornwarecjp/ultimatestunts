@@ -30,8 +30,9 @@
 class CGraphicBound : public CBound, public CGraphObj
 {
 public:
-	virtual bool loadFromFile(CString filename, CMaterial *matarray)
-		{return CBound::loadFromFile(filename, matarray);}
+	virtual bool loadFromFile(CString filename, CMaterial **matarray)
+		{return CBound::loadFromFile(filename, matarray) &&
+			CGraphObj::loadFromFile(filename, matarray);}
 };
 
 #endif

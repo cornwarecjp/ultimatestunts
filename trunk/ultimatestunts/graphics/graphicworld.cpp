@@ -41,3 +41,10 @@ CBound *CGraphicWorld::createBound()
 
 CMaterial *CGraphicWorld::createMaterial()
 {return new CGraphicMaterial;}
+
+bool CGraphicWorld::loadBackground(const CString &descr)
+{
+	printf("The background %s is being loaded\n", descr.c_str());
+	m_Background.setTextureSmooth(m_TexSmooth);
+	return m_Background.loadFromFile(descr, m_BackgroundSize, m_BackgroundSize / 4);
+}

@@ -66,6 +66,16 @@ bool mainloop()
 	printf("**********\n");
 
 	bool retval = true;
+
+	const Uint8 *keystate = winsys->getKeyState();
+	((CHumanPlayer *)player4)->setKeyState(keystate);
+
+	//Escape:
+	retval = retval && (!((bool)keystate['\e']));
+
+	//Camera:
+	if(keystate['c']) camera->swithCameraMode();
+
 	player1->update(); //Makes moving decisions
 	player2->update();
 	player3->update();
@@ -119,6 +129,10 @@ int main(int argc, char *argv[])
 			sim = new CClientSim(world, name, port);
 			break;
 		}
+		case CGUI::NewNetwork:
+		case CGUI::Options:
+		case CGUI::LoadReplay:
+		case CGUI::EditTrack:
 		case CGUI::Exit:
 			return 0;
 	}
@@ -151,8 +165,6 @@ int main(int argc, char *argv[])
 		{printf("Sim doesn't accept player1\n");}
 	player1->m_MovingObjectId = id;
 	player1->m_PlayerId = 0;
-	//And set the camera to this player:
-	camera->setTrackedObject(id);
 
 	id = sim->addPlayer(choice);
 	if(id < 0)
@@ -171,6 +183,8 @@ int main(int argc, char *argv[])
 		{printf("Sim doesn't accept player4\n");}
 	player4->m_MovingObjectId = id;
 	player4->m_PlayerId = 3;
+	//And set the camera to this player:
+	camera->setTrackedObject(id);
 
 	if(!sim->loadObjects())
 		{printf("Error while loading moving objects\n");}

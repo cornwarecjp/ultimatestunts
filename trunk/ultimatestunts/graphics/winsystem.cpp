@@ -76,6 +76,8 @@ CWinSystem::CWinSystem(const CLConfig &conf)
 	reshape(m_W, m_H);
 
 	runLoop(dummy_loopfunc, true); //catch startup-events
+
+	m_KeyState = SDL_GetKeyState(&m_NumKeys);
 }
 
 CWinSystem::~CWinSystem()
@@ -109,6 +111,12 @@ int CWinSystem::runLoop( bool (CALLBACKFUN *loopfunc)(), bool swp)
 
 				case SDL_QUIT:
 					quit = true;
+					break;
+
+				case SDL_KEYDOWN:
+				case SDL_KEYUP:
+					printf("Something has changed in the keystate\n");
+					m_KeyState = SDL_GetKeyState(&m_NumKeys);
 					break;
 			}
 		}

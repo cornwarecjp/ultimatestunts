@@ -22,6 +22,8 @@
 #include "graphicworld.h"
 #include "camera.h"
 
+#include "car.h"
+
 /**
   *@author CJP
   */
@@ -35,6 +37,7 @@ public:
 
 	void update();
 	void viewBackground();
+	void viewCar(CCar *car);
 	void viewPilaar(int x, int y, int cur_zpos);
 protected:
 	const CGraphicWorld *m_World;

@@ -1,8 +1,8 @@
 /***************************************************************************
-                          matrix.h  -  A 3D rotation matrix class
+                          background.h  -  description
                              -------------------
-    begin                : Fri Jul 6 2001
-    copyright            : (C) 2001 by CJP
+    begin                : di feb 4 2003
+    copyright            : (C) 2003 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
 
@@ -14,34 +14,26 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#ifndef MATRIX_H
-#define MATRIX_H
 
-#include "vector.h"
+#ifndef BACKGROUND_H
+#define BACKGROUND_H
 
-class CMatrix
+#include "texture.h"
+
+/**
+  *@author CJP
+  */
+
+class CBackground : public CTexture
 {
-	public:
-		CMatrix();
-		CMatrix(CVector v);
-		CMatrix(CMatrix const &val);
-		~CMatrix();
+public: 
+	CBackground();
+	virtual ~CBackground();
 
-		CMatrix const &operator=(CMatrix const &val);
-		CMatrix const &operator*=(CMatrix const &val);
-
-		void  rotY ( float hoek);
-		void  rotX ( float hoek);
-		void reset();
-
-		float Element(int i, int j) const;
-		void setElement(int i, int j, float e);
-		const float *gl_mtr() const;
-
-		CMatrix inverse() const;
-
-	protected:
-		float *m_M;
+	virtual bool loadFromFile(CString filename, int xs, int ys);
+	void draw() const;
+protected:
+	unsigned int m_ObjList;
 };
 
 #endif

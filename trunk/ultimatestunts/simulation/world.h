@@ -47,6 +47,7 @@ protected:
 	virtual CShape *createShape();
 	virtual CBound *createBound();
 	virtual CMaterial *createMaterial();
+	virtual bool loadBackground(const CString &descr);
 
 	vector<CShape *>m_TileShapes;
 	vector<CBound *>m_MovObjBounds;
@@ -58,6 +59,7 @@ protected:
 
 	CString m_DataDir;
 	int m_TexMaxSize;
+	int m_BackgroundSize;
 	bool m_TexSmooth;
 };
 

@@ -37,6 +37,10 @@ CWorld::CWorld(const CLConfig &conf)
 	if(cnf != "")
 		m_TexMaxSize = cnf.toInt();
 
+	cnf = conf.getValue("graphics", "background_size");
+	if(cnf != "")
+		m_BackgroundSize = cnf.toInt();
+
 	cnf = conf.getValue("graphics", "texture_smooth");
 	m_TexSmooth = (cnf != "false");
 }
@@ -94,7 +98,7 @@ bool CWorld::loadTrack(CString filename)
 	printf("\nLoaded %d textures\n\n", m_TileMaterials.size());
 
 	while(tfile.readl() != "BEGIN"); //Begin of background section
-	//TODO: load background
+	loadBackground(m_DataDir + tfile.readl());
 
 	//Second: loading collision (and graphics) data
 	while(tfile.readl() != "BEGIN"); //begin of tiles section
@@ -210,18 +214,23 @@ bool CWorld::loadMovObjs(CString filename)
 	//Second: loading collision (and graphics) data
 	//For example:
 	CBound *b = createBound();
+	b->loadFromFile(m_DataDir + "cars/default.gl", NULL);
 	m_MovObjBounds.push_back(b);
-	//TODO: use loadFromFile
 
 	//Third: initialising car array
 	for(int i=0; i<num; i++)
 	{
 		CMovingObject *m = new CCar; //future: selecting, using the file
+
+		if(m->getType() != CMessageBuffer::car)
+			printf("Error: created car is not a car!\n");
+
 		m->m_Bound = m_MovObjBounds[0]; //for example
 		m_MovObjs.push_back(m);
 
 		int s = m_MovObjs.size();
 		printf("Added car: total %d moving objects\n", s);
+
 	}
 
 		return true;
@@ -271,6 +280,11 @@ CBound *CWorld::createBound()
 
 CMaterial *CWorld::createMaterial()
 {return new CMaterial;}
+
+bool CWorld::loadBackground(const CString &descr)
+{
+	return true; //Do nothing: the graphic version overload loads the background
+}
 
 CMaterial **CWorld::getMaterialSubset(CString indices)
 {

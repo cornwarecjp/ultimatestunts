@@ -18,7 +18,7 @@
 #ifndef GRAPHICWORLD_H
 #define GRAPHICWORLD_H
 
-#include "texture.h"
+#include "background.h"
 #include "world.h"
 
 /**
@@ -28,12 +28,14 @@
 class CGraphicWorld : public CWorld  {
 public: 
 	CGraphicWorld(const CLConfig &conf);
-	~CGraphicWorld();
+	virtual ~CGraphicWorld();
 
+	CBackground m_Background;
 protected:
 	virtual CShape *createShape();
 	virtual CBound *createBound();
 	virtual CMaterial *createMaterial();
+	virtual bool loadBackground(const CString &descr);
 };
 
 #endif

@@ -39,6 +39,19 @@ void CGameCamera::setCameraMode(eCameraMode mode)
 	m_Mode = mode;
 }
 
+void CGameCamera::swithCameraMode()
+{
+	switch(m_Mode)
+	{
+		case In:
+			setCameraMode(Tracking); break;
+		case Tracking:
+			setCameraMode(In); break;
+		default:
+			setCameraMode(In);
+	}
+}
+
 void CGameCamera::setTrackedObject(int id)
 {m_Id = id;}
 
@@ -53,10 +66,20 @@ void CGameCamera::update()
 	switch(m_Mode)
 	{
 		case In:
-			tp = to->getPosition();
+			//viewpoint is higher than center of mass
+			tp = to->getPosition() + CVector(0.0,0.3,0.0);
 			tm = to->getRotationMatrix();
 			break;
 		case Tracking:
+			tp = CVector(0.0,3.0,15.0);
+			tp *= to->getRotationMatrix();
+			tp += to->getPosition();
+
+			tm.rotX(0.197); //arctan(3/15) = 0.197 rad
+			tm *= to->getRotationMatrix();
+
+			m_Reached = false; //always have "smooth" camera movement
+			break;
 		case UserDefined:
 		case Top:
 		case Television:

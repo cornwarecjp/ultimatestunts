@@ -34,6 +34,7 @@ public:
 
 	int runLoop( bool (CALLBACKFUN *loopfunc)(), bool swp = false);
 
+	const Uint8 *getKeyState() const {return m_KeyState;}
 	SDL_Surface *getScreen(){return m_Screen;}
 protected:
 	int m_W, m_H, m_BPP;
@@ -43,6 +44,9 @@ protected:
 	int m_VisibleTiles;
 
 	SDL_Surface *m_Screen;
+
+	Uint8 *m_KeyState;
+	int m_NumKeys;
 };
 
 #endif

@@ -26,20 +26,20 @@ class CTexture
 public:
 	CTexture();
 	virtual void setTextureSmooth(bool texture_smooth)
-		{m_GrsetTextureSmooth = texture_smooth;}
+		{m_TextureSmooth = texture_smooth;}
 
 	virtual bool loadFromFile(CString filename, int xs, int ys);
 
 	int getSizeX(int i);
 	int getSizeY(int i);
-	CVector getColor();
+	CVector getColor() const;
 
   void draw(int lod);
 
 protected:
   RGBImageRec *scaleImage(RGBImageRec *in, int xs, int ys);
 
-	bool m_GrsetTextureSmooth;
+	bool m_TextureSmooth;
 
 	unsigned int m_Texture;
 	unsigned int m_Texture2;

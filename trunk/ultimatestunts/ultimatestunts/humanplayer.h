@@ -19,6 +19,7 @@
 #define HUMANPLAYER_H
 
 #include "player.h"
+#include "usmacros.h"
 
 /**
   *@author CJP
@@ -29,7 +30,13 @@ public:
 	CHumanPlayer(const CWorld *w);
 	~CHumanPlayer();
 
+	void setKeyState(const Uint8 *keystate)
+		{m_KeyState = keystate; m_KeysAreSet = true;}
+
 	virtual bool update();
+protected:
+	const Uint8 *m_KeyState;
+	bool m_KeysAreSet;
 };
 
 #endif

@@ -39,6 +39,7 @@ public:
 	virtual ~CGameCamera();
 
 	void setCameraMode(eCameraMode mode);
+	void swithCameraMode();
 	void setTrackedObject(int id);
 
 	virtual void update();

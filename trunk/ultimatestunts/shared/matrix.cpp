@@ -87,12 +87,12 @@ CMatrix const &CMatrix::operator*=(CMatrix const &val)
 
 float CMatrix::Element(int i, int j) const
 {
-	return *(m_M + i + 4*j);
+	return *(m_M + 4*i + j);
 }
 
 void CMatrix::setElement(int i, int j, float e)
 {
-	*(m_M + i + 4*j) = e;
+	*(m_M + 4*i + j) = e;
 }
 
 void  CMatrix::rotY ( float hoek)
@@ -121,4 +121,15 @@ void CMatrix::reset()
                 setElement(i, j, 0.0);
         }
     }
+}
+
+CMatrix CMatrix::inverse() const
+{
+	CMatrix ret;
+
+	for(int i=0; i<3; i++)
+		for(int j=0; j<3; j++)
+			ret.setElement(i,j, Element(j,i));
+
+	return ret;
 }

@@ -25,6 +25,7 @@
 CTexture::CTexture()
 {
 	m_Color = CVector(0,0,0);
+	m_TextureSmooth = true; //default
 }
 
 bool CTexture::loadFromFile(CString filename, int xs, int ys)
@@ -34,12 +35,12 @@ bool CTexture::loadFromFile(CString filename, int xs, int ys)
 
 	printf("  1: %d,%d\n", xs, ys);
 	RGBImageRec *image = scaleImage(in_image, xs, ys);
-  if(image==NULL)
-  {
-    //printf("Using maximum texture size\n");
-    image = in_image;
-    in_image = NULL;
-  }
+	if(image==NULL)
+	{
+		//printf("Using maximum texture size\n");
+		image = in_image;
+		in_image = NULL;
+	}
 
 	glGenTextures(1, &m_Texture);
 	glBindTexture(GL_TEXTURE_2D, m_Texture);
@@ -48,11 +49,11 @@ bool CTexture::loadFromFile(CString filename, int xs, int ys)
 	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
 	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
 
-	if(m_GrsetTextureSmooth)
+	if(m_TextureSmooth)
 	{
 		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-  }
+	}
 	else
 	{
 		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
@@ -62,120 +63,120 @@ bool CTexture::loadFromFile(CString filename, int xs, int ys)
 	sizex = image->sizeX;
 	sizey = image->sizeY;
 
-  if(in_image != NULL)
-  {
-    free(in_image->data);
-	  free(in_image);
-  }
-  in_image = image;
+	if(in_image != NULL)
+	{
+		free(in_image->data);
+		free(in_image);
+	}
+	in_image = image;
 
 	printf("  2: %d,%d\n", xs/2, ys/2);
 	image = scaleImage(in_image, xs/2, ys/2);
-  if(image==NULL)
-  {
-    m_Texture2 = m_Texture;
-  	sizex2 = sizex;
-	  sizey2 = sizey;
-  }
-  else
-  {
-  	glGenTextures(1, &m_Texture2);
-  	glBindTexture(GL_TEXTURE_2D, m_Texture2);
-	  glTexImage2D( GL_TEXTURE_2D, 0, 3, image->sizeX, image->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, image->data);
+	if(image==NULL)
+	{
+		m_Texture2 = m_Texture;
+		sizex2 = sizex;
+		sizey2 = sizey;
+	}
+	else
+	{
+		glGenTextures(1, &m_Texture2);
+		glBindTexture(GL_TEXTURE_2D, m_Texture2);
+		glTexImage2D( GL_TEXTURE_2D, 0, 3, image->sizeX, image->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, image->data);
 
-  	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
-	  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
 
-  	if(m_GrsetTextureSmooth)
-	  {
-		  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-  		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-    }
-  	else
-	  {
-		  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-  		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-	  }
+		if(m_TextureSmooth)
+		{
+			glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+			glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+		}
+		else
+		{
+			glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+			glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+		}
 
-  	sizex2 = image->sizeX;
-	  sizey2 = image->sizeY;
+		sizex2 = image->sizeX;
+		sizey2 = image->sizeY;
 
-    free(in_image->data);
-	  free(in_image);
-    in_image = image;
-  }
+		free(in_image->data);
+		free(in_image);
+		in_image = image;
+	}
 
 	printf("  3: %d,%d\n", xs/4, ys/4);
 	image = scaleImage(in_image, xs/4,ys/4);
-  if(image==NULL)
-  {
-    m_Texture3 = m_Texture2;
-  	sizex3 = sizex2;
-	  sizey3 = sizey2;
-  }
-  else
-  {
-  	glGenTextures(1, &m_Texture3);
-	  glBindTexture(GL_TEXTURE_2D, m_Texture3);
-  	glTexImage2D( GL_TEXTURE_2D, 0, 3, image->sizeX, image->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, image->data);
+	if(image==NULL)
+	{
+		m_Texture3 = m_Texture2;
+		sizex3 = sizex2;
+		sizey3 = sizey2;
+	}
+	else
+	{
+		glGenTextures(1, &m_Texture3);
+		glBindTexture(GL_TEXTURE_2D, m_Texture3);
+		glTexImage2D( GL_TEXTURE_2D, 0, 3, image->sizeX, image->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, image->data);
 
-	  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
-  	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
 
-	  if(m_GrsetTextureSmooth)
-  	{
-	  	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-		  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-    }
-	  else
-  	{
-	  	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-		  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-  	}
+		if(m_TextureSmooth)
+		{
+			glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+			glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+		}
+		else
+		{
+			glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+			glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+		}
 
-	  sizex3 = image->sizeX;
-  	sizey3 = image->sizeY;
+		sizex3 = image->sizeX;
+		sizey3 = image->sizeY;
 
-    free(in_image->data);
-  	free(in_image);
-    in_image = image;
-  }
+		free(in_image->data);
+		free(in_image);
+		in_image = image;
+	}
 
 	printf("  4: %d,%d\n", xs/8,ys/8);
 	image = scaleImage(in_image, xs/8,ys/8);
-  if(image==NULL)
-  {
-    m_Texture4 = m_Texture3;
-  	sizex4 = sizex3;
-	  sizey4 = sizey3;
-  }
-  else
-  {
-  	glGenTextures(1, &m_Texture4);
-	  glBindTexture(GL_TEXTURE_2D, m_Texture4);
-  	glTexImage2D( GL_TEXTURE_2D, 0, 3, image->sizeX, image->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, image->data);
+	if(image==NULL)
+	{
+		m_Texture4 = m_Texture3;
+		sizex4 = sizex3;
+		sizey4 = sizey3;
+	}
+	else
+	{
+		glGenTextures(1, &m_Texture4);
+		glBindTexture(GL_TEXTURE_2D, m_Texture4);
+		glTexImage2D( GL_TEXTURE_2D, 0, 3, image->sizeX, image->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, image->data);
 
-	  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
-  	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
 
-	  if(m_GrsetTextureSmooth)
-  	{
-	  	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-		  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-    }
-	  else
-  	{
-	  	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-		  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-  	}
+		if(m_TextureSmooth)
+		{
+			glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+			glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+		}
+		else
+		{
+			glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+			glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+		}
 
-	  sizex4 = image->sizeX;
-  	sizey4 = image->sizeY;
+		sizex4 = image->sizeX;
+		sizey4 = image->sizeY;
 
-    free(in_image->data);
-  	free(in_image);
-    in_image = image;
-  }
+		free(in_image->data);
+		free(in_image);
+		in_image = image;
+	}
 
 	printf("  5: 1,1\n");
 	image = scaleImage(in_image, 1,1);
@@ -256,7 +257,7 @@ int CTexture::getSizeY(int i)
   return 0;
 }
 
-CVector CTexture::getColor()
+CVector CTexture::getColor() const
 {
 	//printf("Returning texture color: %f,%f,%f\n", m_Color.x, m_Color.y, m_Color.z);
 	return m_Color;

@@ -35,12 +35,12 @@ CRenderer::CRenderer(const CLConfig &conf, const CGraphicWorld *world)
 	breedte = m_World->m_W;
 	hoogte = m_World->m_H;
 
+	CVector fc = world->m_Background.getColor();
 	m_FogColor = new float[4];
-	m_FogColor[0] = 0.5;
-	m_FogColor[1] = 0.5;
-	m_FogColor[2] = 1.0;
+	m_FogColor[0] = fc.x;
+	m_FogColor[1] = fc.y;
+	m_FogColor[2] = fc.z;
 	m_FogColor[3] = 1.0;
-	//TODO: get fog color from background texture
 	glClearColor(	m_FogColor[0],m_FogColor[1],m_FogColor[2],m_FogColor[3]);
 
 	//Default values:
@@ -152,8 +152,8 @@ void CRenderer::update()
 		glClear( GL_COLOR_BUFFER_BIT );
 
 	const CMatrix &cammat = m_Camera->getOrientation();
-	glLoadIdentity();
-	glLoadMatrixf(cammat.gl_mtr());
+	//glLoadIdentity();
+	glLoadMatrixf(cammat.inverse().gl_mtr());
 
 	if(m_UseBackground)
 	{
@@ -222,27 +222,53 @@ void CRenderer::update()
 	glPopMatrix();
 
 	//Tijdelijke plaats om auto's te renderen: achteraan
-	//for(int i=0; i<num_cars; i++)
-		//if(i != mijncar)
-			//view_car(cars+i);
+	int num_objs = m_World->m_MovObjs.size();
+	for(int i=0; i<num_objs; i++)
+	{
+		CMovingObject *mo = m_World->m_MovObjs[i];
+
+		switch(mo->getType())
+		{
+			case CMessageBuffer::car:
+				viewCar((CCar *)mo);
+				break;
+			default:
+				printf("Warning: could not render unknown object type\n");
+		}
+	}
 }
 
 void CRenderer::viewBackground()
 {
-	//TODO: view background
-/*
-	if(grset_fogmode != -1)
+	if(m_FogMode != -1)
 		glDisable(GL_FOG);
-	if(grset_zbuffer)
+	if(m_ZBuffer)
 		glDisable(GL_DEPTH_TEST);
 
-	cur_background->draw();
+	m_World->m_Background.draw();
 
-	if(grset_fogmode != -1)
+	if(m_FogMode != -1)
 		glEnable(GL_FOG);
-	if(grset_zbuffer)
+	if(m_ZBuffer)
 		glEnable(GL_DEPTH_TEST);
-*/
+}
+
+void CRenderer::viewCar(CCar *car)
+{
+	glPushMatrix();
+
+	CVector r = car->getPosition();
+	const CMatrix &m = car->getRotationMatrix();
+
+	//printf("Drawing a car at position %f,%f,%f\n", r.x,r.y,r.z);
+
+	glTranslatef (r.x, r.y, r.z);
+	glMultMatrixf(m.gl_mtr());
+
+	( (CGraphicBound *)(car->m_Bound) )->draw(1); //TODO: LOD
+	//TODO: other CBound members
+
+	glPopMatrix();
 }
 
 void CRenderer::viewTrackPart(

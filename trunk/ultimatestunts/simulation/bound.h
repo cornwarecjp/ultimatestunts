@@ -30,7 +30,7 @@ public:
 	CBound();
 	virtual ~CBound();
 
-	virtual bool loadFromFile(CString filename, CMaterial *matarray);
+	virtual bool loadFromFile(CString filename, CMaterial **matarray);
 };
 
 #endif
