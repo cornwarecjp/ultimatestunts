@@ -27,9 +27,8 @@
 int camx, camy, camz;
 int lengte, breedte, hoogte;
 
-CRenderer::CRenderer(const CLConfig &conf, CGraphicWorld *world)
+CRenderer::CRenderer(const CLConfig &conf, const CGraphicWorld *world)
 {
-	printf("Renderer created\n");
 	m_World = world;
 
 	lengte = m_World->m_L;
@@ -136,21 +135,25 @@ CRenderer::CRenderer(const CLConfig &conf, CGraphicWorld *world)
 	glEnable(GL_CULL_FACE);
 }
 
+void CRenderer::setCamera(const CCamera *cam)
+{m_Camera = cam;}
+
 CRenderer::~CRenderer()
 {
 	delete [] m_FogColor;
 }
 
-void CRenderer::Update()
+void CRenderer::update()
 {
-	printf("Yeah! I'm updating the graphics!\n");
 
 	if(m_ZBuffer)
 		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 	else
 		glClear( GL_COLOR_BUFFER_BIT );
 
-	glLoadIdentity(); //TODO: load rotation matrix
+	const CMatrix &cammat = m_Camera->getOrientation();
+	glLoadIdentity();
+	glLoadMatrixf(cammat.gl_mtr());
 
 	if(m_UseBackground)
 	{
@@ -166,7 +169,7 @@ void CRenderer::Update()
 	glLightfv(GL_LIGHT0, GL_POSITION, sun_position);
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, sun_diffuse);
 
-	CVector camera(400.0, 10.0, 600.0); //TODO: use camera position
+	const CVector &camera = m_Camera->getPosition();
 
 	glTranslatef (-camera.x, -camera.y, -camera.z);
 

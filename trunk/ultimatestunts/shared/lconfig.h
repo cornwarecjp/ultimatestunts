@@ -66,8 +66,11 @@ public:
   vector<CString> getSection(CString) const;
   vector<CString> getFieldsInSection(CString) const;
 	bool setFilename(CString);
+	bool setArgs(int argc, char *argv[]);
 	CLConfig();
-  CLConfig(CString);
+	CLConfig(CString);
+	CLConfig(int argc, char *argv[]);
+	CLConfig(CString, int argc, char *argv[]);
 	virtual ~CLConfig();
 
 };

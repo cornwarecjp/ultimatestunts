@@ -37,14 +37,14 @@ void CServerSim::addSubSim(CSimulation *s)
 	m_SubSim.push_back(s);
 }
 
-bool CServerSim::Update()
+bool CServerSim::update()
 {
 	bool cont_game = true;
 
 	//TODO: check for incoming data
 
 	for(unsigned int i=0; i<m_SubSim.size(); i++)
-		{cont_game = (m_SubSim[i])->Update() && cont_game;}
+		{cont_game = (m_SubSim[i])->update() && cont_game;}
 
 	//TODO: send new data
 

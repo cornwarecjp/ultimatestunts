@@ -25,19 +25,23 @@ class CVector
 		CVector();
 		CVector( float xa, float ya, float za);
 
-    //CVector addition
+		//vector addition
 		CVector const &operator+=(CVector const &val);
-    //Multiplication with matrix
+		//Multiplication with matrix
 		CVector const &operator*=(CMatrix const &val);
-    //multiplication with semi-inverse matrix
+		//multiplication with semi-inverse matrix
 		CVector const &operator/=(CMatrix const &val);
-    //CVector/scalar multiplication
-		CVector const operator*(float const &val);
-    //CVector addition/substraction
-		CVector const operator+(CVector const &val);
-		CVector const operator-(CVector const &val);
+		//vector/scalar multiplication
+		CVector const operator*(float const &val) const;
+		//vector addition/substraction
+		CVector const operator+(CVector const &val) const;
+		CVector const operator-(CVector const &val) const;
+
+		float abs() const;
 
 		float x, y, z; //Don't want to follow the naming conventions!
 };
+
+CVector const operator*(float const &val1, CVector const &val2);
 
 #endif

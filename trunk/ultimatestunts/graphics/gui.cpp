@@ -26,15 +26,15 @@ CGUI::CGUI(const CLConfig &conf, CWinSystem *winsys)
 	m_WinSys = winsys;
 
 	//Default: not passed
-	m_PassedMainMenu = false;
-	m_PassedHostMenu = false;
+	resetSection();
+
 }
 
 CGUI::~CGUI(){
 }
 
 
-void CGUI::startFrom(eMenu menu)
+void CGUI::startFrom(CString section)
 {
 	printf(
 		"This is a temporary implementation of the GUI,\n"
@@ -44,24 +44,16 @@ void CGUI::startFrom(eMenu menu)
 		);
 
 	m_Stop = false;
-	while(!m_Stop && menu != NoMenu)
+	while(!m_Stop && section != "")
 	{
 		printf("\n\n"); //create some space
-		switch(menu)
-		{
 
-			case MainMenu:
-				menu = viewMainMenu();
-				m_PassedMainMenu = true;
-				break;
-			case HostMenu:
-				menu = viewHostMenu();
-				m_PassedHostMenu = true;
-				break;
-			default:
-				printf("Error: using an unimplemented menu.\n");
-				m_Stop = true;
-		}
+		if(section=="mainmenu")
+			section = viewMainMenu();
+		else if(section=="hostmenu")
+			section = viewHostMenu();
+		else
+			{printf("Error: unknown menu %s\n", section.c_str()); section = "";}
 	}
 }
 
@@ -71,32 +63,45 @@ void CGUI::stop()
 	m_Stop = true;
 }
 
-const void *CGUI::getData(eMenu menu, CString item)
+CString CGUI::getValue(CString section, CString field)
 {
-	switch(menu)
+	if(section=="mainmenu")
 	{
-		case MainMenu:
-			if(!m_PassedMainMenu) return NULL;
-			//m_PassedMainMenu = false;
-			return (void *)&m_MainMenuInput;
-		case HostMenu:
-			if(!m_PassedHostMenu) return NULL;
-			if(item=="hostname")
-				return (void *)&m_HostName;
-			if(item=="portnumber")
-				return (void *)&m_HostPort;
-			//unknown item:
-			printf("Error: host menu does not contain item \"%s\"\n", item.c_str());
-			return NULL;
-		default:
-			printf("Error: asking for an unimplemented menu.\n");
-			return NULL;
+		if(field=="choice") return m_MainMenuInput;
 	}
+	if(section=="hostmenu")
+	{
+		if(field=="hostname") return m_HostName;
+		if(field=="portnumber") return m_HostPort;
+	}
+	return "";
 }
 
-CGUI::eMenu CGUI::viewMainMenu()
+void CGUI::resetSection(CString section)
 {
-	while(true) //while we're giving an incorrect answer
+	if(section=="") //reset all sections
+		{m_PassedMainMenu = false; m_PassedHostMenu = false;}
+
+	if(section=="mainmenu")
+		m_PassedMainMenu = false;
+	if(section=="hostmenu")
+		m_PassedHostMenu = false;
+}
+
+bool CGUI::isPassed(CString section)
+{
+	if(section=="mainmenu")
+		return m_PassedMainMenu;
+	if(section=="hostmenu")
+		return m_PassedHostMenu;
+
+	return false; //all unknown sections are not passed
+}
+
+CString CGUI::viewMainMenu()
+{
+	CString ret = "incorrect_answer";
+	while(ret == "incorrect_answer")
 	{
 		printf(
 			"Main menu:\n"
@@ -105,25 +110,35 @@ CGUI::eMenu CGUI::viewMainMenu()
 			"  \n"
 			"  3: Exit\n"
 		);
-		scanf("%d", &m_MainMenuInput);
-		switch(m_MainMenuInput)
+		int input;
+		scanf("%d", &input);
+
+		switch(input)
 		{
 			case 1:
-				return TrackMenu;
+				m_MainMenuInput = LocalGame;
+				ret = ""; //TODO: track menu
+				break;
 			case 2:
-				return HostMenu;
+				m_MainMenuInput = JoinNetwork;
+				ret = "hostmenu";
+				break;
 			case 3:
-				return NoMenu;
+				m_MainMenuInput = Exit;
+				ret = "";
+				break;
+			default:
+				printf("Incorrect answer\n");
 		}
 
-		printf("Incorrect answer\n");
-		//and loop again
-	}
+	} //while
 
-	return NoMenu; //we'll never reach this code
+	m_PassedMainMenu = true;
+	return ret;
 }
 
-CGUI::eMenu CGUI::viewHostMenu()
+
+CString CGUI::viewHostMenu()
 {
 	printf(
 		"Host menu:\n"
@@ -134,6 +149,7 @@ CGUI::eMenu CGUI::viewHostMenu()
 	m_HostName = input;
 	printf("Enter the server's UDP port number: ");
 	scanf("%d", &m_HostPort);
+	m_PassedHostMenu = true;
 
-	return PlayerMenu;
+	return ""; //TODO: player menu
 }

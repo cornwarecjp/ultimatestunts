@@ -27,6 +27,8 @@ CMovingObject::CMovingObject()
 	//The simulation should re-initialise them.
 	m_Position = m_Velocity = m_Orientation = m_AngularVelocity = CVector(0,0,0);
 
+	m_Position = CVector(400.0,0.8,450.0); //TODO: put this somewhere else
+
 	m_RotationMatrix = CMatrix(m_Orientation);
 }
 

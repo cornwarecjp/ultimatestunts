@@ -20,26 +20,34 @@
 
 CMatrix::CMatrix()
 {
-    m_M = new float[9];
+    m_M = new float[16];
 
     reset();
 }
 
 CMatrix::CMatrix(CVector v)
 {
-	m_M = new float[9];
+	m_M = new float[16];
 
 	//This function is NOT finished.
 	//It currently only handles rotations around the y-axis.
 	rotY(v.y);
+
+	setElement(3,0,0.0);
+	setElement(3,1,0.0);
+	setElement(3,2,0.0);
+
+	setElement(0,3,0.0);
+	setElement(1,3,0.0);
+	setElement(2,3,0.0);
+
+	setElement(3,3,1.0);
 }
 
 CMatrix::CMatrix(CMatrix const &val)
 {
-	m_M = new float[9];
-	for (int i=0; i<3; i++)
-		for (int j=0; j<3; j++)
-			*(m_M + i + 3*j) = val.Element(i,j);
+	m_M = new float[16];
+	operator=(val);
 }
 
 CMatrix::~CMatrix()
@@ -47,12 +55,15 @@ CMatrix::~CMatrix()
 	delete [] m_M;
 }
 
+const float *CMatrix::gl_mtr() const
+{return m_M;}
+
 CMatrix const &CMatrix::operator=(CMatrix const &val)
 {
 
-	for (int i=0; i<3; i++)
-		for (int j=0; j<3; j++)
-			*(m_M + i + 3*j) = val.Element(i,j);
+	for (int i=0; i<4; i++)
+		for (int j=0; j<4; j++)
+			setElement(i,j, val.Element(i,j) );
 
 	return (*this);
 }
@@ -64,9 +75,9 @@ CMatrix const &CMatrix::operator*=(CMatrix const &val)
 	for (int i=0; i<3; i++)
 		for (int j=0; j<3; j++)
 			temp.setElement(i,j,
-        *(m_M + i    ) * val.Element(0,j) +
-        *(m_M + i + 3) * val.Element(1,j) +
-        *(m_M + i + 6) * val.Element(2,j)
+        Element(i,0) * val.Element(0,j) +
+        Element(i,1) * val.Element(1,j) +
+        Element(i,2) * val.Element(2,j)
       );
 
   *this = temp;
@@ -76,38 +87,38 @@ CMatrix const &CMatrix::operator*=(CMatrix const &val)
 
 float CMatrix::Element(int i, int j) const
 {
-	return *(m_M + i + 3*j);
+	return *(m_M + i + 4*j);
 }
 
 void CMatrix::setElement(int i, int j, float e)
 {
-	*(m_M + i + 3*j) = e;
+	*(m_M + i + 4*j) = e;
 }
 
 void  CMatrix::rotY ( float hoek)
 {
-    *(m_M+0)=cos(hoek);  *(m_M+1)=0;  *(m_M+2)=-sin(hoek);
-    *(m_M+3)=0;          *(m_M+4)=1;  *(m_M+5)=0;
-    *(m_M+6)=sin(hoek); *(m_M+7)=0;  *(m_M+8)=cos(hoek);
+	setElement(0,0,cos(hoek));	setElement(1,0,0.0);	setElement(2,0,-sin(hoek));
+	setElement(0,1,0.0);				setElement(1,1,1.0);	setElement(2,1,0.0);
+	setElement(0,2,sin(hoek));	setElement(1,2,0.0);	setElement(2,2,cos(hoek));
 }
 
 void  CMatrix::rotX ( float hoek)
 {
-    *(m_M+0)=1; *(m_M+1)=0;         *(m_M+2)=0;
-    *(m_M+3)=0; *(m_M+4)=cos(hoek); *(m_M+5)=-sin(hoek);
-    *(m_M+6)=0; *(m_M+7)=sin(hoek); *(m_M+8)=cos(hoek);
+	setElement(0,0,1.0);	setElement(0,1,0.0);				setElement(0,2,0.0);
+	setElement(1,0,0.0);	setElement(1,1,cos(hoek));	setElement(1,2,-sin(hoek));
+	setElement(2,0,0.0);	setElement(2,1,sin(hoek));	setElement(2,2,cos(hoek));
 }
 
 void CMatrix::reset()
 {
-    for (int i=0; i<3; i++)
+    for (int i=0; i<4; i++)
     {
-        for (int j=0; j<3; j++)
+        for (int j=0; j<4; j++)
         {
             if (i==j)
-                *(m_M + i + 3*j)=1;
+                setElement(i,j,1.0);
             else
-                *(m_M + i + 3*j)=0;
+                setElement(i, j, 0.0);
         }
     }
 }

@@ -34,7 +34,7 @@ public:
 
 	void addSubSim(CSimulation *s);
 
-  virtual bool Update();
+  virtual bool update();
 
 protected:
 	vector<CSimulation *> m_SubSim;

@@ -30,7 +30,7 @@ class CAIPlayerCar : public CPlayer
 		CAIPlayerCar(CWorld *w);
 		~CAIPlayerCar();
 
-		virtual bool Update();
+		virtual bool update();
 
 	protected:
 		bool m_FirstTime;

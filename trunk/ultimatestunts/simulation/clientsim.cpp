@@ -50,8 +50,8 @@ bool CClientSim::loadObjects()
 	return CSimulation::loadObjects();
 }
 
-bool CClientSim::Update()
+bool CClientSim::update()
 {
 	//TODO: check network for new data, and update the world
-	return m_SubSim->Update();
+	return m_SubSim->update();
 }

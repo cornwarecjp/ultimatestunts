@@ -40,7 +40,7 @@ public:
 	virtual bool loadObjects();
 
 	//while playing:
-	virtual bool Update() =0;
+	virtual bool update() =0;
 
 protected:
 

@@ -32,10 +32,11 @@ class CMatrix
 
 		void  rotY ( float hoek);
 		void  rotX ( float hoek);
-    void reset();
+		void reset();
 
 		float Element(int i, int j) const;
 		void setElement(int i, int j, float e);
+		const float *gl_mtr() const;
 
 	protected:
 		float *m_M;

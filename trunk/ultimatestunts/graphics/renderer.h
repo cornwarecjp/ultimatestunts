@@ -20,6 +20,7 @@
 
 #include "lconfig.h"
 #include "graphicworld.h"
+#include "camera.h"
 
 /**
   *@author CJP
@@ -27,14 +28,17 @@
 
 class CRenderer {
 public: 
-	CRenderer(const CLConfig &conf, CGraphicWorld *world);
+	CRenderer(const CLConfig &conf, const CGraphicWorld *world);
 	~CRenderer();
 
-	void Update();
+	void setCamera(const CCamera *cam);
+
+	void update();
 	void viewBackground();
 	void viewPilaar(int x, int y, int cur_zpos);
 protected:
-	CGraphicWorld *m_World;
+	const CGraphicWorld *m_World;
+	const CCamera *m_Camera;
 
 	float *m_FogColor;
 

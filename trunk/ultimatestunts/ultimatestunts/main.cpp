@@ -38,6 +38,7 @@
 #include "winsystem.h"
 #include "renderer.h"
 #include "gui.h"
+#include "gamecamera.h"
 
 CGraphicWorld *world;
 CPlayer *player1, *player2, *player3, *player4;
@@ -46,6 +47,7 @@ CSimulation *sim;
 CWinSystem *winsys;
 CRenderer *renderer;
 CGUI *gui;
+CGameCamera *camera;
 
 bool mainloop()
 {
@@ -64,15 +66,15 @@ bool mainloop()
 	printf("**********\n");
 
 	bool retval = true;
-	player1->Update(); //Makes moving decisions
-	player2->Update();
-	player3->Update();
-	player4->Update();
-	retval = retval && sim->Update(); //Modifies world object
+	player1->update(); //Makes moving decisions
+	player2->update();
+	player3->update();
+	player4->update();
+	retval = retval && sim->update(); //Modifies world object
 
-	//camera->Update();
-	renderer->Update();
-	//sound->Update();
+	camera->update();
+	renderer->update();
+	//sound->update();
 
 	return retval;
 }
@@ -81,7 +83,7 @@ int main(int argc, char *argv[])
 {
 	printf("Welcome to " PACKAGE " version " VERSION "\n");
 
-	CLConfig conffile;
+	CLConfig conffile(argc, argv);
 	if(!conffile.setFilename("ultimatestunts.conf"))
 	{
 		printf("Error: could not read ultimatestunts.conf\n"); return 1;
@@ -97,30 +99,27 @@ int main(int argc, char *argv[])
 	printf("\nSetting up the GUI:\n");
 	gui = new CGUI(conffile, winsys);
 
-	gui->startFrom(CGUI::MainMenu);
-	const void *maininput;
-	while((maininput = gui->getData(CGUI::MainMenu, "")) == NULL); //waiting for input
+	gui->startFrom("mainmenu");
+	while(!( gui->isPassed("mainmenu") )); //waiting for input
+	CGUI::eMainMenu maininput =
+		(CGUI::eMainMenu)gui->getValue("mainmenu", "choice").toInt();
 
-	switch(*((int *)maininput))
+	switch(maininput)
 	{
-		case 1:
+		case CGUI::LocalGame:
 			printf("Creating physics simulation\n");
 			sim = new CPhysics(world);
 			break;
-		case 2:
+		case CGUI::JoinNetwork:
 		{
-			const void *hostinput;
-			CString name;
-			int port;
-			while((hostinput = gui->getData(CGUI::HostMenu, "hostname")) == NULL);
-			name = *((CString *)hostinput);
-			while((hostinput = gui->getData(CGUI::HostMenu, "portnumber")) == NULL);
-			port = *((int *)hostinput);
+			while(!( gui->isPassed("hostmenu") )); //waiting for input
+			CString name = gui->getValue("hostmenu", "hostname");
+			int port = gui->getValue("hostmenu", "portnumber").toInt();
 			printf("Creating client-type simulation with %s:%d\n", name.c_str(), port);
 			sim = new CClientSim(world, name, port);
 			break;
 		}
-		case 3:
+		case CGUI::Exit:
 			return 0;
 	}
 
@@ -130,6 +129,8 @@ int main(int argc, char *argv[])
 
 	printf("\nInitialising the rendering engine\n");
 	renderer = new CRenderer(conffile, world);
+	camera = new CGameCamera(world);
+	renderer->setCamera(camera);
 
 	printf("\nCreating 3 AI players\n");
 	player1 = new CAIPlayerCar(world);
@@ -150,6 +151,8 @@ int main(int argc, char *argv[])
 		{printf("Sim doesn't accept player1\n");}
 	player1->m_MovingObjectId = id;
 	player1->m_PlayerId = 0;
+	//And set the camera to this player:
+	camera->setTrackedObject(id);
 
 	id = sim->addPlayer(choice);
 	if(id < 0)

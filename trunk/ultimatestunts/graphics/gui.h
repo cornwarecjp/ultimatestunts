@@ -29,24 +29,26 @@ class CGUI //derived from CBThread in the future
 {
 public:
 
-	enum eMenu {
-		MainMenu=1,
-		HostMenu,
-		TrackMenu,
-		PlayerMenu,
+	enum eMainMenu {
+		LocalGame=1,
+		NewNetwork,
+		JoinNetwork,
 		Options,
-		CarMenu,
-		HighScore,
-		NoMenu
+		LoadReplay,
+		EditTrack,
+		Exit
 	};
 
 	CGUI(const CLConfig &conf, CWinSystem *winsys);
 	~CGUI();
 
-	void startFrom(eMenu menu);
+	void startFrom(CString section);
 	void stop();
 
-	const void *getData(eMenu menu, CString item);
+	//new interface:
+	CString getValue(CString section, CString field);
+	void resetSection(CString section="");
+	bool isPassed(CString section);
 
 protected:
 	CWinSystem *m_WinSys;
@@ -56,13 +58,13 @@ protected:
 	bool m_PassedMainMenu, m_PassedHostMenu;
 
 	//all data of the last times the menus were passed
-	int m_MainMenuInput;
+	eMainMenu m_MainMenuInput;
 	CString m_HostName;
 	int m_HostPort;
 
 	//The menu code
-	eMenu viewMainMenu();
-	eMenu viewHostMenu();
+	CString viewMainMenu();
+	CString viewHostMenu();
 };
 
 #endif

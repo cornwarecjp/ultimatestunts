@@ -131,9 +131,21 @@ install_location=
 type=HEADER
 
 [graphics/Makefile.am]
-files=graphics/winsystem.cpp,graphics/winsystem.h,graphics/graphobj.cpp,graphics/graphobj.h,graphics/image.c,graphics/image.h,graphics/texture.cpp,graphics/texture.h,graphics/renderer.cpp,graphics/renderer.h,graphics/graphicbound.h,graphics/graphicmaterial.h,graphics/graphicshape.h,graphics/graphicworld.cpp,graphics/graphicworld.h,graphics/gui.cpp,graphics/gui.h
+files=graphics/winsystem.cpp,graphics/winsystem.h,graphics/graphobj.cpp,graphics/graphobj.h,graphics/image.c,graphics/image.h,graphics/texture.cpp,graphics/texture.h,graphics/renderer.cpp,graphics/renderer.h,graphics/graphicbound.h,graphics/graphicmaterial.h,graphics/graphicshape.h,graphics/graphicworld.cpp,graphics/graphicworld.h,graphics/gui.cpp,graphics/gui.h,graphics/camera.cpp,graphics/camera.h
 sub_dirs=
 type=static_library
+
+[graphics/camera.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[graphics/camera.h]
+dist=true
+install=false
+install_location=
+type=HEADER
 
 [graphics/graphicbound.h]
 dist=true
@@ -711,9 +723,21 @@ install_location=
 type=DATA
 
 [ultimatestunts/Makefile.am]
-files=ultimatestunts/main.cpp,ultimatestunts/humanplayer.cpp,ultimatestunts/humanplayer.h
+files=ultimatestunts/main.cpp,ultimatestunts/humanplayer.cpp,ultimatestunts/humanplayer.h,ultimatestunts/gamecamera.cpp,ultimatestunts/gamecamera.h
 sub_dirs=
 type=prog_main
+
+[ultimatestunts/gamecamera.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[ultimatestunts/gamecamera.h]
+dist=true
+install=false
+install_location=
+type=HEADER
 
 [ultimatestunts/humanplayer.cpp]
 dist=true

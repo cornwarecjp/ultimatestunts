@@ -118,6 +118,11 @@ bool CLConfig::setFilename(CString fn)
 
 }
 
+bool CLConfig::setArgs(int argc, char *argv[])
+{
+	//TODO: do something
+	return true;
+}
 
 bool CLConfig::readFile(void)
 {
@@ -170,6 +175,17 @@ CLConfig::CLConfig()
 CLConfig::CLConfig(CString fn)
 {
   this->setFilename(fn);
+}
+
+CLConfig::CLConfig(int argc, char *argv[])
+{
+  this->setArgs(argc, argv);
+}
+
+CLConfig::CLConfig(CString fn, int argc, char *argv[])
+{
+  this->setFilename(fn);
+  this->setArgs(argc, argv);
 }
 
 

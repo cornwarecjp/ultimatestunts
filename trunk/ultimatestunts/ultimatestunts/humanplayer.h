@@ -29,7 +29,7 @@ public:
 	CHumanPlayer(const CWorld *w);
 	~CHumanPlayer();
 
-	virtual bool Update();
+	virtual bool update();
 };
 
 #endif

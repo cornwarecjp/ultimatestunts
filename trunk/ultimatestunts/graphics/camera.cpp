@@ -1,7 +1,7 @@
 /***************************************************************************
-                          clientsim.h  -  Client-side networked simulation
+                          camera.cpp  -  A basic camera-class
                              -------------------
-    begin                : di jan 14 2003
+    begin                : ma feb 3 2003
     copyright            : (C) 2003 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
@@ -15,30 +15,18 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef CLIENTSIM_H
-#define CLIENTSIM_H
+#include "camera.h"
 
-#include "simulation.h"
-#include "clientnet.h"
+CCamera::CCamera()
+{
+	m_Position = CVector(0,0,0);
+	m_Orientation.reset();
+}
+CCamera::~CCamera(){
+}
 
-/**
-  *@author CJP
-  */
+const CVector &CCamera::getPosition() const
+{return m_Position;}
 
-class CClientSim : public CSimulation  {
-public: 
-	CClientSim(CWorld *w, CString HostName, int UDPPort);
-	~CClientSim();
-
-	virtual int addPlayer(CObjectChoice choice);
-	virtual bool loadObjects();
-
-	virtual bool update();
-
-protected:
-	CSimulation *m_SubSim;
-
-	CClientNet *m_Network;
-};
-
-#endif
+const CMatrix &CCamera::getOrientation() const
+{return m_Orientation;}

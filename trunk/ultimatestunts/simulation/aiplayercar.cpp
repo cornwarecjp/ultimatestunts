@@ -28,7 +28,7 @@ CAIPlayerCar::CAIPlayerCar(CWorld *w) : CPlayer(w)
 CAIPlayerCar::~CAIPlayerCar(){
 }
 
-bool CAIPlayerCar::Update()
+bool CAIPlayerCar::update()
 {
 
 	if(m_MovingObjectId < 0) return false; //player not registered
@@ -44,7 +44,7 @@ bool CAIPlayerCar::Update()
 		printf("AI Player %d is setting input of object %d\n", m_PlayerId, m_MovingObjectId);
 		carin->m_Forward = 1.0;
 		carin->m_Backward = 0.0;
-		carin->m_Right = -0.5;
+		carin->m_Right = -0.1;
 		carin->m_Gear = 1;
 		carin->m_CarHorn = true;
 

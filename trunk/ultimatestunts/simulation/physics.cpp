@@ -26,7 +26,7 @@ CPhysics::CPhysics(CWorld *w) : CSimulation(w)
 CPhysics::~CPhysics(){
 }
 
-bool CPhysics::Update()
+bool CPhysics::update()
 {
 	float dt = m_Timer.getdt();
 	if(dt > 1.0)

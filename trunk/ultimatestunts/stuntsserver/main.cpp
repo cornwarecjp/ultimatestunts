@@ -54,11 +54,11 @@ bool mainloop()
 	}
     	printf("**********\n");
 
-  player1->Update(); //Makes moving decisions
-  player2->Update();
-  player3->Update();
+  player1->update(); //Makes moving decisions
+  player2->update();
+  player3->update();
 
-  sim->Update(); //Modifies world object
+  sim->update(); //Modifies world object
 
   return true; //Infinite loop
 }

@@ -1,7 +1,7 @@
 /***************************************************************************
-                          clientsim.h  -  Client-side networked simulation
+                          gamecamera.h  -  The camera being used in the game
                              -------------------
-    begin                : di jan 14 2003
+    begin                : ma feb 3 2003
     copyright            : (C) 2003 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
@@ -15,30 +15,39 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef CLIENTSIM_H
-#define CLIENTSIM_H
+#ifndef GAMECAMERA_H
+#define GAMECAMERA_H
 
-#include "simulation.h"
-#include "clientnet.h"
+#include "camera.h"
+#include "world.h"
 
 /**
   *@author CJP
   */
 
-class CClientSim : public CSimulation  {
+class CGameCamera : public CCamera  {
 public: 
-	CClientSim(CWorld *w, CString HostName, int UDPPort);
-	~CClientSim();
+	enum eCameraMode {
+		In=1,
+		Tracking,
+		UserDefined,
+		Top,
+		Television
+	};
 
-	virtual int addPlayer(CObjectChoice choice);
-	virtual bool loadObjects();
+	CGameCamera(const CWorld *w);
+	virtual ~CGameCamera();
 
-	virtual bool update();
+	void setCameraMode(eCameraMode mode);
+	void setTrackedObject(int id);
 
+	virtual void update();
 protected:
-	CSimulation *m_SubSim;
+	eCameraMode m_Mode;
+	int m_Id;
+	const CWorld *m_World;
 
-	CClientNet *m_Network;
+	bool m_Reached;
 };
 
 #endif
