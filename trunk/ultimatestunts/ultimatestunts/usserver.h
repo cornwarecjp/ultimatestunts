@@ -31,6 +31,7 @@ public:
 	~CUSServer();
 
 	void addai(const CString &name, const CString &car);
+	void clearai();
 	void set(const CString &var, const CString &val);
 	void start();
 	void stop();

@@ -41,6 +41,7 @@ public:
 	void cmd_start();
 	void cmd_stop();
 	void cmd_addai(const CString &args);
+	void cmd_clearai();
 	void cmd_set(const CString &args);
 	void cmd_show();
 	void cmd_write(const CString &args);

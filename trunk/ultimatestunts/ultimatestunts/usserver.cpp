@@ -43,6 +43,11 @@ void CUSServer::addai(const CString &name, const CString &car)
 	giveCmd(CString("addai ") +name + ", " + car);
 }
 
+void CUSServer::clearai()
+{
+	giveCmd("clearai");
+}
+
 void CUSServer::set(const CString &var, const CString &val)
 {
 	giveCmd(CString("set ") + var + " = " + val);

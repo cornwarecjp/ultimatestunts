@@ -174,7 +174,6 @@ Uint8 CNetworkThread::processMessage(const CMessageBuffer &buffer)
 		movingObject
 		movObjInput
 		car
-		carInput
 		confirmation
 		*/
 		case CMessageBuffer::movObjInput:

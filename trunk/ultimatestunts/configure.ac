@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT([Ultimate Stunts], [0.5.2], [cornware-cjp@users.sourceforge.net], [ultimatestunts])
+AC_INIT([Ultimate Stunts], [0.5.3], [cornware-cjp@users.sourceforge.net], [ultimatestunts])
 AC_CONFIG_SRCDIR([ultimatestunts/main.cpp])
 AC_CANONICAL_TARGET
 AM_INIT_AUTOMAKE
@@ -70,8 +70,7 @@ if test "x$ac_cv_header_windows_h" != "xyes" ; then
 else
   dnl CygWin under Windoze.
 
-  dnl added temporarily "-mconsole" for stdio
-  graphlibs="-lm -lwinmm -lglu32 -lopengl32 -luser32 -lgdi32 -mconsole"
+  graphlibs="-lm -lwinmm -lglu32 -lopengl32 -luser32 -lgdi32"
 
   dnl force a failed check
   AM_CONDITIONAL(ENABLE_XMESA_FX, test "no" = "yes")
@@ -87,6 +86,10 @@ AC_LANG_POP(C)
 CFLAGS="$CFLAGS $SDL_CFLAGS"
 CXXFLAGS="$CXXFLAGS $SDL_CFLAGS"
 
+dnl added "-mconsole" for stdio in windows
+if test "x$ac_cv_header_windows_h" = "xyes" ; then
+  sdllibs="$sdllibs -mconsole"
+fi
 
 dnl ---------------------
 dnl Check sockets library

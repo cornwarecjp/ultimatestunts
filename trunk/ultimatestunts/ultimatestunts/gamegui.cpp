@@ -17,6 +17,7 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <unistd.h>
 
 #include "gamegui.h"
 #include "menu.h"
@@ -426,6 +427,9 @@ void CGameGUI::load()
 
 	if(m_GameType == NewNetwork)
 	{
+		//clear the AI list
+		m_Server->clearai();
+
 		//In a new network game, place the AI's on the server side
 		for(unsigned int i=0; i < m_PlayerDescr.size(); i++)
 			if(!(m_PlayerDescr[i].isHuman))
@@ -444,12 +448,18 @@ void CGameGUI::unload()
 {
 	m_GameCore->resetGame();
 
-	if(m_GameType == NewNetwork && m_Server != NULL)
+	if(m_Server != NULL)
 		m_Server->stop();
 
 	for(unsigned int i=0; i<m_Players.size(); i++)
 		delete m_Players[i];
 	m_Players.clear();
+
+	if(m_Server != NULL)
+	{
+		//clear the AI list
+		m_Server->clearai();
+	}
 
 	//do not yet unload the server: we might want to play again
 }

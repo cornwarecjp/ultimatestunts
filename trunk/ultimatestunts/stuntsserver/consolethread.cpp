@@ -16,6 +16,7 @@
  ***************************************************************************/
 
 #include <cstdio>
+#include <unistd.h>
 
 #include "consolethread.h"
 #include "main.h"
@@ -227,7 +228,7 @@ void CConsoleThread::cmd_stop()
 void CConsoleThread::cmd_addai(const CString &args)
 {
 	int pos = args.inStr(',');
-	if(pos > 0)
+	if(pos >= 0)
 	{
 		CString name = args.mid(0, pos);
 		CString car = args.mid(pos+1);
@@ -240,6 +241,16 @@ void CConsoleThread::cmd_addai(const CString &args)
 		ai.carFile = car;
 		m_AIDescriptions.push_back(ai);
 	}
+	else
+	{
+		printf("Syntax: addai name, carfile\n");
+	}
+}
+
+void CConsoleThread::cmd_clearai()
+{
+	printf("Clearing AI list\n");
+	m_AIDescriptions.clear();
 }
 
 void CConsoleThread::cmd_set(const CString &args)
@@ -259,7 +270,11 @@ void CConsoleThread::cmd_set(const CString &args)
 		else if(var=="port")
 			{networkthread.setPort(val.toInt());}
 		else if(var=="maxRequests")
-			{Clients.maxRequests = val.toInt();}
+			{
+				Clients.enter();
+				Clients.maxRequests = val.toInt();
+				Clients.leave();
+			}
 		else
 		{
 			printf("Unknown variable \'%s\'. Try \'help\'\n", var.c_str());
@@ -269,13 +284,15 @@ void CConsoleThread::cmd_set(const CString &args)
 
 void CConsoleThread::cmd_show()
 {
+	Clients.enter();
+	ObjectChoices.enter();
+
 	printf("Variables:\n");
 	printf("  track = %s\n", m_Trackfile.c_str());
 	printf("  port = %d\n", networkthread.getPort());
 	printf("  maxRequests = %d\n", Clients.maxRequests);
-	//printf("   = %\n", );
-	printf("\nRemote players:\n");
-	Clients.enter();
+
+	printf("\nRemote clients:\n");
 	for(unsigned int i=0; i < Clients.size(); i++)
 	{
 		CClient &c = Clients[i];
@@ -289,21 +306,31 @@ void CConsoleThread::cmd_show()
 			else
 				{printf("      %d: %s\n", reqID, Clients.playerRequests[reqID].m_Filename.c_str());}
 		}
+		printf("    Players:\n");
+		for(unsigned int j=0; j < c.players.size(); j++)
+		{
+			int playerID = c.players[j];
+			if(playerID < 0)
+				{printf("      %d: refused\n", playerID);}
+			else
+				{printf("      %d: %s\n", playerID,
+					ObjectChoices[playerID].m_Filename.c_str());}
+		}
 	}
-	Clients.leave();
 
 	printf("\nAI players:\n");
 	for(unsigned int i=0; i < m_AIDescriptions.size(); i++)
-		printf("  %s playing with car %s\n",
+		printf("  %s with car %s\n",
 			m_AIDescriptions[i].name.c_str(), m_AIDescriptions[i].carFile.c_str());
 
-	printf("Players:\n");
-	ObjectChoices.enter();
+	printf("\nObjects currently in the game:\n");
 	for(unsigned int j=0; j < ObjectChoices.size(); j++)
 	{
-		printf("  %s\n", ObjectChoices[j].m_Filename.c_str());
+		printf("  %d: %s\n", j, ObjectChoices[j].m_Filename.c_str());
 	}
+
 	ObjectChoices.leave();
+	Clients.leave();
 }
 
 void CConsoleThread::cmd_write(const CString &args)
@@ -321,6 +348,7 @@ bool CConsoleThread::executeCommand(const CString &cmd)
 	{
 		printf("Commands are:\n"
 			"  addai name,carfile   Add an AI player\n"
+			"  clearai              Clear the AI list\n"
 			"  exit, quit           Terminate the server\n"
 			"  write message        Send a message to all players\n"
 			"  help                 Display this list\n"
@@ -345,6 +373,8 @@ bool CConsoleThread::executeCommand(const CString &cmd)
 		{cmd_stop();}
 	else if(cmd == "show")
 		{cmd_show();}
+	else if(cmd == "clearai")
+		{cmd_clearai();}
 	else if(cmd.length() > 6 && cmd.mid(0, 6) == "addai ")
 		{cmd_addai(cmd.mid(6));}
 	else if(cmd.length() > 4 && cmd.mid(0, 4) == "set ")

@@ -90,7 +90,11 @@ void CGamecoreThread::processInputQueue()
 						mo = tmp;
 				}
 
-			if(mo == NULL) continue; //not found
+			if(mo == NULL)
+			{
+				consolethread.write("Unidentified Input Message (IUM)");
+				continue; //not found
+			}
 
 			mo->m_InputData->setBuffer(buffer);
 		}
