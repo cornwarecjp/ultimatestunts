@@ -1,1 +1,25 @@
+---------------------------------------------------------------------
+                Ultimate Stunts source code
+---------------------------------------------------------------------
+
+This package contains the sourcecode of the 3D racing game 
+"Ultimate Stunts". You can configure it and compile it according
+to the instructions in the documentation.
+
+Ultimate Stunts, data files for Ultimate Stunts and the documentation
+of Ultimate Stunts are available on its website:
+http://ultimatestunts.sourceforge.net
+
+The source code in this package is divided in several directories.
+The code in the directories "shared", "filetransfer", "graphics" and
+"simulation" is compiled into *.a static libraries. The code in the
+directories "stunts3dedit", "stuntsai", "stuntsserver", "trackedit" and
+"ultimatestunts" will be linked with those static libraries, generating
+a different binary executable in each directory.
+
+The source code can be edited with kdevelop. The kdevprj-file is available
+in this directory. Note that this is a "custom"-type project, which means
+that kdevelop does not modify Makefile.am and configure.in for you.
+Automake, autoconf, configure and make can still be done from the kdevelop
+menus.
 
