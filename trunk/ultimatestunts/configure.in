@@ -67,7 +67,8 @@ if test "x$ac_cv_header_windows_h" != "xyes" ; then
 else
   dnl CygWin under Windoze.
 
-  graphlibs="-lm -lwinmm -lglu32 -lopengl32 -luser32 -lgdi32"
+  dnl added temporarily "-mconsole" for stdio
+  graphlibs="-lm -lwinmm -lglu32 -lopengl32 -luser32 -lgdi32 -mconsole"
 fi
 
 dnl Check for SDL

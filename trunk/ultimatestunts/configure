@@ -4168,7 +4168,7 @@ fi
 
 else
 
-  graphlibs="-lm -lwinmm -lglu32 -lopengl32 -luser32 -lgdi32"
+    graphlibs="-lm -lwinmm -lglu32 -lopengl32 -luser32 -lgdi32 -mconsole"
 fi
 
 # Make sure we can run config.sub.

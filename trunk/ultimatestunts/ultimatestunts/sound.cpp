@@ -255,7 +255,10 @@ CSound::CSound(const CLConfig &conf, const CWorld *world)
   printf("Hardware 3D channels : %d\n", FSOUND_GetNumHardwareChannels());
 
 	m_TopDir = conf.getValue("files", "datadir");
-	CString fn = m_TopDir + "music/canyon.mp3";
+	if(m_TopDir != "" && m_TopDir[m_TopDir.length()-1] != '/')
+		m_TopDir += '/';
+
+	CString fn = m_TopDir + "music/kssthbss.ogg";
 	printf("\nLoading music file %s\n", fn.c_str());
 	m_MusicSample = new CSndSample(SAMPLE_2D);
 	m_MusicObject = new CSoundObj;

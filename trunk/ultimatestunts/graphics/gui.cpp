@@ -205,27 +205,7 @@ void CGUI::addPlayer(CString name, bool human)
 
 CString CGUI::getInput()
 {
-#ifdef __CYGWIN__
-	//as SDL makes it impossible to work with stdio in Cygwin(?),
-	//use this file instead
-	static CFile f("stdin.txt");
-
-	CString in;
-	do
-	{
-		in = f.readl();
-		int pos = in.inStr('#');
-		if(pos >= 0)
-			in = in.subStr(0, pos); //ignore comments
-	}
-	while(in=="");
-
-	printf("%s\n", in.c_str());
-	return in;
-
-#else
 	char input[80];
 	scanf("%s", input);
 	return input;
-#endif
 }
