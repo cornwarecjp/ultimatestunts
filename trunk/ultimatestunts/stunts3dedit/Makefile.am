@@ -1,6 +1,6 @@
 bin_PROGRAMS = stunts3dedit
 stunts3dedit_SOURCES = main.cpp
-stunts3dedit_LDADD   = ../shared/libshared.a ../graphics/libgraphics.a @graphlibs@
+stunts3dedit_LDADD   = ../shared/libshared.a ../graphics/libgraphics.a @sdllibs@ @graphlibs@
 
 
 EXTRA_DIST = main.cpp 

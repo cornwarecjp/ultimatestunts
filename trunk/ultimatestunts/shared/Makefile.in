@@ -72,6 +72,7 @@ SDL_LIBS = @SDL_LIBS@
 VERSION = @VERSION@
 graphlibs = @graphlibs@
 netlibs = @netlibs@
+sdllibs = @sdllibs@
 soundlibs = @soundlibs@
 
 noinst_LIBRARIES = libshared.a

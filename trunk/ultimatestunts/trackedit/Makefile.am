@@ -1,6 +1,6 @@
 bin_PROGRAMS = trackedit
 trackedit_SOURCES = main.cpp
-trackedit_LDADD   = ../shared/libshared.a ../graphics/libgraphics.a @graphlibs@
+trackedit_LDADD   = ../shared/libshared.a ../graphics/libgraphics.a @sdllibs@ @graphlibs@
 
 
 EXTRA_DIST = main.cpp 

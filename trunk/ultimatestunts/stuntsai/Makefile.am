@@ -1,6 +1,6 @@
 bin_PROGRAMS = stuntsai
 stuntsai_SOURCES = main.cpp
-stuntsai_LDADD   = ../shared/libshared.a ../simulation/libsimulation.a ../filetransfer/libfiletransfer.a @netlibs@
+stuntsai_LDADD   = ../shared/libshared.a ../simulation/libsimulation.a ../filetransfer/libfiletransfer.a @sdllibs@ @netlibs@
 
 
 EXTRA_DIST = main.cpp 

@@ -1,6 +1,6 @@
 bin_PROGRAMS = ultimatestunts
 ultimatestunts_SOURCES = main.cpp gamecamera.cpp humanplayer.cpp
-ultimatestunts_LDADD   = ../graphics/libgraphics.a ../filetransfer/libfiletransfer.a ../simulation/libsimulation.a ../shared/libshared.a @graphlibs@ @soundlibs@ @netlibs@
+ultimatestunts_LDADD   = ../graphics/libgraphics.a ../filetransfer/libfiletransfer.a ../simulation/libsimulation.a ../shared/libshared.a @sdllibs@ @graphlibs@ @soundlibs@ @netlibs@
 
 
 EXTRA_DIST = main.cpp gamecamera.cpp gamecamera.h humanplayer.cpp humanplayer.h
