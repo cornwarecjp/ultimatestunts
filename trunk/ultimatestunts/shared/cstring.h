@@ -21,176 +21,60 @@
 
 // #include <std/bastring.h>
 #include <string>
-#include <stdio.h>
-#include <stdlib.h>
-
- using namespace std;
 
 //  class CString : public std::basic_string<char>
- class CString : public string
+ class CString : public std::string
  {
   private:
-    char c_up(const char c) const
-    {
-      if ((int (c) >= 97) && (int (c) <= 122)) {
-       return ((char) (  ( (int) c) - 32));
-      }
-      return (c);
-    }
-
-    char c_down(const char c) const
-    {
-      if ((int (c) >= 65) && (int (c) <= 90)) {
-       return ((char) (  ( (int) c) + 32));
-      }
-      return (c);
-
-
-      return (c);
-    }
+    char c_up(const char c) const;
+    char c_down(const char c) const;
 
  public:
+	//Constructors:
+   CString(const char *s);
+   CString();
 
-   CString(const char *s) {
-     this->assign(s);
-   }
+	//Bones functions:
+   CString & trimL();
+   CString & trimR();
+   CString & Trim();
 
-   CString() {
-     this->assign("");
-   };
+   CString & toUpper();
+   CString & toLower();
+   CString & subStr(const int unsigned pos = 0, const int n = -1) const;
+   CString & operator= (const char *str);
+   CString getFirstLine();
+   int countChar(const char c) const;
+   int toInt();
+   CString & dump() const;
 
+	//CJP functions:
+	//char *Cast() const; //instead, use c_str method
 
-   //
-   // LTrim: Trim left
-   //
-   CString & trimL() {
-     while (this->length() > 0)
-     {
-       bool e = false;
-       switch ((char) (*this)[0]) {
-         case '\n':
-         case (char) 1:
-         case '\r':
-         case ' ': this->erase(0,1);
-                   break;
-         default: e = true;
+	//Operators are probably provided by std::string:
+	CString operator+(CString const &val); //std didn't do what I wanted
+	CString operator+(const char *val);
+	//CString const &operator=(CString const &val);
+	//CString const &operator+=(char const &val);
+	//bool operator==(CString const &val) const;
+	//bool operator!=(CString const &val) const;
 
-       }
-       if (e) break;
-     }
-     return (*this);
-   }
+	//int len() const; //instead, use length()
 
-   //
-   // RTrim: Trim right
-   //
-   CString & trimR() {
-     while (this->length() > 0)
-     {
-       bool e = false;
-       switch ((char) (*this)[this->length()-1]) {
-         case '\n':
-         case (char) 1:
-         case '\r':
-         case ' ': this->erase(this->length()-1,1);
-                   break;
-         default: e = true;
+	//Don't know how to do these with std::string:
+	CString mid(int i, int l);
+	int instr(char c);
 
-       }
-       if (e) break;
-     }
-     return (*this);
-   }
+	//char getChar(int i); //instead, use operator[]
+	//void putChar(int i, char c); //instead, use operator[]
+	//void addChar(char c); //operator+= (?)
 
-   //
-   //  Trim: Trim string
-   //
-   CString & Trim()
-   {
-      trimR();
-      trimL();
-      return (*this);
-   }
-
-   CString & toUpper() {
-     for (int unsigned i=0;i<this->size();i++) {
-       (*this)[i] = c_up((*this)[i]);
-     }
-     return *this;
-   }
-
-   CString & toLower() {
-     for (int unsigned i=0;i<this->size();i++) {
-       (*this)[i] = c_down((*this)[i]);
-     }
-     return *this;
-   }
-
-   CString & subStr(const int unsigned pos = 0, const int n = -1) const {
-    CString *res = new CString("");
-    if (pos <= this->length()) {
-       int len = n;
-       if (len == -1) { len = this->size() -pos; }
-       res->assign(*this, pos, len);
-    }
-    return (*res);
-   }
-
-   CString & operator= (const char *str)
-   {
-      this->assign(str);
-      return *this;
-   }
-
-   CString getFirstLine() {
-     CString *res = new CString();
-     for (int unsigned i=0; i < this->length(); i++) {
-        if (((*this)[i] == '\n') || ((*this)[i] == '\r')) {
-//           for (;(((*this)[i+1] == '\n') || ((*this)[i+1] == '\r'));i++);
-           if (i<this->length()-1) { if (((*this)[i+1] == '\n') || ((*this)[i+1] == '\r')) i++; }
-
-           res->assign(this->subStr(0,i+1));
-//           res->Trim();
-           (*this) = this->subStr(i+1);
-//           this->LTrim();
-           return (*res);
-        }
-     }
-     return ("");
-   }
-
-   int countChar(const char c) const {
-     int res = 0;
-     for (int unsigned i=0;i<this->length(); i++) {
-       if ((*this)[i] == c) res++;
-     }
-     return  (res);
-   }
-
-   int toInt() {
-     return (atol(this->c_str()));
-   }
-
-   CString & dump() const {
-     CString *res = new CString();
-     for (int unsigned i=0;i<this->length();i++) {
-       char c=(*this)[i];
-       char s[10];
-       if ( ((int (c) >= 97) && (int (c) <= 122)) ||
-            ((int (c) >= 65) && (int (c) <= 90))
-          )
-       {
-          sprintf(s, "('%c' 0x%x)", c, (int) c);
-       } else {
-          sprintf(s, "('?' 0x%x)", (int) c);
-       }
-       *res+=s;
-     }
-     return (*res);
-   }
-
+	//Don't know how to do this with std::string:
+	float toFloat();
 
 };
+
+CString operator+(const char *val1, CString const &val2);
 
 #endif
 

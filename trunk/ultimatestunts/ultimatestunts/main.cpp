@@ -22,6 +22,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "cstring.h"
+
 #include "world.h"
 #include "simulation.h"
 #include "clientsim.h"
@@ -32,13 +34,14 @@
 #include "aiplayercar.h"
 #include "humanplayer.h"
 
+#include "winsystem.h"
 #include "timer.h"
 
 CWorld *world;
 CPlayer *player1, *player2, *player3, *player4;
 CSimulation *sim;
 
-
+CWinSystem *winsys;
 
 bool mainloop()
 {
@@ -73,6 +76,8 @@ int main(int argc, char *argv[])
 {
 	char inpbuffer[80];
 	printf("Welcome to " PACKAGE " version " VERSION "\n");
+
+	winsys = new CWinSystem;
 
 	printf("\nCreating world object\n");
 	world = new CWorld;
@@ -134,7 +139,7 @@ int main(int argc, char *argv[])
 	for(int i=1; i<40; i++)
 		printf("\n");
 
-	while(mainloop());
+	winsys->runLoop(mainloop);
 
 	printf("\nLeaving mainloop\n");
 

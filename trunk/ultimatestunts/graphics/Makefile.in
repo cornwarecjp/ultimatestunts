@@ -66,6 +66,9 @@ MAKEINFO = @MAKEINFO@
 OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
+SDL_CFLAGS = @SDL_CFLAGS@
+SDL_CONFIG = @SDL_CONFIG@
+SDL_LIBS = @SDL_LIBS@
 VERSION = @VERSION@
 graphlibs = @graphlibs@
 netlibs = @netlibs@
@@ -73,9 +76,10 @@ soundlibs = @soundlibs@
 
 noinst_LIBRARIES = libgraphics.a
 
-libgraphics_a_SOURCES = graphics.cpp 
+libgraphics_a_SOURCES = graphics.cpp winsystem.cpp
+INCLUDES = $(all_includes) -I../shared -I../simulation
 
-EXTRA_DIST = graphics.cpp graphics.h 
+EXTRA_DIST = graphics.cpp graphics.h winsystem.cpp winsystem.h
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_CLEAN_FILES = 
 LIBRARIES =  $(noinst_LIBRARIES)
@@ -90,7 +94,7 @@ X_LIBS = @X_LIBS@
 X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_PRE_LIBS = @X_PRE_LIBS@
 libgraphics_a_LIBADD = 
-libgraphics_a_OBJECTS =  graphics.$(OBJEXT)
+libgraphics_a_OBJECTS =  graphics.$(OBJEXT) winsystem.$(OBJEXT)
 AR = ar
 CXXFLAGS = @CXXFLAGS@
 CXXCOMPILE = $(CXX) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -103,7 +107,7 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
 TAR = tar
 GZIP_ENV = --best
-DEP_FILES =  .deps/graphics.P
+DEP_FILES =  .deps/graphics.P .deps/winsystem.P
 SOURCES = $(libgraphics_a_SOURCES)
 OBJECTS = $(libgraphics_a_OBJECTS)
 

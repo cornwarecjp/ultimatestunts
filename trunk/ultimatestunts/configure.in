@@ -65,14 +65,23 @@ if test "x$ac_cv_header_windows_h" != "xyes" ; then
   fi
 
   dnl check for glut
-  AC_CHECK_LIB(glut, glutGetModifiers, graphlibs="-lglut $graphlibs" ,,$graphlibs)
+  dnl AC_CHECK_LIB(glut, glutGetModifiers, graphlibs="-lglut $graphlibs" ,,$graphlibs)
 
 else
   dnl CygWin under Windoze.
 
-  graphlibs="-lm -lwinmm -lglut32 -lglu32 -lopengl32 -luser32 -lgdi32"
+  dnl graphlibs="-lm -lwinmm -lglut32 -lglu32 -lopengl32 -luser32 -lgdi32"
+  graphlibs="-lm -lwinmm -lglu32 -lopengl32 -luser32 -lgdi32"
 fi
 
+dnl Check for SDL
+SDL_VERSION=1.1.0
+AM_PATH_SDL($SDL_VERSION,
+            :,
+            AC_MSG_ERROR([*** SDL version $SDL_VERSION not found!])
+)
+CFLAGS="$CFLAGS $SDL_CFLAGS"
+graphlibs="$SDL_LIBS $graphlibs"
 
 dnl ---------------------
 dnl Check sockets library

@@ -4,7 +4,7 @@
 #Purpose: choose between binaries
 #Fill in the applications below
 
-stuntsserver/stuntsserver
+ultimatestunts/ultimatestunts
 
 echo "Program stopped. Press Enter."
 read

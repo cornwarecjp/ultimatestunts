@@ -1,8 +1,9 @@
 /***************************************************************************
-                          usmacros.h  -  ultimate stunts macros
+                          cfile.h  -  description
                              -------------------
-    copyright            : (C) 2002 by bones
-    email                : boesemar@users.sourceforge.net
+    begin                : Thu May 23 2002
+    copyright            : (C) 2002 by CJP
+    email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
 
 /***************************************************************************
@@ -14,29 +15,23 @@
  *                                                                         *
  ***************************************************************************/
 
-#if defined(_WIN32) // && !defined(_WINGDI_) && !defined(MESA)
-#define CALLBACKFUN __cdecl
-#else
-#define CALLBACKFUN
-#endif
+#ifndef CFILE_H
+#define CFILE_H
 
-#ifndef _USENDIAN_H
-#define _USENDIAN_H
+#include <stdio.h> //voor FILE type
+#include "cstring.h"
 
-#include <SDL/SDL_endian.h>
-#include <SDL/SDL.h>
+class CFile
+{
+	public:
+		CFile(CString filename, bool write=false);
+		~CFile();
 
-#if SDL_BYTEORDER == SDL_LIL_ENDIAN
-#define ENDIANFIX16(X)    (X)
-#define ENDIANFIX32(X)    (X)
-#else
-#define ENDIANFIX16(X)    SDL_Swap16(X)
-#define ENDIANFIX32(X)    SDL_Swap32(X)
-#endif
+		CString readl();
+		void writel(CString l);
 
-#define LOBYTE(w)           ((Uint8)(w))
-#define HIBYTE(w)           ((Uint8)(((Uint16)(w) >> 8) & 0xFF))
-
-
+	protected:
+		FILE * fp;
+};
 
 #endif

@@ -1,8 +1,9 @@
 /***************************************************************************
-                          usmacros.h  -  ultimate stunts macros
+                          winsystem.h  -  description
                              -------------------
-    copyright            : (C) 2002 by bones
-    email                : boesemar@users.sourceforge.net
+    begin                : wo jan 15 2003
+    copyright            : (C) 2003 by CJP
+    email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
 
 /***************************************************************************
@@ -14,29 +15,24 @@
  *                                                                         *
  ***************************************************************************/
 
-#if defined(_WIN32) // && !defined(_WINGDI_) && !defined(MESA)
-#define CALLBACKFUN __cdecl
-#else
-#define CALLBACKFUN
-#endif
+#ifndef WINSYSTEM_H
+#define WINSYSTEM_H
 
-#ifndef _USENDIAN_H
-#define _USENDIAN_H
+#include "usmacros.h"
 
-#include <SDL/SDL_endian.h>
-#include <SDL/SDL.h>
+/**
+  *@author CJP
+  */
 
-#if SDL_BYTEORDER == SDL_LIL_ENDIAN
-#define ENDIANFIX16(X)    (X)
-#define ENDIANFIX32(X)    (X)
-#else
-#define ENDIANFIX16(X)    SDL_Swap16(X)
-#define ENDIANFIX32(X)    SDL_Swap32(X)
-#endif
+class CWinSystem {
+public: 
+	CWinSystem();
+	~CWinSystem();
 
-#define LOBYTE(w)           ((Uint8)(w))
-#define HIBYTE(w)           ((Uint8)(((Uint16)(w) >> 8) & 0xFF))
+	int runLoop( bool (CALLBACKFUN *loopfunc)() );
 
-
+protected:
+	void reshape(int w, int h);
+};
 
 #endif
