@@ -1,7 +1,7 @@
 /***************************************************************************
-                          movingobject.cpp  -  description
+                          aiplayercar.h  -  description
                              -------------------
-    begin                : Wed Dec 4 2002
+    begin                : wo dec 18 2002
     copyright            : (C) 2002 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
@@ -15,20 +15,25 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "movingobject.h"
-#include "movobjinput.h"
+#ifndef AIPLAYERCAR_H
+#define AIPLAYERCAR_H
 
-CMovingObject::CMovingObject()
+#include "player.h"
+
+/**
+  *@author CJP
+  */
+
+class CAIPlayerCar : public CPlayer
 {
-	m_InputData = new CMovObjInput;
+	public:
+		CAIPlayerCar(CWorld *w);
+		~CAIPlayerCar();
 
-	//Give some default values
-	//Just for not letting them uninitialised
-	//The simulation should re-initialise them.
-	m_Position = m_Velocity = m_Orientation = m_AngularVelocity = CVector(0,0,0);
-}
+		virtual bool Update();
 
-CMovingObject::~CMovingObject()
-{
-	delete m_InputData; //I guess this will happen for all CMovingObject-derived classes
-}
+	protected:
+		bool m_FirstTime;
+};
+
+#endif

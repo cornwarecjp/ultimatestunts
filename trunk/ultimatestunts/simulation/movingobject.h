@@ -24,13 +24,27 @@
   */
 
 #include "dynamicobject.h"
+#include "vector.h"
 
-class CMovingObject : public CDynamicObject {
-public: 
-	CMovingObject();
-	~CMovingObject();
+class CMovingObject : public CDynamicObject
+{
+	public:
+		CMovingObject();
+		~CMovingObject();
 
-	virtual CMessageBuffer::eMessageType getType() const {return CMessageBuffer::movingObject;}
+		virtual CVector getPosition(){return m_Position;}
+		virtual void setPosition(CVector v){m_Position = v;}
+		virtual CVector getVelocity(){return m_Velocity;}
+		virtual void setVelocity(CVector v){m_Velocity = v;}
+		virtual CVector getOrientation(){return m_Orientation;}
+		virtual void setOrientation(CVector v){m_Orientation = v;}
+		virtual CVector getAngularVelocity(){return m_AngularVelocity;}
+		virtual void setAngularVelocity(CVector v){m_AngularVelocity = v;}
+
+		virtual CMessageBuffer::eMessageType getType() const {return CMessageBuffer::movingObject;}
+
+	protected:
+		CVector m_Position, m_Velocity, m_Orientation, m_AngularVelocity;
 };
 
 #endif

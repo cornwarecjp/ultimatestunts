@@ -28,8 +28,3 @@ CPlayer::CPlayer(const CWorld *w)
 
 CPlayer::~CPlayer(){
 }
-
-bool CPlayer::Update()
-{
-	return true;
-}

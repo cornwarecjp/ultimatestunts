@@ -22,3 +22,8 @@ CHumanPlayer::CHumanPlayer(const CWorld *w) : CPlayer(w)
 
 CHumanPlayer::~CHumanPlayer(){
 }
+
+bool CHumanPlayer::Update()
+{
+	return true;
+}

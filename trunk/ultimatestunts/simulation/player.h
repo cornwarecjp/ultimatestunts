@@ -30,10 +30,10 @@ public:
 	CPlayer(const CWorld *w);
 	virtual ~CPlayer();
 
-  virtual bool Update();
+	virtual bool Update()=0; //abstract method
 
-  int m_MovingObjectId;
-  int m_PlayerId;
+	int m_MovingObjectId;
+	int m_PlayerId;
 
 protected:
   const CWorld *m_World;

@@ -28,6 +28,8 @@ class CHumanPlayer : public CPlayer  {
 public: 
 	CHumanPlayer(const CWorld *w);
 	~CHumanPlayer();
+
+	virtual bool Update();
 };
 
 #endif
