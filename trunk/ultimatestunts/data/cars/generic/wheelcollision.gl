@@ -1,0 +1,31 @@
+#CornWare UltimateStunts graphics file
+#created by the stunts3dedit editor
+
+Reflectance 0
+
+#Tedit-name Collision plane 1
+Lod c
+Notex
+Quads
+
+Color 0.000000, 0.000000, 1.000000
+Opacity 0.500000
+Reflectance 0.000000
+Normal 1.000000, 0.000000, 0.000000
+TexCoord 0.000000, 0.000000
+Vertex 0.092369, 0.419243, 0.000000
+Vertex 0.092369, 0.000000, 0.419243
+Vertex 0.092369, -0.419243, 0.000000
+Vertex 0.092369, 0.000000, -0.419243
+End
+
+
+#Tedit-name Collision plane 2
+Quads
+
+Normal -1.000000, -0.000000, -0.000000
+Vertex -0.121441, 0.000000, -0.400000
+Vertex -0.121441, -0.400000, 0.000000
+Vertex -0.121441, 0.000000, 0.400000
+Vertex -0.121441, 0.400000, 0.000000
+End
