@@ -141,8 +141,3 @@ bool CCollisionModel::loadFromFile(CFile *f, CString subset, CMaterial **matarra
 
 	return true;
 }
-
-void CCollisionModel::calculateFixedVolumes(const CMatrix &ori)
-{
-	;
-}

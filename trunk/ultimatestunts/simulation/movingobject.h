@@ -26,6 +26,7 @@
 #include "dynamicobject.h"
 #include "vector.h"
 #include "matrix.h"
+#include "body.h"
 
 class CPhysics;
 
@@ -52,6 +53,11 @@ class CMovingObject : public CDynamicObject
 		virtual void setRotationMatrix(CMatrix &M);
 
 		virtual CMessageBuffer::eMessageType getType() const {return CMessageBuffer::movingObject;}
+
+		virtual void updateBodyData() = 0;
+
+		vector<CBody> m_Bodies; //The object bodies
+		vector<int> m_Sounds; //The object sounds
 
 		//constant:
 		float m_Mass;

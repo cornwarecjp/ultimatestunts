@@ -24,16 +24,6 @@
   */
 
 #include "message.h"
-#include "vector.h"
-#include "matrix.h"
-
-class CBody
-{
-public:
-	int m_Body;
-	CVector m_Position;
-	CMatrix m_Orientation;
-};
 
 class CDynamicObject : public CMessage {
 public: 
@@ -41,13 +31,7 @@ public:
 	virtual ~CDynamicObject();
 	virtual bool hasChanged();
 
-	virtual void updateBodyData() = 0;
-
 	CMessage *m_InputData;
-
-	vector<CBody> m_Bodies; //The object bodies
-	vector<int> m_Sounds; //The object sounds
-
 };
 
 #endif

@@ -36,6 +36,7 @@ void CCollisionData::calculateCollisions()
 
 	for(unsigned int i=0; i<m_World->m_MovObjs.size(); i++)
 	{
+		//Add an event array
 		m_Events.push_back(CColEvents());
 		m_Events[i].isHit = false;
 	}

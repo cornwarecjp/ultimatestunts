@@ -65,10 +65,12 @@
 
 #define NETTYPE char
 #undef UNIX_TREE
+#undef DEBUGMSG
 
 #else
 
 #define NETTYPE void
 #define UNIX_TREE //expect and use $HOME, /etc etc.
+#define DEBUGMSG
 
 #endif

@@ -30,6 +30,7 @@ using namespace std;
 #include "cstring.h"
 #include "lconfig.h"
 #include "filecontrol.h"
+#include "usmacros.h"
 
 //Simulation stuff
 #include "playercontrol.h"
@@ -73,6 +74,7 @@ CSound *soundsystem = NULL;
 
 bool mainloop()
 {
+#ifdef DEBUGMSG
  //Debugging 'display'
 	printf("\033[1H");
 	printf("\033[1G");
@@ -86,6 +88,7 @@ bool mainloop()
 		               i,            r.x, r.y, r.z,       v.x, v.y, v.z);
 	}
 	printf("**********\n");
+#endif
 
 	bool retval = true;
 

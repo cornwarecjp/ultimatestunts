@@ -57,7 +57,7 @@ public:
 
 
 	//Moving objects
-	vector<CMovingObject *> m_MovObjs; //refer to elements from m_MovObjBounds
+	vector<CMovingObject *> m_MovObjs;
 	bool loadMovObjs(CString filename);
 	void unloadMovObjs();
 

@@ -1,7 +1,7 @@
 /***************************************************************************
-                          collisionmodel.h  -  A collision model
+                          body.cpp  -  description
                              -------------------
-    begin                : wo sep 24 2003
+    begin                : di okt 7 2003
     copyright            : (C) 2003 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
@@ -15,55 +15,10 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef COLLISIONMODEL_H
-#define COLLISIONMODEL_H
+#include "body.h"
 
-#include <vector> //STL vector template
-namespace std {}
-using namespace std;
-
-#include "material.h"
-#include "vector.h"
-#include "matrix.h"
-#include "cstring.h"
-#include "cfile.h"
-
-/**
-  *@author CJP
-  */
-
-class CCollisionFace : public vector<CVector>
+void CBody::updateFixedBounds(const CCollisionModel& coll)
 {
-	CVector nor;
-	float d;
-};
-
-class CCollisionModel {
-public: 
-	CCollisionModel();
-	virtual ~CCollisionModel();
-
-	virtual bool loadFromFile(CFile *f, CString subset, CMaterial **matarray);
-
-	//Bounded volume data:
-	float m_BSphere_r; //Bounding sphere
-	CVector m_OBB_min, m_OBB_max; //Oriented bounding box
-
-	//The shape itself
-	vector<CCollisionFace> m_Faces;
-
-	CString m_Filename;
-	CString m_Subset;
-
-protected:
-	enum ePrimitiveType {
-		None,
-		Triangles,
-		Quads,
-		Trianglestrip,
-		Quadstrip,
-		Polygon
-	};
-};
-
-#endif
+	m_FBB_min = coll.m_OBB_min;
+	m_FBB_max = coll.m_OBB_max;
+}

@@ -20,6 +20,7 @@
 #include "physics.h"
 #include "car.h"
 #include "carinput.h"
+#include "usmacros.h"
 
 #ifndef M_PI
 #define M_PI 3.1415926536
@@ -36,12 +37,15 @@ CPhysics::~CPhysics(){
 bool CPhysics::update()
 {
 	float dt = m_Timer.getdt();
-	//if(dt > 1.0)
-	//	{printf("Warning: Low update time detected\n"); dt = 1.0;}
+
+#ifdef DEBUGMSG
+	if(dt > 1.0)
+		{printf("Warning: Low update time detected\n"); dt = 1.0;}
 	if(dt < 0.0001)
 	{
 		printf("Physics debugging message: dt = %f\n", dt);
 	}
+#endif
 
 #define cwA 10
 #define gasmax 10000
