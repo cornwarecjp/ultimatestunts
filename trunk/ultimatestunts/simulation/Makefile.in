@@ -1,6 +1,6 @@
-# Makefile.in generated automatically by automake 1.4 from Makefile.am
+# Makefile.in generated automatically by automake 1.4-p5 from Makefile.am
 
-# Copyright (C) 1994, 1995-8, 1999 Free Software Foundation, Inc.
+# Copyright (C) 1994, 1995-8, 1999, 2001 Free Software Foundation, Inc.
 # This Makefile.in is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
 # with or without modifications, as long as this notice is preserved.
@@ -74,6 +74,7 @@ soundlibs = @soundlibs@
 noinst_LIBRARIES = libsimulation.a
 
 libsimulation_a_SOURCES = car.cpp dynamicobject.cpp message.cpp messagebuffer.cpp movingobject.cpp objectchoice.cpp physics.cpp player.cpp simulation.cpp tile.cpp world.cpp
+INCLUDES = $(all_includes) -I../shared
 
 EXTRA_DIST = car.cpp car.h dynamicobject.cpp dynamicobject.h message.cpp message.h messagebuffer.cpp messagebuffer.h movingobject.cpp movingobject.h objectchoice.cpp objectchoice.h physics.cpp physics.h player.cpp player.h simulation.cpp simulation.h tile.cpp tile.h world.cpp world.h
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -104,7 +105,7 @@ DIST_COMMON =  Makefile.am Makefile.in
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = tar
+TAR = gtar
 GZIP_ENV = --best
 DEP_FILES =  .deps/car.P .deps/dynamicobject.P .deps/message.P \
 .deps/messagebuffer.P .deps/movingobject.P .deps/objectchoice.P \
@@ -206,7 +207,7 @@ distdir: $(DISTFILES)
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
-	    cp -pr $$/$$file $(distdir)/$$file; \
+	    cp -pr $$d/$$file $(distdir)/$$file; \
 	  else \
 	    test -f $(distdir)/$$file \
 	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \

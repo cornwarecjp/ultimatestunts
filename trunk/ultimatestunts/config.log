@@ -22,32 +22,34 @@ configure:1135: c++ -o conftest    conftest.C  1>&5
 configure:1161: checking whether the C++ compiler (c++  ) is a cross-compiler
 configure:1166: checking whether we are using GNU C++
 configure:1194: checking whether c++ accepts -g
-configure:1226: checking how to run the C++ preprocessor
-configure:1280: checking for a BSD compatible install
-configure:1335: checking for ranlib
-configure:1364: checking for Cygwin environment
-configure:1397: checking for mingw32 environment
-configure:1428: checking for executable suffix
-configure:1459: checking for object suffix
-configure:1487: checking for windows.h
-configure:1527: checking for X
-configure:1841: checking for dnet_ntoa in -ldnet
-configure:1882: checking for dnet_ntoa in -ldnet_stub
-configure:1930: checking for gethostbyname
-configure:2028: checking for connect
-configure:2120: checking for remove
-configure:2212: checking for shmat
-configure:2313: checking for IceConnectionNumber in -lICE
-configure:2364: checking for glNewList in -lGL
-configure:2503: checking for gluLookAt in -lGLU
-configure:2586: checking for glutGetModifiers in -lglut
-configure:2632: checking for socket in -lsocket
-configure:2672: checking for gethostbyname in -lnsl
-configure:2712: checking for inet_aton in -lresolv
-configure:2755: checking for ANSI C header files
-configure:2863: checking for GL/gl.h
-configure:2863: checking for GL/glut.h
-configure:2901: checking for joystick.h
-configure:2937: checking for linux/joystick.h
-configure:2974: checking for FSOUND_Close in -lfmod
-configure:3015: checking for fmod/fmod.h
+configure:1243: gcc -c -g -O2  conftest.c 1>&5
+configure:1260: gcc -c -g -O2  conftest.c 1>&5
+configure:1277: checking how to run the C++ preprocessor
+configure:1331: checking for a BSD compatible install
+configure:1386: checking for ranlib
+configure:1415: checking for Cygwin environment
+configure:1448: checking for mingw32 environment
+configure:1479: checking for executable suffix
+configure:1510: checking for object suffix
+configure:1538: checking for windows.h
+configure:1578: checking for X
+configure:1892: checking for dnet_ntoa in -ldnet
+configure:1933: checking for dnet_ntoa in -ldnet_stub
+configure:1981: checking for gethostbyname
+configure:2079: checking for connect
+configure:2171: checking for remove
+configure:2263: checking for shmat
+configure:2364: checking for IceConnectionNumber in -lICE
+configure:2415: checking for glNewList in -lGL
+configure:2554: checking for gluLookAt in -lGLU
+configure:2637: checking for glutGetModifiers in -lglut
+configure:2683: checking for socket in -lsocket
+configure:2723: checking for gethostbyname in -lnsl
+configure:2763: checking for inet_aton in -lresolv
+configure:2806: checking for ANSI C header files
+configure:2914: checking for GL/gl.h
+configure:2914: checking for GL/glut.h
+configure:2952: checking for joystick.h
+configure:2988: checking for linux/joystick.h
+configure:3025: checking for FSOUND_Close in -lfmod
+configure:3066: checking for fmod/fmod.h

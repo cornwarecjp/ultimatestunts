@@ -17,22 +17,37 @@
 
 #include "message.h"
 
+CMessageBuffer * CMessage::getBuffer() const {      // fixme: load first
+  return (this->m_Data);
+}
+ 	
+bool CMessage::setBuffer(const CMessageBuffer & b) {
+ *this->m_Data = b;
+ return (true);
+}
+
+	
+void CMessage::setType(const CMessageBuffer::eMessageType & t) {
+	m_Data->setType(t);
+}
+
+void CMessage::setCounter(const Uint16 & counter) {
+	m_Data->setCounter(counter);
+}
+
+void CMessage::setAC(const bool & ac) {
+	if (ac) m_Data->setAC(1); else m_Data->setAC(0);
+}
+
+
 CMessage::CMessage(){
 }
 
-CMessage::CMessage(CMessageBuffer b)
+CMessage::CMessage(const CMessageBuffer & mb)
 {
+ this->setBuffer(mb);
 }
 
 CMessage::~CMessage(){
 }
 
-CMessageBuffer CMessage::getBuffer()
-{
-  CMessageBuffer b;
-  return b;
-}
-
-void CMessage::setBuffer(CMessageBuffer b)
-{
-}

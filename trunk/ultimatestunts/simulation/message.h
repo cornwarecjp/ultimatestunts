@@ -26,6 +26,36 @@
 #include "messagebuffer.h"
 
 class CMessage {
+
+private:
+
+  CMessageBuffer *m_Data;
+	
+ 	
+public:
+  CMessage();
+  CMessage(const CMessageBuffer &);
+  virtual ~CMessage();
+
+
+  virtual CBinBuffer & getData() const = 0;         // returns class data as binbuffer
+  virtual bool setData(CBinBuffer &) = 0;   // rebuild class data from binbuffer
+
+	CMessageBuffer * getBuffer() const;
+ 	
+  bool setBuffer(const CMessageBuffer &);
+
+	
+  void setType(const CMessageBuffer::eMessageType & t);
+ 	void setCounter(const Uint16 & counter);
+  void setAC(const bool & ac);
+	
+};
+
+
+/*
+class CMessage {
+
 public: 
 	CMessage();
   CMessage(CMessageBuffer b);
@@ -34,5 +64,7 @@ public:
   virtual CMessageBuffer getBuffer();
   virtual void setBuffer(CMessageBuffer b);
 };
+
+*/
 
 #endif

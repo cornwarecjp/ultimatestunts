@@ -30,17 +30,17 @@ public:
 	CDynamicObject();
 	virtual ~CDynamicObject();
 
-  virtual const CMessage *getParameters();
-  virtual void setParameters(const CMessage *m);
+//  virtual const CMessage *getParameters();
+//  virtual void setParameters(const CMessage *m);
 
-  virtual const CMessage *getInputData(); //Used by network
-  virtual void setInputData(const CMessage *m);
+//  virtual const CMessage *getInputData(); //Used by network
+//  virtual void setInputData(const CMessage *m);
 
   virtual bool hasChanged();
 
 protected:
-  CMessage *m_Parameters;
-  CMessage *m_InputData;
+//  CMessage *m_Parameters;
+//  CMessage *m_InputData;
 };
 
 #endif
