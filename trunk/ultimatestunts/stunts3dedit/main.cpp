@@ -19,15 +19,91 @@
 #include <config.h>
 #endif
 
+#include <stdio.h>
 #include <stdlib.h>
 
-#include "hello.h"
+//Common files
+#include "lconfig.h"
+#include "cstring.h"
+
+//Graphics stuff
+#include "winsystem.h"
+#include "editrenderer.h"
+#include "editcamera.h"
+
+#include "graphobj.h"
+
+CWinSystem *winsys;
+CEditRenderer *renderer;
+CEditCamera *camera;
+
+CGraphObj *graphobj;
+
+CString topdir;
+
+CString getInput()
+{
+	char input[80];
+	scanf("%s", input);
+	return input;
+}
+
+bool mainloop()
+{
+	bool ret = true;
+
+	const Uint8 *keystate = winsys->getKeyState();
+
+	if(winsys->wasPressed('\e'))
+		ret = false;
+
+	if(keystate[SDLK_PAGEUP])
+		{camera->incrDist(-1.0); printf("^\n");}
+	if(keystate[SDLK_PAGEDOWN])
+		{camera->incrDist(1.0); printf("v\n");}
+
+	renderer->update();
+	return ret;
+}
 
 int main(int argc, char *argv[])
 {
-  hello h;
-  h.writeHello();
-  //printf("Hello world\n");
+	CLConfig conffile(argc, argv);
+	if(!conffile.setFilename("ultimatestunts.conf"))
+	{
+		printf("Error: could not read ultimatestunts.conf\n"); return 1;
+		//TODO: create a default one
+	} else {printf("Using ultimatestunts.conf\n");}
+
+	printf("\nCreating a window\n");
+	winsys = new CWinSystem(conffile);
+
+	topdir = conffile.getValue("files", "datadir");
+	if(topdir != "" && topdir[topdir.length()-1] != '/')
+		topdir += '/';
+	printf("Filenames are relative to \"%s\"\n", topdir.c_str());
+
+	printf("Please enter the filename: ");
+	CString fn = getInput();
+	graphobj = new CGraphObj;
+	printf("Loading graphic object...\n");
+	graphobj->loadFromFile(topdir + fn, NULL);
+	printf("...done\n");
+
+	printf("\nInitialising the rendering engine\n");
+	renderer = new CEditRenderer(conffile);
+	camera = new CEditCamera();
+	renderer->setCamera(camera);
+	renderer->setGraphobj(graphobj);
+
+	printf("\nEntering mainloop\n");
+	winsys->runLoop(mainloop, true); //true: swap buffers
+	printf("\nLeaving mainloop\n");
+
+	delete renderer;
+	delete winsys; //Important; don't remove: this calls SDL_Quit!!!
+
+	printf("\nProgram finished succesfully\n");
 
   return EXIT_SUCCESS;
 }

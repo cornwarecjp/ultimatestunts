@@ -15,8 +15,12 @@
  *                                                                         *
  ***************************************************************************/
 #include <math.h>
+#ifndef M_PI
+#define M_PI 3.141592653
+#endif
 
 #include "gamecamera.h"
+#include "usmacros.h"
 
 CGameCamera::CGameCamera(const CWorld *w)
 {
@@ -27,6 +31,7 @@ CGameCamera::CGameCamera(const CWorld *w)
 	m_World = w;
 
 	m_Reached = true;
+	m_First = true;
 }
 
 CGameCamera::~CGameCamera(){
@@ -35,7 +40,9 @@ CGameCamera::~CGameCamera(){
 void CGameCamera::setCameraMode(eCameraMode mode)
 {
 	m_Reached = false;
+	m_First = true;
 	m_Mode = mode;
+	m_SwitchTime = m_Timer.getTime();
 }
 
 void CGameCamera::swithCameraMode()
@@ -45,6 +52,10 @@ void CGameCamera::swithCameraMode()
 		case In:
 			setCameraMode(Tracking); break;
 		case Tracking:
+			setCameraMode(Top); break;
+		case Top:
+			setCameraMode(Television); break;
+		case Television:
 			setCameraMode(In); break;
 		default:
 			setCameraMode(In);
@@ -52,7 +63,19 @@ void CGameCamera::swithCameraMode()
 }
 
 void CGameCamera::setTrackedObject(int id)
-{m_Id = id;}
+{
+	m_Id = id;
+	m_Reached = false;
+	m_First = true;
+	m_SwitchTime = m_Timer.getTime();
+}
+
+void CGameCamera::switchTrackedObject()
+{
+	unsigned int i = m_Id + 1;
+	if(i >= m_World->m_MovObjs.size()) i = 0;
+	setTrackedObject(i);
+}
 
 void CGameCamera::update()
 {
@@ -64,6 +87,7 @@ void CGameCamera::update()
 	CVector tv; //target velocity
 	CVector tp; //target position
 	CMatrix tm; //target orientation
+	float reach_thr = 1.0;
 	bool autotarget = false; //default: use tm
 
 	switch(m_Mode)
@@ -71,7 +95,10 @@ void CGameCamera::update()
 		case In:
 			//viewpoint is higher than center of mass
 			tp = to->getPosition() + CVector(0.0,0.3,0.0);
-			tm = to->getRotationMatrix();
+			if(m_Reached)
+				{tm = to->getRotationMatrix();}
+			//else: autotarget
+
 			tv = to->getVelocity();
 			break;
 		case Tracking:
@@ -87,9 +114,41 @@ void CGameCamera::update()
 				m_Reached = false; //always have "smooth" camera movement
 			}
 			break;
-		case UserDefined:
 		case Top:
+			{
+				reach_thr = 5.0;
+				tv = to->getVelocity();
+				float vabs = tv.abs();
+				tp = to->getPosition() + CVector(0.0, 20.0 + 5.0*vabs, 0.0);
+				if(m_Reached)
+				{
+					CMatrix m;
+					m.setElement(1,1,0.0);
+					m.setElement(2,2,0.0);
+					m.setElement(1,2,-1.0);
+					m.setElement(2,1,1.0);
+					tm = m;
+				}
+				//else: autotarget
+			}
+			break;
 		case Television:
+			{
+				tp = to->getPosition();
+				int x = (int)tp.x;
+				int y = (int)tp.y;
+				int z = (int)tp.z;
+				x = x - x % (2*TILESIZE) + TILESIZE;
+				y = y - y % (VERTSIZE) + VERTSIZE;
+				z = z - z % (2*TILESIZE) + TILESIZE;
+				tp.x = (float)x;
+				tp.y = (float)y;
+				tp.z = (float)z;
+				m_Reached = true; //immediately
+				autotarget = true;
+			}
+			break;
+		case UserDefined:
 			break;
 			//TODO: all other viewpoints
 	}
@@ -98,6 +157,8 @@ void CGameCamera::update()
 		{m_Position = tp; m_Velocity = tv;}
 	else
 	{
+		autotarget = true; //always autotarget when not reached
+
 		CVector prel = m_Position - tp;
 		CVector vrel = m_Velocity - tv;
 
@@ -111,7 +172,8 @@ void CGameCamera::update()
 		m_Velocity += a * dt;
 		m_Position += m_Velocity * dt;
 
-		if(prel.abs() < 1.0) m_Reached = true;
+		if(prel.abs() < reach_thr || (m_Timer.getTime() - m_SwitchTime) > 2.0)
+			m_Reached = true;
 	}
 
 	if(autotarget)

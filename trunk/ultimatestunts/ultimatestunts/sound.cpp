@@ -33,136 +33,76 @@
 
 CSound::CSound(const CLConfig &conf, const CWorld *world)
 {
-	printf("sound::sound()\n");
-
 	m_World = world;
+
+	CString drivername = "nosound"; //Default for unknown system types
+
+#ifdef __CYGWIN__
+	drivername = conf.getValue("sound", "windowsdriver");
+#elif defined(__linux__)
+	drivername = conf.getValue("sound", "linuxdriver");
+#endif
 
 	if (FSOUND_GetVersion() < FMOD_VERSION)
 	{
 		printf("Error : You are using the wrong DLL version!  You should be using FMOD %.02f\n", FMOD_VERSION);
 		return;
 	}
-  // ==========================================================================================
+
   // SELECT OUTPUT METHOD
-  // ==========================================================================================
-  printf("---------------------------------------------------------\n");
-  printf("Output Type\n");
-  printf("---------------------------------------------------------\n");
-
-#ifdef __CYGWIN__
-  printf("1 - Direct Sound\n");
-  printf("2 - Windows Multimedia Waveout\n");
-  printf("3 - A3D\n");
-#elif defined(__linux__)
-  printf("1 - Open Sound System (OSS) (Linux, Solaris, freebsd)\n");
-  printf("2 - Elightment Sound Daemon (ESD, Linux, more ...)\n");
-  printf("3 - Alsa Sound System (Linux)\n");
-#endif
-  printf("4 - NoSound\n");
-  printf("---------------------------------------------------------\n");
-// print driver names
-  printf("Press a corresponding number\n");
-
-  char key;
-  do
-  {
-    key = getchar();
-  } while (key < '1' || key > '4');
-
-  switch (key)
-  {
-#ifdef __CYGWIN__
-    case '1' :      FSOUND_SetOutput(FSOUND_OUTPUT_DSOUND);
-      break;
-    case '2' :      FSOUND_SetOutput(FSOUND_OUTPUT_WINMM);
-      break;
-    case '3' :      FSOUND_SetOutput(FSOUND_OUTPUT_A3D);
-      break;
-#elif defined(__linux__)
-    case '1' :  FSOUND_SetOutput(FSOUND_OUTPUT_OSS);
-      break;
-    case '2' :  FSOUND_SetOutput(FSOUND_OUTPUT_ESD);
-      break;
-    case '3' :  FSOUND_SetOutput(FSOUND_OUTPUT_ALSA);
-      break;
-#endif
-    default:
-    case '4' :      FSOUND_SetOutput(FSOUND_OUTPUT_NOSOUND);
-      printf("No sound will be available\n");
-      break;
-  }
-  // ==========================================================================================
-  // SELECT DRIVER
-  // ==========================================================================================
-
-  // The following list are the drivers for the output method selected above.
-  printf("---------------------------------------------------------\n");
-
-  switch (FSOUND_GetOutput())
-  {
-    case FSOUND_OUTPUT_NOSOUND:
-      printf("NoSound");
-      break;
-#ifdef __CYGWIN__
-    case FSOUND_OUTPUT_WINMM:
-      printf("Windows Multimedia Waveout");
-      break;
-    case FSOUND_OUTPUT_DSOUND:
-      printf("Direct Sound");
-      break;
-    case FSOUND_OUTPUT_A3D:
-      printf("A3D");
-      break;
-#elif defined(__linux__)
-    case FSOUND_OUTPUT_OSS:
-      printf("Open Sound System");
-      break;
-    case FSOUND_OUTPUT_ESD:
-      printf("Enlightment Sound Daemon");
-      break;
-    case FSOUND_OUTPUT_ALSA:
-      printf("Alsa");
-      break;
-#endif
-  };
-  printf(" Driver list\n");
-  printf("---------------------------------------------------------\n");
-
-  for (int i=0; i < FSOUND_GetNumDrivers(); i++)
-  {
-    printf("%d - %s\n", i+1, FSOUND_GetDriverName(i));      // print driver names
-    {
-      unsigned int caps = 0;
-
-      FSOUND_GetDriverCaps(i, &caps);
-      if (caps & FSOUND_CAPS_HARDWARE)
-        printf("  * Driver supports hardware 3D sound!\n");
-      if (caps & FSOUND_CAPS_EAX2)
-        printf("  * Driver supports EAX 2 reverb!\n");
-      if (caps & FSOUND_CAPS_EAX3)
-        printf("  * Driver supports EAX 3 reverb!\n");
-      if (caps & FSOUND_CAPS_GEOMETRY_OCCLUSIONS)
-        printf("  * Driver supports hardware 3d geometry processing with occlusions!\n");
-      if (caps & FSOUND_CAPS_GEOMETRY_REFLECTIONS)
-        printf("  * Driver supports hardware 3d geometry processing with reflections!\n");
-    }
-  }
-
-  printf("---------------------------------------------------------\n");
-
-	// print driver names
-	printf("Press a corresponding number\n");
-	m_Driver = 0;
-	do
+	if(drivername == "directsound")
+		FSOUND_SetOutput(FSOUND_OUTPUT_DSOUND);
+	else if(drivername == "winmm")
+		FSOUND_SetOutput(FSOUND_OUTPUT_WINMM);
+	else if(drivername == "a3d")
+		FSOUND_SetOutput(FSOUND_OUTPUT_A3D);
+	else if(drivername == "oss")
+		FSOUND_SetOutput(FSOUND_OUTPUT_OSS);
+	else if(drivername == "alsa")
+		FSOUND_SetOutput(FSOUND_OUTPUT_ALSA);
+	else if(drivername == "esd")
+		FSOUND_SetOutput(FSOUND_OUTPUT_ESD);
+	else if(drivername == "nosound")
+		FSOUND_SetOutput(FSOUND_OUTPUT_NOSOUND);
+	else
 	{
-		key = getchar() - '1';
+		printf("Unknown driver name %s: using nosound driver\n", drivername.c_str());
+		FSOUND_SetOutput(FSOUND_OUTPUT_NOSOUND);
 	}
-	while (key < 0 || key >= FSOUND_GetNumDrivers());
 
-	m_Driver = key;
-	FSOUND_SetDriver(m_Driver);		// Select sound card (0 = default)
-	printf("Selected driver: %d\n", m_Driver + 1);
-	printf("Loaded driver: %d\n", FSOUND_GetDriver() + 1);
+	// SELECT DRIVER
+	if(FSOUND_GetNumDrivers() > 1)
+	{
+		CString subdriver = conf.getValue("sound", "subdriver");
+		printf("\nSelected driver: %s\n", subdriver.c_str());
+		printf("Available drivers:\n");
+		for (int i=0; i < FSOUND_GetNumDrivers(); i++)
+		{
+			printf("%d: %s\n", i+1, FSOUND_GetDriverName(i));
+
+			if(subdriver == (char *)FSOUND_GetDriverName(i))
+				FSOUND_SetDriver(i);
+
+			{
+				unsigned int caps = 0;
+
+				FSOUND_GetDriverCaps(i, &caps);
+				if (caps & FSOUND_CAPS_HARDWARE)
+					printf("  * Driver supports hardware 3D sound!\n");
+				if (caps & FSOUND_CAPS_EAX2)
+					printf("  * Driver supports EAX 2 reverb!\n");
+				if (caps & FSOUND_CAPS_EAX3)
+					printf("  * Driver supports EAX 3 reverb!\n");
+				if (caps & FSOUND_CAPS_GEOMETRY_OCCLUSIONS)
+					printf("  * Driver supports hardware 3d geometry processing with occlusions!\n");
+				if (caps & FSOUND_CAPS_GEOMETRY_REFLECTIONS)
+					printf("  * Driver supports hardware 3d geometry processing with reflections!\n");
+			}
+
+		}
+	}
+
+	printf("Loaded driver: %s\n", FSOUND_GetDriverName(FSOUND_GetDriver()) );
 
   {
     unsigned int caps = 0;
@@ -186,49 +126,44 @@ CSound::CSound(const CLConfig &conf, const CWorld *world)
     printf("---------------------------------------------------------\n");
   }
 
-  // ==========================================================================================
   // INITIALIZE
-  // ==========================================================================================
   if (!FSOUND_Init(44100, 32, 0))
   {
     printf("Init: %s\n", FMOD_ErrorString(FSOUND_GetError()));
     return;
   }
 
-  // ==========================================================================================
   // DISPLAY HELP
-  // ==========================================================================================
-
-  printf("FSOUND Output Method : ");
+  printf("FMOD Output Method : ");
   switch (FSOUND_GetOutput())
   {
     case FSOUND_OUTPUT_NOSOUND:
-      printf("FSOUND_OUTPUT_NOSOUND\n");
+      printf("nosound\n");
       break;
 #ifdef __CYGWIN__
     case FSOUND_OUTPUT_WINMM:
-      printf("FSOUND_OUTPUT_WINMM\n");
+      printf("winmm\n");
       break;
     case FSOUND_OUTPUT_DSOUND:
-      printf("FSOUND_OUTPUT_DSOUND\n");
+      printf("directsound\n");
       break;
     case FSOUND_OUTPUT_A3D:
-      printf("FSOUND_OUTPUT_A3D\n");
+      printf("a3d\n");
       break;
 #elif defined(__linux__)
     case FSOUND_OUTPUT_OSS:
-      printf("Open Sound System");
+      printf("oss\n");
       break;
     case FSOUND_OUTPUT_ESD:
-      printf("Enlightment Sound Daemon");
+      printf("esd\n");
       break;
     case FSOUND_OUTPUT_ALSA:
-      printf("Alsa");
+      printf("alsa\n");
       break;
 #endif
   };
 
-  printf("FSOUND Mixer         : ");
+  printf("FMOD Mixer         : ");
   switch (FSOUND_GetMixer())
   {
     case FSOUND_MIXER_BLENDMODE:
@@ -250,7 +185,8 @@ CSound::CSound(const CLConfig &conf, const CWorld *world)
       printf("FSOUND_MIXER_QUALITY_MMXP6\n");
       break;
   };
-  printf("FSOUND Driver        : ");
+
+  printf("Sub driver        : ");
   printf("%s\n", FSOUND_GetDriverName(FSOUND_GetDriver()));
   printf("Hardware 3D channels : %d\n", FSOUND_GetNumHardwareChannels());
 
@@ -264,7 +200,11 @@ CSound::CSound(const CLConfig &conf, const CWorld *world)
 	m_MusicObject = new CSoundObj;
 	m_MusicSample->loadFromFile(fn);
 	m_MusicObject->setSample(m_MusicSample);
-	m_MusicObject->setVolume(120); //less than 50% volume
+
+	m_MusicVolume = conf.getValue("sound", "musicvolume").toInt();
+	m_SoundVolume = conf.getValue("sound", "soundvolume").toInt();
+
+	m_MusicObject->setVolume(m_MusicVolume);
 }
 
 CSound::~CSound()
@@ -337,7 +277,7 @@ void CSound::update()
 		float freq = 0.1 + 0.1 * v.abs();
 		//printf("Setting vol,freq of %d to %d,%3.3f\n", i, vol, freq);
 		m_Channels[i]->setFrequency(freq);
-		m_Channels[i]->setVolume(vol);
+		m_Channels[i]->setVolume((vol * m_SoundVolume) >> 8);
 	}
 
 	//Update:

@@ -1,7 +1,7 @@
 /***************************************************************************
-                          gamecamera.h  -  The camera being used in the game
+                          editcamera.h  -  description
                              -------------------
-    begin                : ma feb 3 2003
+    begin                : wo apr 9 2003
     copyright            : (C) 2003 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
@@ -15,49 +15,32 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GAMECAMERA_H
-#define GAMECAMERA_H
+#ifndef EDITCAMERA_H
+#define EDITCAMERA_H
 
 #include "camera.h"
-#include "world.h"
-#include "timer.h"
 
 /**
   *@author CJP
   */
 
-class CGameCamera : public CCamera  {
+class CEditCamera : public CCamera  {
 public: 
-	enum eCameraMode {
-		In=1,
-		Tracking,
-		UserDefined,
-		Top,
-		Television
-	};
+	CEditCamera();
+	~CEditCamera();
 
-	CGameCamera(const CWorld *w);
-	virtual ~CGameCamera();
+	void setDist(float dist);
+	void setXAngle(float xangle);
+	void setYAngle(float yangle);
 
-	void setCameraMode(eCameraMode mode);
-	void swithCameraMode();
-	void setTrackedObject(int id);
-	void switchTrackedObject();
+	void incrDist(float dist);
+	void incrXAngle(float xangle);
+	void incrYAngle(float yangle);
 
-	const CVector &getVelocity() const {return m_Velocity;}
-
-	virtual void update();
 protected:
-	CVector m_Velocity;
-	CTimer m_Timer;
+	void updatePosition();
 
-	eCameraMode m_Mode;
-	int m_Id;
-	const CWorld *m_World;
-
-	bool m_Reached;
-	bool m_First;
-	float m_SwitchTime;
+	float m_Dist, m_XAngle, m_YAngle;
 };
 
 #endif

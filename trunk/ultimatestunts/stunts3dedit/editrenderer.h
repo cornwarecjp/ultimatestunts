@@ -1,7 +1,7 @@
 /***************************************************************************
-                          camera.cpp  -  A basic camera-class
+                          editrenderer.h  -  The renderer of stunts3dedit
                              -------------------
-    begin                : ma feb 3 2003
+    begin                : wo apr 9 2003
     copyright            : (C) 2003 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
@@ -15,18 +15,28 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "camera.h"
+#ifndef EDITRENDERER_H
+#define EDITRENDERER_H
 
-CCamera::CCamera()
-{
-	m_Position = CVector(0,0,0);
-	m_Orientation.reset();
-}
-CCamera::~CCamera(){
-}
+#include "renderer.h"
+#include "graphobj.h"
 
-const CVector &CCamera::getPosition() const
-{return m_Position;}
+/**
+  *@author CJP
+  */
 
-const CMatrix &CCamera::getOrientation() const
-{return m_Orientation;}
+class CEditRenderer : public CRenderer  {
+public: 
+	CEditRenderer(const CLConfig &conf);
+	virtual ~CEditRenderer();
+
+	void setGraphobj(const CGraphObj *obj)
+		{m_GraphObj = obj;}
+
+	virtual void update();
+
+protected:
+	const CGraphObj *m_GraphObj;
+};
+
+#endif

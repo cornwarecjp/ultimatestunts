@@ -76,10 +76,10 @@ sdllibs = @sdllibs@
 soundlibs = @soundlibs@
 
 bin_PROGRAMS = stunts3dedit
-stunts3dedit_SOURCES = main.cpp
-stunts3dedit_LDADD = ../shared/libshared.a ../graphics/libgraphics.a @sdllibs@ @graphlibs@
+stunts3dedit_SOURCES = editcamera.cpp editrenderer.cpp main.cpp
+stunts3dedit_LDADD = ../graphics/libgraphics.a ../shared/libshared.a @sdllibs@ @graphlibs@
 
-EXTRA_DIST = main.cpp 
+EXTRA_DIST = editcamera.cpp editcamera.h editrenderer.cpp editrenderer.h main.cpp
 
 # set the include path found by configure
 INCLUDES = $(all_includes) -I../shared -I../graphics
@@ -100,9 +100,10 @@ X_CFLAGS = @X_CFLAGS@
 X_LIBS = @X_LIBS@
 X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_PRE_LIBS = @X_PRE_LIBS@
-stunts3dedit_OBJECTS =  main.$(OBJEXT)
-stunts3dedit_DEPENDENCIES =  ../shared/libshared.a \
-../graphics/libgraphics.a
+stunts3dedit_OBJECTS =  editcamera.$(OBJEXT) editrenderer.$(OBJEXT) \
+main.$(OBJEXT)
+stunts3dedit_DEPENDENCIES =  ../graphics/libgraphics.a \
+../shared/libshared.a
 CXXFLAGS = @CXXFLAGS@
 CXXCOMPILE = $(CXX) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 CXXLD = $(CXX)
@@ -114,7 +115,7 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
 TAR = tar
 GZIP_ENV = --best
-DEP_FILES =  .deps/main.P
+DEP_FILES =  .deps/editcamera.P .deps/editrenderer.P .deps/main.P
 SOURCES = $(stunts3dedit_SOURCES)
 OBJECTS = $(stunts3dedit_OBJECTS)
 

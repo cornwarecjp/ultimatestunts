@@ -27,11 +27,16 @@
 
 class CCamera {
 public: 
-	CCamera();
-	virtual ~CCamera();
+	CCamera()
+		{m_Position = CVector(0,0,0); m_Orientation.reset();}
 
-	virtual const CVector &getPosition() const;
-	virtual const CMatrix &getOrientation() const;
+	virtual ~CCamera(){;}
+
+	const CVector &getPosition() const
+		{return m_Position;}
+
+	const CMatrix &getOrientation() const
+		{return m_Orientation;}
 
 	virtual void update(){;}
 

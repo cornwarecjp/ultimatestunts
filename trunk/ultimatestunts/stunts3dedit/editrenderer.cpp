@@ -1,7 +1,7 @@
 /***************************************************************************
-                          gamecamera.h  -  The camera being used in the game
+                          editrenderer.cpp  -  The renderer of stunts3dedit
                              -------------------
-    begin                : ma feb 3 2003
+    begin                : wo apr 9 2003
     copyright            : (C) 2003 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
@@ -14,50 +14,34 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
+#include <GL/gl.h>
 
-#ifndef GAMECAMERA_H
-#define GAMECAMERA_H
+#include "editrenderer.h"
 
-#include "camera.h"
-#include "world.h"
-#include "timer.h"
+CEditRenderer::CEditRenderer(const CLConfig &conf) : CRenderer(conf)
+{
+}
 
-/**
-  *@author CJP
-  */
+CEditRenderer::~CEditRenderer(){
+}
 
-class CGameCamera : public CCamera  {
-public: 
-	enum eCameraMode {
-		In=1,
-		Tracking,
-		UserDefined,
-		Top,
-		Television
-	};
+void CEditRenderer::update()
+{
+	//printf("Updating graphics\n");
 
-	CGameCamera(const CWorld *w);
-	virtual ~CGameCamera();
+	if(m_ZBuffer)
+		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+	else
+		glClear( GL_COLOR_BUFFER_BIT );
 
-	void setCameraMode(eCameraMode mode);
-	void swithCameraMode();
-	void setTrackedObject(int id);
-	void switchTrackedObject();
+	const CMatrix &cammat = m_Camera->getOrientation();
+	//glLoadIdentity();
+	glLoadMatrixf(cammat.inverse().gl_mtr());
 
-	const CVector &getVelocity() const {return m_Velocity;}
+	const CVector &camera = m_Camera->getPosition();
 
-	virtual void update();
-protected:
-	CVector m_Velocity;
-	CTimer m_Timer;
+	glTranslatef (-camera.x, -camera.y, -camera.z);
 
-	eCameraMode m_Mode;
-	int m_Id;
-	const CWorld *m_World;
-
-	bool m_Reached;
-	bool m_First;
-	float m_SwitchTime;
-};
-
-#endif
+	int lod = 1;
+	m_GraphObj->draw(lod);
+}

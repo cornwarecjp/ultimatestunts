@@ -1,7 +1,7 @@
 /***************************************************************************
-                          gamecamera.h  -  The camera being used in the game
+                          gamerenderer.h  -  Renderer using world object
                              -------------------
-    begin                : ma feb 3 2003
+    begin                : di apr 8 2003
     copyright            : (C) 2003 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
@@ -15,49 +15,42 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GAMECAMERA_H
-#define GAMECAMERA_H
+#ifndef GAMERENDERER_H
+#define GAMERENDERER_H
 
-#include "camera.h"
-#include "world.h"
-#include "timer.h"
+#include "renderer.h"
+
+#include "graphicworld.h"
+#include "car.h"
 
 /**
   *@author CJP
   */
 
-class CGameCamera : public CCamera  {
+class CGameRenderer : public CRenderer  {
 public: 
-	enum eCameraMode {
-		In=1,
-		Tracking,
-		UserDefined,
-		Top,
-		Television
-	};
+	CGameRenderer(const CLConfig &conf, const CWorld *world);
+	virtual ~CGameRenderer();
 
-	CGameCamera(const CWorld *w);
-	virtual ~CGameCamera();
-
-	void setCameraMode(eCameraMode mode);
-	void swithCameraMode();
-	void setTrackedObject(int id);
-	void switchTrackedObject();
-
-	const CVector &getVelocity() const {return m_Velocity;}
+	bool loadTrackData();
+	void unloadTrackData();
+	bool loadObjData();
+	void unloadObjData();
 
 	virtual void update();
 protected:
-	CVector m_Velocity;
-	CTimer m_Timer;
+	void viewBackground();
+	void viewCar(CCar *car);
+	void viewPilaar(int x, int y, int cur_zpos);
 
-	eCameraMode m_Mode;
-	int m_Id;
+	void viewTrackPart(
+		int xmin,int ymin,
+		int xmax,int ymax,
+		int dx,  int dy,
+		int cur_zpos);
+
 	const CWorld *m_World;
-
-	bool m_Reached;
-	bool m_First;
-	float m_SwitchTime;
+	CGraphicWorld *m_GraphicWorld;
 };
 
 #endif

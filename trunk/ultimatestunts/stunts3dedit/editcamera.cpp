@@ -1,7 +1,7 @@
 /***************************************************************************
-                          gamecamera.h  -  The camera being used in the game
+                          editcamera.cpp  -  description
                              -------------------
-    begin                : ma feb 3 2003
+    begin                : wo apr 9 2003
     copyright            : (C) 2003 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
@@ -15,49 +15,36 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GAMECAMERA_H
-#define GAMECAMERA_H
+#include "editcamera.h"
+#include "usmacros.h"
 
-#include "camera.h"
-#include "world.h"
-#include "timer.h"
+CEditCamera::CEditCamera()
+{
+	m_XAngle = m_YAngle = 0.0;
+	m_Dist = 2 * TILESIZE;
+	updatePosition();
+}
 
-/**
-  *@author CJP
-  */
+CEditCamera::~CEditCamera(){
+}
 
-class CGameCamera : public CCamera  {
-public: 
-	enum eCameraMode {
-		In=1,
-		Tracking,
-		UserDefined,
-		Top,
-		Television
-	};
+void CEditCamera::setDist(float dist)
+{m_Dist = dist; updatePosition();}
+void CEditCamera::setXAngle(float xangle)
+{m_XAngle = xangle; updatePosition();}
+void CEditCamera::setYAngle(float yangle)
+{m_YAngle = yangle; updatePosition();}
 
-	CGameCamera(const CWorld *w);
-	virtual ~CGameCamera();
+void CEditCamera::incrDist(float dist)
+{m_Dist += dist; updatePosition();}
+void CEditCamera::incrXAngle(float xangle)
+{m_XAngle += xangle; updatePosition();}
+void CEditCamera::incrYAngle(float yangle)
+{m_YAngle += yangle; updatePosition();}
 
-	void setCameraMode(eCameraMode mode);
-	void swithCameraMode();
-	void setTrackedObject(int id);
-	void switchTrackedObject();
+void CEditCamera::updatePosition()
+{
+	m_Position = CVector(0.0, 0.0, m_Dist);
 
-	const CVector &getVelocity() const {return m_Velocity;}
-
-	virtual void update();
-protected:
-	CVector m_Velocity;
-	CTimer m_Timer;
-
-	eCameraMode m_Mode;
-	int m_Id;
-	const CWorld *m_World;
-
-	bool m_Reached;
-	bool m_First;
-	float m_SwitchTime;
-};
-
-#endif
+	m_Position += CVector(0.0, VERTSIZE/2, 0.0);
+}

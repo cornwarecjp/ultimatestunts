@@ -19,10 +19,7 @@
 #define RENDERER_H
 
 #include "lconfig.h"
-#include "graphicworld.h"
 #include "camera.h"
-
-#include "car.h"
 
 /**
   *@author CJP
@@ -30,24 +27,15 @@
 
 class CRenderer {
 public: 
-	CRenderer(const CLConfig &conf, const CWorld *world);
-	~CRenderer();
+	CRenderer(const CLConfig &conf);
+	virtual ~CRenderer();
 
-	void setCamera(const CCamera *cam);
+	void setCamera(const CCamera *cam)
+		{m_Camera = cam;}
 
-	bool loadTrackData();
-	void unloadTrackData();
-	bool loadObjData();
-	void unloadObjData();
+	virtual void update();
 
-	void update();
-	void viewBackground();
-	void viewCar(CCar *car);
-	void viewPilaar(int x, int y, int cur_zpos);
 protected:
-	const CWorld *m_World;
-	CGraphicWorld *m_GraphicWorld;
-
 	const CCamera *m_Camera;
 
 	float *m_FogColor;
@@ -60,11 +48,8 @@ protected:
 	bool m_TexSmooth;
 	bool m_ShadowSmooth;
 
-	void viewTrackPart(
-		int xmin,int ymin,
-		int xmax,int ymax,
-		int dx,  int dy,
-		int cur_zpos);
+	int camx, camy, camz;
+	int lengte, breedte, hoogte;
 };
 
 #endif

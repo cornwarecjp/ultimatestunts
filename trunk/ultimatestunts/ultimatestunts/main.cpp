@@ -41,7 +41,7 @@
 
 //Graphics stuff
 #include "winsystem.h"
-#include "renderer.h"
+#include "gamerenderer.h"
 #include "gui.h"
 #include "gamecamera.h"
 
@@ -55,7 +55,7 @@ vector<CPlayer *> players;
 CSimulation *sim;
 
 CWinSystem *winsys;
-CRenderer *renderer;
+CGameRenderer *renderer;
 CGUI *gui;
 CGameCamera *camera;
 
@@ -84,6 +84,7 @@ bool mainloop()
 
 	//Camera:
 	if(winsys->wasPressed('c')) camera->swithCameraMode();
+	if(winsys->wasPressed('t')) camera->switchTrackedObject();
 
 	for(unsigned int i=0; i<players.size(); i++)
 		players[i]->update(); //Makes moving decisions
@@ -177,7 +178,7 @@ int main(int argc, char *argv[])
 	world->loadTrack("tracks/default.track");
 
 	printf("\nInitialising the rendering engine\n");
-	renderer = new CRenderer(conffile, world);
+	renderer = new CGameRenderer(conffile, world);
 	renderer->loadTrackData();
 	camera = new CGameCamera(world);
 	renderer->setCamera(camera);

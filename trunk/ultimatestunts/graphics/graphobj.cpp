@@ -205,7 +205,7 @@ bool CGraphObj::loadFromFile(CString filename, CTexture **matarray)
 	return true; //geslaagd
 }
 
-void CGraphObj::draw(int lod)
+void CGraphObj::draw(int lod) const
 {
 	//TODO: make this code very fast (it's the main drawing routine)
 	//printf("Drawing beautiful openGL graphics...\n");

@@ -1,9 +1,9 @@
 bin_PROGRAMS = stunts3dedit
-stunts3dedit_SOURCES = main.cpp
-stunts3dedit_LDADD   = ../shared/libshared.a ../graphics/libgraphics.a @sdllibs@ @graphlibs@
+stunts3dedit_SOURCES = editcamera.cpp editrenderer.cpp main.cpp
+stunts3dedit_LDADD   = ../graphics/libgraphics.a ../shared/libshared.a @sdllibs@ @graphlibs@
 
 
-EXTRA_DIST = main.cpp 
+EXTRA_DIST = editcamera.cpp editcamera.h editrenderer.cpp editrenderer.h main.cpp
 
 # set the include path found by configure
 INCLUDES= $(all_includes) -I../shared -I../graphics

@@ -131,7 +131,7 @@ install_location=
 type=HEADER
 
 [graphics/Makefile.am]
-files=graphics/winsystem.cpp,graphics/winsystem.h,graphics/graphobj.cpp,graphics/graphobj.h,graphics/image.c,graphics/image.h,graphics/texture.cpp,graphics/texture.h,graphics/renderer.cpp,graphics/renderer.h,graphics/graphicworld.cpp,graphics/graphicworld.h,graphics/gui.cpp,graphics/gui.h,graphics/camera.cpp,graphics/camera.h,graphics/background.cpp,graphics/background.h
+files=graphics/winsystem.cpp,graphics/winsystem.h,graphics/graphobj.cpp,graphics/graphobj.h,graphics/image.c,graphics/image.h,graphics/texture.cpp,graphics/texture.h,graphics/renderer.cpp,graphics/renderer.h,graphics/graphicworld.cpp,graphics/graphicworld.h,graphics/gui.cpp,graphics/gui.h,graphics/camera.h,graphics/background.cpp,graphics/background.h
 sub_dirs=
 type=static_library
 
@@ -146,12 +146,6 @@ dist=true
 install=false
 install_location=
 type=HEADER
-
-[graphics/camera.cpp]
-dist=true
-install=false
-install_location=
-type=SOURCE
 
 [graphics/camera.h]
 dist=true
@@ -656,9 +650,33 @@ install_location=
 type=DATA
 
 [stunts3dedit/Makefile.am]
-files=stunts3dedit/main.cpp,
+files=stunts3dedit/main.cpp,stunts3dedit/editrenderer.cpp,stunts3dedit/editrenderer.h,stunts3dedit/editcamera.cpp,stunts3dedit/editcamera.h
 sub_dirs=
 type=static_library
+
+[stunts3dedit/editcamera.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[stunts3dedit/editcamera.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[stunts3dedit/editrenderer.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[stunts3dedit/editrenderer.h]
+dist=true
+install=false
+install_location=
+type=HEADER
 
 [stunts3dedit/main.cpp]
 dist=true
@@ -717,7 +735,7 @@ install_location=
 type=DATA
 
 [ultimatestunts/Makefile.am]
-files=ultimatestunts/main.cpp,ultimatestunts/humanplayer.cpp,ultimatestunts/humanplayer.h,ultimatestunts/gamecamera.cpp,ultimatestunts/gamecamera.h,ultimatestunts/sound.cpp,ultimatestunts/sound.h,ultimatestunts/sndsample.cpp,ultimatestunts/sndsample.h,ultimatestunts/soundobj.cpp,ultimatestunts/soundobj.h
+files=ultimatestunts/main.cpp,ultimatestunts/humanplayer.cpp,ultimatestunts/humanplayer.h,ultimatestunts/gamecamera.cpp,ultimatestunts/gamecamera.h,ultimatestunts/sound.cpp,ultimatestunts/sound.h,ultimatestunts/sndsample.cpp,ultimatestunts/sndsample.h,ultimatestunts/soundobj.cpp,ultimatestunts/soundobj.h,ultimatestunts/gamerenderer.cpp,ultimatestunts/gamerenderer.h
 sub_dirs=
 type=prog_main
 
@@ -728,6 +746,18 @@ install_location=
 type=SOURCE
 
 [ultimatestunts/gamecamera.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[ultimatestunts/gamerenderer.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[ultimatestunts/gamerenderer.h]
 dist=true
 install=false
 install_location=

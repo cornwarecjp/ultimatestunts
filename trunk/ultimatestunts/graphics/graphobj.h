@@ -27,7 +27,7 @@ class CGraphObj
 		virtual ~CGraphObj();
 		virtual bool loadFromFile(CString filename, CTexture **matarray);
 
-		void draw(int lod);
+		void draw(int lod) const;
 	protected:
 		unsigned int m_ObjList1, m_ObjList2, m_ObjList3, m_ObjList4;
 		void setMaterialColor(CVector c);

@@ -56,10 +56,7 @@ protected:
 	vector<CSndSample *> m_Samples;
 
 	CString m_TopDir;
-
-#ifdef HAVE_LIBFMOD
-	int m_Driver;
-#endif
+	int m_MusicVolume, m_SoundVolume;
 };
 
 #endif
