@@ -132,18 +132,16 @@ CSound::CSound(const CLConfig &conf)
 	m_SoundVolume = conf.getValue("sound", "soundvolume").toInt();
 
 	//Defining the playlist
-	{
-		CDataFile f(conf.getValue("sound", "playlist"));
-		while(true)
-		{
-			CString line = f.readl();
-			if(line == "\n") break;
-			line = line.Trim();
-			if(line != "")
-				m_Playlist.push_back(line);
-		}
-	}
-	m_PlaylistItem = m_Playlist.size()-1;
+	vector<CString> wavfiles = getDirContents("music", ".wav");
+	vector<CString> mp3files = getDirContents("music", ".mp3");
+	vector<CString> oggfiles = getDirContents("music", ".ogg");
+	m_Playlist = wavfiles;
+	for(unsigned int i=0; i < mp3files.size(); i++)
+		m_Playlist.push_back(mp3files[i]);
+	for(unsigned int i=0; i < oggfiles.size(); i++)
+		m_Playlist.push_back(oggfiles[i]);
+	for(unsigned int i=0; i < m_Playlist.size(); i++)
+		m_Playlist[i] = CString("music/") + m_Playlist[i];
 
 	//Loading data:
 	m_Music = NULL;
@@ -189,6 +187,8 @@ void CSound::playNextSong()
 		delete m_MusicObject;
 		delete m_Music;
 	}
+
+	if(m_Playlist.size() == 0) return; //just don't play music
 
 	m_Music = new CMusic(NULL);
 	m_MusicObject = new CSoundObj(-1);

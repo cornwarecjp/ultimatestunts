@@ -88,18 +88,18 @@ void CGameGUI::start()
 CString CGameGUI::viewMainMenu()
 {
 	CGUIPage *page = (CGUIPage *)m_ChildWidget;
-	page->m_Selected = 0;
+	page->m_Menu.m_Selected = 0;
 	page->m_Title = "Main menu";
-	page->m_Lines.clear();
-	page->m_Lines.push_back("Start playing");
-	page->m_Lines.push_back("Set the game type");
-	page->m_Lines.push_back("Select the track");
-	page->m_Lines.push_back("Select the players");
-	page->m_Lines.push_back("Options");
-	page->m_Lines.push_back("Exit");
+	page->m_Menu.m_Lines.clear();
+	page->m_Menu.m_Lines.push_back("Start playing");
+	page->m_Menu.m_Lines.push_back("Set the game type");
+	page->m_Menu.m_Lines.push_back("Select the track");
+	page->m_Menu.m_Lines.push_back("Select the players");
+	page->m_Menu.m_Lines.push_back("Options");
+	page->m_Menu.m_Lines.push_back("Exit");
 	m_WinSys->runLoop(this);
 
-	switch(page->m_Selected)
+	switch(page->m_Menu.m_Selected)
 	{
 		case 0:
 			return "playgame";
@@ -111,9 +111,9 @@ CString CGameGUI::viewMainMenu()
 			return "playermenu";
 		case 4:
 			page->m_Title = "Options";
-			page->m_Lines.clear();
-			page->m_Lines.push_back("Please edit ultimatestunts.conf manually");
-			page->m_Selected = 0;
+			page->m_Menu.m_Lines.clear();
+			page->m_Menu.m_Lines.push_back("Please edit ultimatestunts.conf manually");
+			page->m_Menu.m_Selected = 0;
 			m_WinSys->runLoop(this);
 			return "mainmenu";
 		case 5:
@@ -126,15 +126,15 @@ CString CGameGUI::viewMainMenu()
 CString CGameGUI::viewGameTypeMenu()
 {
 	CGUIPage *page = (CGUIPage *)m_ChildWidget;
-	page->m_Selected = 0;
+	page->m_Menu.m_Selected = 0;
 	page->m_Title = "Select the game type:";
-	page->m_Lines.clear();
-	page->m_Lines.push_back("Local game");
-	page->m_Lines.push_back("Join an existing network game");
-	page->m_Lines.push_back("Start a new network game");
+	page->m_Menu.m_Lines.clear();
+	page->m_Menu.m_Lines.push_back("Local game");
+	page->m_Menu.m_Lines.push_back("Join an existing network game");
+	page->m_Menu.m_Lines.push_back("Start a new network game");
 	m_WinSys->runLoop(this);
 
-	switch(page->m_Selected)
+	switch(page->m_Menu.m_Selected)
 	{
 		case 0:
 			m_GameType = LocalGame;
@@ -158,12 +158,12 @@ CString CGameGUI::viewGameTypeMenu()
 CString CGameGUI::viewTrackMenu()
 {
 	CGUIPage *page = (CGUIPage *)m_ChildWidget;
-	page->m_Selected = 0;
+	page->m_Menu.m_Selected = 0;
 	page->m_Title = "Select a track:";
-	page->m_Lines = getDirContents("tracks", ".track");
+	page->m_Menu.m_Lines = getDirContents("tracks", ".track");
 	m_WinSys->runLoop(this);
 
-	m_TrackFile = CString("tracks/") + page->m_Lines[page->m_Selected];
+	m_TrackFile = CString("tracks/") + page->m_Menu.m_Lines[page->m_Menu.m_Selected];
 	return "mainmenu";
 }
 
@@ -175,39 +175,39 @@ CString CGameGUI::viewPlayerMenu()
 
 	CString name = "Player 1";
 
-	page->m_Selected = 0;
+	page->m_Menu.m_Selected = 0;
 	page->m_Title = "Select a car for yourself:";
-	page->m_Lines = getDirContents("cars", ".conf");
+	page->m_Menu.m_Lines = getDirContents("cars", ".conf");
 	m_WinSys->runLoop(this);
-	CString carfile = CString("cars/") + page->m_Lines[page->m_Selected];
+	CString carfile = CString("cars/") + page->m_Menu.m_Lines[page->m_Menu.m_Selected];
 
 	addPlayer(name, true, carfile);
 
 	while(true)
 	{
-		page->m_Selected = 0;
+		page->m_Menu.m_Selected = 0;
 		page->m_Title = "Do you want to add a player?";
-		page->m_Lines.clear();
-		page->m_Lines.push_back("yes");
-		page->m_Lines.push_back("no");
+		page->m_Menu.m_Lines.clear();
+		page->m_Menu.m_Lines.push_back("yes");
+		page->m_Menu.m_Lines.push_back("no");
 		m_WinSys->runLoop(this);
-		if(page->m_Selected == 1) break;
+		if(page->m_Menu.m_Selected == 1) break;
 
 		name = "Player";
 
-		page->m_Selected = 0;
+		page->m_Menu.m_Selected = 0;
 		page->m_Title = "Select a car for this player:";
-		page->m_Lines = getDirContents("cars", ".conf");
+		page->m_Menu.m_Lines = getDirContents("cars", ".conf");
 		m_WinSys->runLoop(this);
-		CString carfile = CString("cars/") + page->m_Lines[page->m_Selected];
+		CString carfile = CString("cars/") + page->m_Menu.m_Lines[page->m_Menu.m_Selected];
 
-		page->m_Selected = 0;
+		page->m_Menu.m_Selected = 0;
 		page->m_Title = "Is it an AI player?";
-		page->m_Lines.clear();
-		page->m_Lines.push_back("yes");
-		page->m_Lines.push_back("no");
+		page->m_Menu.m_Lines.clear();
+		page->m_Menu.m_Lines.push_back("yes");
+		page->m_Menu.m_Lines.push_back("no");
 		m_WinSys->runLoop(this);
-		bool isHuman = (page->m_Selected == 1);
+		bool isHuman = (page->m_Menu.m_Selected == 1);
 		addPlayer(name, isHuman, carfile);
 	}
 
@@ -240,10 +240,10 @@ CString CGameGUI::playGame()
 void CGameGUI::load()
 {
 	CGUIPage *page = (CGUIPage *)m_ChildWidget;
-	page->m_Selected = 0;
+	page->m_Menu.m_Selected = 0;
 	page->m_Title = "Loading";
-	page->m_Lines.clear();
-	page->m_Lines.push_back("please wait......");
+	page->m_Menu.m_Lines.clear();
+	page->m_Menu.m_Lines.push_back("please wait......");
 	onRedraw();
 	m_WinSys->swapBuffers();
 
@@ -284,8 +284,8 @@ void CGameGUI::load()
 		if(!m_GameCore->addPlayer(p, m_PlayerDescr[i].name, choice))
 		{
 			page->m_Title = "Error:";
-			page->m_Lines.clear();
-			page->m_Lines.push_back("Sim doesn't accept player");
+			page->m_Menu.m_Lines.clear();
+			page->m_Menu.m_Lines.push_back("Sim doesn't accept player");
 			onRedraw();
 			m_WinSys->swapBuffers();
 			delete p;
@@ -318,14 +318,14 @@ void CGameGUI::unload()
 CString CGameGUI::viewHiscore()
 {
 	CGUIPage *page = (CGUIPage *)m_ChildWidget;
-	page->m_Selected = 0;
+	page->m_Menu.m_Selected = 0;
 	page->m_Title = "Hiscore (in future versions)";
-	page->m_Lines.clear();
-	page->m_Lines.push_back("Play again");
-	page->m_Lines.push_back("Return to main menu");
+	page->m_Menu.m_Lines.clear();
+	page->m_Menu.m_Lines.push_back("Play again");
+	page->m_Menu.m_Lines.push_back("Return to main menu");
 	m_WinSys->runLoop(this);
 
-	switch(page->m_Selected)
+	switch(page->m_Menu.m_Selected)
 	{
 		case 0:
 			return "playgame";
