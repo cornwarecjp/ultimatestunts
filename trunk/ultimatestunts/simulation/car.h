@@ -60,6 +60,7 @@ protected:
 	void updateMainAxisVelocity(float dt);  //from the wheel velocities
 	void updateMainAxisTorque(); //engine + gearbox simulation
 	void applyWheelTorques();    //engine + brakes
+	void addDownforce();         //aerodynamic downforce
 	void doSteering(float dt);
 
 	//Cached data about the wheels' axes
@@ -87,6 +88,7 @@ protected:
 	float m_FrontSuspERP, m_RearSuspERP, m_FrontSuspCFM, m_RearSuspCFM;
 	float m_FrontBrakeMax, m_RearBrakeMax, m_FrontSteerMax, m_RearSteerMax;
 	float m_FrontTraction, m_RearTraction;
+	float m_FrontDownforce, m_RearDownforce;
 
 	//driving pipeline
 	float m_EngineTorque, m_MaxEngineSpeed, m_dMdw;

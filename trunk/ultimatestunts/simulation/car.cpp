@@ -75,6 +75,8 @@ bool CCar::load(const CString &filename, const CParamList &list)
 	m_RearSteerMax = -cfile.getValue("rearwheels", "steermax").toFloat();
 	m_FrontTraction = cfile.getValue("frontwheels", "traction").toFloat();
 	m_RearTraction = cfile.getValue("rearwheels", "traction").toFloat();
+	m_FrontDownforce = cfile.getValue("frontwheels", "downforce").toFloat();
+	m_RearDownforce = cfile.getValue("rearwheels", "downforce").toFloat();
 
 	//driving pipeline
 	m_EngineTorque = cfile.getValue("engine", "enginetorque").toFloat();
@@ -294,6 +296,7 @@ void CCar::update(CPhysics *simulator, float dt)
 	updateMainAxisVelocity(dt);
 	updateMainAxisTorque();
 	applyWheelTorques();
+	addDownforce();
 
 	//----------------------
 	//Air resistance
@@ -315,6 +318,27 @@ void CCar::update(CPhysics *simulator, float dt)
 	//Common other things
 	//----------------------
 	CMovingObject::update(simulator, dt);
+}
+
+void CCar::addDownforce()
+{
+	CMatrix ori = m_Bodies[0].getOrientationMatrix();
+	
+	const dReal *vptr = dBodyGetLinearVel(m_Bodies[0].m_ODEBody);
+	CVector v(vptr[0], vptr[1], vptr[2]);
+
+	v /= ori;
+
+	if(v.z < 0.0) //moving forward
+	{
+		dBodyAddRelForceAtRelPos(m_Bodies[0].m_ODEBody,
+			0.0, -m_FrontDownforce*v.z*v.z, 0.0,
+			0.0, 0.0, m_FrontWheelNeutral.z);
+
+		dBodyAddRelForceAtRelPos(m_Bodies[0].m_ODEBody,
+			0.0, -m_RearDownforce*v.z*v.z, 0.0,
+			0.0, 0.0, m_RearWheelNeutral.z);
+	}
 }
 
 void CCar::updateAxisData()
