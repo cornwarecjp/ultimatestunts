@@ -88,14 +88,6 @@ CWinSystem::CWinSystem(const CString &caption, const CLConfig &conf)
 
 	m_NumJoysticks = SDL_NumJoysticks();
 	printf("   Found %d joysticks\n", m_NumJoysticks);
-	/*
-	if(conf.getValue("input", "enablejoysticks") == "false")
-	{
-		printf("  Disabling joysticks according to conf file\n");
-		m_NumJoysticks = 0;
-		SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
-	}
-	*/
 
 	if(m_NumJoysticks > 0)
 	{
@@ -111,7 +103,10 @@ CWinSystem::CWinSystem(const CString &caption, const CLConfig &conf)
 			printf("   Number of Balls: %d\n", SDL_JoystickNumBalls(m_Joystick));
 		}
 		else
+		{
 			printf("   Couldn't open Joystick 0\n");
+			m_NumJoysticks = 0;
+		}
 
 	}
 
@@ -122,7 +117,12 @@ CWinSystem::CWinSystem(const CString &caption, const CLConfig &conf)
 	for(int i=0; i<m_NumKeys; i++)
 		m_WasPressed[i] = false;
 
-	m_NumJoyBtns = SDL_JoystickNumButtons(m_Joystick);
+	if(m_NumJoysticks > 0)
+		{m_NumJoyBtns = SDL_JoystickNumButtons(m_Joystick);}
+	else
+		{m_NumJoyBtns = 0;}
+		
+
 	m_JoyButtonWasPressed = new bool[m_NumJoyBtns];
 	for(int i=0; i<m_NumJoyBtns; i++)
 		m_JoyButtonWasPressed[i] = false;
@@ -134,9 +134,7 @@ CWinSystem::~CWinSystem()
 	delete [] m_JoyButtonWasPressed;
 
 	if(m_NumJoysticks > 0)
-	{
 		SDL_JoystickClose(m_Joystick);
-	}
 
 	SDL_Quit();
 }

@@ -218,14 +218,18 @@ bool CGameWinSystem::getKeyCodeState(unsigned int code)
 	{
 		return getKeyState(code);
 	}
-	if(code == JOY0_BTN0)
-		return SDL_JoystickGetButton(m_Joystick, 0);
-	if(code == JOY0_BTN1)
-		return SDL_JoystickGetButton(m_Joystick, 1);
-	if(code == JOY0_BTN2)
-		return SDL_JoystickGetButton(m_Joystick, 2);
-	if(code == JOY0_BTN3)
-		return SDL_JoystickGetButton(m_Joystick, 3);
+
+	if(m_NumJoysticks > 0)
+	{
+		if(code == JOY0_BTN0)
+			return SDL_JoystickGetButton(m_Joystick, 0);
+		if(code == JOY0_BTN1)
+			return SDL_JoystickGetButton(m_Joystick, 1);
+		if(code == JOY0_BTN2)
+			return SDL_JoystickGetButton(m_Joystick, 2);
+		if(code == JOY0_BTN3)
+			return SDL_JoystickGetButton(m_Joystick, 3);
+	}
 
 	return false;
 }
@@ -252,29 +256,32 @@ float CGameWinSystem::getControlCodeState(unsigned int code)
 	{
 		return (float)(getKeyState(code));
 	}
-	else if(code == JOY0_LEFT)
+	else if(m_NumJoysticks > 0)
 	{
-		float val = (float)-SDL_JoystickGetAxis(m_Joystick, 0) / 32767;
-		if(val < 0.0) val = 0.0;
-		return val;
-	}
-	else if(code == JOY0_RIGHT)
-	{
-		float val = (float)SDL_JoystickGetAxis(m_Joystick, 0) / 32767;
-		if(val < 0.0) val = 0.0;
-		return val;
-	}
-	else if(code == JOY0_UP)
-	{
-		float val = (float)-SDL_JoystickGetAxis(m_Joystick, 1) / 32767;
-		if(val < 0.0) val = 0.0;
-		return val;
-	}
-	else if(code == JOY0_DOWN)
-	{
-		float val = (float)SDL_JoystickGetAxis(m_Joystick, 1) / 32767;
-		if(val < 0.0) val = 0.0;
-		return val;
+		if(code == JOY0_LEFT)
+		{
+			float val = (float)-SDL_JoystickGetAxis(m_Joystick, 0) / 32767;
+			if(val < 0.0) val = 0.0;
+			return val;
+		}
+		else if(code == JOY0_RIGHT)
+		{
+			float val = (float)SDL_JoystickGetAxis(m_Joystick, 0) / 32767;
+			if(val < 0.0) val = 0.0;
+			return val;
+		}
+		else if(code == JOY0_UP)
+		{
+			float val = (float)-SDL_JoystickGetAxis(m_Joystick, 1) / 32767;
+			if(val < 0.0) val = 0.0;
+			return val;
+		}
+		else if(code == JOY0_DOWN)
+		{
+			float val = (float)SDL_JoystickGetAxis(m_Joystick, 1) / 32767;
+			if(val < 0.0) val = 0.0;
+			return val;
+		}
 	}
 
 	return 0.0;

@@ -12,5 +12,7 @@ rm -rf */.deps
 
 rm -f *.stdout
 rm -f *.stderr
-rm -f debuglog.*
+rm -f *debuglog*
+rm -f config.log
+rm -f config.status
 
