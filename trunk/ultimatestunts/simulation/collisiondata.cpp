@@ -329,7 +329,7 @@ void CCollisionData::ObjTileTest(int nobj, int xtile, int ztile, int htile)
 			{
 				if(m_World->printDebug)
 					m_DebugFile->writel(CString("  ") + (int)tf + ": Not in direction of movement");
-				continue;
+				//continue; //this contains a bug. But what??
 			}
 
 			//1.2: Calculate distance to plane
@@ -425,17 +425,13 @@ void CCollisionData::ObjTileTest(int nobj, int xtile, int ztile, int htile)
 			//2.5: calculate penetration depth and collision point
 			CVector coll_pos;
 			float penetr_depth = 0.0;
-			for(unsigned int of=0; of < b->m_Faces.size(); of++)
+			for(unsigned int p=0; p < b->m_Points.size(); p++)
 			{
-				const CCollisionFace &face = b->m_Faces[of];
-				for(unsigned int v=0; v < face.size(); v++)
+				float depth = theFace.d - b->m_Points[p].dotProduct(theFace.nor);
+				if(depth > penetr_depth)
 				{
-					float depth = theFace.d - face[v].dotProduct(theFace.nor);
-					if(depth > penetr_depth)
-					{
-						penetr_depth = depth;
-						coll_pos = face[v];
-					}
+					penetr_depth = depth;
+					coll_pos = b->m_Points[p];
 				}
 			}
 

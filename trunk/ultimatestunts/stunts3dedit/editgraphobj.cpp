@@ -44,7 +44,7 @@ bool CEditGraphObj::loadFromFile(CString filename, CTexture **matarray)
 		state.tex = CVector(0,0,0);
 	int texid = -1;
 	CString name = "default-name";
-	CString LODs = "1234s";
+	CString LODs = "1234c";
 
 	CFile f(filename);
 
@@ -207,7 +207,7 @@ bool CEditGraphObj::import_raw(CString filename, CTexture **matarray)
 				pr.m_Name = line;
 				pr.m_Texture = -1;
 				pr.m_Type = GL_TRIANGLES;
-				pr.m_LODs = "1234s";
+				pr.m_LODs = "1234c";
 				m_Primitives.push_back(pr);
 		}
 		else
@@ -258,7 +258,7 @@ void CEditGraphObj::saveToFile(CString filename)
 		state.tex = CVector(0,0,0);
 	int texid = -1;
 	CString name = "default-name";
-	CString LODs = "1234s";
+	CString LODs = "1234c";
 
 	for(unsigned int i=0; i<m_Primitives.size(); i++)
 	{
