@@ -35,10 +35,16 @@ public:
 	virtual ~CMenu();
 
 	virtual int onKeyPress(int key);
+	virtual int onMouseMove(int x, int y);
+	virtual int onMouseClick(int x, int y, unsigned int buttons);
 	virtual int onRedraw();
 
 	unsigned int m_Selected;
 	vector<CString> m_Lines;
+
+protected:
+	int getdy();
+	
 };
 
 #endif

@@ -39,7 +39,7 @@ public:
 	virtual int onMouseMove(int x, int y);
 	virtual int onMouseClick(int x, int y, unsigned int buttons);
 	virtual int onKeyPress(int key);
-	virtual int onResize(int w, int h);
+	virtual int onResize(int x, int y, int w, int h);
 	virtual int onRedraw();
 
 	virtual void start(); //returns when an exit command is given

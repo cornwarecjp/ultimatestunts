@@ -45,9 +45,11 @@ void CGUI::enter2DMode()
 	glDisable(GL_LIGHTING);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
 
+	glEnable(GL_SCISSOR_TEST);
+
 	int w = m_WinSys->getWidth();
 	int h = m_WinSys->getHeight();
-	onResize(w, h);
+	onResize(0, 0, w, h);
 }
 
 void CGUI::leave2DMode()
@@ -59,6 +61,8 @@ void CGUI::leave2DMode()
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 	if(znabled) glEnable(GL_DEPTH_TEST);
 	if(fnabled) glEnable(GL_FOG);
+
+	glDisable(GL_SCISSOR_TEST);
 }
 
 void CGUI::start()
@@ -86,8 +90,10 @@ int CGUI::onKeyPress(int key)
 	return m_ChildWidget->onKeyPress(key);
 }
 
-int CGUI::onResize(int w, int h)
+int CGUI::onResize(int x, int y, int w, int h)
 {
+	CWidget::onResize(x, y, w, h);
+
 	//no perspective
 	glMatrixMode( GL_PROJECTION );
 	glLoadIdentity();
@@ -95,8 +101,9 @@ int CGUI::onResize(int w, int h)
 	glMatrixMode( GL_MODELVIEW );
 	glLoadIdentity();
 	glViewport(0, 0, w, h);
+	glScissor(0, 0, w, h);
 
-	return m_ChildWidget->onResize(w, h);
+	return m_ChildWidget->onResize(0, 0, w, h);
 }
 
 int CGUI::onRedraw()

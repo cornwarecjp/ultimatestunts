@@ -23,7 +23,6 @@ namespace std {}
 using namespace std;
 
 #include "widget.h"
-#include "menu.h"
 #include "cstring.h"
 
 /**
@@ -36,10 +35,14 @@ public:
 	~CGUIPage();
 
 	virtual int onKeyPress(int key);
-	virtual int onResize(int w, int h);
+	virtual int onMouseMove(int x, int y);
+	virtual int onMouseClick(int x, int y, unsigned int buttons);
+	virtual int onResize(int x, int y, int w, int h);
 	virtual int onRedraw();
 
-	CMenu m_Menu;
+	
+	vector<CWidget *> m_Widgets;
+	unsigned int m_FocussedWidget;
 	CString m_Title;
 };
 

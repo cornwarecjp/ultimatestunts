@@ -51,12 +51,51 @@ int CMenu::onKeyPress(int key)
 	return WIDGET_REDRAW;
 }
 
+int CMenu::getdy()
+{
+	int dy_resizable = m_H / m_Lines.size();
+
+	if(dy_resizable > int(theConsoleFont->getFontH())) return int(theConsoleFont->getFontH());
+
+	return dy_resizable;
+}
+
+int CMenu::onMouseMove(int x, int y)
+{
+	int numl = m_Lines.size();
+	int yrel = int(float(m_Y + m_H - y) / getdy());
+
+	if(yrel < numl && yrel >= 0)
+	{
+		int s = yrel;
+		if(s < 0) s = 0;
+		if(s >= numl) s = numl-1;
+		
+		m_Selected = s;
+		return WIDGET_REDRAW;
+	}
+
+	return 0;
+}
+
+int CMenu::onMouseClick(int x, int y, unsigned int buttons)
+{
+	onMouseMove(x, y);
+
+	if(buttons == SDL_BUTTON_LEFT)
+		return WIDGET_QUIT;
+
+	return 0;
+}
+
 int CMenu::onRedraw()
 {
+	CWidget::onRedraw();
+
 	theConsoleFont->enable();
 
-	glLoadIdentity();
-	glTranslatef(m_W/2, m_H/2 + ((int)m_Lines.size())*theConsoleFont->getFontH()/2, 0); //set cursor
+	int dy = getdy();
+	glTranslatef(m_W/2, m_H - dy, 0); //to the top mid point
 
 	//draw the list:
 	for(unsigned int i=0; i < m_Lines.size(); i++)
@@ -69,10 +108,10 @@ int CMenu::onRedraw()
 		else
 			{glColor3f(1,1,1);}
 
-		glTranslatef(-((int)m_Lines[i].length())*theConsoleFont->getFontW()/2, 0, 0); //centered
+		glTranslatef(-int(m_Lines[i].length())*theConsoleFont->getFontW()/2, 0, 0); //centered
 		theConsoleFont->drawString(m_Lines[i]);
 		glPopMatrix();
-		glTranslatef(0, -theConsoleFont->getFontH(), 0); //next line
+		glTranslatef(0, -dy, 0); //next line
 	}
 
 	//back to normal:
@@ -80,5 +119,6 @@ int CMenu::onRedraw()
 
 
 	theConsoleFont->disable();
+
 	return 0;
 }

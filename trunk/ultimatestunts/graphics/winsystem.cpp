@@ -225,7 +225,7 @@ bool CWinSystem::runLoop(CWidget *widget)
 					{
 						m_W = m_Screen->w;
 						m_H = m_Screen->h;
-						widgetmessages |= widget->onResize(m_W, m_H);
+						widgetmessages |= widget->onResize(0, 0, m_W, m_H);
 					}
 					else
 					{
@@ -248,6 +248,15 @@ bool CWinSystem::runLoop(CWidget *widget)
 						{widgetmessages |= widget->onKeyPress(event.key.keysym.sym-32);}
 					else
 						{widgetmessages |= widget->onKeyPress(event.key.keysym.sym);}
+					break;
+
+				//Mouse
+				case SDL_MOUSEMOTION:
+					widgetmessages |= widget->onMouseMove(event.motion.x, m_H - event.motion.y);
+					break;
+
+				case SDL_MOUSEBUTTONUP:
+					widgetmessages |= widget->onMouseClick(event.button.x, m_H - event.button.y, event.button.button);
 					break;
 
 			}

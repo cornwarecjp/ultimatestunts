@@ -29,6 +29,7 @@ CGUIPage::CGUIPage()
 {
 	loadConsoleFont();
 
+	m_FocussedWidget = 0;
 	m_Title = "Ultimate Stunts menu";
 
 	if(_thePageBackground == NULL)
@@ -46,18 +47,52 @@ CGUIPage::CGUIPage()
 	}
 }
 
-CGUIPage::~CGUIPage(){
+CGUIPage::~CGUIPage()
+{
+	for(unsigned int i=0; i < m_Widgets.size(); i++)
+		delete m_Widgets[i];
 }
 
 int CGUIPage::onKeyPress(int key)
 {
-	return m_Menu.onKeyPress(key);
+	if(m_Widgets.size() == 0) return 0;
+
+	return m_Widgets[m_FocussedWidget]->onKeyPress(key);
+}
+
+int CGUIPage::onMouseMove(int x, int y)
+{
+	if(m_Widgets.size() == 0) return 0;
+
+	for(int i=m_Widgets.size()-1; i >= 0; i--)
+		if(m_Widgets[(unsigned int)i]->isInWidget(x, y))
+		{
+			m_FocussedWidget = (unsigned int)i;
+			return m_Widgets[(unsigned int)i]->onMouseMove(x, y);
+		}
+
+	return 0;
+}
+
+int CGUIPage::onMouseClick(int x, int y, unsigned int buttons)
+{
+	if(m_Widgets.size() == 0) return 0;
+
+	for(int i=m_Widgets.size()-1; i >= 0; i--)
+		if(m_Widgets[(unsigned int)i]->isInWidget(x, y))
+		{
+			m_FocussedWidget = (unsigned int)i;
+			return m_Widgets[(unsigned int)i]->onMouseClick(x, y, buttons);
+		}
+
+	return 0;
 }
 
 int CGUIPage::onRedraw()
 {
+	CWidget::onRedraw();
+
 	//draw background:
-	glLoadIdentity();
 	_thePageBackground->draw();
 	glBegin(GL_QUADS);
 	glTexCoord2f(0,0);
@@ -73,26 +108,33 @@ int CGUIPage::onRedraw()
 	theConsoleFont->enable();
 
 	//draw the title:
-	glLoadIdentity();
-	glTranslatef(m_W/2, m_H/2 + ((int)m_Menu.m_Lines.size() + 4)*theConsoleFont->getFontH()/2, 0); //set cursor
-
-	glPushMatrix();
+	glTranslatef(0.5*m_W, 0.8*m_H, 0); //set cursor
 
 	glColor3f(1,1,1);
 
 	glTranslatef(-((int)m_Title.length())*theConsoleFont->getFontW(), 0, 0); //centered
 	glScalef(2,2,2);
 	theConsoleFont->drawString(m_Title);
-	glPopMatrix();
 
 	theConsoleFont->disable();
 
-	m_Menu.onRedraw();
+	if(m_Widgets.size() == 0) return 0;
+
+	for(unsigned int i=0; i < m_Widgets.size(); i++)
+		m_Widgets[i]->onRedraw();
 
 	return 0;
 }
 
-int CGUIPage::onResize(int w, int h)
+int CGUIPage::onResize(int x, int y, int w, int h)
 {
-	return CWidget::onResize(w, h) | m_Menu.onResize(w, h);
+	//TODO
+	int ret = CWidget::onResize(x, y, w, h);
+	
+	if(m_Widgets.size() == 0) return ret;
+
+	for(unsigned int i=0; i < m_Widgets.size(); i++)
+		ret |= m_Widgets[i]->onResize(int(x+0.2*w), int(y+0.2*h), int(0.6*w), int(0.6*h));
+
+	return ret;
 }

@@ -25,21 +25,23 @@
 class CWidget {
 public:
 	CWidget()
-		{m_W = m_H = 0;}
+		{m_W = m_H = m_X = m_Y = 0;}
+	virtual ~CWidget();
 
-	virtual ~CWidget(){;}
+	virtual int onMouseMove(int x, int y);
+	virtual int onMouseClick(int x, int y, unsigned int buttons);
+	virtual int onKeyPress(int key);
+	virtual int onResize(int x, int y, int w, int h);
+	virtual int onRedraw();
 
-	virtual int onMouseMove(int x, int y){return 0;}
-	virtual int onMouseClick(int x, int y, unsigned int buttons){return 0;}
-	virtual int onKeyPress(int key){return 0;}
-	virtual int onResize(int w, int h){m_W = w; m_H = h; return WIDGET_REDRAW;}
-	virtual int onRedraw(){return 0;}
+	bool isInWidget(int x, int y);
 
+	int getX(){return m_X;}
+	int getY(){return m_Y;}
 	int getW(){return m_W;}
 	int getH(){return m_H;}
-	int m_X, m_Y;
 protected:
-	int m_W, m_H;
+	int m_X, m_Y, m_W, m_H;
 };
 
 #endif
