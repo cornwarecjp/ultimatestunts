@@ -44,7 +44,13 @@ void CEditCamera::incrYAngle(float yangle)
 
 void CEditCamera::updatePosition()
 {
+	//Distance
 	m_Position = CVector(0.0, 0.0, m_Dist);
 
+	//Orientation
+	m_Orientation = CMatrix(CVector(m_YAngle, m_XAngle, 0.0));
+	m_Position *= m_Orientation;
+
+	//Origin
 	m_Position += CVector(0.0, VERTSIZE/2, 0.0);
 }

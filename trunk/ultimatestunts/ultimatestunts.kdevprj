@@ -40,7 +40,7 @@ project_type=normal_empty
 short_info=,
 showNonProjectFiles=true
 sub_dir=ultimatestunts/
-version=0.3.0
+version=0.3.2
 version_control=CVS
 workspace=1
 
@@ -60,7 +60,7 @@ User Interface=*.ui,*.kdevdlg,*.rc,
 groups=Headers,Sources,GNU,Translations,User Interface,Others
 
 [Makefile.am]
-files=ultimatestunts.kdevprj,AUTHORS,COPYING,INSTALL,ChangeLog,README,TODO,acinclude.m4,aclocal.m4,configure.in,install-sh,missing,mkinstalldirs,execselect.sh,execselect.x,restore-am,stdin.txt
+files=ultimatestunts.kdevprj,AUTHORS,COPYING,INSTALL,ChangeLog,README,TODO,acinclude.m4,aclocal.m4,configure.in,install-sh,missing,mkinstalldirs,execselect.sh,execselect.x,restore-am,stdin.txt,textures.dat,ultimatestunts.conf
 sub_dirs=ultimatestunts,shared,filetransfer,graphics,simulation,stuntsai,stuntsserver,tileedit,trackedit,stunts3dedit,__test
 type=normal
 
@@ -650,7 +650,7 @@ install_location=
 type=DATA
 
 [stunts3dedit/Makefile.am]
-files=stunts3dedit/main.cpp,stunts3dedit/editrenderer.cpp,stunts3dedit/editrenderer.h,stunts3dedit/editcamera.cpp,stunts3dedit/editcamera.h
+files=stunts3dedit/main.cpp,stunts3dedit/editrenderer.cpp,stunts3dedit/editrenderer.h,stunts3dedit/editcamera.cpp,stunts3dedit/editcamera.h,stunts3dedit/textureloader.cpp,stunts3dedit/textureloader.h,stunts3dedit/editgraphobj.cpp,stunts3dedit/editgraphobj.h
 sub_dirs=
 type=static_library
 
@@ -661,6 +661,18 @@ install_location=
 type=SOURCE
 
 [stunts3dedit/editcamera.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[stunts3dedit/editgraphobj.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[stunts3dedit/editgraphobj.h]
 dist=true
 install=false
 install_location=
@@ -684,6 +696,18 @@ install=false
 install_location=
 type=SOURCE
 
+[stunts3dedit/textureloader.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[stunts3dedit/textureloader.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
 [stuntsai/Makefile.am]
 files=stuntsai/main.cpp,
 sub_dirs=
@@ -706,6 +730,12 @@ install=false
 install_location=
 type=SOURCE
 
+[textures.dat]
+dist=true
+install=false
+install_location=
+type=DATA
+
 [tileedit/Makefile.am]
 files=tileedit/main.cpp,
 sub_dirs=
@@ -727,6 +757,12 @@ dist=true
 install=false
 install_location=
 type=SOURCE
+
+[ultimatestunts.conf]
+dist=true
+install=false
+install_location=
+type=DATA
 
 [ultimatestunts.kdevprj]
 dist=true

@@ -31,13 +31,15 @@
 #include "editrenderer.h"
 #include "editcamera.h"
 
-#include "graphobj.h"
+#include "editgraphobj.h"
+#include "textureloader.h"
 
 CWinSystem *winsys;
 CEditRenderer *renderer;
 CEditCamera *camera;
 
-CGraphObj *graphobj;
+CEditGraphObj *graphobj;
+CTextureLoader *texloader;
 
 CString topdir;
 
@@ -58,9 +60,17 @@ bool mainloop()
 		ret = false;
 
 	if(keystate[SDLK_PAGEUP])
-		{camera->incrDist(-1.0); printf("^\n");}
+		camera->incrDist(-1.0);
 	if(keystate[SDLK_PAGEDOWN])
-		{camera->incrDist(1.0); printf("v\n");}
+		camera->incrDist(1.0);
+	if(keystate[SDLK_LEFT])
+		camera->incrXAngle(0.1);
+	if(keystate[SDLK_RIGHT])
+		camera->incrXAngle(-0.1);
+	if(keystate[SDLK_UP])
+		camera->incrYAngle(0.1);
+	if(keystate[SDLK_DOWN])
+		camera->incrYAngle(-0.1);
 
 	renderer->update();
 	return ret;
@@ -83,11 +93,14 @@ int main(int argc, char *argv[])
 		topdir += '/';
 	printf("Filenames are relative to \"%s\"\n", topdir.c_str());
 
+	printf("\nLoading textures from textures.dat\n");
+	texloader = new CTextureLoader(conffile, "textures.dat");
+
 	printf("Please enter the filename: ");
 	CString fn = getInput();
-	graphobj = new CGraphObj;
+	graphobj = new CEditGraphObj;
 	printf("Loading graphic object...\n");
-	graphobj->loadFromFile(topdir + fn, NULL);
+	graphobj->loadFromFile(topdir + fn, texloader->m_TexArray);
 	printf("...done\n");
 
 	printf("\nInitialising the rendering engine\n");

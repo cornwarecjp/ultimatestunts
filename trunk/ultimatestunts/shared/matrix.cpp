@@ -30,8 +30,11 @@ CMatrix::CMatrix(CVector v)
 	m_M = new float[16];
 
 	//This function is NOT finished.
-	//It currently only handles rotations around the y-axis.
-	rotY(v.y);
+	//It currently only handles rotations around the x- and y-axis.
+	CMatrix tmp;
+	tmp.rotY(v.y);
+	rotX(v.x);
+	operator*=(tmp);
 
 	setElement(3,0,0.0);
 	setElement(3,1,0.0);

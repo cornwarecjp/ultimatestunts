@@ -170,7 +170,6 @@ int CWinSystem::runLoop( bool (CALLBACKFUN *loopfunc)(), bool swp)
 				case SDL_KEYDOWN:
 					m_WasPressed[event.key.keysym.sym] = true;
 				case SDL_KEYUP:
-					printf("Something has changed in the keystate\n");
 					m_KeyState = SDL_GetKeyState(&m_NumKeys);
 					break;
 

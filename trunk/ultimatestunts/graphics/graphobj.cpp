@@ -26,7 +26,6 @@
 
 GLubyte notex_img[1][3];
 GLuint no_tex;
-//GLfloat white[] = {1,1,1};
 
 CGraphObj::CGraphObj()
 {
