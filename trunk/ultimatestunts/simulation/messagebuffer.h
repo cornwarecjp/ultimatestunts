@@ -19,6 +19,7 @@
 #define MESSAGEBUFFER_H
 
 #include "binbuffer.h"
+#include "cstring.h"
 
 
 
@@ -40,11 +41,16 @@ enum eMessageType {   // more to add
 
 
 private:
+
  s_msg_header * getHeader() const;
  bool setHeader(s_msg_header &);
 
+ CString m_netIP;      // to be set to tranfer messages over network
+ int m_netPort;        // this can be eigher source or destination address
+
 
 public:
+
 
  CMessageBuffer(const CMessageBuffer::eMessageType & t);
 
@@ -63,13 +69,16 @@ public:
  CBinBuffer & getData() const;
 
 
-
-
  int getHeaderLength() const;
 
  bool setBuffer(const CBinBuffer & b);               // restore messagebuffer
  CBinBuffer & getBuffer();
 	~CMessageBuffer();
+
+ void setIP(const CString & ip) { m_netIP = ip; }
+ void setPort(const int port) { m_netPort = port; }
+ CString & getIP() const { return (* new CString(m_netIP)); }
+ int getPort() const { return (m_netPort); }
 
 };
 

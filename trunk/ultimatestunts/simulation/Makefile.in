@@ -73,7 +73,7 @@ soundlibs = @soundlibs@
 
 noinst_LIBRARIES = libsimulation.a
 
-libsimulation_a_SOURCES = car.cpp dynamicobject.cpp message.cpp messagebuffer.cpp movingobject.cpp objectchoice.cpp physics.cpp player.cpp simulation.cpp tile.cpp world.cpp netudp.cpp
+libsimulation_a_SOURCES = car.cpp dynamicobject.cpp message.cpp messagebuffer.cpp movingobject.cpp objectchoice.cpp physics.cpp player.cpp simulation.cpp tile.cpp world.cpp netudp.cpp netmessage.cpp
 INCLUDES = $(all_includes) -I../shared
 
 EXTRA_DIST = car.cpp car.h dynamicobject.cpp dynamicobject.h message.cpp message.h messagebuffer.cpp messagebuffer.h movingobject.cpp movingobject.h objectchoice.cpp objectchoice.h physics.cpp physics.h player.cpp player.h simulation.cpp simulation.h tile.cpp tile.h world.cpp world.h
@@ -94,7 +94,8 @@ libsimulation_a_LIBADD =
 libsimulation_a_OBJECTS =  car.$(OBJEXT) dynamicobject.$(OBJEXT) \
 message.$(OBJEXT) messagebuffer.$(OBJEXT) movingobject.$(OBJEXT) \
 objectchoice.$(OBJEXT) physics.$(OBJEXT) player.$(OBJEXT) \
-simulation.$(OBJEXT) tile.$(OBJEXT) world.$(OBJEXT) netudp.$(OBJEXT)
+simulation.$(OBJEXT) tile.$(OBJEXT) world.$(OBJEXT) netudp.$(OBJEXT) \
+netmessage.$(OBJEXT)
 AR = ar
 CXXFLAGS = @CXXFLAGS@
 CXXCOMPILE = $(CXX) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -108,9 +109,9 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 TAR = gtar
 GZIP_ENV = --best
 DEP_FILES =  .deps/car.P .deps/dynamicobject.P .deps/message.P \
-.deps/messagebuffer.P .deps/movingobject.P .deps/netudp.P \
-.deps/objectchoice.P .deps/physics.P .deps/player.P .deps/simulation.P \
-.deps/tile.P .deps/world.P
+.deps/messagebuffer.P .deps/movingobject.P .deps/netmessage.P \
+.deps/netudp.P .deps/objectchoice.P .deps/physics.P .deps/player.P \
+.deps/simulation.P .deps/tile.P .deps/world.P
 SOURCES = $(libsimulation_a_SOURCES)
 OBJECTS = $(libsimulation_a_OBJECTS)
 

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          netudp.h - low level UDP network interface
+                          netmessage.h - message network interface
                              -------------------
     copyright            : (C) 2002 by bones
     email                : boesemar@users.sourceforge.net
@@ -14,53 +14,45 @@
  *                                                                         *
  ***************************************************************************/
 
-// NOT TESTED!
+
+// NOT YET TESTED!
 
 
-#ifndef _cnetudp_h
-#define _cnetudp_h
-
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <stdio.h>
-#include <unistd.h> /* close() */
-#include <string.h> /* memset() */
-#include <fcntl.h>
-#include <sys/poll.h>
-
-#include "binbuffer.h"
+#include "netmessage.h"
 
 
-#define UDP_MAX_DATAGRAM 4096
+CNetMessage::SNetDatagram & CNetMessage::Msg2Dgram(const CMessageBuffer & m)
+{
+  CNetUDP::SNetDatagram *res = new CNetUDP::SNetDatagram;
+  res->host = m.getIP();
+  res->port = m.getPort();
+  return (*res);
+}
+
+CMessageBuffer & CNetMessage::Dgram2Msg(const SNetDatagram & d)
+{
+  CMessageBuffer *res = new CMessageBuffer();
+  res->setBuffer(d.data);
+  res->setIP(d.host);
+  res->setPort(d.port);
+  return (*res);
+}
 
 
+bool CNetMessage::sendMessage(const CMessageBuffer & buffer)
+{
+  return (
+   sendData(Msg2Dgram(buffer))
+  );
 
+}
 
-class CNetUDP {
+CMessageBuffer * CNetMessage::recvMessage()
+{
+ SNetDatagram *dg = recvData();
+ if (dg == NULL) return (NULL);
+ CMessageBuffer *res = & Dgram2Msg(*dg);
+ delete dg;
+ return (res);
+}
 
-public:
-typedef struct _SNetDatagram {
-  CString host;
-  Uint16 port;
-  CBinBuffer data;
-} SNetDatagram;
-
-
-private:
-  vector<SNetDatagram> m_inBuffer;
-
-  int sockfd;
-
-
-public:
-  CNetUDP();
-  bool sendData(const SNetDatagram &) const;
-  SNetDatagram* recvData() const ;   // NULL if end of buffer
-  bool setNetwork(const CString & localHost, const int port);
-
-};
-
-#endif

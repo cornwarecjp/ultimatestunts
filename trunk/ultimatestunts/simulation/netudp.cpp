@@ -51,12 +51,12 @@ bool CNetUDP::setNetwork(const CString & localHost, int port) {
   return true;
 }
 
-SNetDataGram * CNetUDP::recvData() const {
+CNetUDP::SNetDatagram * CNetUDP::recvData() const {
   int nread = -1;
   char unsigned msg[UDP_MAX_DATAGRAM];
   struct sockaddr_in from;
   socklen_t fromlen = sizeof(from);
-  SNetDataGram *res = new SNetDataGram;
+  SNetDatagram *res = new SNetDatagram;
 
 
   nread = recvfrom(sockfd, &msg[0], UDP_MAX_DATAGRAM-1, 0, (struct sockaddr *) &from, &fromlen);
@@ -71,7 +71,7 @@ SNetDataGram * CNetUDP::recvData() const {
 
 }
 
-bool CNetUDP::sendData(const SNetDataGram & d) const {
+bool CNetUDP::sendData(const SNetDatagram & d) const {
   struct sockaddr_in destaddr;
   char *dat = d.data.raw_str();
 

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          netudp.h - low level UDP network interface
+                          netmessage.h - message network interface
                              -------------------
     copyright            : (C) 2002 by bones
     email                : boesemar@users.sourceforge.net
@@ -14,53 +14,35 @@
  *                                                                         *
  ***************************************************************************/
 
-// NOT TESTED!
+   // NOT YET TESTED!
 
+ #ifndef _NETMESSAGE_H
+ #define _NETMESSAGE_H
 
-#ifndef _cnetudp_h
-#define _cnetudp_h
-
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <stdio.h>
-#include <unistd.h> /* close() */
-#include <string.h> /* memset() */
-#include <fcntl.h>
-#include <sys/poll.h>
-
-#include "binbuffer.h"
-
-
-#define UDP_MAX_DATAGRAM 4096
+ #include "netudp.h"
+ #include <SDL/SDL.h>
+ #include <vector>
+ #include "messagebuffer.h"
 
 
 
+ class CNetMessage : public CNetUDP
+ {
+   private:
+    struct ACQ {
+      int long arrived;
+      CMessageBuffer message;
+    };
 
-class CNetUDP {
+    static CNetMessage::SNetDatagram & Msg2Dgram(const CMessageBuffer & m);
+    static CMessageBuffer & CNetMessage::Dgram2Msg(const CNetMessage::SNetDatagram & d);
+    vector<struct ACQ> m_ACQueue;
 
-public:
-typedef struct _SNetDatagram {
-  CString host;
-  Uint16 port;
-  CBinBuffer data;
-} SNetDatagram;
+   public:
+    bool sendMessage(const CMessageBuffer & buffer);
+    CMessageBuffer * recvMessage();                         // NULL = no more messages
+ };
 
-
-private:
-  vector<SNetDatagram> m_inBuffer;
-
-  int sockfd;
-
-
-public:
-  CNetUDP();
-  bool sendData(const SNetDatagram &) const;
-  SNetDatagram* recvData() const ;   // NULL if end of buffer
-  bool setNetwork(const CString & localHost, const int port);
-
-};
 
 #endif
+
