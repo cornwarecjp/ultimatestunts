@@ -18,11 +18,7 @@
 
 #include "physics.h"
 
-hello::hello(){
+CPhysics::CPhysics(){
 }
-hello::~hello(){
-}
-void hello::writeHello()
-{
-  printf("Hello, world!\n");
+CPhysics::~CPhysics(){
 }

@@ -15,20 +15,22 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef HELLO_H
-#define HELLO_H
+#ifndef PHYSICS_H
+#define PHYSICS_H
 
 
 /**
   *@author CJP
   */
+#include "simulation.h"
 
-class hello {
+class CPhysics : public CSimulation {
 public: 
-	hello();
-	~hello();
+	CPhysics();
+	virtual ~CPhysics();
 
-  void writeHello();
+  //virtual bool addPlayer(CPlayer *p); //Using the default ones
+  //virtual bool removePlayer(CPlayer *p);
 };
 
 #endif

@@ -4,7 +4,7 @@
 # Created: 1993-05-16
 # Public domain
 
-# $Id: mkinstalldirs,v 1.1.1.1 2002-12-04 09:55:54 cornware-cjp Exp $
+# $Id: mkinstalldirs,v 1.2 2002-12-05 09:15:19 cornware-cjp Exp $
 
 errstatus=0
 

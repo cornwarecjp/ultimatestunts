@@ -20,14 +20,50 @@
 #endif
 
 #include <stdlib.h>
+#include <stdio.h>
 
-#include "hello.h"
+#include "player.h"
+#include "simulation.h"
+#include "physics.h"
 
 int main(int argc, char *argv[])
 {
-  hello h;
-  h.writeHello();
-  //printf("Hello world\n");
+  printf("Welcome to " PACKAGE " version " VERSION ".\n");
+
+  CSimulation *sim = new CPhysics;
+  CPlayer *player1 = new CPlayer;
+  CPlayer *player2 = new CPlayer;
+  CPlayer *player3 = new CPlayer;
+
+  if(!sim->addPlayer(player1))
+    {printf("Sim accepteert player1 NIET\n");}
+
+  if(!sim->addPlayer(player2))
+    {printf("Sim accepteert player2 NIET\n");}
+
+  if(!sim->addPlayer(player2))
+    {printf("Sim accepteert player2 NIET\n");}
+
+  if(!sim->addPlayer(player2))
+    {printf("Sim accepteert player2 NIET\n");}
+
+  if(!sim->addPlayer(player3))
+    {printf("Sim accepteert player3 NIET\n");}
+
+  printf("Removing player 2\n");
+  if(!sim->removePlayer(player2))
+    printf("Removing 2 failed\n");
+
+  printf("Removing player 3\n");
+  if(!sim->removePlayer(player3))
+    printf("Removing 3 failed\n");
+
+  delete sim;
+
+  printf("\nThe players still need to be deleted.\n");
+  delete player1;
+  delete player2;
+  delete player3;
 
   return EXIT_SUCCESS;
 }
