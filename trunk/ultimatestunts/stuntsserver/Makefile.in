@@ -142,10 +142,10 @@ target_os = @target_os@
 target_vendor = @target_vendor@
 
 stunts_PROGRAMS = stuntsserver
-stuntsserver_SOURCES = main.cpp
+stuntsserver_SOURCES = gamecorethread.cpp networkthread.cpp main.cpp
 stuntsserver_LDADD = ../simulation/libsimulation.a ../shared/libshared.a @sdllibs@ @netlibs@ @odelibs@
 
-EXTRA_DIST = main.cpp 
+EXTRA_DIST = gamecorethread.cpp gamecorethread.h networkthread.cpp networkthread.h main.cpp 
 
 # set the include path found by configure
 INCLUDES = $(all_includes) -I../shared -I../simulation
@@ -159,7 +159,8 @@ CONFIG_CLEAN_FILES =
 stunts_PROGRAMS = stuntsserver$(EXEEXT)
 PROGRAMS = $(stunts_PROGRAMS)
 
-am_stuntsserver_OBJECTS = main.$(OBJEXT)
+am_stuntsserver_OBJECTS = gamecorethread.$(OBJEXT) \
+	networkthread.$(OBJEXT) main.$(OBJEXT)
 stuntsserver_OBJECTS = $(am_stuntsserver_OBJECTS)
 stuntsserver_DEPENDENCIES = ../simulation/libsimulation.a \
 	../shared/libshared.a
@@ -167,7 +168,8 @@ stuntsserver_DEPENDENCIES = ../simulation/libsimulation.a \
 DEFAULT_INCLUDES =  -I. -I$(srcdir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/main.Po
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/gamecorethread.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/main.Po ./$(DEPDIR)/networkthread.Po
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 CXXLD = $(CXX)
@@ -220,7 +222,9 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gamecorethread.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/networkthread.Po@am__quote@
 
 distclean-depend:
 	-rm -rf ./$(DEPDIR)
