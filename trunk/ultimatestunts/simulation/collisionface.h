@@ -41,7 +41,7 @@ public:
 
 	CMaterial *material; //points to material array
 
-	CCollisionFace(){material = NULL;}
+	CCollisionFace();
 	CCollisionFace(const CCollisionFace &f);
 	const CCollisionFace &operator=(const CCollisionFace &f);
 

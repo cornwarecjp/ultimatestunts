@@ -17,6 +17,11 @@
 
 #include "collisionface.h"
 
+CCollisionFace::CCollisionFace()
+{
+	material = NULL;
+}
+
 CCollisionFace::CCollisionFace(const CCollisionFace &f)
 {
 	for(unsigned int i=0; i < f.size(); i++)

@@ -1,8 +1,8 @@
 /***************************************************************************
-                          body.h  -  A rigid body (like a wheel or a car's body)
+                          carwheel.h  -  A wheel of a car
                              -------------------
-    begin                : di okt 7 2003
-    copyright            : (C) 2003 by CJP
+    begin                : di mrt 8 2005
+    copyright            : (C) 2005 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
 
@@ -15,33 +15,41 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef BODY_H
-#define BODY_H
+#ifndef CARWHEEL_H
+#define CARWHEEL_H
 
-#include <vector>
-namespace std {}
-using namespace std;
-
-#include "collisionmodel.h"
-//#include "collisiondata.h"
 #include "vector.h"
-#include "matrix.h"
 
 /**
   *@author CJP
   */
 
+class CCarWheel {
+public: 
+	CCarWheel();
+	~CCarWheel();
 
-class CBody
-{
-public:
-	CVector m_Position;
-	CMatrix m_OrientationMatrix;
+	//state variables:
+	float m_w; //angular velocity around the axis
+	float m_a; //rotation angle around the axis
+	float m_DesiredSt; //desired steering angle
+	float m_SkidVolume;
 
-	int m_Body; //refers to geometry model
+	float m_Fnormal; //normal force on the wheel surface
 
-	//Other data:
-	//vector<CCollisionData> m_Collisions; //for usage in the sound subsystem, dust graphics etc.
+	float m_M; //acumulator for force moment around the axis
+
+	CVector getGroundForce(float &groundM, float vlong, float vlat, float contactMu);
+
+	//Temorary data
+	CVector m_Z;
+
+	//settings:
+	float m_Radius;
+	float m_Iinv_eff;
+
+	CVector m_NeutralPos; //in car coordinates
+	float m_Mu; //static friction limit on asphalt
 };
 
 #endif

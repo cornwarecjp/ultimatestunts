@@ -31,6 +31,7 @@ public:
 
 	CVector pos;
 	CVector nor;
+	float depth;
 	CVector vmean;
 	CVector vdiff;
 };

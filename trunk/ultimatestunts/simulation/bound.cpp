@@ -23,7 +23,6 @@
 CBound::CBound(CDataManager *manager) : CCollisionModel(manager)
 {
 	m_DataType = CDataObject::eBound;
-	m_isCylinder = false;
 }
 
 CBound::~CBound()
@@ -65,20 +64,9 @@ bool CBound::load(const CString &filename, const CParamList &list)
 			}
 		}
 
-	//if it is a cylinder
-	if(m_ParamList.getValue("cylinder", "false") == "true")
-		setCylinder(true);
+	//set cylinder parameters
+	m_CylinderRadius = 0.5 * fabs(m_OBB_max.y - m_OBB_min.y);
+	//m_CylinderWidth = fabs(m_OBB_max.x - m_OBB_min.x);
 
 	return true;
-}
-
-void CBound::setCylinder(bool b)
-{
-	m_isCylinder = b;
-
-	if(b)
-	{
-		m_CylinderWidth = fabs(m_OBB_max.x - m_OBB_min.x);
-		m_CylinderRadius = 0.5 * fabs(m_OBB_max.y - m_OBB_min.y);
-	}
 }

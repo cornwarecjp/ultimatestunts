@@ -91,14 +91,34 @@ bool CPhysics::update()
 		vector<CDataObject *> objs = theWorld->getObjectArray(CDataObject::eMovingObject);
 		for(unsigned int step=0; step < N; step++)
 		{
-			//do object-specific simulation things
+			vector<vector<CCollisionData> > collisions;
 			for(unsigned int i=0; i < objs.size(); i++)
+			{
 				((CMovingObject *)objs[i])->update(this, dt);
 
-			//old simulation code:
-			/*
-			m_Detector->calculateCollisions();
-			*/
+				collisions.push_back(m_Detector->getCollisions((CMovingObject *)objs[i]));
+			}
+
+			for(unsigned int i=0; i < objs.size(); i++)
+			{
+				vector<CCollisionData> &cols = collisions[i];
+				
+				for(unsigned int c=0; c < cols.size(); c++)
+				{
+					CMovingObject *mo = (CMovingObject *)objs[i];
+					CCollisionData col = cols[c];
+
+					//printf("depth = %.3f\n", col.depth);
+
+					//correct the position
+					mo->m_Position += col.nor * col.depth;
+
+					//set the collision velocity to zero
+					float radcomp = mo->m_Velocity.dotProduct(col.nor);
+					if(radcomp < 0.0)
+						mo->m_Velocity -= radcomp * col.nor;
+				}
+			}
 		}
 	}
 	return true;

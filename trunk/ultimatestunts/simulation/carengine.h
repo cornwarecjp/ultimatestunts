@@ -1,8 +1,8 @@
 /***************************************************************************
-                          body.h  -  A rigid body (like a wheel or a car's body)
+                          carengine.h  -  Engine + drivetrain of a car
                              -------------------
-    begin                : di okt 7 2003
-    copyright            : (C) 2003 by CJP
+    begin                : di mrt 8 2005
+    copyright            : (C) 2005 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
 
@@ -15,33 +15,43 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef BODY_H
-#define BODY_H
+#ifndef CARENGINE_H
+#define CARENGINE_H
 
-#include <vector>
+#include <vector> //STL vector template
 namespace std {}
 using namespace std;
-
-#include "collisionmodel.h"
-//#include "collisiondata.h"
-#include "vector.h"
-#include "matrix.h"
 
 /**
   *@author CJP
   */
 
+class CCarEngine {
+public: 
+	CCarEngine();
+	~CCarEngine();
 
-class CBody
-{
-public:
-	CVector m_Position;
-	CMatrix m_OrientationMatrix;
+	//settings:
+	vector<float> m_GearRatios;
+	float m_DifferentialRatio;
+	float m_EngineM, m_MaxEngineW, m_dMdw;
 
-	int m_Body; //refers to geometry model
+	float m_FrontTraction, m_RearTraction;
 
-	//Other data:
-	//vector<CCollisionData> m_Collisions; //for usage in the sound subsystem, dust graphics etc.
+	//input:
+	float m_Gas;
+	unsigned int m_Gear;
+
+	//from wheels:
+	float m_MainAxisW;
+	void update(float dt, float w1, float w2, float w3, float w4);
+
+	//to wheels:
+	float m_MainAxisM;
+	float getWheelM(unsigned int wheelnr);
+
+	float getGearRatio(int gear = -1);
+	float getEngineM(float wengine);
 };
 
 #endif

@@ -43,19 +43,19 @@ int CPlayer::setAutomaticGear(float &gas, float &brake)
 	CCar *theCar = (CCar *)theWorld->getMovingObject(m_MovingObjectId);
 	CCarInput *carin = (CCarInput *)theCar->m_InputData;
 
-	int gear = theCar->m_Gear;
+	int gear = theCar->m_Engine.m_Gear;
 	int maxgear = 6;
-	float r = theCar->getGearRatio();
-	float w = theCar->m_MainAxisVelocity * r;
-	float M = theCar->getEngineTorque(w) * r;
+	float r = theCar->m_Engine.getGearRatio();
+	float w = theCar->m_Engine.m_MainAxisW * r;
+	float M = theCar->m_Engine.getEngineM(w) * r;
 
 	float speed = theCar->m_Velocity.abs();
 
 	if(gear < maxgear && gear > 0) //gear up if possible (and no reverse gear)
 	{
-		float rhigher = theCar->getGearRatio(gear+1);
-		float whigher = theCar->m_MainAxisVelocity * rhigher;
-		float Mhigher = theCar->getEngineTorque(whigher) * rhigher;
+		float rhigher = theCar->m_Engine.getGearRatio(gear+1);
+		float whigher = theCar->m_Engine.m_MainAxisW * rhigher;
+		float Mhigher = theCar->m_Engine.getEngineM(whigher) * rhigher;
 
 		if(Mhigher > M)
 		{
@@ -66,9 +66,9 @@ int CPlayer::setAutomaticGear(float &gas, float &brake)
 
 	if(gear > 1) //gear down if possible
 	{
-		float rlower = theCar->getGearRatio(gear-1);
-		float wlower = theCar->m_MainAxisVelocity * rlower;
-		float Mlower = theCar->getEngineTorque(wlower) * rlower;
+		float rlower = theCar->m_Engine.getGearRatio(gear-1);
+		float wlower = theCar->m_Engine.m_MainAxisW * rlower;
+		float Mlower = theCar->m_Engine.getEngineM(wlower) * rlower;
 		
 		if(Mlower > M)
 		{

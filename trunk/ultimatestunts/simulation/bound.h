@@ -34,13 +34,7 @@ public:
 	vector<CVector> m_Points;
 
 	//More detailed description for wheels
-	float m_CylinderWidth, m_CylinderRadius;
-	bool isCylinder() const
-		{return m_isCylinder;}
-
-protected:
-	void setCylinder(bool b); //also sets the cylinder parameters
-	bool m_isCylinder;
+	float m_CylinderRadius;
 };
 
 #endif

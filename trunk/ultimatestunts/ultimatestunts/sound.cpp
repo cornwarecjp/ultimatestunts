@@ -264,22 +264,15 @@ void CSound::update()
 			{ //skid sound
 				unsigned int vol = 0;
 				
-				for(unsigned int w=1; w <= 4; w++)
-				{
-					bool skid = false;
-					for(unsigned int c=0; c < theCar->m_Bodies[w].m_Collisions.size(); c++)
-						if(theCar->m_Bodies[w].m_Collisions[c].getTangVel() > 1.0)
-							{skid = true; break;}
-
-					if(skid) vol += 63;
-				}
+				for(unsigned int w=0; w < 4; w++)
+					vol += int(63 * theCar->m_Wheel[i].m_SkidVolume);
 				
 				chn->setVolume((vol * m_SoundVolume) >> 8);
 			}
 			else
 			{ //engine sound
-				float engineRPS = theCar->m_MainAxisVelocity * theCar->getGearRatio();
-				int vol = 100 + (int)(100 * theCar->m_gas);
+				float engineRPS = theCar->m_Engine.m_MainAxisW * theCar->m_Engine.getGearRatio();
+				int vol = 100 + (int)(100 * theCar->m_Engine.m_Gas);
 				if(vol > 255) vol = 255;
 				chn->setFrequency(0.0025 * engineRPS); //correct for sound sample frequency & 2*pi
 				chn->setVolume((vol * m_SoundVolume) >> 8);

@@ -26,8 +26,9 @@ using namespace std;
 #include "vector.h"
 #include "collisionmodel.h"
 #include "collisionface.h"
+#include "collisiondata.h"
 #include "bound.h"
-#include "body.h"
+#include "movingobject.h"
 /**
   *@author CJP
   */
@@ -37,7 +38,7 @@ public:
 	CCollisionDetector();
 	~CCollisionDetector();
 
-	void calculateCollisions();
+	vector<CCollisionData> getCollisions(const CMovingObject *obj);
 
 	const CCollisionFace *getGroundFace(const CVector &pos);
 
@@ -45,19 +46,16 @@ protected:
 	CVector m_TrackMin, m_TrackMax;
 	bool m_FirstUpdate;
 
-	void clearData();
-
 	//Object <-> object collisions
-	void ObjObjTest(const CBody &body1, const CBody &body2);
+	CCollisionData ObjObjTest(const CBody &body1, const CBody &body2);
 
 	//Object <-> tile collisions
-	void ObjTileTest(int nobj, int xtile, int ztile, int htile);
+	vector<CCollisionData> ObjTileTest(const CMovingObject *theObj, int xtile, int ztile, int htile);
 	void tileRotate(CVector &v, int rot);
-	void addTileCollision(CBody &body, const CVector &pos, const CVector &nor, float penetr_depth, CMaterial *tileMaterial);
 
 	//Object <-> track bound collisions
 	void calculateTrackBounds();
-	void ObjTrackBoundTest(const CBody &body);
+	vector<CCollisionData> ObjTrackBoundTest(const CBody &body);
 
 	//Ground face tests
 	const CCollisionFace *getTileGround(int xtile, int ztile, int htile, const CVector &pos, float &dmax);

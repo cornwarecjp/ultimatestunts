@@ -97,11 +97,11 @@ bool CUSCore::update()
 			CCar * theCar = (CCar *)mo;
 			float vel = theCar->m_Velocity.abs();
 			if(vel > topspeed) topspeed = vel;
-			float wEngine = theCar->getGearRatio() * theCar->m_MainAxisVelocity;
+			float wEngine = theCar->m_Engine.getGearRatio() * theCar->m_Engine.m_MainAxisW;
 				
 			m_Console->print(
 				CString().format( _("Car %d velocity %.1f km/h; gear %d; %.1f RPM"), 100,
-					(int)i, (float)(vel * 3.6), (int)(theCar->m_Gear),
+					(int)i, (float)(vel * 3.6), (int)(theCar->m_Engine.m_Gear),
 					(float)(60.0 * wEngine / 6.28) ));
 		}
 	}

@@ -52,7 +52,7 @@ bool CHumanPlayer::update()
 		carin->m_Right = right - left;
 
 		//default
-		carin->m_Gear = ((CCar *)theWorld->getMovingObject(m_MovingObjectId))->m_Gear;
+		carin->m_Gear = ((CCar *)theWorld->getMovingObject(m_MovingObjectId))->m_Engine.m_Gear;
 		
 		//try the automatic gear
 		setAutomaticGear(carin->m_Forward, carin->m_Backward);

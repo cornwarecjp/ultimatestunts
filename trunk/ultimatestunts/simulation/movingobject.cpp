@@ -68,7 +68,14 @@ void CMovingObject::addTorque(CVector M)
 void CMovingObject::addForceAt(CVector F, CVector pos)
 {
 	m_Ftot += F;
-	m_Mtot += F.crossProduct(pos); //TODO: is the sign right??
+	m_Mtot += F.crossProduct(pos);
+
+	/*
+	CVector Madd = F.crossProduct(pos);
+	printf("    F = %s\n", CString(F).c_str());
+	printf("    p = %s\n", CString(pos).c_str());
+	printf("    M = %s\n", CString(Madd).c_str());
+	*/
 }
 
 void CMovingObject::update(CPhysics *simulator, float dt)
