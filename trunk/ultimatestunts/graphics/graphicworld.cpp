@@ -20,15 +20,17 @@
 #include "graphicbound.h"
 #include "graphicmaterial.h"
 
-#include "car.h"
-
 #include "graphicworld.h"
 
 CGraphicWorld::CGraphicWorld(const CLConfig &conf) : CWorld(conf)
 {
 }
 
-CGraphicWorld::~CGraphicWorld(){
+CGraphicWorld::~CGraphicWorld()
+{
+	//printf("Testing the textures: %d textures\n", m_TileMaterials.size());
+	//for(int i=0; i<m_TileMaterials.size(); i++)
+	//	( (CGraphicMaterial *)(m_TileMaterials[i]) )->getColor();
 }
 
 CShape *CGraphicWorld::createShape()

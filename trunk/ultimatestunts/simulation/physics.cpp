@@ -29,6 +29,8 @@ CPhysics::~CPhysics(){
 bool CPhysics::Update()
 {
 	float dt = m_Timer.getdt();
+	if(dt > 1.0)
+		{printf("Warning: Low update time detected\n"); dt = 1.0;}
 	printf("Now doing physics calculations (dt = %f)\n", dt);
 
 //Dummy physics version 2.0 !!!!

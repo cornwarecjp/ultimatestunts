@@ -25,7 +25,7 @@ class CTexture
 {
 public:
 	CTexture();
-	void setTextureSmooth(bool texture_smooth)
+	virtual void setTextureSmooth(bool texture_smooth)
 		{m_GrsetTextureSmooth = texture_smooth;}
 
 	virtual bool loadFromFile(CString filename, int xs, int ys);

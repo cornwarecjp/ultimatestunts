@@ -25,10 +25,12 @@
   */
 
 class CMaterial {
-public: 
+public:
 
+	//as if it were a texture:
+	virtual void setTextureSmooth(bool texture_smooth){;}
 	virtual bool loadFromFile(CString filename, int xs, int ys)
-		{return true;} //as if it were a texture
+		{return true;}
 };
 
 #endif

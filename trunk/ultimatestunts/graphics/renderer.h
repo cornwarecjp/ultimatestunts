@@ -31,8 +31,26 @@ public:
 	~CRenderer();
 
 	void Update();
+	void viewBackground();
+	void viewPilaar(int x, int y, int cur_zpos);
 protected:
 	CGraphicWorld *m_World;
+
+	float *m_FogColor;
+
+	bool m_UseBackground;
+	bool m_ZBuffer;
+	int m_VisibleTiles;
+	int m_FogMode;
+	bool m_TexPerspective;
+	bool m_TexSmooth;
+	bool m_ShadowSmooth;
+
+	void viewTrackPart(
+		int xmin,int ymin,
+		int xmax,int ymax,
+		int dx,  int dy,
+		int cur_zpos);
 };
 
 #endif

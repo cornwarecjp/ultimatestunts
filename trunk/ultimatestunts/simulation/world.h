@@ -58,6 +58,7 @@ protected:
 
 	CString m_DataDir;
 	int m_TexMaxSize;
+	bool m_TexSmooth;
 };
 
 #endif

@@ -32,7 +32,7 @@ class CGraphicShape : public CShape, public CGraphObj
 public: 
 	virtual bool loadFromFile(CString filename, CMaterial **matarray)
 		{return CShape::loadFromFile(filename, matarray) &&
-		CGraphObj::loadFromFile(filename, (CTexture **)(CGraphicMaterial **)matarray);}
+			CGraphObj::loadFromFile(filename, matarray);}
 };
 
 #endif

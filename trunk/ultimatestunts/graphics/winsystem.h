@@ -30,7 +30,7 @@ public:
 	CWinSystem(const CLConfig &conf);
 	~CWinSystem();
 
-	int runLoop( bool (CALLBACKFUN *loopfunc)() );
+	int runLoop( bool (CALLBACKFUN *loopfunc)(), bool swp = false);
 
 protected:
 	int m_W, m_H, m_BPP;

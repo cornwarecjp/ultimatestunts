@@ -24,7 +24,7 @@
 
 CTexture::CTexture()
 {
-	m_Color = CVector(1,0,0);
+	m_Color = CVector(0,0,0);
 }
 
 bool CTexture::loadFromFile(CString filename, int xs, int ys)
@@ -198,6 +198,8 @@ bool CTexture::loadFromFile(CString filename, int xs, int ys)
 	free(in_image->data);
 	free(in_image);
 
+	//printf("Texture color: %f,%f,%f\n", m_Color.x, m_Color.y, m_Color.z);
+
 	return true;
 }
 
@@ -256,6 +258,7 @@ int CTexture::getSizeY(int i)
 
 CVector CTexture::getColor()
 {
+	//printf("Returning texture color: %f,%f,%f\n", m_Color.x, m_Color.y, m_Color.z);
 	return m_Color;
 }
 

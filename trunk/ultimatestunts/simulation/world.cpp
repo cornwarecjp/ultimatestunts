@@ -36,6 +36,9 @@ CWorld::CWorld(const CLConfig &conf)
 	cnf = conf.getValue("graphics", "texture_maxsize");
 	if(cnf != "")
 		m_TexMaxSize = cnf.toInt();
+
+	cnf = conf.getValue("graphics", "texture_smooth");
+	m_TexSmooth = (cnf != "false");
 }
 
 CWorld::~CWorld(){
@@ -79,10 +82,11 @@ bool CWorld::loadTrack(CString filename)
 		}
 
 		line = m_DataDir + line;
-		int xs = m_TexMaxSize * mul;
-		int ys = m_TexMaxSize * mul;
+		int xs = m_TexMaxSize / mul;
+		int ys = m_TexMaxSize / mul;
 		printf("Loading %s with mul %d\n", line.c_str(), mul);
 		CMaterial *m = createMaterial();
+		m->setTextureSmooth(m_TexSmooth);
 		m->loadFromFile(line, xs, ys); //Only useful for textures
 		//TODO: set friction coefficients
 		m_TileMaterials.push_back(m);
@@ -119,15 +123,36 @@ bool CWorld::loadTrack(CString filename)
 	}
 	printf("\nLoaded %d tile shapes\n\n", m_TileShapes.size());
 
+
 	//Third: initialising track array
-	for(int x=0; x<m_L; x++)
-	for(int z=0; z<m_W; z++)
+	m_Track.resize(m_L * m_W * m_H);
 	for(int y=0; y<m_H; y++)
 	{
-		CTile t;
-		t.m_Shape = m_TileShapes[0]; //for example
-		t.m_R = t.m_Z = 0; //TODO: load from file (of course)
-		m_Track.push_back(t);
+		while(tfile.readl() != "BEGIN"); //begin of track layer section
+
+		for(int z=0; z<m_W; z++)
+		{
+			line = tfile.readl();
+
+			for(int x=0; x<m_L; x++)
+			{
+				int n = y + m_H * (z+m_W*x);
+				int tp = line.inStr('\t');
+				line = line.mid(tp+1, line.length());
+				CTile t;
+				t.m_Shape = m_TileShapes[line.toInt()];
+				line = line.mid(line.inStr('/')+1, line.length());
+				t.m_R = line.toInt();
+				line = line.mid(line.inStr('/')+1, line.length());
+				t.m_Z = line.toInt();
+				m_Track[n] = t;
+			}
+       }
+
+		if(tfile.readl()!="END") printf(
+			"Error while reading track data: END expected\n"
+			"after track layer %d\n"
+			, y);
 
 	}
 

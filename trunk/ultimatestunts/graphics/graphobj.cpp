@@ -48,21 +48,22 @@ CGraphObj::~CGraphObj()
 	//TODO: remove display list when needed
 }
 
-bool CGraphObj::loadFromFile(CString filename, CTexture **texarray)
+bool CGraphObj::loadFromFile(CString filename, CMaterial **matarray)
 {
 	for(int lod=1; lod<5; lod++)
 	{
 		//printf("Loading graphobj lod=%d\n", lod);
-		unsigned int &objlist = m_ObjList1;
+
+		unsigned int objlist = glGenLists(1);
+		glNewList(objlist, GL_COMPILE);
+
 		switch(lod)
 		{
-			case 2: objlist = m_ObjList2; break;
-			case 3: objlist = m_ObjList3; break;
-			case 4: objlist = m_ObjList4; break;
+			case 1: m_ObjList1 = objlist; break;
+			case 2: m_ObjList2 = objlist; break;
+			case 3: m_ObjList3 = objlist; break;
+			case 4: m_ObjList4 = objlist; break;
 		}
-
-		objlist = glGenLists(1);
-		glNewList(objlist, GL_COMPILE);
 
 		bool texture_isenabled = true;
 		setMaterialColor(CVector(1,1,1));
@@ -91,8 +92,8 @@ bool CGraphObj::loadFromFile(CString filename, CTexture **texarray)
 					int t = (int)line.toFloat();
 
 					//printf("  Using texture %d\n", t);
-
-					if((*(texarray+t))->getSizeX(lod) <=4 || (*(texarray+t))->getSizeY(lod) <= 4)
+					CTexture *tex = (CGraphicMaterial *)(*(matarray+t));
+					if(tex->getSizeX(lod) <=4 || tex->getSizeY(lod) <= 4)
 					{
 						if(texture_isenabled)
 						{
@@ -111,9 +112,11 @@ bool CGraphObj::loadFromFile(CString filename, CTexture **texarray)
 					}
 
 					if(texture_isenabled)
-						{(*(texarray+t))->draw(lod);}
+						{tex->draw(lod);}
 					else //geen texture
-						{setMaterialColor((*(texarray+t))->getColor());}
+					{
+						setMaterialColor(tex->getColor());
+					}
 
 				}
 				if(line.mid(0, sp)=="Color")
@@ -205,6 +208,7 @@ bool CGraphObj::loadFromFile(CString filename, CTexture **texarray)
 void CGraphObj::draw(int lod)
 {
 	//TODO: make this code very fast (it's the main drawing routine)
+	//printf("Drawing beautiful openGL graphics...\n");
 	switch(lod)
 	{
 		case 1: glCallList(m_ObjList1); break;
@@ -216,6 +220,6 @@ void CGraphObj::draw(int lod)
 
 void CGraphObj::setMaterialColor(CVector c)
 {
-  float kleur[] = {c.x, c.y, c.z};
-  glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, kleur);
+	float kleur[] = {c.x, c.y, c.z};
+	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, kleur);
 }

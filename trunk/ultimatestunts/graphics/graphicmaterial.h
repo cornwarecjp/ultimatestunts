@@ -23,6 +23,8 @@
 class CGraphicMaterial : public CMaterial, public CTexture
 {
 public:
+	virtual void setTextureSmooth(bool texture_smooth)
+		{CTexture::setTextureSmooth(texture_smooth);}
 	virtual bool loadFromFile(CString filename, int xs, int ys)
 		{return CTexture::loadFromFile(filename, xs, ys);}
 };

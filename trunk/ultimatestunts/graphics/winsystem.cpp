@@ -71,6 +71,9 @@ CWinSystem::CWinSystem(const CLConfig &conf)
 		exit(2);
 	}
 	SDL_WM_SetCaption("UltimateStunts", "ultimatestunts");
+
+	//To set up openGL correctly, call reshape
+	reshape(m_W, m_H);
 }
 
 CWinSystem::~CWinSystem()
@@ -78,12 +81,12 @@ CWinSystem::~CWinSystem()
 	SDL_Quit();
 }
 
-int CWinSystem::runLoop( bool (CALLBACKFUN *loopfunc)() )
+int CWinSystem::runLoop( bool (CALLBACKFUN *loopfunc)(), bool swp)
 {
 	bool quit = false;
 
 	//if loopfunc want to quit for some reason, then is returns false
-	while(loopfunc() && !quit)
+	while(!quit)
 	{
 		SDL_Event event;
 
@@ -108,6 +111,10 @@ int CWinSystem::runLoop( bool (CALLBACKFUN *loopfunc)() )
 			}
 		}
 
+		quit = quit || !loopfunc();
+
+		if(swp)
+			SDL_GL_SwapBuffers();
 	}
 
 	return 0;

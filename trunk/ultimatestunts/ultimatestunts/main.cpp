@@ -174,7 +174,7 @@ int main(int argc, char *argv[])
 	//Creating some white space
 	for(int i=1; i<40; i++)
 		printf("\n");
-	winsys->runLoop(mainloop);
+	winsys->runLoop(mainloop, true); //true: swap buffers
 	printf("\nLeaving mainloop\n");
 
 	printf("\nDeleting simulation\n");
