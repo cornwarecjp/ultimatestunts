@@ -32,21 +32,20 @@ typedef struct _s_msg_header {
 	} s_msg_header;
 
 
-
-
 enum eMessageType {   // more to add
+   badMessage = 0,
    dummyMessage = 1,
    objectChoice = 2
 };
 
 
 private:
- s_msg_header m_HeaderCp;
+ s_msg_header * getHeader() const;
+ bool setHeader(s_msg_header &);
 
- bool setHeader();
- bool rereadHeader();
 
 public:
+
  CMessageBuffer(const CMessageBuffer::eMessageType & t);
 
  CMessageBuffer();
@@ -55,9 +54,9 @@ public:
  bool setAC(const Uint8 acflag);
  bool setCounter(const Uint16 counter);
 
- eMessageType getType();
- Uint8 getAC();
- Uint16 getCounter();
+ eMessageType getType() const;
+ Uint8 getAC() const;
+ Uint16 getCounter() const;
 
 
  bool setData(const CBinBuffer & b);

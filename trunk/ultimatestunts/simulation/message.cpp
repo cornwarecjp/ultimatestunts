@@ -17,27 +17,30 @@
 
 #include "message.h"
 
-CMessageBuffer * CMessage::getBuffer() {
-  this->m_Data->setData(this->getData());
-  return (this->m_Data);
+CMessageBuffer & CMessage::getBuffer() {
+  CMessageBuffer *res = new CMessageBuffer();
+
+  this->m_Data.setData(this->getData());
+  *res = m_Data  ;
+  return (*res);
 }
  	
 bool CMessage::setBuffer(const CMessageBuffer & b) {
- *this->m_Data = b;
- this->setData(this->m_Data->getData());
+ m_Data = b;
+ this->setData(m_Data.getData());
  return (true);
 }
 
 void CMessage::setType(const CMessageBuffer::eMessageType & t) {
-	m_Data->setType(t);
+	m_Data.setType(t);
 }
 
 void CMessage::setCounter(const Uint16 & counter) {
-	m_Data->setCounter(counter);
+	m_Data.setCounter(counter);
 }
 
 void CMessage::setAC(const bool & ac) {
-	if (ac) m_Data->setAC(1); else m_Data->setAC(0);
+	if (ac) m_Data.setAC(1); else m_Data.setAC(0);
 }
 
 

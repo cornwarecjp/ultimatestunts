@@ -40,24 +40,29 @@
 
 
 CMessageBuffer::CMessageBuffer(){
+  s_msg_header h;
+  setHeader(h);
 }
 CMessageBuffer::~CMessageBuffer(){
 }
 
 
 bool CMessageBuffer::setType(const eMessageType t){
-  this->m_HeaderCp.tid = t;
-  return (this->setHeader());
+  s_msg_header *m = this->getHeader();
+  m->tid = (Uint8) t;
+  return (setHeader(*m));
 }
 
 bool CMessageBuffer::setAC(const Uint8 acflag) {
-  this->m_HeaderCp.ac = acflag;
-  return (this->setHeader());
+  s_msg_header *m = getHeader();
+  m->ac = (Uint8) acflag;
+  return (setHeader(*m));
 }
 
 bool CMessageBuffer::setCounter(const Uint16 counter) {
-  this->m_HeaderCp.counter = counter;
-  return (this->setHeader());
+  s_msg_header *m = getHeader();
+  m->counter =  counter;
+  return (setHeader(*m));
 }
 
 
@@ -75,38 +80,43 @@ CBinBuffer & CMessageBuffer::getData() const
 }
 
 
-bool CMessageBuffer::rereadHeader() {
-  if (this->size() < sizeof(s_msg_header)) return (false);
-  m_HeaderCp.tid = this->getUint8(0);
-  m_HeaderCp.ac = this->getUint8(this->getNewCursor());
-  m_HeaderCp.counter = this->getUint16(this->getNewCursor());
-  return (true);
+CMessageBuffer::s_msg_header *CMessageBuffer::getHeader() const
+{
+  s_msg_header *res =  new s_msg_header;
+  int newpos;
+  if (this->size() < sizeof(s_msg_header)) return (NULL);
+  res->tid = this->getUint8(0, &newpos);
+  res->ac = this->getUint8(newpos, &newpos);
+  res->counter = this->getUint16(newpos);
+  return (res);
 }
 
-CMessageBuffer::eMessageType CMessageBuffer::getType() {
- rereadHeader();
- return ((eMessageType) m_HeaderCp.tid);
+CMessageBuffer::eMessageType CMessageBuffer::getType() const {
+ s_msg_header *m = getHeader();
+ if (m == NULL) return(badMessage);
+ return ((CMessageBuffer::eMessageType) m->tid);
 }
 
-Uint8 CMessageBuffer::getAC() {
- rereadHeader();
- return (m_HeaderCp.ac);
+Uint8 CMessageBuffer::getAC() const {
+ s_msg_header *m = getHeader();
+ if (m == NULL) return(badMessage);
+ return (m->ac);
 }
 
-Uint16 CMessageBuffer::getCounter() {
-  rereadHeader();
-  return (m_HeaderCp.counter);
+Uint16 CMessageBuffer::getCounter() const {
+ s_msg_header *m = getHeader();
+ if (m == NULL) return(badMessage);
+ return (m->counter);
 }
 
 
 
-
-bool CMessageBuffer::setHeader() {
+bool CMessageBuffer::setHeader(s_msg_header & h) {
    CBinBuffer tmp;
    tmp.empty();
-   tmp+=m_HeaderCp.tid;
-   tmp+=m_HeaderCp.ac;
-   tmp+=m_HeaderCp.counter;
+   tmp+=h.tid;
+   tmp+=h.ac;
+   tmp+=h.counter;
    if (this->size() < tmp.size()) { this->resize(tmp.size()); }
    for (int i=0;i<tmp.size();i++) { (*this)[i] = tmp[i]; }
    return (true);
@@ -127,10 +137,10 @@ CBinBuffer & CMessageBuffer::getBuffer() {
 
 }
 
-
 CMessageBuffer::CMessageBuffer(const CMessageBuffer::eMessageType & t){
-  m_HeaderCp.tid=t;
-  setHeader();
+  s_msg_header h;
+  h.tid = (Uint8) t;
+  setHeader(h);
 }
 
 

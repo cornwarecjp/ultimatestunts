@@ -177,11 +177,17 @@ install_location=
 type=DATA
 
 [shared/Makefile.am]
-files=shared/hello.cpp,shared/hello.h,shared/matrix.cpp,shared/matrix.h,shared/vector.cpp,shared/vector.h,shared/binbuffer.h
+files=shared/hello.cpp,shared/hello.h,shared/matrix.cpp,shared/matrix.h,shared/vector.cpp,shared/vector.h,shared/binbuffer.h,shared/cstring.h
 sub_dirs=
 type=static_library
 
 [shared/binbuffer.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[shared/cstring.h]
 dist=true
 install=false
 install_location=

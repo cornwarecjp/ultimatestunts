@@ -25,7 +25,6 @@
 class CBinBuffer : public vector<Uint8>
 {
   private:
-    Uint16 m_newCursor;	
 
   public:
 
@@ -34,8 +33,6 @@ class CBinBuffer : public vector<Uint8>
      eEndOfBuffer=1,
      eOtherError
    };
-
-   Uint16 getNewCursor() const { return (m_newCursor); }
 
 
 	 CBinBuffer & operator += (const char unsigned & c) {
@@ -56,24 +53,24 @@ class CBinBuffer : public vector<Uint8>
 
    CBinBuffer & operator += (const CString & bs) {
      this->push_back((Uint8) bs.size());
-     for (int i=0;i<bs.size();i++) {
+     for (int unsigned i=0;i<bs.size();i++) {
        this->push_back((Uint8) bs[i]);
      }
    }
 
-   Uint8 getUint8(const int pos=0)  {
+   Uint8 getUint8(const int unsigned pos=0, int *newpos = NULL) const {
      if (pos > this->size()-1) throw(eEndOfBuffer);
-     m_newCursor = pos+1;
+     if (newpos != NULL) *newpos = pos+1;
      return ((Uint8) (*this)[pos]);
    }
 
-   Uint16 getUint16(const int pos=0) {
+   Uint16 getUint16(const int unsigned pos=0, int *newpos = NULL) const {
      if (pos > this->size()-2) throw(eEndOfBuffer);
-     m_newCursor = pos+2;
+     if (newpos !=NULL) *newpos = pos+2;
      return (((*this)[pos] << 8) + (*this)[pos+1]);
    }
 
-   CString & getCString(const int pos=0) {
+   CString & getCString(const int unsigned pos=0, int *newpos = NULL) const {
      CString *res = new CString();
      if (pos > this->size()-1) throw(eEndOfBuffer);
      Uint8 ssize = (*this)[pos];
@@ -81,7 +78,7 @@ class CBinBuffer : public vector<Uint8>
      for (int i=0;i<ssize;i++) {
        res->push_back((*this)[pos+1+i]);
      }
-     m_newCursor = pos+1+ssize;
+     if (newpos !=NULL) *newpos = pos+1+ssize;
      return (*res);
    }
    	
@@ -108,7 +105,7 @@ class CBinBuffer : public vector<Uint8>
     if (pos <= this->size()) {
        int len = n;
        if (len == -1) { len = this->size() -pos; }
-       for (int i = pos;i<len+pos;i++) {
+       for (int unsigned i = pos;i<len+pos;i++) {
          res->push_back((*this)[i]);
        }
     }
