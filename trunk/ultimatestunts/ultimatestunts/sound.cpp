@@ -197,7 +197,7 @@ CSound::CSound(const CLConfig &conf, const CWorld *world)
   printf("Hardware 3D channels : %d\n", FSOUND_GetNumHardwareChannels());
 */
 
-	CDataFile f("music/kssthbss.ogg");
+	CDataFile f("music/sv.ogg");
 	printf("   Loading music file %s\n", f.getName().c_str());
 	m_MusicSample = new CSndSample(SAMPLE_2D);
 	m_MusicObject = new CSoundObj;
