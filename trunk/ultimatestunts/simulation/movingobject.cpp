@@ -36,6 +36,10 @@ void CMovingObject::unload()
 {
 	for(unsigned int i=0; i < m_Bodies.size(); i++)
 		m_Bodies[i].destroyODE();
+	m_Bodies.clear();
+
+	m_Sounds.clear();
+	m_Textures.clear();
 
 	CDataObject::unload();
 }

@@ -89,6 +89,12 @@ bool CCar::load(const CString &filename, const CParamList &list)
 	m_GearRatios.push_back(cfile.getValue("engine", "gear6").toFloat());
 	m_DifferentialRatio = cfile.getValue("engine", "differentialratio").toFloat();
 
+	//Two sounds:
+	m_Sounds.push_back(theWorld->loadObject(cfile.getValue("sound", "engine"), CParamList(), CDataObject::eSample));
+	m_Sounds.push_back(theWorld->loadObject(cfile.getValue("sound", "skid"), CParamList(), CDataObject::eSample));
+
+	//One texture:
+	m_Textures.push_back(theWorld->loadObject(cfile.getValue("texture", "file"), CParamList(), CDataObject::eMaterial));
 
 	//The input object
 	m_InputData = new CCarInput;
@@ -102,13 +108,21 @@ bool CCar::load(const CString &filename, const CParamList &list)
 	//Five bodies:
 	CBody body, wheel1, wheel2, wheel3, wheel4;
 
+	//texture settings:
+	CParamList plist;
+	{
+		SParameter p;
+		p.name = "subset";
+		p.value = (int)m_Textures[0];
+		plist.push_back(p);
+	}
+
 	//Set the indices to the body array
-	body.m_Body = theWorld->loadObject(bodygeomfile, CParamList(), CDataObject::eBound);
+	body.m_Body = theWorld->loadObject(bodygeomfile, plist, CDataObject::eBound);
 	if(body.m_Body < 0)
 		printf("Error: body geometry %s was not loaded\n", bodygeomfile.c_str());
 
 	//The wheels are cylinders:
-	CParamList plist;
 	{
 		SParameter p;
 		p.name = "cylinder";
@@ -237,10 +251,6 @@ bool CCar::load(const CString &filename, const CParamList &list)
 	dJointSetHinge2Param(m_joint2, dParamSuspensionCFM, m_FrontSuspCFM);
 	dJointSetHinge2Param(m_joint3, dParamSuspensionCFM, m_RearSuspCFM);
 	dJointSetHinge2Param(m_joint4, dParamSuspensionCFM, m_RearSuspCFM);
-
-	//Two sounds:
-	m_Sounds.push_back(theWorld->loadObject("sounds/engine.wav", CParamList(), CDataObject::eSample));
-	m_Sounds.push_back(theWorld->loadObject("sounds/skid.wav", CParamList(), CDataObject::eSample));
 
 	return true;
 }

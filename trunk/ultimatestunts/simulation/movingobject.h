@@ -50,6 +50,7 @@ public:
 
 	vector<CBody> m_Bodies; //The object bodies
 	vector<unsigned int> m_Sounds; //The object sounds
+	vector<unsigned int> m_Textures; //The object textures
 
 	//For network transfer & other stuff
 	virtual CBinBuffer &getData(CBinBuffer &b) const;       // returns class data as binbuffer
