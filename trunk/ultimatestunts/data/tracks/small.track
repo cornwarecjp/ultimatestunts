@@ -1,0 +1,40 @@
+TRACKFILE
+4
+5
+1
+
+#properties:
+length
+width
+heigth
+
+BEGIN
+textures/grass2.rgb
+textures/road2.rgb
+textures/concrete1.rgb
+textures/startfinish.rgb
+END
+
+BEGIN
+environment/sky3.rgb
+environment/spheremap.rgb
+END
+
+BEGIN
+tiles/empty.gl 0
+tiles/horiz.gl 0
+tiles/corner.gl 0 1
+tiles/roadhoriz.gl 0 1
+tiles/startfinish.gl:sf 0 1 2 3
+END
+
+#tile_id/rotation/heigth
+
+BEGIN
+	1/0/0	1/0/0	1/0/0	1/0/0
+	1/0/0	2/3/0	2/2/0	1/0/0
+	1/0/0	3/0/0	4/0/0	1/0/0
+	1/0/0	2/0/0	2/1/0	1/0/0
+	1/0/0	1/0/0	1/0/0	1/0/0
+END
+

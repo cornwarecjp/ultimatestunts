@@ -1,0 +1,62 @@
+#CornWare UltimateStunts graphics file
+#created by the stunts3dedit editor
+
+Normal 0,1,0
+Color 1,1,1
+
+
+#Tedit-name Weg
+Texture 0
+Quads
+
+TexCoord 1.000000, 4.000000
+Vertex 5.000000, 0.000000, 20.000000
+TexCoord 1.000000, 0.000000
+Vertex 5.000000, 0.000000, -20.000000
+TexCoord 0.000000, 0.000000
+Vertex -5.000000, 0.000000, -20.000000
+TexCoord 0.000000, 4.000000
+Vertex -5.000000, 0.000000, 20.000000
+End
+
+
+#Tedit-name Plafond
+Texture 2
+Quads
+
+Normal 0.000000, -1.000000, 0.000000
+TexCoord 1.000000, 2.000000
+Vertex -5.000000, 6.000000, 20.000000
+TexCoord 1.000000, 0.000000
+Vertex -5.000000, 6.000000, -20.000000
+TexCoord 0.000000, 0.000000
+Vertex 5.000000, 6.000000, -20.000000
+TexCoord 0.000000, 2.000000
+Vertex 5.000000, 6.000000, 20.000000
+End
+
+
+#Tedit-name Muren
+Texture 1
+Quads
+
+Normal -1.000000, 0.000000, 0.000000
+TexCoord 0.000000, 0.000000
+Vertex 5.000000, 0.000000, -20.000000
+TexCoord 12.000000, 0.000000
+Vertex 5.000000, 0.000000, 20.000000
+TexCoord 12.000000, 2.000000
+Vertex 5.000000, 6.000000, 20.000000
+TexCoord 0.000000, 2.000000
+Vertex 5.000000, 6.000000, -20.000000
+
+Normal 1.000000, 0.000000, 0.000000
+TexCoord 12.000000, 0.000000
+Vertex -5.000000, 0.000000, 20.000000
+TexCoord 0.000000, 0.000000
+Vertex -5.000000, 0.000000, -20.000000
+TexCoord 0.000000, 2.000000
+Vertex -5.000000, 6.000000, -20.000000
+TexCoord 12.000000, 2.000000
+Vertex -5.000000, 6.000000, 20.000000
+End

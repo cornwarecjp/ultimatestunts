@@ -1,0 +1,20 @@
+#Cornware UltimateStunts graphics file
+#Created by the UltimateStunts Tile Editor
+Texture 0
+
+Quads
+
+Normal 0.000000,0.960000,0.290000
+Color 1.000000,1.000000,1.000000
+TexCoord 1.000000,1.000000
+Vertex 20.000000,0.000000,20.000000
+TexCoord 1.000000,0.000000
+Vertex 20.000000,12.000000,-20.000000
+TexCoord 0.000000,0.000000
+Vertex -20.000000,12.000000,-20.000000
+TexCoord 0.000000,1.000000
+Vertex -20.000000,0.000000,20.000000
+End
+
+Notex
+#End of tile
