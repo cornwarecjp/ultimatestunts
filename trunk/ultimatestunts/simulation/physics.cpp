@@ -21,6 +21,7 @@
 #include "car.h"
 #include "carinput.h"
 #include "usmacros.h"
+#include "generalmatrix.h"
 
 #ifndef M_PI
 #define M_PI 3.1415926536
@@ -39,8 +40,8 @@ bool CPhysics::update()
 	float dt = m_Timer.getdt(0.01); //max. 100 fps
 
 #ifdef DEBUGMSG
-	if(dt > 1.0)
-		{printf("Warning: Low update time detected\n"); dt = 1.0;}
+	if(dt > 0.5)
+		{printf("Warning: Low update time detected\n"); dt = 0.5;}
 	if(dt < 0.0001)
 	{
 		printf("Physics debugging message: dt = %f\n", dt);
@@ -81,58 +82,79 @@ bool CPhysics::update()
 			CVector Ftot, Mtot;
 
 			CMatrix R = mo->getOrientation();
-			const float m = mo->m_Mass;
+			const float invmass = mo->m_InvMass;
 			const CMatrix &Iinv = mo->m_InvMomentInertia;
 
 			float gas = input->m_Forward;
 			float rem = input->m_Backward;
 
 			//Collision response
+			CMatrix Jinv = mo->m_InvMomentInertia / mo->m_InvMass;
 			if(m_World->m_CollData->m_Events[i].isHit)
 			{
-				CVector dr_min, dp_min, dr_max, dp_max;
-				CVector dL; //rotational momentum change
 				const CColEvents &e = m_World->m_CollData->m_Events[i];
+				CVector dp, dL;
+
+				//Set up the matrix as described in usphysics1.pdf
+				CGeneralMatrix M(e.size());
+				CGeneralVector a;
 				for(unsigned int j=0; j<e.size(); j++)
 				{
-					const CCollision &c = e[j];
-					if(c.body != 0) continue; //TODO: multiple bodies
+					const CCollision &cj = e[j];
+					CMatrix Rj; Rj.setCrossProduct(cj.pos);
 
-					//quick&dirty:
-					if(c.dr.x > dr_max.x) dr_max.x = c.dr.x;
-					if(c.dr.y > dr_max.y) dr_max.y = c.dr.y;
-					if(c.dr.z > dr_max.z) dr_max.z = c.dr.z;
-					if(c.dr.x < dr_min.x) dr_min.x = c.dr.x;
-					if(c.dr.y < dr_min.y) dr_min.y = c.dr.y;
-					if(c.dr.z < dr_min.z) dr_min.z = c.dr.z;
+					for(unsigned int k=0; k<e.size(); k++)
+					{
+						const CCollision &ck = e[k];
+						CMatrix Rk; Rk.setCrossProduct(ck.pos);
+						M.setElement(j, k, cj.nor.dotProduct(ck.nor + Rj*(Jinv*(Rk*ck.nor)) ));
+					}
 
-					if(c.dp.x > dr_max.x) dp_max.x = c.dp.x;
-					if(c.dp.y > dr_max.y) dp_max.y = c.dp.y;
-					if(c.dp.z > dr_max.z) dp_max.z = c.dp.z;
-					if(c.dp.x < dr_min.x) dp_min.x = c.dp.x;
-					if(c.dp.y < dr_min.y) dp_min.y = c.dp.y;
-					if(c.dp.z < dr_min.z) dp_min.z = c.dp.z;
+					a.push_back(cj.p);
 
-					dL += 0.1 * c.dp.crossProduct(c.pos); //TODO: remove 0.1
 				}
 
-				//quick&dirty:
-				CVector dr, dp;
-				dr.x = (dr_max.x > -dr_min.x)? dr_max.x : dr_min.x;
-				dr.y = (dr_max.y > -dr_min.y)? dr_max.y : dr_min.y;
-				dr.z = (dr_max.z > -dr_min.z)? dr_max.z : dr_min.z;
-				dp.x = (dp_max.x > -dp_min.x)? dp_max.x : dp_min.x;
-				dp.y = (dp_max.y > -dp_min.y)? dp_max.y : dp_min.y;
-				dp.z = (dp_max.z > -dp_min.z)? dp_max.z : dp_min.z;
+				//Solve it
+				if(M.solve(a) == -2)
+					{printf("physics.cpp: Matrix size error\n");}
+				else
+				{
+					for(unsigned int j=0; j<e.size(); j++)
+					{
+						dp += a[j] * e[j].nor;
+						dL -= a[j] * e[j].pos.crossProduct(e[j].nor);
+					}
+				}
 
-				mo->setPosition(mo->getPosition() + dr); //place back
 				Ftot += dp/dt; //collision force
 				Mtot += dL/dt; //collision torque
+
+
+				//Placing back:
+				CVector dr_min, dr_max;
+				for(unsigned int j=0; j<e.size(); j++)
+				{
+					const CCollision &cj = e[j];
+					CVector dr = cj.nor * cj.penetrationDepth;
+
+					//quick&dirty:
+					if(dr.x > dr_max.x) dr_max.x = dr.x;
+					if(dr.y > dr_max.y) dr_max.y = dr.y;
+					if(dr.z > dr_max.z) dr_max.z = dr.z;
+					if(dr.x < dr_min.x) dr_min.x = dr.x;
+					if(dr.y < dr_min.y) dr_min.y = dr.y;
+					if(dr.z < dr_min.z) dr_min.z = dr.z;
+				}
+				CVector dr;
+				if(dr_max.x > -dr_min.x) dr.x = dr_max.x; else dr.x = dr_min.x;
+				if(dr_max.y > -dr_min.y) dr.y = dr_max.y; else dr.y = dr_min.y;
+				if(dr_max.z > -dr_min.z) dr.z = dr_max.z; else dr.z = dr_min.z;
+				mo->setPosition(mo->getPosition() + dr);
 			}
 
 
 			//Gas
-			CVector Fgas = CVector(0.0, 0.0, -gasmax*gas) * R;
+			CVector Fgas = R * CVector(0.0, 0.0, -gasmax*gas);
 			Ftot += Fgas;
 
 			//Brake + friction
@@ -142,7 +164,7 @@ bool CPhysics::update()
 			if(vabs < 0.001)
 				{Frem = -v;}
 			else
-				{Frem = v * (-(remmax*rem + cwA*v.abs2()) / vabs);}
+				{Frem = v * (-remmax*rem/vabs -cwA*vabs);}
 			Ftot += Frem;
 
 			//rotational air friction
@@ -152,26 +174,25 @@ bool CPhysics::update()
 			if(wabs < 0.001)
 				{Mrem = -w;}
 			else
-				{Mrem = w * (-cwA*w.abs2() / wabs);}
+				{Mrem = w * (-500.0*cwA*wabs);}
 			Mtot += Mrem;
 
 			//Gravity
-			Ftot += CVector(0.0, -g*m, 0.0);
+			Ftot += CVector(0.0, -g / invmass, 0.0);
 
 			//Dummy wheel rotation
 			//positive angle = driving forward = positive vz
 			theCar->m_WheelVelocity = vabs / theCar->m_WheelRadius;
 			theCar->m_WheelAngle += dt * theCar->m_WheelVelocity;
 
+			//standard acceleration:
+			mo->setVelocity(mo->getVelocity() + Ftot * dt * invmass);
+
 			//Dummy roteer-functie:
 			float stuur = input->m_Right;
-			Mtot += CVector(0,10000*stuur*dt,0);
-
-			//standard acceleration:
-			mo->setVelocity(mo->getVelocity() + Ftot * dt/m);
-
+			//Mtot += CVector(0,100000.0*stuur*dt,0);
 			//standard rotation
-			mo->setAngularVelocity(mo->getAngularVelocity() + dt*Mtot*Iinv);
+			mo->setAngularVelocity(mo->getAngularVelocity() + Iinv * Mtot * dt + CVector(0, 10.0*stuur*dt, 0) );
 		}
 		else
 			{printf("Error: object %d is not a car\n", i);}

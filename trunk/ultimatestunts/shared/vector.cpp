@@ -40,12 +40,14 @@ CVector const &CVector::operator*=(CMatrix const &val)
 	return (*this);
 }
 
+/*
 CVector const CVector::operator*(CMatrix const &val) const
 {
 	CVector ret(x,y,z);
 	ret *= val;
 	return ret;
 }
+*/
 
 CVector const &CVector::operator/=(CMatrix const &val)
 {
@@ -58,12 +60,14 @@ CVector const &CVector::operator/=(CMatrix const &val)
 	return (*this);
 }
 
+/*
 CVector const CVector::operator/(CMatrix const &val) const
 {
 	CVector ret(x,y,z);
 	ret /= val;
 	return ret;
 }
+*/
 
 CVector const CVector::operator*(float const &val) const
 	{return CVector(x*val,y*val,z*val);}
@@ -116,6 +120,15 @@ CVector const &CVector::operator+=(CVector const &val)
 	x += val.x;
 	y += val.y;
 	z += val.z;
+
+	return (*this);
+}
+
+CVector const &CVector::operator-=(CVector const &val)
+{
+	x -= val.x;
+	y -= val.y;
+	z -= val.z;
 
 	return (*this);
 }

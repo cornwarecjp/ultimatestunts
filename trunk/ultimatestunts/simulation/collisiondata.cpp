@@ -120,97 +120,125 @@ void CCollisionData::ObjTrackBoundTest(int n)
 {
 	CMovingObject *o = m_World->m_MovObjs[n];
 	CVector pos = o->getPosition();
-	CVector mom = o->getVelocity() * o->m_Mass;
-	//TODO: per body collision
-	//for(unsigned int i=0; i<o->m_Bodies.size(); i++)
-	int i=0;
+	CVector mom = o->getVelocity() / o->m_InvMass;
+
+	for(unsigned int i=0; i<o->m_Bodies.size(); i++)
+	{
+		CVector p = pos + o->m_Bodies[i].m_Position;
+		const CBound *b = m_World->m_MovObjBounds[o->m_Bodies[i].m_Body];
+		float r = b->m_BSphere_r;
+
+		if(p.x - r < m_TrackMin.x)
 		{
-			CVector p = pos + o->m_Bodies[i].m_Position;
-			const CBound *b = m_World->m_MovObjBounds[o->m_Bodies[i].m_Body];
-			float r = b->m_BSphere_r;
+			CCollision c;
+			c.nor = CVector(-1,0,0);
+			c.pos = CVector(-r,0,0);
 
-			if(p.x - r < m_TrackMin.x)
-			{
-				CCollision c;
-				c.body = i;
-				c.dp = CVector(-mom.x,0,0);
-				c.dr = CVector(m_TrackMin.x-p.x+r,0,0);
-				c.mat1 = c.mat2 = NULL;
-				c.nor = CVector(-1,0,0);
-				c.pos = CVector(-r,0,0);
+			c.object2 = -1;
+			c.body1 = i;
+			c.body2 = -1;
+			c.mat1 = c.mat2 = 0;
+			c.penetrationDepth = -m_TrackMin.x+p.x-r;
 
-				m_Events[n].isHit = true;
-				m_Events[n].push_back(c);
-			}
-			if(p.y - r < m_TrackMin.y) //fallen through the track
-			{
-				CCollision c;
-				c.body = i;
-				c.dp = CVector(0,-mom.y,0);
-				c.dr = CVector(0,m_TrackMin.y+VERTSIZE-p.y+r,0);
-				c.mat1 = c.mat2 = NULL;
-				c.nor = CVector(0,-1,0);
-				c.pos = CVector(0,-r,0);
+			c.p = mom.x;
 
-				m_Events[n].isHit = true;
-				m_Events[n].push_back(c);
-			}
-			if(p.z - r < m_TrackMin.z)
-			{
-				CCollision c;
-				c.body = i;
-				c.dp = CVector(0,0,-mom.z);
-				c.dr = CVector(0,0,m_TrackMin.z-p.z+r);
-				c.mat1 = c.mat2 = NULL;
-				c.nor = CVector(0,0,-1);
-				c.pos = CVector(0,0,-r);
-
-				m_Events[n].isHit = true;
-				m_Events[n].push_back(c);
-			}
-			if(p.x + r > m_TrackMax.x)
-			{
-				CCollision c;
-				c.body = i;
-				c.dp = CVector(-mom.x,0,0);
-				c.dr = CVector(m_TrackMax.x-p.x-r,0,0);
-				c.mat1 = c.mat2 = NULL;
-				c.nor = CVector(1,0,0);
-				c.pos = CVector(r,0,0);
-
-				m_Events[n].isHit = true;
-				m_Events[n].push_back(c);
-			}
-			if(p.y + r > m_TrackMax.y)
-			{
-				CCollision c;
-				c.body = i;
-				c.dp = CVector(0,-mom.y,0);
-				c.dr = CVector(0,m_TrackMax.y-p.y-r,0);
-				c.mat1 = c.mat2 = NULL;
-				c.nor = CVector(0,1,0);
-				c.pos = CVector(0,r,0);
-
-				m_Events[n].isHit = true;
-				m_Events[n].push_back(c);
-			}
-			if(p.z + r > m_TrackMax.z)
-			{
-				CCollision c;
-				c.body = i;
-				c.dp = CVector(0,0,-mom.z);
-				c.dr = CVector(0,0,m_TrackMax.z-p.z-r);
-				c.mat1 = c.mat2 = NULL;
-				c.nor = CVector(0,0,1);
-				c.pos = CVector(0,0,r);
-
-				m_Events[n].isHit = true;
-				m_Events[n].push_back(c);
-			}
+			m_Events[n].isHit = true;
+			m_Events[n].push_back(c);
 		}
+		if(p.y - r < m_TrackMin.y) //fallen through the track
+		{
+			CCollision c;
+			c.nor = CVector(0,-1,0);
+			c.pos = CVector(0,-r,0);
+
+			c.object2 = -1;
+			c.body1 = i;
+			c.body2 = -1;
+			c.mat1 = c.mat2 = 0;
+
+			c.penetrationDepth = -m_TrackMin.y-VERTSIZE+p.y-r;
+
+			c.p = mom.y;
+
+			m_Events[n].isHit = true;
+			m_Events[n].push_back(c);
+		}
+		if(p.z - r < m_TrackMin.z)
+		{
+			CCollision c;
+			c.nor = CVector(0,0,-1);
+			c.pos = CVector(0,0,-r);
+
+			c.object2 = -1;
+			c.body1 = i;
+			c.body2 = -1;
+			c.mat1 = c.mat2 = 0;
+
+			c.penetrationDepth = -m_TrackMin.z+p.z-r;
+
+			c.p = mom.z;
+
+			m_Events[n].isHit = true;
+			m_Events[n].push_back(c);
+		}
+		if(p.x + r > m_TrackMax.x)
+		{
+			CCollision c;
+			c.nor = CVector(1,0,0);
+			c.pos = CVector(r,0,0);
+
+			c.object2 = -1;
+			c.body1 = i;
+			c.body2 = -1;
+			c.mat1 = c.mat2 = 0;
+
+			c.penetrationDepth = m_TrackMax.x-p.x-r;
+
+			c.p = -mom.x;
+
+			m_Events[n].isHit = true;
+			m_Events[n].push_back(c);
+		}
+		if(p.y + r > m_TrackMax.y)
+		{
+			CCollision c;
+			c.nor = CVector(0,1,0);
+			c.pos = CVector(0,r,0);
+
+			c.object2 = -1;
+			c.body1 = i;
+			c.body2 = -1;
+			c.mat1 = c.mat2 = 0;
+
+			c.penetrationDepth = m_TrackMax.y-p.y-r;
+
+			c.p = -mom.y;
+
+			m_Events[n].isHit = true;
+			m_Events[n].push_back(c);
+		}
+		if(p.z + r > m_TrackMax.z)
+		{
+			CCollision c;
+			c.nor = CVector(0,0,1);
+			c.pos = CVector(0,0,r);
+
+			c.object2 = -1;
+			c.body1 = i;
+			c.body2 = -1;
+			c.mat1 = c.mat2 = 0;
+
+			c.penetrationDepth = m_TrackMax.z-p.z-r;
+
+			c.p = -mom.z;
+
+			m_Events[n].isHit = true;
+			m_Events[n].push_back(c);
+		}
+	}
 }
 
-#define elasticity 0.3
+#define elasticity 0.1
 #define responsefactor (1.0 + elasticity)
 #define dynfriction 100
 
@@ -222,9 +250,8 @@ void CCollisionData::ObjObjTest(int n1, int n2)
 	CVector pos2 = o2->getPosition();
 
 	//TODO: per body collision
-	//for(unsigned int i=0; i<o1->m_Bodies.size(); i++)
-	//	for(unsigned int j=0; j<o2->m_Bodies.size(); j++)
-	int i=0, j=0;
+	for(unsigned int i=0; i<o1->m_Bodies.size(); i++)
+		for(unsigned int j=0; j<o2->m_Bodies.size(); j++)
 		{
 			CVector p1 = pos1 + o1->m_Bodies[i].m_Position;
 			CVector p2 = pos2 + o2->m_Bodies[j].m_Position;
@@ -242,28 +269,28 @@ void CCollisionData::ObjObjTest(int n1, int n2)
 				c1.pos = b1->m_BSphere_r * c1.nor;
 				c2.pos = b2->m_BSphere_r * c2.nor;
 
-				c1.mat1 = c1.mat2 = NULL;
-				c2.mat1 = c1.mat1;
-				c2.mat2 = c1.mat2;
+				c1.mat1 = c1.mat2 = c2.mat1 = c2.mat2 = 0;
 
-				c1.body = i;
-				c2.body = j;
+				c1.object2 = n2;
+				c2.object2 = n1;
+				c1.body1 = i; c1.body2 = j;
+				c2.body1 = j; c2.body2 = i;
 
 				//position correction
-				float dr = 0.5 * (b1->m_BSphere_r + b2->m_BSphere_r - (p2-p1).abs());
-				c1.dr = c1.nor * -dr;
-				c2.dr = c2.nor * -dr;
+				float dr = -0.5 * (b1->m_BSphere_r + b2->m_BSphere_r - (p2-p1).abs());
+				c1.penetrationDepth = dr;
+				c2.penetrationDepth = dr;
 
 				//determine momentum transfer
 				{
-					CVector v1 = o1->getVelocity().component(c1.nor);
-					CVector v2 = o2->getVelocity().component(c1.nor);
-					float m1 = o1->m_Mass;
-					float m2 = o2->m_Mass;
-					CVector vcg = (m1*v1 + m2*v2)/(m1 + m2);
-					c1.dp = responsefactor*m1*(vcg - v1);
+					float v1 = o1->getVelocity().dotProduct(c1.nor);
+					float v2 = o2->getVelocity().dotProduct(c1.nor);
+					float m1 = 1.0 / o1->m_InvMass;
+					float m2 = 1.0 / o2->m_InvMass;
+					float vcg = (m1*v1 + m2*v2)/(m1 + m2);
+					c1.p = responsefactor*m1*(vcg - v1);
 
-					c2.dp = -c1.dp;
+					c2.p = c1.p;
 				}
 
 				m_Events[n1].isHit = true;
@@ -289,8 +316,7 @@ void CCollisionData::ObjTileTest(int nobj, int xtile, int ztile, int htile)
 	CVector prevpos = obj->getPreviousPosition();
 	const CMatrix &ori = obj->getOrientation();
 
-	//for(unsigned int i=0; i<obj->m_Bodies.size(); i++)
-	for(unsigned int i=0; i<1; i++)
+	for(unsigned int i=0; i<obj->m_Bodies.size(); i++)
 	{
 		CVector p = pos + obj->m_Bodies[i].m_Position;
 		CVector pp = prevpos + obj->m_Bodies[i].m_PreviousPosition;
@@ -423,49 +449,73 @@ void CCollisionData::ObjTileTest(int nobj, int xtile, int ztile, int htile)
 				continue;
 			}
 
-			//2.5: calculate penetration depth and collision point
-			CVector coll_pos;
+			//2.5: calculate penetration depth
 			float penetr_depth = 0.0;
+			//CVector coll_pos;
+			//int num_collpoints = 0;
 			for(unsigned int p=0; p < b->m_Points.size(); p++)
 			{
 				float depth = theFace.d - b->m_Points[p].dotProduct(theFace.nor);
 				if(depth > penetr_depth)
-				{
 					penetr_depth = depth;
-					coll_pos = b->m_Points[p];
-				}
+				//if(depth > 0.0)
+				//{
+				//	coll_pos += b->m_Points[p];
+				//	num_collpoints++;
+				//}
 			}
+
+			//for(unsigned int j=0; j < theFace.size(); j++)
+			//	coll_pos += theFace[j];
+
+			//coll_pos *= (1.0 / (num_collpoints + theFace.size()));
 
 			if(m_World->printDebug)
 				m_DebugFile->writel(CString("  ") + (int)tf + ": Collision!!");
 
 			//3: Generate collision info
-			CCollision c;
-
-			c.nor = theFace.nor * ori; //rotate back
-			c.pos = coll_pos * ori; //rotate back
-			c.mat1 = c.mat2 = NULL;
-			c.body = i;
-
-			//position correction
-			c.dr = c.nor * 0.9 * penetr_depth;
-
-			//determine momentum transfer
+			for(unsigned int j=0; j < theFace.size(); j++)
 			{
-				CVector v = obj->getVelocity()
-					+ c.pos.crossProduct(obj->getAngularVelocity()); //or wxr
-				CVector vvert = v.component(c.nor);
-				CVector vhor = v - vvert;
-				float minv = 1.0 / obj->m_Mass;
-				float mrotinv = (c.pos * obj->m_InvMomentInertia).dotProduct(c.pos); //just a guess
-				float meff = 1.0 / (minv + mrotinv);
-				c.dp = -responsefactor*meff*vvert
-				- dynfriction*vhor; //dummy dynamic friction
+				CCollision c;
+
+				//normal+position
+				c.nor = ori * theFace.nor; //rotate back
+				c.pos = ori * theFace[j]; //rotate back
+
+				//Objects+materials
+				c.mat1 = c.mat2 = 0;
+				c.object2 = -1;
+				c.body1 = i;
+				c.body2 = -1;
+
+				//position correction
+				c.penetrationDepth = penetr_depth;
+
+				//determine momentum transfer
+				//TODO: move to physics.cpp
+				{
+					/*
+					CVector v = obj->getVelocity()
+						+ c.pos.crossProduct(obj->getAngularVelocity()); //vlocal = v + r x w
+					CVector vvert = v.component(c.nor);
+					//CVector vhor = v - vvert;
+					float minv = obj->m_InvMass;
+					float mrotinv = (c.pos * obj->m_InvMomentInertia).dotProduct(c.pos); //just a guess
+					float meff = 1.0 / (minv + mrotinv);
+					c.dp = -responsefactor*meff*vvert;
+					//- dynfriction*vhor; //dummy dynamic friction
+					*/
+					CMatrix R1; R1.setCrossProduct(c.pos);
+					float minv = obj->m_InvMass;
+					float minv_eff = minv + c.nor.dotProduct((R1*obj->m_InvMomentInertia*R1) * c.nor);
+					float v_eff = c.nor.dotProduct(-(obj->getVelocity()) + R1 * obj->getAngularVelocity());
+					c.p = responsefactor * v_eff / minv_eff;
+				}
+
+				m_Events[nobj].push_back(c);
 			}
 
 			m_Events[nobj].isHit = true;
-			m_Events[nobj].push_back(c);
-
 		} //for tf
 	} //for i
 

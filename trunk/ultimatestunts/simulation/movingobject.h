@@ -65,7 +65,7 @@ class CMovingObject : public CDynamicObject
 		vector<int> m_Sounds; //The object sounds
 
 		//constant:
-		float m_Mass;
+		float m_InvMass;
 		CMatrix m_InvMomentInertia;
 	protected:
 		CVector m_Position,

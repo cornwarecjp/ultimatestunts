@@ -40,13 +40,15 @@ public:
 	//position relative to body center
 	//normal pointing outwards
 	//momentum transfer to body
-	CVector pos, nor, dp;
+	CVector pos, nor;
 
-	//position correction vector dr = rnew - rold
-	CVector dr;
+	float p; //impulse transfer parallel to normal (no friction)
+	float penetrationDepth;
 
-	const CMaterial *mat1, *mat2; //The two materials
-	int body; //the body that collided
+	//objects & materials. 1 = the object itself 2 = the other object
+	int object2; //the object that collided
+	int body1, body2; //the bodies that collided
+	int mat1, mat2; //The two materials
 };
 
 class CColEvents : public vector<CCollision>

@@ -27,6 +27,7 @@ class CMatrix
 		CMatrix(CMatrix const &val);
 		~CMatrix();
 		void reset();
+		void setCrossProduct(CVector v);
 
 		//Matrix-operations:
 		CMatrix const &operator=(CMatrix const &val);
@@ -34,6 +35,15 @@ class CMatrix
 		CMatrix const &operator/=(CMatrix const &val);
 		CMatrix operator*(CMatrix const &val);
 		CMatrix inverse() const;
+
+		//Multiplication with a vector
+		CVector const operator*(CVector val) const;
+		CVector const operator/(CVector val) const;
+
+		//Multiplication with a scalar
+		CMatrix const operator*(float val) const;
+		CMatrix const operator/(float val) const;
+
 
 		//Special ways to create the right rotation matrix:
 		void  rotX ( float hoek);

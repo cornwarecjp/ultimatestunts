@@ -54,7 +54,7 @@ void CEditCamera::updatePosition()
 	m_Position = CVector(0.0, 0.0, m_Dist);
 
 	//Orientation
-	m_Orientation = CMatrix(CVector(m_YAngle, m_XAngle, 0.0));
+	m_Orientation = CMatrix(CVector(m_YAngle, 0.0, 0.0)) * CMatrix(CVector(0.0, m_XAngle, 0.0));
 	m_Position *= m_Orientation;
 
 	//Origin

@@ -250,7 +250,7 @@ install_location=
 type=DATA
 
 [shared/Makefile.am]
-files=shared/hello.cpp,shared/hello.h,shared/matrix.cpp,shared/matrix.h,shared/vector.cpp,shared/vector.h,shared/binbuffer.h,shared/cstring.h,shared/binbuffer.cpp,shared/usmacros.h,shared/timer.cpp,shared/timer.h,shared/bthread.h,shared/ipnumber.h,shared/ipnumber.cpp,shared/cstring.cpp,shared/cfile.cpp,shared/cfile.h,shared/lconfig.cpp,shared/lconfig.h,shared/datafile.cpp,shared/datafile.h,shared/filecontrol.h
+files=shared/hello.cpp,shared/hello.h,shared/matrix.cpp,shared/matrix.h,shared/vector.cpp,shared/vector.h,shared/binbuffer.h,shared/cstring.h,shared/binbuffer.cpp,shared/usmacros.h,shared/timer.cpp,shared/timer.h,shared/bthread.h,shared/ipnumber.h,shared/ipnumber.cpp,shared/cstring.cpp,shared/cfile.cpp,shared/cfile.h,shared/lconfig.cpp,shared/lconfig.h,shared/datafile.cpp,shared/datafile.h,shared/filecontrol.h,shared/generalmatrix.cpp,shared/generalmatrix.h
 sub_dirs=
 type=static_library
 
@@ -309,6 +309,18 @@ install_location=
 type=HEADER
 
 [shared/filecontrol.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[shared/generalmatrix.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[shared/generalmatrix.h]
 dist=true
 install=false
 install_location=

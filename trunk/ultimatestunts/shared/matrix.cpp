@@ -123,6 +123,39 @@ CMatrix const &CMatrix::operator/=(CMatrix const &val)
 	return (*this);
 }
 
+CVector const CMatrix::operator*(CVector val) const
+{
+	return CVector(
+		Element(0,0)*val.x + Element(1,0)*val.y + Element(2,0)*val.z,
+		Element(0,1)*val.x + Element(1,1)*val.y + Element(2,1)*val.z,
+		Element(0,2)*val.x + Element(1,2)*val.y + Element(2,2)*val.z
+		);
+}
+
+CVector const CMatrix::operator/(CVector val) const
+{
+	return CVector(
+		Element(0,0)*val.x + Element(0,1)*val.y + Element(0,2)*val.z,
+		Element(1,0)*val.x + Element(1,1)*val.y + Element(1,2)*val.z,
+		Element(2,0)*val.x + Element(2,1)*val.y + Element(2,2)*val.z
+		);
+}
+
+CMatrix const CMatrix::operator*(float val) const
+{
+	CMatrix ret = *this;
+	for(unsigned int i=0; i<2; i++)
+		for(unsigned int j=0; j<2; j++)
+			ret.setElement(i, j, ret.Element(i,j) * val);
+
+	return ret;
+}
+
+CMatrix const CMatrix::operator/(float val) const
+{
+	return (*this) * (1.0/val);
+}
+
 CMatrix CMatrix::operator*(CMatrix const &val)
 {
 	CMatrix temp;
@@ -212,6 +245,13 @@ void CMatrix::reset()
                 setElement(i, j, 0.0);
         }
     }
+}
+
+void CMatrix::setCrossProduct(CVector v)
+{
+	setElement(0,0,0.0); setElement(0,1,-v.z); setElement(0,2,v.y);
+	setElement(1,0,v.z); setElement(1,1,0.0); setElement(1,2,-v.x);
+	setElement(2,0,-v.y); setElement(2,1,v.x); setElement(2,2,0.0);
 }
 
 CMatrix CMatrix::inverse() const

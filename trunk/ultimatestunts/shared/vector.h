@@ -27,10 +27,8 @@ class CVector
 
 		//Multiplication with matrix
 		CVector const &operator*=(CMatrix const &val);
-		CVector const operator*(CMatrix const &val) const;
 		//multiplication with semi-inverse matrix
 		CVector const &operator/=(CMatrix const &val);
-		CVector const operator/(CMatrix const &val) const;
 
 		//scalar multiplication/division
 		CVector const operator*(float const &val) const;
@@ -42,6 +40,7 @@ class CVector
 		CVector const operator+(CVector const &val) const;
 		CVector const operator-(CVector const &val) const;
 		CVector const &operator+=(CVector const &val);
+		CVector const &operator-=(CVector const &val);
 		CVector const operator-() const;
 
 		//vector multiplication
