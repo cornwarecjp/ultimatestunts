@@ -43,24 +43,20 @@ public:
 	bool loadMovObjs(CString filename);
 	void unloadMovObjs();
 
-protected:
-	virtual CShape *createShape();
-	virtual CBound *createBound();
-	virtual CMaterial *createMaterial();
-	virtual bool loadBackground(const CString &descr);
-
 	vector<CShape *>m_TileShapes;
 	vector<CBound *>m_MovObjBounds;
 
 	vector<CMaterial *> m_TileMaterials;
 	vector<CMaterial *> m_MovObjMaterials;
 
+	CString getBackgroundFilename() const
+		{return m_BackgroundFilename;}
+
+protected:
 	CMaterial **getMaterialSubset(CString indices);
 
 	CString m_DataDir;
-	int m_TexMaxSize;
-	int m_BackgroundSize;
-	bool m_TexSmooth;
+	CString m_BackgroundFilename;
 };
 
 #endif

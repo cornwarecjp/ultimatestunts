@@ -1,5 +1,5 @@
 /***************************************************************************
-                          graphicworld.h  -  A graphical version of a world object
+                          graphicworld.h  -  Graphical world data
                              -------------------
     begin                : do jan 16 2003
     copyright            : (C) 2003 by CJP
@@ -18,6 +18,8 @@
 #ifndef GRAPHICWORLD_H
 #define GRAPHICWORLD_H
 
+#include "texture.h"
+#include "graphobj.h"
 #include "background.h"
 #include "world.h"
 
@@ -25,17 +27,31 @@
   *@author CJP
   */
 
-class CGraphicWorld : public CWorld  {
+class CGraphicWorld
+{
 public: 
-	CGraphicWorld(const CLConfig &conf);
+	CGraphicWorld(const CWorld *world, const CLConfig &conf);
 	virtual ~CGraphicWorld();
+
+	bool loadWorld();
+	void unloadWorld();
+	bool loadObjects();
+	void unloadObjects();
+
+	vector<CGraphObj> m_Tiles;
+	vector<CGraphObj> m_MovingObjects;
 
 	CBackground m_Background;
 protected:
-	virtual CShape *createShape();
-	virtual CBound *createBound();
-	virtual CMaterial *createMaterial();
-	virtual bool loadBackground(const CString &descr);
+	CTexture **getTextureSubset(CString indices);
+
+	vector<CTexture> m_TileTextures;
+	vector<CTexture> m_MovingObjectTextures;
+
+	const CWorld *m_World;
+	int m_TexMaxSize;
+	int m_BackgroundSize;
+	bool m_TexSmooth;
 };
 
 #endif

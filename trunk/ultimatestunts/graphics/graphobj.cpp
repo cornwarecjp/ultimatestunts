@@ -48,7 +48,7 @@ CGraphObj::~CGraphObj()
 	//TODO: remove display list when needed
 }
 
-bool CGraphObj::loadFromFile(CString filename, CMaterial **matarray)
+bool CGraphObj::loadFromFile(CString filename, CTexture **matarray)
 {
 	for(int lod=1; lod<5; lod++)
 	{
@@ -92,7 +92,7 @@ bool CGraphObj::loadFromFile(CString filename, CMaterial **matarray)
 					int t = (int)line.toFloat();
 
 					//printf("  Using texture %d\n", t);
-					CTexture *tex = (CGraphicMaterial *)(*(matarray+t));
+					CTexture *tex = *(matarray+t);
 					if(tex->getSizeX(lod) <=4 || tex->getSizeY(lod) <= 4)
 					{
 						if(texture_isenabled)

@@ -29,7 +29,7 @@
 #include "lconfig.h"
 
 //Simulation stuff
-#include "graphicworld.h"
+#include "world.h"
 #include "simulation.h"
 #include "clientsim.h"
 #include "physics.h"
@@ -48,7 +48,7 @@
 //Sound stuff
 #include "sound.h"
 
-CGraphicWorld *world;
+CWorld *world;
 
 vector<CPlayer *> players;
 
@@ -139,7 +139,7 @@ int main(int argc, char *argv[])
 	printf("\nCreating a window\n");
 	winsys = new CWinSystem(conffile);
 
-	world = new CGraphicWorld(conffile);
+	world = new CWorld(conffile);
 
 	printf("\nSetting up the GUI:\n");
 	gui = new CGUI(conffile, winsys);
@@ -178,6 +178,7 @@ int main(int argc, char *argv[])
 
 	printf("\nInitialising the rendering engine\n");
 	renderer = new CRenderer(conffile, world);
+	renderer->loadTrackData();
 	camera = new CGameCamera(world);
 	renderer->setCamera(camera);
 
@@ -194,6 +195,9 @@ int main(int argc, char *argv[])
 	printf("\nLoading moving objects\n");
 	if(!sim->loadObjects())
 		{printf("Error while loading moving objects\n");}
+	if(!renderer->loadObjData())
+		{printf("Error while loading object graphics\n");}
+
 
 	printf("\nLoading the sound samples\n");
 	soundsystem->load();

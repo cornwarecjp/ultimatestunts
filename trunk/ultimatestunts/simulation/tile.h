@@ -27,10 +27,10 @@
 
 class CTile {
 public: 
-	CTile();
-	~CTile();
+	//CShape *m_Shape;
 
-	CShape *m_Shape;
+	int m_Shape;
+
 	int m_Z, m_R; //height, orientation. 0 <= m_R <= 3
 };
 

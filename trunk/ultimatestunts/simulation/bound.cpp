@@ -24,5 +24,6 @@ CBound::~CBound(){
 
 bool CBound::loadFromFile(CString filename, CMaterial **matarray)
 {
+	m_Filename = filename;
 	return true; //TODO: really load it
 }

@@ -26,11 +26,20 @@
 
 class CMaterial {
 public:
+	virtual ~CMaterial(){;}
 
-	//as if it were a texture:
-	virtual void setTextureSmooth(bool texture_smooth){;}
-	virtual bool loadFromFile(CString filename, int xs, int ys)
-		{return true;}
+	virtual bool loadFromFile(CString filename, int mul)
+		{m_Filename = filename; m_Mul = mul; return true;}
+
+	CString getFilename()
+		{return m_Filename;}
+
+	int getTextureMul()
+		{return m_Mul;}
+
+protected:
+	CString m_Filename; //Texture filename
+	int m_Mul; //texture size multiplier
 };
 
 #endif

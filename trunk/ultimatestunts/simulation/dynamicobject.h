@@ -34,7 +34,7 @@ public:
 
 	CMessage *m_InputData;
 
-	CBound *m_Bound;
+	int m_Bound;
 };
 
 #endif

@@ -22,7 +22,10 @@ CShape::CShape(){
 CShape::~CShape(){
 }
 
-bool CShape::loadFromFile(CString filename, CMaterial **matarray)
+bool CShape::loadFromFile(CString filename, CString subset, CMaterial **matarray)
 {
+	m_Filename = filename;
+	m_Subset = subset;
+
 	return true; //TODO: really load it
 }

@@ -17,7 +17,7 @@
 #ifndef GRAPHOBJ_H
 #define GRAPHOBJ_H
 
-#include "graphicmaterial.h"
+#include "texture.h"
 #include "cstring.h"
 
 class CGraphObj
@@ -25,7 +25,7 @@ class CGraphObj
 	public:
 		CGraphObj();
 		virtual ~CGraphObj();
-		virtual bool loadFromFile(CString filename, CMaterial **matarray);
+		virtual bool loadFromFile(CString filename, CTexture **matarray);
 
 		void draw(int lod);
 	protected:

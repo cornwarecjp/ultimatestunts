@@ -22,9 +22,8 @@
 
 CWorld::CWorld(const CLConfig &conf)
 {
-	//Defaults:
+	//Default:
 	m_DataDir = ""; //try in default directories, like "./"
-	m_TexMaxSize = 1024;
 
 	CString cnf = conf.getValue("files", "datadir");
 	if(cnf != "")
@@ -32,17 +31,6 @@ CWorld::CWorld(const CLConfig &conf)
 		if(cnf[cnf.length()-1] != '/') cnf += '/';
 		m_DataDir = cnf;
 	}
-
-	cnf = conf.getValue("graphics", "texture_maxsize");
-	if(cnf != "")
-		m_TexMaxSize = cnf.toInt();
-
-	cnf = conf.getValue("graphics", "background_size");
-	if(cnf != "")
-		m_BackgroundSize = cnf.toInt();
-
-	cnf = conf.getValue("graphics", "texture_smooth");
-	m_TexSmooth = (cnf != "false");
 }
 
 CWorld::~CWorld(){
@@ -86,19 +74,16 @@ bool CWorld::loadTrack(CString filename)
 		}
 
 		line = m_DataDir + line;
-		int xs = m_TexMaxSize / mul;
-		int ys = m_TexMaxSize / mul;
-		printf("Loading %s with mul %d\n", line.c_str(), mul);
-		CMaterial *m = createMaterial();
-		m->setTextureSmooth(m_TexSmooth);
-		m->loadFromFile(line, xs, ys); //Only useful for textures
-		//TODO: set friction coefficients
+		//printf("Loading %s with mul=%d\n", line.c_str(), mul);
+		CMaterial *m = new CMaterial;
+		m->loadFromFile(line, mul);
+		//TODO: set friction coefficients etc.
 		m_TileMaterials.push_back(m);
 	}
-	printf("\nLoaded %d textures\n\n", m_TileMaterials.size());
+	printf("\nLoaded %d materials\n\n", m_TileMaterials.size());
 
 	while(tfile.readl() != "BEGIN"); //Begin of background section
-	loadBackground(m_DataDir + tfile.readl());
+	m_BackgroundFilename = m_DataDir + tfile.readl();
 
 	//Second: loading collision (and graphics) data
 	while(tfile.readl() != "BEGIN"); //begin of tiles section
@@ -116,11 +101,11 @@ bool CWorld::loadTrack(CString filename)
 		}
 
 		line = m_DataDir + line;
-		CShape *b = createShape();
+		CShape *b = new CShape;
 
 		CMaterial **subset = getMaterialSubset(texture_indices);
-		printf("Loading %s\n", line.c_str());
-		b->loadFromFile(line, subset);
+		//printf("Loading %s\n", line.c_str());
+		b->loadFromFile(line, texture_indices, subset);
 		delete [] subset;
 
 		m_TileShapes.push_back(b);
@@ -144,7 +129,8 @@ bool CWorld::loadTrack(CString filename)
 				int tp = line.inStr('\t');
 				line = line.mid(tp+1, line.length());
 				CTile t;
-				t.m_Shape = m_TileShapes[line.toInt()];
+				//t.m_Shape = m_TileShapes[line.toInt()];
+				t.m_Shape = line.toInt();
 				line = line.mid(line.inStr('/')+1, line.length());
 				t.m_R = line.toInt();
 				line = line.mid(line.inStr('/')+1, line.length());
@@ -211,7 +197,7 @@ bool CWorld::loadMovObjs(CString filename)
 
 	//Second: loading collision (and graphics) data
 	//For example:
-	CBound *b = createBound();
+	CBound *b = new CBound;
 	b->loadFromFile(m_DataDir + "cars/default.gl", NULL);
 	m_MovObjBounds.push_back(b);
 
@@ -223,7 +209,7 @@ bool CWorld::loadMovObjs(CString filename)
 		if(m->getType() != CMessageBuffer::car)
 			printf("Error: created car is not a car!\n");
 
-		m->m_Bound = m_MovObjBounds[0]; //for example
+		m->m_Bound = 0; //for example
 		m_MovObjs.push_back(m);
 
 		int s = m_MovObjs.size();
@@ -268,20 +254,6 @@ void CWorld::unloadMovObjs()
 		m_MovObjMaterials.clear();
 	}
 
-}
-
-CShape *CWorld::createShape()
-{return new CShape;}
-
-CBound *CWorld::createBound()
-{return new CBound;}
-
-CMaterial *CWorld::createMaterial()
-{return new CMaterial;}
-
-bool CWorld::loadBackground(const CString &descr)
-{
-	return true; //Do nothing: the graphic version overload loads the background
 }
 
 CMaterial **CWorld::getMaterialSubset(CString indices)

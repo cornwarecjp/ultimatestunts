@@ -31,6 +31,12 @@ public:
 	virtual ~CBound();
 
 	virtual bool loadFromFile(CString filename, CMaterial **matarray);
+
+	CString getFilename()
+		{return m_Filename;}
+
+protected:
+	CString m_Filename;
 };
 
 #endif

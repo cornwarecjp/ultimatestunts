@@ -30,17 +30,24 @@
 
 class CRenderer {
 public: 
-	CRenderer(const CLConfig &conf, const CGraphicWorld *world);
+	CRenderer(const CLConfig &conf, const CWorld *world);
 	~CRenderer();
 
 	void setCamera(const CCamera *cam);
+
+	bool loadTrackData();
+	void unloadTrackData();
+	bool loadObjData();
+	void unloadObjData();
 
 	void update();
 	void viewBackground();
 	void viewCar(CCar *car);
 	void viewPilaar(int x, int y, int cur_zpos);
 protected:
-	const CGraphicWorld *m_World;
+	const CWorld *m_World;
+	CGraphicWorld *m_GraphicWorld;
+
 	const CCamera *m_Camera;
 
 	float *m_FogColor;

@@ -33,7 +33,7 @@ public:
 
 	//CRuleStatus m_RuleStatus;
 
-	CBound *m_Body, *m_FrontWheel, *m_BackWheel;
+	int m_Body, m_FrontWheel, m_BackWheel;
 };
 
 #endif

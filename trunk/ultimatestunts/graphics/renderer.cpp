@@ -19,29 +19,17 @@
 #include <GL/gl.h>
 
 #include "renderer.h"
-#include "graphicshape.h"
-#include "graphicbound.h"
 #include "usmacros.h"
 
 //TODO: put this into the class
 int camx, camy, camz;
 int lengte, breedte, hoogte;
 
-CRenderer::CRenderer(const CLConfig &conf, const CGraphicWorld *world)
+CRenderer::CRenderer(const CLConfig &conf, const CWorld *world)
 {
 	m_World = world;
-
-	lengte = m_World->m_L;
-	breedte = m_World->m_W;
-	hoogte = m_World->m_H;
-
-	CVector fc = world->m_Background.getColor();
+	m_GraphicWorld = new CGraphicWorld(world, conf);
 	m_FogColor = new float[4];
-	m_FogColor[0] = fc.x;
-	m_FogColor[1] = fc.y;
-	m_FogColor[2] = fc.z;
-	m_FogColor[3] = 1.0;
-	glClearColor(	m_FogColor[0],m_FogColor[1],m_FogColor[2],m_FogColor[3]);
 
 	//Default values:
 	m_UseBackground = true;
@@ -104,7 +92,6 @@ CRenderer::CRenderer(const CLConfig &conf, const CGraphicWorld *world)
 		glFogf(GL_FOG_DENSITY, 2.0/(float)(TILESIZE*m_VisibleTiles));
 		glFogi(GL_FOG_START, 0);
 		glFogi(GL_FOG_END, TILESIZE*m_VisibleTiles);
-		glFogfv(GL_FOG_COLOR, m_FogColor);
 	}
 
 	if(m_TexSmooth)
@@ -135,13 +122,54 @@ CRenderer::CRenderer(const CLConfig &conf, const CGraphicWorld *world)
 	glEnable(GL_CULL_FACE);
 }
 
-void CRenderer::setCamera(const CCamera *cam)
-{m_Camera = cam;}
-
 CRenderer::~CRenderer()
 {
+	unloadTrackData();
+	delete m_GraphicWorld;
 	delete [] m_FogColor;
 }
+
+bool CRenderer::loadTrackData()
+{
+	if(m_GraphicWorld->loadWorld())
+	{
+		lengte = m_World->m_L;
+		breedte = m_World->m_W;
+		hoogte = m_World->m_H;
+
+		CVector fc = m_GraphicWorld->m_Background.getColor();
+		m_FogColor[0] = fc.x;
+		m_FogColor[1] = fc.y;
+		m_FogColor[2] = fc.z;
+		m_FogColor[3] = 1.0;
+		glClearColor(	m_FogColor[0],m_FogColor[1],m_FogColor[2],m_FogColor[3]);
+
+		if(m_FogMode >= 0)
+			glFogfv(GL_FOG_COLOR, m_FogColor);
+
+		return true;
+	}
+
+	return false;
+}
+
+void CRenderer::unloadTrackData()
+{
+	m_GraphicWorld->unloadWorld();
+}
+
+bool CRenderer::loadObjData()
+{
+	return m_GraphicWorld->loadObjects();
+}
+
+void CRenderer::unloadObjData()
+{
+	m_GraphicWorld->unloadObjects();
+}
+
+void CRenderer::setCamera(const CCamera *cam)
+{m_Camera = cam;}
 
 void CRenderer::update()
 {
@@ -245,7 +273,7 @@ void CRenderer::viewBackground()
 	if(m_ZBuffer)
 		glDisable(GL_DEPTH_TEST);
 
-	m_World->m_Background.draw();
+	m_GraphicWorld->m_Background.draw();
 
 	if(m_FogMode != -1)
 		glEnable(GL_FOG);
@@ -265,7 +293,7 @@ void CRenderer::viewCar(CCar *car)
 	glTranslatef (r.x, r.y, r.z);
 	glMultMatrixf(m.gl_mtr());
 
-	( (CGraphicBound *)(car->m_Bound) )->draw(1); //TODO: LOD
+	m_GraphicWorld->m_MovingObjects[car->m_Bound].draw(1); //TODO: LOD
 	//TODO: other CBound members
 
 	glPopMatrix();
@@ -354,7 +382,8 @@ void CRenderer::viewPilaar(int x, int y, int cur_zpos)
 					}
 
 					//tekenen
-					((CGraphicShape *)(temp.m_Shape))->draw(lod);
+					//((CGraphicShape *)(temp.m_Shape))->draw(lod);
+					m_GraphicWorld->m_Tiles[temp.m_Shape].draw(lod);
 				}
 				break;
 			}
@@ -371,7 +400,8 @@ void CRenderer::viewPilaar(int x, int y, int cur_zpos)
 			}
 
 			//tekenen
-			((CGraphicShape *)(temp.m_Shape))->draw(lod);
+			//((CGraphicShape *)(temp.m_Shape))->draw(lod);
+			m_GraphicWorld->m_Tiles[temp.m_Shape].draw(lod);
 		}
 
 	glPopMatrix();

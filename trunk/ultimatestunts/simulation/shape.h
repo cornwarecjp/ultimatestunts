@@ -30,7 +30,17 @@ public:
 	CShape();
 	virtual ~CShape();
 
-	virtual bool loadFromFile(CString filename, CMaterial ** matarray);
+	virtual bool loadFromFile(CString filename, CString subset, CMaterial ** matarray);
+
+	CString getFilename()
+		{return m_Filename;}
+
+	CString getSubset()
+		{return m_Subset;}
+
+protected:
+	CString m_Filename;
+	CString m_Subset;
 };
 
 #endif
