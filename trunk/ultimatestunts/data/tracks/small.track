@@ -21,11 +21,11 @@ environment/spheremap.rgb
 END
 
 BEGIN
-tiles/empty.gl 0
-tiles/horiz.gl 0
-tiles/corner.gl 0 1
-tiles/roadhoriz.gl 0 1
-tiles/startfinish.gl:sf 0 1 2 3
+tiles/empty.glb 0
+tiles/horiz.glb 0
+tiles/corner.glb 0 1
+tiles/roadhoriz.glb 0 1
+tiles/startfinish.glb:sf 0 1 2 3
 END
 
 #tile_id/rotation/heigth

@@ -27,27 +27,27 @@ environment/spheremap.rgb
 END
 
 BEGIN
-tiles/empty.gl 0
-tiles/horiz.gl 0
-tiles/corner.gl 0 1
-tiles/roadhoriz.gl 0 1
-tiles/startfinish.gl:sf 0 1 2 3
-tiles/diag2.gl 0
-tiles/roaddiag.gl 0 1
-tiles/diag1.gl 0
-tiles/jump1.gl 0 4 2
-tiles/bridgeroad1.gl 4 5
-tiles/splitsleft1.gl 0 1 7
-tiles/splitsright1.gl 0 1 7
-tiles/tunnelin1.gl 0 4 6 2
-tiles/tunnelhoriz.gl 4 6 2
-tiles/trench1.gl 0 8
-tiles/trenche.gl 0 8
-tiles/trench2.gl 0 8 9
-tiles/trench3.gl 0 8 9
-tiles/trench1c.gl 0 8 9
-tiles/trench2c.gl 0 8 9
-tiles/trench3c.gl 0 8 9
+tiles/empty.glb 0
+tiles/horiz.glb 0
+tiles/corner.glb 0 1
+tiles/roadhoriz.glb 0 1
+tiles/startfinish.glb:sf 0 1 2 3
+tiles/diag2.glb 0
+tiles/roaddiag.glb 0 1
+tiles/diag1.glb 0
+tiles/jump1.glb 0 4 2
+tiles/bridgeroad1.glb 4 5
+tiles/splitsleft1.glb 0 1 7
+tiles/splitsright1.glb 0 1 7
+tiles/tunnelin1.glb 0 4 6 2
+tiles/tunnelhoriz.glb 4 6 2
+tiles/trench1.glb 0 8
+tiles/trenche.glb 0 8
+tiles/trench2.glb 0 8 9
+tiles/trench3.glb 0 8 9
+tiles/trench1c.glb 0 8 9
+tiles/trench2c.glb 0 8 9
+tiles/trench3c.glb 0 8 9
 END
 
 #tile_id/rotation/heigth

@@ -30,25 +30,25 @@ environment/spheremap.rgb
 END
 
 BEGIN
-tiles/empty.gl 0
-tiles/horiz.gl 0
-tiles/corner.gl 0 1
-tiles/roadhoriz.gl 0 1
-tiles/startfinish.gl:sf 0 1 2 3
-tiles/diag2.gl 0
-tiles/roaddiag.gl 0 1
-tiles/splitsleft1.gl 0 1 4
-tiles/splitsright1.gl 0 1 4
-tiles/hotel.gl 0 5 6 8 7
-tiles/jump1.gl 0 9 2
-tiles/pipe1.gl 0 9 10 11
-tiles/pipein1.gl 0 9 10
-tiles/looping-bottom.gl 0 9 2
-tiles/looping-mid.gl 9
-tiles/looping-top.gl 9
-tiles/diag1.gl 0
-tiles/tunnelin1.gl 0 9 12 2
-tiles/tunnelhoriz.gl 9 12 2
+tiles/empty.glb 0
+tiles/horiz.glb 0
+tiles/corner.glb 0 1
+tiles/roadhoriz.glb 0 1
+tiles/startfinish.glb:sf 0 1 2 3
+tiles/diag2.glb 0
+tiles/roaddiag.glb 0 1
+tiles/splitsleft1.glb 0 1 4
+tiles/splitsright1.glb 0 1 4
+tiles/hotel.glb 0 5 6 8 7
+tiles/jump1.glb 0 9 2
+tiles/pipe1.glb 0 9 10 11
+tiles/pipein1.glb 0 9 10
+tiles/looping-bottom.glb 0 9 2
+tiles/looping-mid.glb 9
+tiles/looping-top.glb 9
+tiles/diag1.glb 0
+tiles/tunnelin1.glb 0 9 12 2
+tiles/tunnelhoriz.glb 9 12 2
 END
 
 #tile_id/rotation/heigth
