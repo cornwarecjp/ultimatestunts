@@ -30,8 +30,9 @@
 #include "world.h"
 
 #include "objectchoice.h"
-
 #include "aiplayercar.h"
+
+#include "lconfig.h"
 
 CWorld *world;
 CPlayer *player1, *player2, *player3;
@@ -67,10 +68,13 @@ int main(int argc, char *argv[])
 	char inpbuffer[80];
 	printf("Welcome to the " PACKAGE " server version " VERSION "\n");
 
-	printf("\nCreating world object\n");
-	world = new CWorld;
+	CLConfig conffile;
+	conffile.setFilename("ultimatestunts.conf");
 
-	world->loadTrack("not_yet.track");
+	printf("\nCreating world object\n");
+	world = new CWorld(conffile);
+
+	world->loadTrack("tracks/default.track");
 
 	printf("\nDo you want to use the server to act as a client? (y/n)");
 	scanf("%s", inpbuffer);

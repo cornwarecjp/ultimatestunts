@@ -31,6 +31,9 @@ CTimer::~CTimer(){
 float CTimer::getdt()
 {
 	float t = getTime();
+	if(t < m_PreviousTime) //time variable wrapped
+		{m_PreviousTime = t; return 0;}
+
 	float dt = t - m_PreviousTime;
 	m_PreviousTime = t;
 	return dt;
@@ -43,7 +46,6 @@ float CTimer::getF()
 
 float CTimer::getTime()
 {
-	//Tijd:
 	struct timeval tv;
 	struct timezone tz;
 	gettimeofday(&tv, &tz);

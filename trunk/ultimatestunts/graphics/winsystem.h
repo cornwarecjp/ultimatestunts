@@ -33,7 +33,11 @@ public:
 	int runLoop( bool (CALLBACKFUN *loopfunc)() );
 
 protected:
+	int m_W, m_H, m_BPP;
+	Uint32 m_Flags;
 	void reshape(int w, int h);
+
+	int m_VisibleTiles;
 };
 
 #endif

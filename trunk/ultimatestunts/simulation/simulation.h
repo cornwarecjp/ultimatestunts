@@ -35,16 +35,18 @@ public:
 	CSimulation(CWorld *w);
 	virtual ~CSimulation();
 
-  virtual int addPlayer(CObjectChoice choice);
-  virtual bool loadObjects();
+	//player init:
+	virtual int addPlayer(CObjectChoice choice);
+	virtual bool loadObjects();
 
-  virtual bool Update() =0;
+	//while playing:
+	virtual bool Update() =0;
 
 protected:
 
   //Services of the base-class; derived classes don't have to use these
-  vector<CObjectChoice> m_LocalChoices;
-  CWorld *m_World;
+	vector<CObjectChoice> m_LocalChoices;
+	CWorld *m_World;
 };
 
 #endif

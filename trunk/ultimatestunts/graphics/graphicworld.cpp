@@ -1,7 +1,7 @@
 /***************************************************************************
-                          graphicmaterial.h  -  A material and a texture
+                          graphicworld.cpp  -  A graphical version of a world object
                              -------------------
-    begin                : ma jan 27 2003
+    begin                : do jan 16 2003
     copyright            : (C) 2003 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
@@ -14,18 +14,28 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#ifndef GRAPHICMATERIAL_H
-#define GRAPHICMATERIAL_H
+#include <stdio.h>
 
-#include "material.h"
-#include "texture.h"
+#include "graphicshape.h"
+#include "graphicbound.h"
+#include "graphicmaterial.h"
 
-class CGraphicMaterial : public CMaterial, public CTexture
+#include "car.h"
+
+#include "graphicworld.h"
+
+CGraphicWorld::CGraphicWorld(const CLConfig &conf) : CWorld(conf)
 {
-public:
-	virtual bool loadFromFile(CString filename, int xs, int ys)
-		//{return CTexture::loadFromFile(filename, xs, ys);}
-		{return true;}
-};
+}
 
-#endif
+CGraphicWorld::~CGraphicWorld(){
+}
+
+CShape *CGraphicWorld::createShape()
+{return new CGraphicShape;}
+
+CBound *CGraphicWorld::createBound()
+{return new CGraphicBound;}
+
+CMaterial *CGraphicWorld::createMaterial()
+{return new CGraphicMaterial;}

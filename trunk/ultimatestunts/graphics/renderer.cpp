@@ -1,7 +1,7 @@
 /***************************************************************************
-                          graphicworld.cpp  -  A graphical version of a world object
+                          renderer.cpp  -  The graphics rendering routines
                              -------------------
-    begin                : do jan 16 2003
+    begin                : di jan 28 2003
     copyright            : (C) 2003 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
@@ -15,25 +15,20 @@
  *                                                                         *
  ***************************************************************************/
 #include <stdio.h>
+#include <GL/gl.h>
 
-#include "graphicshape.h"
-#include "graphicbound.h"
-#include "graphicmaterial.h"
+#include "renderer.h"
 
-#include "car.h"
-
-#include "graphicworld.h"
-
-CGraphicWorld::CGraphicWorld(){
-}
-CGraphicWorld::~CGraphicWorld(){
+CRenderer::CRenderer(const CLConfig &conf, CGraphicWorld *world)
+{
+	printf("Renderer created\n");
+	m_World = world;
 }
 
-CShape *CGraphicWorld::createShape()
-{return new CGraphicShape;}
+CRenderer::~CRenderer(){
+}
 
-CBound *CGraphicWorld::createBound()
-{return new CGraphicBound;}
-
-CMaterial *CGraphicWorld::createMaterial()
-{return new CGraphicMaterial;}
+void CRenderer::Update()
+{
+	printf("Yeah! I'm updating the graphics!\n");
+}

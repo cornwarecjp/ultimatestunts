@@ -1,8 +1,8 @@
 /***************************************************************************
-                          graphics.cpp  -  dummy file
+                          renderer.h  -  The graphics rendering routines
                              -------------------
-    begin                : Wed Nov 20 2002
-    copyright            : (C) 2002 by CJP
+    begin                : di jan 28 2003
+    copyright            : (C) 2003 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
 
@@ -14,15 +14,25 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#include <stdio.h>
 
-#include "graphics.h"
+#ifndef RENDERER_H
+#define RENDERER_H
 
-hello::hello(){
-}
-hello::~hello(){
-}
-void hello::writeHello()
-{
-  printf("Hello, world!\n");
-}
+#include "lconfig.h"
+#include "graphicworld.h"
+
+/**
+  *@author CJP
+  */
+
+class CRenderer {
+public: 
+	CRenderer(const CLConfig &conf, CGraphicWorld *world);
+	~CRenderer();
+
+	void Update();
+protected:
+	CGraphicWorld *m_World;
+};
+
+#endif

@@ -16,7 +16,7 @@
  ***************************************************************************/
 
 #include <GL/gl.h>
-#include "SDL/SDL.h"
+#include <SDL/SDL.h>
 
 #include <stdio.h>
 
@@ -27,43 +27,52 @@ SDL_Surface *screen;
 CWinSystem::CWinSystem(const CLConfig &conf)
 {
 	//Default values:
-	Uint32 flags = SDL_OPENGL|SDL_RESIZABLE;
-	int w = 640, h = 480, bpp = 24;
+	m_Flags = SDL_OPENGL|SDL_RESIZABLE;
+	m_W = 640;
+	m_H = 480;
+	m_BPP = 24;
+	m_VisibleTiles = 20;
 
-	CString cnf_display = conf.getValue("graphics","display");
-	printf("Display variable: \"%s\"\n", cnf_display.c_str());
-	unsigned int pos = cnf_display.inStr(':');
-	if(pos > 0 && pos < cnf_display.length()-1) //There is a ':' in cnf_display
+
+	//Display variable:
+	CString cnf = conf.getValue("graphics","display");
+	printf("Display variable: \"%s\"\n", cnf.c_str());
+	unsigned int pos = cnf.inStr(':');
+	if(pos > 0 && pos < cnf.length()-1) //There is a ':' in cnf_display
 	{
-		CString s = cnf_display.mid(pos+1, cnf_display.length()-pos);
-		cnf_display = cnf_display.mid(0, pos);
-
-
+		CString s = cnf.mid(pos+1, cnf.length()-pos);
+		cnf = cnf.mid(0, pos);
 		pos = s.inStr('x');
 		if(pos > 0 && pos < s.length()-1)
 		{
-			w = s.mid(0, pos).toInt();
-			h = s.mid(pos+1, s.length()-pos).toInt();
+			m_W = s.mid(0, pos).toInt();
+			m_H = s.mid(pos+1, s.length()-pos).toInt();
 			//TODO: support bpp setting
 		}
 	}
+	if(cnf == "fullscreen")
+		m_Flags = SDL_OPENGL|SDL_FULLSCREEN;
 
-	if(cnf_display == "fullscreen")
-		flags = SDL_OPENGL|SDL_FULLSCREEN;
+
+	//visible_tiles variable
+	cnf = conf.getValue("graphics", "visible_tiles");
+	if(cnf != "")
+		m_VisibleTiles = cnf.toInt();
+	printf("Visible tiles: %d\n", m_VisibleTiles);
 
 	//Some code coming from SDL gears
+	SDL_Init(SDL_INIT_VIDEO);
 
-  SDL_Init(SDL_INIT_VIDEO);
-
-  screen = SDL_SetVideoMode(w, h, bpp, flags);
-  if ( ! screen ) {
-    fprintf(stderr, "Couldn't set %dx%d GL video mode: %s\n", w, h, SDL_GetError());
-    SDL_Quit();
-    exit(2);
-  }
-  SDL_WM_SetCaption("UltimateStunts", "ultimatestunts");
-
+	screen = SDL_SetVideoMode(m_W, m_H, m_BPP, m_Flags);
+	if ( ! screen ) {
+		fprintf(stderr, "Couldn't set %dx%d GL video mode: %s\n",
+			m_W, m_W, SDL_GetError());
+		SDL_Quit();
+		exit(2);
+	}
+	SDL_WM_SetCaption("UltimateStunts", "ultimatestunts");
 }
+
 CWinSystem::~CWinSystem()
 {
 	SDL_Quit();
@@ -83,7 +92,7 @@ int CWinSystem::runLoop( bool (CALLBACKFUN *loopfunc)() )
 			switch(event.type)
 			{
 				case SDL_VIDEORESIZE:
-					screen = SDL_SetVideoMode(event.resize.w, event.resize.h, 16,
+					screen = SDL_SetVideoMode(event.resize.w, event.resize.h, m_BPP,
 						SDL_OPENGL|SDL_RESIZABLE);
 					if ( screen )
 					{
@@ -106,5 +115,23 @@ int CWinSystem::runLoop( bool (CALLBACKFUN *loopfunc)() )
 
 void CWinSystem::reshape(int w, int h)
 {
-	; //Do some openGL stuff to adapt rendering to new window size
+	m_W = w; m_H = h;
+
+	//Do some openGL stuff to adapt rendering to new window size
+
+	float ratio = (float) w / (float) h;
+	GLfloat near = 1.0;
+	GLfloat far = TILESIZE * m_VisibleTiles;
+	float hor_mul = near / 5.0;
+	GLfloat xs = ratio*hor_mul;
+	GLfloat ys = 1.0*hor_mul;
+
+	glViewport( 0, 0, w, h );
+
+	glMatrixMode( GL_PROJECTION );
+	glLoadIdentity();
+	glFrustum( -xs, xs, -ys, ys, near, far );
+
+	glMatrixMode( GL_MODELVIEW );
+	glLoadIdentity();
 }

@@ -30,7 +30,7 @@ public:
 	CShape();
 	virtual ~CShape();
 
-	virtual bool loadFromFile(CString filename, CMaterial *matarray);
+	virtual bool loadFromFile(CString filename, CMaterial ** matarray);
 };
 
 #endif

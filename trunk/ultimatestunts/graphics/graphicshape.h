@@ -1,7 +1,7 @@
 /***************************************************************************
-                          graphicworld.h  -  A graphical version of a world object
+                          graphicshape.h  -  a combination of CGraphObj and CShape
                              -------------------
-    begin                : do jan 16 2003
+    begin                : vr jan 24 2003
     copyright            : (C) 2003 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
@@ -15,25 +15,24 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GRAPHICWORLD_H
-#define GRAPHICWORLD_H
+#ifndef GRAPHICSHAPE_H
+#define GRAPHICSHAPE_H
 
-#include "texture.h"
-#include "world.h"
+#include "shape.h"
+#include "graphobj.h"
+
+#include "graphicmaterial.h"
 
 /**
   *@author CJP
   */
 
-class CGraphicWorld : public CWorld  {
+class CGraphicShape : public CShape, public CGraphObj
+{
 public: 
-	CGraphicWorld();
-	~CGraphicWorld();
-
-protected:
-	virtual CShape *createShape();
-	virtual CBound *createBound();
-	virtual CMaterial *createMaterial();
+	virtual bool loadFromFile(CString filename, CMaterial **matarray)
+		{return CShape::loadFromFile(filename, matarray) &&
+		CGraphObj::loadFromFile(filename, (CTexture **)(CGraphicMaterial **)matarray);}
 };
 
 #endif

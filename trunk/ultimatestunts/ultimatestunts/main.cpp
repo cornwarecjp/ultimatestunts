@@ -36,13 +36,14 @@
 #include "humanplayer.h"
 
 #include "winsystem.h"
-#include "timer.h"
+#include "renderer.h"
 
-CWorld *world;
+CGraphicWorld *world;
 CPlayer *player1, *player2, *player3, *player4;
 CSimulation *sim;
 
 CWinSystem *winsys;
+CRenderer *renderer;
 
 bool mainloop()
 {
@@ -58,24 +59,24 @@ bool mainloop()
 		printf("Object %d: position (%.2f,%.2f,%.2f), velocity (%.2f,%.2f,%.2f)\n",
 		               i,            r.x, r.y, r.z,       v.x, v.y, v.z);
 	}
-    	printf("**********\n");
+	printf("**********\n");
 
-  player1->Update(); //Makes moving decisions
-  player2->Update();
-  player3->Update();
-  player4->Update();
-  sim->Update(); //Modifies world object
+	bool retval = true;
+	player1->Update(); //Makes moving decisions
+	player2->Update();
+	player3->Update();
+	player4->Update();
+	retval = retval && sim->Update(); //Modifies world object
 
-  //camera->Update();
-  //graphics->Update();
-  //sound->Update();
+	//camera->Update();
+	renderer->Update();
+	//sound->Update();
 
-  return true; //Infinite loop
+	return retval;
 }
 
 int main(int argc, char *argv[])
 {
-	char inpbuffer[80];
 	printf("Welcome to " PACKAGE " version " VERSION "\n");
 
 	CLConfig conffile;
@@ -85,24 +86,48 @@ int main(int argc, char *argv[])
 		//TODO: create a default one
 	} else {printf("Using ultimatestunts.conf\n");}
 
+	printf("\nCreating a window\n");
 	winsys = new CWinSystem(conffile);
 
 	printf("\nCreating (graphic) world object\n");
-	world = new CGraphicWorld;
-	world->loadTrack("not_yet.track");
+	world = new CGraphicWorld(conffile);
 
-	printf("\nDo you want to start a network game session? (y/n)");
-	scanf("%s", inpbuffer);
-	if(inpbuffer[0]=='y' || inpbuffer[0]=='Y')
+	while(true) //while we're giving an incorrect answer
 	{
-		printf("Creating client-type simulation\n");
-		sim = new CClientSim(world, "localhost", 1500);
+		printf(
+			"\nThis is a dummy replacement for the GUI.\n"
+			"Choose from the following:\n"
+			"  1: Play a local game\n"
+			"  2: Log in on a remote game\n"
+			"  \n"
+			"  3: Exit\n"
+				);
+
+		int input = 0;
+		scanf("%d", &input);
+		switch(input)
+		{
+			case 2:
+				printf("Creating client-type simulation\n");
+				sim = new CClientSim(world, "localhost", 1500);
+				break;
+			case 1:
+				printf("Creating physics simulation\n");
+				sim = new CPhysics(world);
+				break;
+			case 3:
+				return 0;
+			default:
+				printf("That is not an option\n"); continue;
+		}
+		break; //The answer was a correct one
 	}
-	else
-	{
-		printf("Creating physics simulation\n");
-		sim = new CPhysics(world);
-	}
+
+	printf("\nLoading the track\n");
+	world->loadTrack("tracks/default.track");
+
+	printf("\nInitialising the rendering engine\n");
+	renderer = new CRenderer(conffile, world);
 
 	printf("\nCreating 3 AI players\n");
 	player1 = new CAIPlayerCar(world);

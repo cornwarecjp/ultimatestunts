@@ -18,8 +18,24 @@
 
 #include "world.h"
 #include "car.h"
+#include "cfile.h"
 
-CWorld::CWorld(){
+CWorld::CWorld(const CLConfig &conf)
+{
+	//Defaults:
+	m_DataDir = ""; //try in default directories, like "./"
+	m_TexMaxSize = 1024;
+
+	CString cnf = conf.getValue("files", "datadir");
+	if(cnf != "")
+	{
+		if(cnf[cnf.length()-1] != '/') cnf += '/';
+		m_DataDir = cnf;
+	}
+
+	cnf = conf.getValue("graphics", "texture_maxsize");
+	if(cnf != "")
+		m_TexMaxSize = cnf.toInt();
 }
 
 CWorld::~CWorld(){
@@ -29,26 +45,84 @@ CWorld::~CWorld(){
 
 bool CWorld::loadTrack(CString filename)
 {
-	printf("The world is being loaded from %s\n", filename.c_str());
+	filename = m_DataDir + filename;
+	printf("The world is being loaded from %s\n\n", filename.c_str());
+
+	//Open the track file
+	CFile tfile(filename);
+	//TODO: change so that it checks for existence
+
+	CString line = tfile.readl();
+	if(line != "TRACKFILE")
+		{printf("Track file does not contain a correct header\n");}
+		//TODO: throw something
+
+	m_L = tfile.readl().toInt();
+	m_W = tfile.readl().toInt();
+	m_H = tfile.readl().toInt();
 
 	//First: load materials/textures
-	//for example:
-	CMaterial *m = createMaterial();
-	m->loadFromFile("no_file.rgb", 256, 256); //Only useful for textures
-	//TODO: set friction coefficients
-	m_TileMaterials.push_back(m);
-	
+	while(tfile.readl() != "BEGIN"); //begin of textures section
+	while(true)
+	{
+		int mul = 1;
+		line = tfile.readl();
+		if(line == "END") break;
+		int pos = line.inStr(' ');
+		if(pos  > 0) //a space exists
+		{
+			if((unsigned int)pos < line.length()-1)
+				{mul = line.mid(pos+1, line.length()-pos-1).toInt();}
+			//TODO: check for different y-direction mul
+
+			line = line.mid(0, pos);
+		}
+
+		line = m_DataDir + line;
+		int xs = m_TexMaxSize * mul;
+		int ys = m_TexMaxSize * mul;
+		printf("Loading %s with mul %d\n", line.c_str(), mul);
+		CMaterial *m = createMaterial();
+		m->loadFromFile(line, xs, ys); //Only useful for textures
+		//TODO: set friction coefficients
+		m_TileMaterials.push_back(m);
+	}
+	printf("\nLoaded %d textures\n\n", m_TileMaterials.size());
+
+	while(tfile.readl() != "BEGIN"); //Begin of background section
+	//TODO: load background
+
 	//Second: loading collision (and graphics) data
-	//For example:
-	CShape *b = createShape();
-	m_TileShapes.push_back(b);
-	//TODO: use loadFromFile
+	while(tfile.readl() != "BEGIN"); //begin of tiles section
+	while(true)
+	{
+		CString texture_indices;
+		line = tfile.readl();
+		if(line == "END") break;
+		int pos = line.inStr(' ');
+		if(pos  > 0) //a space exists
+		{
+			if((unsigned int)pos < line.length()-1)
+				{texture_indices = line.mid(pos+1, line.length()-pos-1);}
+			line = line.mid(0, pos);
+		}
+
+		line = m_DataDir + line;
+		CShape *b = createShape();
+
+		CMaterial **subset = getMaterialSubset(texture_indices);
+		printf("Loading %s\n", line.c_str());
+		b->loadFromFile(line, subset);
+		delete [] subset;
+
+		m_TileShapes.push_back(b);
+	}
+	printf("\nLoaded %d tile shapes\n\n", m_TileShapes.size());
 
 	//Third: initialising track array
-	l=10; w=10; h=2; //example
-	for(int x=0; x<l; x++)
-	for(int z=0; z<w; z++)
-	for(int y=0; y<h; y++)
+	for(int x=0; x<m_L; x++)
+	for(int z=0; z<m_W; z++)
+	for(int y=0; y<m_H; y++)
 	{
 		CTile t;
 		t.m_Shape = m_TileShapes[0]; //for example
@@ -58,7 +132,7 @@ bool CWorld::loadTrack(CString filename)
 	}
 
 	int s = m_Track.size();
-	printf("Added tiles: total %d tiles\n", s);
+	printf("Loaded the track: total %d tiles\n", s);
 
 	return true;
 }
@@ -92,20 +166,6 @@ void CWorld::unloadTrack()
 	}
 }
 
-/*
-int CWorld::addMovingObject(CObjectChoice c)
-{
-	//future: selecting, using c
-
-	CMovingObject *m = new CCar;
-	m_MovObjs.push_back(m);
-
-	int s = m_MovObjs.size();
-	printf("Added car: total %d moving objects\n", s);
-
-	return s - 1;
-}
-*/
 bool CWorld::loadMovObjs(CString filename)
 {
 	printf("Loading moving objects...\n");
@@ -115,10 +175,12 @@ bool CWorld::loadMovObjs(CString filename)
 
 	//First: load materials/textures
 	//for example:
+	/*
 	CMaterial *m = createMaterial();
 	m->loadFromFile("no_file.rgb", 256, 256); //Only useful for textures
 	//TODO: set friction coefficients
 	m_MovObjMaterials.push_back(m);
+    */
 
 	//Second: loading collision (and graphics) data
 	//For example:
@@ -184,3 +246,31 @@ CBound *CWorld::createBound()
 
 CMaterial *CWorld::createMaterial()
 {return new CMaterial;}
+
+CMaterial **CWorld::getMaterialSubset(CString indices)
+{
+	//printf("Indices: \"%s\"\n", indices.c_str());
+	CMaterial **ret = new (CMaterial *)[1+indices.length()/2]; //We don't need more
+	int i=0;
+	while(true)
+	{
+		int sp = indices.inStr(' ');
+		if(sp > 0)
+		{
+			int n = indices.mid(0,sp).toInt();
+			indices= indices.mid(sp+1, indices.length()-sp-1);
+			//printf("    Adding %d\n", n);
+			*(ret+i) = m_TileMaterials[n];
+		}
+		else
+		{
+			//printf("    Adding %d\n", indices.toInt());
+			*(ret+i) = m_TileMaterials[indices.toInt()]; //the last index
+			break;
+		}
+
+		i++;
+	}
+
+	return ret;
+}

@@ -1,9 +1,9 @@
 bin_PROGRAMS = ultimatestunts
-ultimatestunts_SOURCES = main.cpp graphicworld.cpp humanplayer.cpp
+ultimatestunts_SOURCES = main.cpp humanplayer.cpp
 ultimatestunts_LDADD   = ../graphics/libgraphics.a ../filetransfer/libfiletransfer.a ../simulation/libsimulation.a ../shared/libshared.a @graphlibs@ @soundlibs@ @netlibs@
 
 
-EXTRA_DIST = main.cpp graphicbound.h graphicmaterial.h graphicshape.h graphicworld.cpp graphicworld.h humanplayer.cpp humanplayer.h
+EXTRA_DIST = main.cpp humanplayer.cpp humanplayer.h
 
 # set the include path found by configure
 INCLUDES= $(all_includes) -I../shared -I../simulation -I../filetransfer -I../graphics

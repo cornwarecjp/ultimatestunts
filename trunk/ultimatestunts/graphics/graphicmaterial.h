@@ -1,7 +1,7 @@
 /***************************************************************************
-                          graphicshape.h  -  a combination of CGraphObj and CShape
+                          graphicmaterial.h  -  A material and a texture
                              -------------------
-    begin                : vr jan 24 2003
+    begin                : ma jan 27 2003
     copyright            : (C) 2003 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
@@ -14,24 +14,17 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
+#ifndef GRAPHICMATERIAL_H
+#define GRAPHICMATERIAL_H
 
-#ifndef GRAPHICSHAPE_H
-#define GRAPHICSHAPE_H
+#include "material.h"
+#include "texture.h"
 
-#include "shape.h"
-#include "graphobj.h"
-
-#include "graphicmaterial.h"
-
-/**
-  *@author CJP
-  */
-
-class CGraphicShape : public CShape, public CGraphObj
+class CGraphicMaterial : public CMaterial, public CTexture
 {
-public: 
-	virtual bool loadFromFile(CString filename, CMaterial *matarray)
-		{return CShape::loadFromFile(filename, matarray);}
+public:
+	virtual bool loadFromFile(CString filename, int xs, int ys)
+		{return CTexture::loadFromFile(filename, xs, ys);}
 };
 
 #endif

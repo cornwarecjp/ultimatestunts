@@ -76,10 +76,10 @@ soundlibs = @soundlibs@
 
 noinst_LIBRARIES = libgraphics.a
 
-libgraphics_a_SOURCES = graphics.cpp graphobj.cpp image.c texture.cpp winsystem.cpp
+libgraphics_a_SOURCES = graphobj.cpp graphicworld.cpp image.c renderer.cpp texture.cpp winsystem.cpp
 INCLUDES = $(all_includes) -I../shared -I../simulation
 
-EXTRA_DIST = graphics.cpp graphics.h graphobj.cpp graphobj.h image.c image.h texture.cpp texture.h winsystem.cpp winsystem.h
+EXTRA_DIST = graphicbound.h graphicmaterial.h graphicshape.h graphicworld.cpp graphicworld.h graphobj.cpp graphobj.h image.c image.h renderer.cpp renderer.h texture.cpp texture.h winsystem.cpp winsystem.h
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_CLEAN_FILES = 
 LIBRARIES =  $(noinst_LIBRARIES)
@@ -94,8 +94,9 @@ X_LIBS = @X_LIBS@
 X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_PRE_LIBS = @X_PRE_LIBS@
 libgraphics_a_LIBADD = 
-libgraphics_a_OBJECTS =  graphics.$(OBJEXT) graphobj.$(OBJEXT) \
-image.$(OBJEXT) texture.$(OBJEXT) winsystem.$(OBJEXT)
+libgraphics_a_OBJECTS =  graphobj.$(OBJEXT) graphicworld.$(OBJEXT) \
+image.$(OBJEXT) renderer.$(OBJEXT) texture.$(OBJEXT) \
+winsystem.$(OBJEXT)
 AR = ar
 CXXFLAGS = @CXXFLAGS@
 CXXCOMPILE = $(CXX) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -112,8 +113,8 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
 TAR = tar
 GZIP_ENV = --best
-DEP_FILES =  .deps/graphics.P .deps/graphobj.P .deps/image.P \
-.deps/texture.P .deps/winsystem.P
+DEP_FILES =  .deps/graphicworld.P .deps/graphobj.P .deps/image.P \
+.deps/renderer.P .deps/texture.P .deps/winsystem.P
 SOURCES = $(libgraphics_a_SOURCES)
 OBJECTS = $(libgraphics_a_OBJECTS)
 

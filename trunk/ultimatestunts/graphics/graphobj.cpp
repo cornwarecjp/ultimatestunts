@@ -48,20 +48,31 @@ CGraphObj::~CGraphObj()
 	//TODO: remove display list when needed
 }
 
-bool CGraphObj::loadFromFile(CString filename, CTexture *texarray, int lod)
+bool CGraphObj::loadFromFile(CString filename, CTexture **texarray)
 {
-	m_ObjList = glGenLists(1);
-	glNewList(m_ObjList, GL_COMPILE);
+	for(int lod=1; lod<5; lod++)
+	{
+		//printf("Loading graphobj lod=%d\n", lod);
+		unsigned int &objlist = m_ObjList1;
+		switch(lod)
+		{
+			case 2: objlist = m_ObjList2; break;
+			case 3: objlist = m_ObjList3; break;
+			case 4: objlist = m_ObjList4; break;
+		}
 
-	bool texture_isenabled = true;
-  setMaterialColor(CVector(1,1,1));
-  glBindTexture(GL_TEXTURE_2D, no_tex);
+		objlist = glGenLists(1);
+		glNewList(objlist, GL_COMPILE);
+
+		bool texture_isenabled = true;
+		setMaterialColor(CVector(1,1,1));
+		glBindTexture(GL_TEXTURE_2D, no_tex);
 
 
-	if(filename.length()==0) //lege string
-		{glEndList(); return true;}
+		if(filename.length()==0) //lege string
+			{glEndList(); break;}
 
-	bool eof = false;
+		bool eof = false;
 
 		CFile f(filename);
 
@@ -79,28 +90,30 @@ bool CGraphObj::loadFromFile(CString filename, CTexture *texarray, int lod)
 					line = line.mid(sp+1, line.length());
 					int t = (int)line.toFloat();
 
-					if((texarray+t)->getSizeX(lod) <=4 || (texarray+t)->getSizeY(lod) <= 4)
+					//printf("  Using texture %d\n", t);
+
+					if((*(texarray+t))->getSizeX(lod) <=4 || (*(texarray+t))->getSizeY(lod) <= 4)
 					{
 						if(texture_isenabled)
 						{
-              glDisable(GL_TEXTURE_2D);
-              texture_isenabled=false;
-            }
+							glDisable(GL_TEXTURE_2D);
+							texture_isenabled=false;
+						}
 					}
 					else
 					{
 						if(!texture_isenabled)
 						{
-              glEnable(GL_TEXTURE_2D);
-              texture_isenabled=true;
-						  setMaterialColor(CVector(1,1,1));
-            }
+							glEnable(GL_TEXTURE_2D);
+							texture_isenabled=true;
+							setMaterialColor(CVector(1,1,1));
+						}
 					}
 
 					if(texture_isenabled)
-  					{(texarray+t)->draw(lod);}
+						{(*(texarray+t))->draw(lod);}
 					else //geen texture
-  					{setMaterialColor((texarray+t)->getColor());}
+						{setMaterialColor((*(texarray+t))->getColor());}
 
 				}
 				if(line.mid(0, sp)=="Color")
@@ -113,8 +126,8 @@ bool CGraphObj::loadFromFile(CString filename, CTexture *texarray, int lod)
 					line = line.mid(line.inStr(',')+1, line.length());
 					float b = line.toFloat();
 
-          if(texture_isenabled) //oplossing van de kleurenbug
-    			  setMaterialColor(CVector(r,g,b));
+					if(texture_isenabled) //oplossing van de kleurenbug
+						setMaterialColor(CVector(r,g,b));
 				}
 				if(line.mid(0, sp)=="Vertex")
 				{
@@ -159,8 +172,8 @@ bool CGraphObj::loadFromFile(CString filename, CTexture *texarray, int lod)
 					glEnd();
 				if(line.mid(0, sp)=="Notex")
 					glBindTexture(GL_TEXTURE_2D, no_tex);
-      }
-			else
+			}
+			else //no spaces
 			{
 				if(line=="Quads")
 					glBegin(GL_QUADS);
@@ -174,24 +187,31 @@ bool CGraphObj::loadFromFile(CString filename, CTexture *texarray, int lod)
 					glEnd();
 				if(line=="Notex")
 					glBindTexture(GL_TEXTURE_2D, no_tex);
-			}
+			} //if a space exists
 
-		}
+		} //while(!eof)
 
-	if(!texture_isenabled)
+		if(!texture_isenabled)
 			glEnable(GL_TEXTURE_2D);
 
+		glEndList();
 
+		//printf("Loading graphobj lod=%d done\n", lod);
+	} //for(all lod's)
 
-	glEndList();
-
-	//printf ("Vorm-Object is geladen.\n");
 	return true; //geslaagd
 }
 
-void CGraphObj::draw()
+void CGraphObj::draw(int lod)
 {
-  glCallList(m_ObjList);
+	//TODO: make this code very fast (it's the main drawing routine)
+	switch(lod)
+	{
+		case 1: glCallList(m_ObjList1); break;
+		case 2: glCallList(m_ObjList2); break;
+		case 3: glCallList(m_ObjList3); break;
+		case 4: glCallList(m_ObjList4); break;
+	}
 }
 
 void CGraphObj::setMaterialColor(CVector c)

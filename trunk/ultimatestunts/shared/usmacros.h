@@ -37,6 +37,20 @@
 #define LOBYTE(w)           ((Uint8)(w))
 #define HIBYTE(w)           ((Uint8)(((Uint16)(w) >> 8) & 0xFF))
 
+#define TILESIZE 40 //40 meter horizontal
+#define VERTSIZE 12  //12 meter vertical
+/*
 
+             /--------------/    N
+            /              /|    |  12 meter
+           /              / |    V
+          /              / /  N
+         /--------------/ /  /  40 meter
+         |              |/  /
+         |--------------/  V
+
+         <------------->
+               40 meter
+*/
 
 #endif

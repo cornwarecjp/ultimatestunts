@@ -1,8 +1,8 @@
 /***************************************************************************
-                          graphics.h  -  dummy file
+                          graphicworld.h  -  A graphical version of a world object
                              -------------------
-    begin                : Wed Nov 20 2002
-    copyright            : (C) 2002 by CJP
+    begin                : do jan 16 2003
+    copyright            : (C) 2003 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
 
@@ -15,20 +15,25 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef HELLO_H
-#define HELLO_H
+#ifndef GRAPHICWORLD_H
+#define GRAPHICWORLD_H
 
+#include "texture.h"
+#include "world.h"
 
 /**
   *@author CJP
   */
 
-class hello {
+class CGraphicWorld : public CWorld  {
 public: 
-	hello();
-	~hello();
+	CGraphicWorld(const CLConfig &conf);
+	~CGraphicWorld();
 
-  void writeHello();
+protected:
+	virtual CShape *createShape();
+	virtual CBound *createBound();
+	virtual CMaterial *createMaterial();
 };
 
 #endif

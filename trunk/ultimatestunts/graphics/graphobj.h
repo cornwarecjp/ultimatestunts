@@ -25,11 +25,11 @@ class CGraphObj
 	public:
 		CGraphObj();
 		virtual ~CGraphObj();
-		virtual bool loadFromFile(CString filename, CTexture *texarray, int lod);
+		virtual bool loadFromFile(CString filename, CTexture **texarray);
 
-		void draw();
+		void draw(int lod);
 	protected:
-		unsigned int m_ObjList;
+		unsigned int m_ObjList1, m_ObjList2, m_ObjList3, m_ObjList4;
 		void setMaterialColor(CVector c);
 };
 

@@ -53,4 +53,5 @@ protected:
 
 	CVector m_Color;
 };
+
 #endif

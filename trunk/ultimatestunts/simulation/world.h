@@ -27,14 +27,15 @@
 #include "tile.h"
 #include "movingobject.h"
 #include "objectchoice.h"
+#include "lconfig.h"
 
 class CWorld {
 public: 
-	CWorld();
+	CWorld(const CLConfig &conf);
 	virtual ~CWorld();
 
 	vector<CTile> m_Track; //refer to elements from m_TileShapes
-	int l, w, h;
+	int m_L, m_W, m_H;
 	bool loadTrack(CString filename);
 	void unloadTrack();
 
@@ -52,6 +53,11 @@ protected:
 
 	vector<CMaterial *> m_TileMaterials;
 	vector<CMaterial *> m_MovObjMaterials;
+
+	CMaterial **getMaterialSubset(CString indices);
+
+	CString m_DataDir;
+	int m_TexMaxSize;
 };
 
 #endif
