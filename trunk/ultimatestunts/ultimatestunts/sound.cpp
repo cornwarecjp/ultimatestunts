@@ -34,7 +34,7 @@
 #endif
 
 CSndSample *musicsample;
-CSoundObj musicobject;
+CSoundObj *musicobject;
 
 CSound::CSound(const CLConfig &conf, const CWorld *world)
 {
@@ -154,14 +154,20 @@ CSound::CSound(const CLConfig &conf, const CWorld *world)
   }
 
   printf("---------------------------------------------------------\n");
-  // print driver names
-  printf("Press a corresponding number\n");
-  do
-  {
-    key = getchar();
-    FSOUND_SetDriver(m_Driver);                                       // Select sound card (0 = default)
-    m_Driver = key - '1';
-  } while (m_Driver < 0 || m_Driver >= FSOUND_GetNumDrivers());
+
+	// print driver names
+	printf("Press a corresponding number\n");
+	m_Driver = 0;
+	do
+	{
+		key = getchar() - '1';
+	}
+	while (key < 0 || key >= FSOUND_GetNumDrivers());
+
+	m_Driver = key;
+	FSOUND_SetDriver(m_Driver);		// Select sound card (0 = default)
+	printf("Selected driver: %d\n", m_Driver + 1);
+	printf("Loaded driver: %d\n", FSOUND_GetDriver() + 1);
 
   {
     unsigned int caps = 0;
@@ -184,6 +190,7 @@ CSound::CSound(const CLConfig &conf, const CWorld *world)
       printf("- Driver supports hardware 3d geometry processing with reflections!\n");
     printf("---------------------------------------------------------\n");
   }
+
   // ==========================================================================================
   // INITIALIZE
   // ==========================================================================================
@@ -255,8 +262,9 @@ CSound::CSound(const CLConfig &conf, const CWorld *world)
 	CString fn = conf.getValue("files", "datadir") + "music/canyon.mp3";
 	printf("\nLoading music file %s\n", fn.c_str());
 	musicsample = new CSndSample(SAMPLE_2D);
+	musicobject = new CSoundObj;
 	musicsample->loadFromFile(fn);
-	musicobject.setSample(musicsample);
+	musicobject->setSample(musicsample);
 }
 
 CSound::~CSound()
