@@ -19,6 +19,9 @@
 #define SERVERSIM_H
 
 #include <vector>
+namespace std {}
+using namespace std;
+
 #include "simulation.h"
 
 /**

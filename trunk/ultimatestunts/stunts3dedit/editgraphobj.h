@@ -19,6 +19,8 @@
 #define EDITGRAPHOBJ_H
 
 #include <vector>
+namespace std {}
+using namespace std;
 
 #include "graphobj.h"
 

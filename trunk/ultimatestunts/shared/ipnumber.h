@@ -19,6 +19,9 @@
 
 #include <SDL/SDL.h>
 #include <vector>
+namespace std {}
+using namespace std;
+
 #include "cstring.h"
 
 class CIPNumber

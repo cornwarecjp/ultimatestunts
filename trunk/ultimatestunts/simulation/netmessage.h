@@ -16,13 +16,16 @@
 
    // NOT YET TESTED!
 
- #ifndef _NETMESSAGE_H
- #define _NETMESSAGE_H
+#ifndef _NETMESSAGE_H
+#define _NETMESSAGE_H
 
- #include "netudp.h"
- #include <SDL/SDL.h>
- #include <vector>
- #include "messagebuffer.h"
+#include "netudp.h"
+#include <SDL/SDL.h>
+#include <vector>
+namespace std {}
+using namespace std;
+
+#include "messagebuffer.h"
 
 
 

@@ -19,6 +19,8 @@
 #define GUI_H
 
 #include <vector>
+namespace std {}
+using namespace std;
 
 #include "lconfig.h"
 #include "winsystem.h"

@@ -23,3 +23,4 @@ extern RGBImageRec *RGBImageLoad(const char *);
 #endif
 
 #endif
+

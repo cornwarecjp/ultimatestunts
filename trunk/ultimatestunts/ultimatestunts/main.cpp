@@ -23,6 +23,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <vector>
+namespace std {}
+using namespace std;
 
 //Frequently used
 #include "cstring.h"

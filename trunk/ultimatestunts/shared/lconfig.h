@@ -6,10 +6,12 @@
 #define _LCONFIG_H
 
 #include <vector>
+namespace std {}
+using namespace std;
+
 #include <stdio.h>
 #include "cstring.h"
 
-using namespace std;
 
 
 

@@ -18,11 +18,13 @@
 #define _CBinBuffer_H_
 
 #include <vector>
+namespace std {}
+using namespace std;
+
 #include "cstring.h"
 #include <SDL/SDL.h>
 #include "usmacros.h"
 
-using namespace std;
 
 class CBinBuffer : public vector<Uint8>
 {

@@ -24,6 +24,9 @@
   */
 
 #include <vector> //STL vector template
+namespace std {}
+using namespace std;
+
 #include "player.h"
 #include "world.h"
 #include "objectchoice.h"

@@ -19,6 +19,8 @@
 #define SOUND_H
 
 #include <vector>
+namespace std {}
+using namespace std;
 
 #include "gamecamera.h"
 #include "lconfig.h"

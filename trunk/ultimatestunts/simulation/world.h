@@ -23,6 +23,8 @@
   *@author CJP
   */
 #include <vector> //STL vector template
+namespace std {}
+using namespace std;
 
 #include "tile.h"
 #include "movingobject.h"
