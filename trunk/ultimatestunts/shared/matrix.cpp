@@ -88,6 +88,21 @@ CMatrix const &CMatrix::operator*=(CMatrix const &val)
 	return (*this);
 }
 
+CMatrix CMatrix::operator*(CMatrix const &val)
+{
+	CMatrix temp;
+
+	for (int i=0; i<3; i++)
+		for (int j=0; j<3; j++)
+			temp.setElement(i,j,
+        Element(i,0) * val.Element(0,j) +
+        Element(i,1) * val.Element(1,j) +
+        Element(i,2) * val.Element(2,j)
+      );
+
+	return temp;
+}
+
 float CMatrix::Element(int i, int j) const
 {
 	return *(m_M + 4*i + j);

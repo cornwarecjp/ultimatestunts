@@ -53,6 +53,8 @@ class CMovingObject : public CDynamicObject
 
 		virtual CMessageBuffer::eMessageType getType() const {return CMessageBuffer::movingObject;}
 
+		//constant:
+		float m_Mass;
 	protected:
 		CVector m_Position, m_Velocity, m_Orientation, m_AngularVelocity;
 		CMatrix m_RotationMatrix;

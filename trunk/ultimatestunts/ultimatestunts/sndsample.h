@@ -1,5 +1,5 @@
 /***************************************************************************
-                          sndsample.h  -  description
+                          sndsample.h  -  A 3D sound sample class
                              -------------------
     begin                : di feb 25 2003
     copyright            : (C) 2003 by CJP
@@ -23,26 +23,26 @@
   *@author CJP
   */
 
-#define SAMPLE_3D 1
-#define SAMPLE_2D 2
+#ifdef HAVE_LIBFMOD
+#ifdef FMOD_HEADER
+#include <fmod/fmod.h>
+#endif
+#endif
 
 #include "cstring.h"
 
 class CSndSample
 {
-  public:
+public:
 	CSndSample();
-	CSndSample(int t);
-	~CSndSample();
-	void init(int t);
+	virtual ~CSndSample();
 
-    int loadFromFile(CString filename);
+	virtual int loadFromFile(CString filename);
 
-    int attachToChannel(int c);
-  protected:
+	virtual int attachToChannel(int c);
+protected:
 #ifdef HAVE_LIBFMOD
-    void *m_Sample;
-    int m_Type;
+	FSOUND_SAMPLE *m_Sample;
 #endif
 };
 

@@ -190,7 +190,13 @@ bool CWorld::loadMovObjs(CString filename)
 		m_MovObjBounds.push_back(wheel);
 	}
 
-	//Third: initialising car array
+	//Third: defining sound data
+	{
+		CString filename = "sounds/engine.wav";
+		m_MovObjSounds.push_back(filename);
+	}
+
+	//Finally: Initialising car array
 	for(int i=0; i<num; i++)
 	{
 		CMovingObject *m = new CCar; //making a general car object
@@ -204,6 +210,8 @@ bool CWorld::loadMovObjs(CString filename)
 		m->m_Bodies[2].m_Body = 1;
 		m->m_Bodies[3].m_Body = 1;
 		m->m_Bodies[4].m_Body = 1;
+
+		m->m_Sounds[0] = 0; //The engine sound
 
 		m_MovObjs.push_back(m);
 

@@ -31,6 +31,7 @@ class CMatrix
 		//Matrix-operations:
 		CMatrix const &operator=(CMatrix const &val);
 		CMatrix const &operator*=(CMatrix const &val);
+		CMatrix operator*(CMatrix const &val);
 		CMatrix inverse() const;
 
 		//Special ways to create the right rotation matrix:

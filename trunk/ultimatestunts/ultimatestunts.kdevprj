@@ -777,7 +777,7 @@ install_location=
 type=DATA
 
 [ultimatestunts/Makefile.am]
-files=ultimatestunts/main.cpp,ultimatestunts/humanplayer.cpp,ultimatestunts/humanplayer.h,ultimatestunts/gamecamera.cpp,ultimatestunts/gamecamera.h,ultimatestunts/sound.cpp,ultimatestunts/sound.h,ultimatestunts/sndsample.cpp,ultimatestunts/sndsample.h,ultimatestunts/soundobj.cpp,ultimatestunts/soundobj.h,ultimatestunts/gamerenderer.cpp,ultimatestunts/gamerenderer.h,ultimatestunts/usserver.cpp,ultimatestunts/usserver.h
+files=ultimatestunts/main.cpp,ultimatestunts/humanplayer.cpp,ultimatestunts/humanplayer.h,ultimatestunts/gamecamera.cpp,ultimatestunts/gamecamera.h,ultimatestunts/sound.cpp,ultimatestunts/sound.h,ultimatestunts/sndsample.cpp,ultimatestunts/sndsample.h,ultimatestunts/soundobj.cpp,ultimatestunts/soundobj.h,ultimatestunts/gamerenderer.cpp,ultimatestunts/gamerenderer.h,ultimatestunts/usserver.cpp,ultimatestunts/usserver.h,ultimatestunts/soundworld.cpp,ultimatestunts/soundworld.h,ultimatestunts/music.cpp,ultimatestunts/music.h
 sub_dirs=
 type=prog_main
 
@@ -823,6 +823,18 @@ install=false
 install_location=
 type=SOURCE
 
+[ultimatestunts/music.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[ultimatestunts/music.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
 [ultimatestunts/sndsample.cpp]
 dist=true
 install=false
@@ -854,6 +866,18 @@ install_location=
 type=SOURCE
 
 [ultimatestunts/soundobj.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[ultimatestunts/soundworld.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[ultimatestunts/soundworld.h]
 dist=true
 install=false
 install_location=

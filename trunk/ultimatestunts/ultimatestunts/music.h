@@ -1,7 +1,7 @@
 /***************************************************************************
-                          sound.h  -  The basic sound system
+                          music.h  -  A Music class
                              -------------------
-    begin                : di feb 25 2003
+    begin                : wo aug 13 2003
     copyright            : (C) 2003 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
@@ -15,49 +15,39 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef SOUND_H
-#define SOUND_H
-
-#include <vector>
-namespace std {}
-using namespace std;
-
-#include "gamecamera.h"
-#include "lconfig.h"
-#include "usmacros.h"
-
-#include "soundworld.h"
-#include "music.h"
+#ifndef MUSIC_H
+#define MUSIC_H
 
 /**
   *@author CJP
   */
 
-class CSound {
-public: 
-	CSound(const CLConfig &conf, const CWorld *world);
-	~CSound();
+#ifdef HAVE_LIBFMOD
+#ifdef FMOD_HEADER
+#include <fmod/fmod.h>
+#endif
+#endif
 
-	void setCamera(const CCamera *cam)
-		{m_Camera = (CGameCamera *)cam;}
+#include "cstring.h"
+#include "sndsample.h"
+#include "usmacros.h"
 
-	void playNextSong();
+class CMusic : public CSndSample
+{
+  public:
+	CMusic();
+	virtual ~CMusic();
 
-	bool load(); //loads samples, using the world object
-	void unload(); //unloads the world samples
+	virtual int loadFromFile(CString filename);
 
-	void update();
+	virtual int attachToChannel(int c);
+
+	void setEndCallback(void (CALLBACKFUN *endfunc)());
 
 protected:
-	const CGameCamera *m_Camera;
-
-	CMusic *m_Music;
-	CSoundObj *m_MusicObject;
-
-	const CWorld *m_World;
-	CSoundWorld *m_SoundWorld;
-
-	int m_MusicVolume, m_SoundVolume;
+#ifdef HAVE_LIBFMOD
+	FSOUND_STREAM *m_Stream;
+#endif
 };
 
 #endif

@@ -24,6 +24,13 @@
 #include "usmacros.h"
 #include "datafile.h"
 
+CSound *_theSoundObject;
+
+void musicEndCallback()
+{
+	_theSoundObject->playNextSong();
+}
+
 #ifdef HAVE_LIBFMOD
 
 #ifdef FMOD_HEADER
@@ -34,8 +41,12 @@
 
 CSound::CSound(const CLConfig &conf, const CWorld *world)
 {
+	_theSoundObject = this;
+
+	//The world object:
 	m_World = world;
 
+	//Initialising the sound library:
 	CString drivername = "nosound"; //Default for unknown system types
 
 #ifdef __CYGWIN__
@@ -83,53 +94,10 @@ CSound::CSound(const CLConfig &conf, const CWorld *world)
 
 			if(subdriver == (char *)FSOUND_GetDriverName(i))
 				FSOUND_SetDriver(i);
-
-/*
-			{
-				unsigned int caps = 0;
-
-				FSOUND_GetDriverCaps(i, &caps);
-				if (caps & FSOUND_CAPS_HARDWARE)
-					printf("     * Driver supports hardware 3D sound!\n");
-				if (caps & FSOUND_CAPS_EAX2)
-					printf("     * Driver supports EAX 2 reverb!\n");
-				if (caps & FSOUND_CAPS_EAX3)
-					printf("     * Driver supports EAX 3 reverb!\n");
-				if (caps & FSOUND_CAPS_GEOMETRY_OCCLUSIONS)
-					printf("     * Driver supports hardware 3d geometry processing with occlusions!\n");
-				if (caps & FSOUND_CAPS_GEOMETRY_REFLECTIONS)
-					printf("     * Driver supports hardware 3d geometry processing with reflections!\n");
-			}
-*/
-
 		}
 	}
 
 	printf("   Loaded driver: %s\n", FSOUND_GetDriverName(FSOUND_GetDriver()) );
-
-/*
-  {
-    unsigned int caps = 0;
-
-    FSOUND_GetDriverCaps(FSOUND_GetDriver(), &caps);
-    printf("---------------------------------------------------------\n");
-    printf("Driver capabilities\n");
-    printf("---------------------------------------------------------\n");
-    if (!caps)
-      printf("- This driver will support software mode only.\n  It does not properly support 3D sound hardware.\n");
-    if (caps & FSOUND_CAPS_HARDWARE)
-      printf("- Driver supports hardware 3D sound!\n");
-    if (caps & FSOUND_CAPS_EAX2)
-      printf("- Driver supports EAX 2 reverb!\n");
-    if (caps & FSOUND_CAPS_EAX3)
-      printf("- Driver supports EAX 3 reverb!\n");
-    if (caps & FSOUND_CAPS_GEOMETRY_OCCLUSIONS)
-      printf("- Driver supports hardware 3d geometry processing with occlusions!\n");
-    if (caps & FSOUND_CAPS_GEOMETRY_REFLECTIONS)
-      printf("- Driver supports hardware 3d geometry processing with reflections!\n");
-    printf("---------------------------------------------------------\n");
-  }
-*/
 
   // INITIALIZE
   if (!FSOUND_Init(44100, 32, 0))
@@ -138,122 +106,61 @@ CSound::CSound(const CLConfig &conf, const CWorld *world)
     return;
   }
 
-/*
-  // DISPLAY HELP
-  printf("FMOD Output Method : ");
-  switch (FSOUND_GetOutput())
-  {
-    case FSOUND_OUTPUT_NOSOUND:
-      printf("nosound\n");
-      break;
-#ifdef __CYGWIN__
-    case FSOUND_OUTPUT_WINMM:
-      printf("winmm\n");
-      break;
-    case FSOUND_OUTPUT_DSOUND:
-      printf("directsound\n");
-      break;
-    case FSOUND_OUTPUT_A3D:
-      printf("a3d\n");
-      break;
-#elif defined(__linux__)
-    case FSOUND_OUTPUT_OSS:
-      printf("oss\n");
-      break;
-    case FSOUND_OUTPUT_ESD:
-      printf("esd\n");
-      break;
-    case FSOUND_OUTPUT_ALSA:
-      printf("alsa\n");
-      break;
-#endif
-  };
-
-  printf("FMOD Mixer         : ");
-  switch (FSOUND_GetMixer())
-  {
-    case FSOUND_MIXER_BLENDMODE:
-      printf("FSOUND_MIXER_BLENDMODE\n");
-      break;
-    case FSOUND_MIXER_MMXP5:
-      printf("FSOUND_MIXER_MMXP5\n");
-      break;
-    case FSOUND_MIXER_MMXP6:
-      printf("FSOUND_MIXER_MMXP6\n");
-      break;
-    case FSOUND_MIXER_QUALITY_FPU:
-      printf("FSOUND_MIXER_QUALITY_FPU\n");
-      break;
-    case FSOUND_MIXER_QUALITY_MMXP5:
-      printf("FSOUND_MIXER_QUALITY_MMXP5\n");
-      break;
-    case FSOUND_MIXER_QUALITY_MMXP6:
-      printf("FSOUND_MIXER_QUALITY_MMXP6\n");
-      break;
-  };
-
-  printf("Sub driver        : ");
-  printf("%s\n", FSOUND_GetDriverName(FSOUND_GetDriver()));
-  printf("Hardware 3D channels : %d\n", FSOUND_GetNumHardwareChannels());
-*/
-
-	CDataFile f("music/sv.ogg");
-	printf("   Loading music file %s\n", f.getName().c_str());
-	m_MusicSample = new CSndSample(SAMPLE_2D);
-	m_MusicObject = new CSoundObj;
-	m_MusicSample->loadFromFile(f.useExtern());
-	m_MusicObject->setSample(m_MusicSample);
+	//The sound world:
+	m_SoundWorld = new CSoundWorld(world, conf);
 
 	m_MusicVolume = conf.getValue("sound", "musicvolume").toInt();
 	m_SoundVolume = conf.getValue("sound", "soundvolume").toInt();
 
-	m_MusicObject->setVolume(m_MusicVolume);
+	//Loading data:
+	m_Music = NULL;
+	m_MusicObject = NULL;
+	playNextSong();
 }
 
 CSound::~CSound()
 {
 	unload();
 
-	delete m_MusicObject;
-	delete m_MusicSample;
+	if(m_MusicObject != NULL && m_Music != NULL)
+	{
+		m_Music->setEndCallback(NULL);
+		delete m_MusicObject;
+		delete m_Music;
+	}
 
 	FSOUND_Close();
 }
 
 bool CSound::load()
 {
-	CSndSample *engine = new CSndSample(SAMPLE_3D);
-	CDataFile f("sounds/engine.wav");
-	printf("   Loading enine sound from %s\n", f.getName().c_str());
-	engine->loadFromFile(f.useExtern());
-
-	m_Samples.push_back(engine);
-
-	for(unsigned int i=0; i<m_World->m_MovObjs.size(); i++)
-		if(m_World->m_MovObjs[i]->getType() == CMessageBuffer::car)
-		{
-			CSoundObj *o = new CSoundObj;
-			o->setSample(engine);
-			o->setPosVel(CVector(0,0,0), CVector(0,0,0));
-
-			m_Channels.push_back(o);
-			m_ObjIDs.push_back(i);
-		}
-
-	return true;
+	return m_SoundWorld->loadObjects();
 }
 
 void CSound::unload()
 {
-	for(unsigned int i=0; i<m_Channels.size(); i++)
-		delete m_Channels[i];
+	m_SoundWorld->unloadObjects();
+}
 
-	for(unsigned int i=0; i<m_Samples.size(); i++)
-		delete m_Samples[i];
+void CSound::playNextSong()
+{
+	if(m_MusicObject != NULL && m_Music != NULL)
+	{
+		m_Music->setEndCallback(NULL);
+		delete m_MusicObject;
+		delete m_Music;
+	}
 
-	m_Channels.clear();
-	m_Samples.clear();
-	m_ObjIDs.clear();
+	m_Music = new CMusic;
+	m_MusicObject = new CSoundObj;
+
+	CDataFile f("music/sv.ogg");
+	printf("   Loading music file %s\n\n", f.getName().c_str());
+	m_Music->loadFromFile(f.useExtern());
+
+	m_MusicObject->setSample(m_Music);
+	m_Music->setEndCallback(musicEndCallback);
+	m_MusicObject->setVolume(m_MusicVolume);
 }
 
 void CSound::update()
@@ -272,17 +179,20 @@ void CSound::update()
 		-ori.Element(0,1), ori.Element(1,1), ori.Element(2,1)
 	);
 
+
 	//Objects:
-	for(unsigned int i=0; i<m_Channels.size(); i++)
+	unsigned int s = m_SoundWorld->m_Channels.size();
+	for(unsigned int i=0; i<s; i++)
 	{
-		CMovingObject *o = m_World->m_MovObjs[m_ObjIDs[i]];
+		CSoundObj *chn = m_SoundWorld->m_Channels[i];
+		CMovingObject *o = m_World->m_MovObjs[m_SoundWorld->m_ObjIDs[i]];
 		CVector v = o->getVelocity();
-		m_Channels[i]->setPosVel(o->getPosition(), v);
+		chn->setPosVel(o->getPosition(), v);
 		int vol = 20 + (int)(4*v.abs());
 		float freq = 0.1 + 0.1 * v.abs();
 		//printf("Setting vol,freq of %d to %d,%3.3f\n", i, vol, freq);
-		m_Channels[i]->setFrequency(freq);
-		m_Channels[i]->setVolume((vol * m_SoundVolume) >> 8);
+		chn->setFrequency(freq);
+		chn->setVolume((vol * m_SoundVolume) >> 8);
 	}
 
 	//Update:
@@ -301,6 +211,9 @@ CSound::~CSound()
 
 bool CSound::load()
 {return true;}
+
+void CSound::playNextSong()
+{;}
 
 void CSound::update()
 {;}

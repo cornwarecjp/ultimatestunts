@@ -142,18 +142,8 @@ void CGameRenderer::update()
 	//Tijdelijke plaats om auto's te renderen: achteraan
 	int num_objs = m_World->m_MovObjs.size();
 	for(int i=0; i<num_objs; i++)
-	{
-		CMovingObject *mo = m_World->m_MovObjs[i];
+		viewMovObj(m_World->m_MovObjs[i]);
 
-		switch(mo->getType())
-		{
-			case CMessageBuffer::car:
-				viewCar((CCar *)mo);
-				break;
-			default:
-				printf("Warning: could not render unknown object type\n");
-		}
-	}
 }
 
 void CGameRenderer::viewBackground()
@@ -171,22 +161,22 @@ void CGameRenderer::viewBackground()
 		glEnable(GL_DEPTH_TEST);
 }
 
-void CGameRenderer::viewCar(CCar *car)
+void CGameRenderer::viewMovObj(CMovingObject *mo)
 {
 	glPushMatrix();
 
-	CVector r = car->getPosition();
-	const CMatrix &m = car->getRotationMatrix();
+	CVector r = mo->getPosition();
+	const CMatrix &m = mo->getRotationMatrix();
 	//printf("Drawing a car at position %f,%f,%f\n", r.x,r.y,r.z);
 
 	glTranslatef (r.x, r.y, r.z);
 	glMultMatrixf(m.gl_mtr());
 
-	for(unsigned int i=car->m_Bodies.size(); i > 0; i--) //TODO: depth sorting?
+	for(unsigned int i=mo->m_Bodies.size(); i > 0; i--) //TODO: depth sorting?
 	{
 		glPushMatrix();
 
-		CBody &b = car->m_Bodies[i-1];
+		CBody &b = mo->m_Bodies[i-1];
 		r = b.m_Position;
 		glTranslatef (r.x, r.y, r.z);
 		glMultMatrixf(b.m_Orientation.gl_mtr());

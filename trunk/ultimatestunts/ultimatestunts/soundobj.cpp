@@ -23,26 +23,23 @@
 #ifdef FMOD_HEADER
 #include <fmod/fmod.h>
 #include <fmod/fmod_errors.h>
-#include <fmod/wincompat.h> //debugging
 #endif
 
 CSoundObj::CSoundObj()
 {
-  //m_Sample = NULL;
   m_Pos.x = m_Pos.y = m_Pos.z = 0;
   m_Vel.x = m_Vel.y = m_Vel.z = 0;
 }
 
 CSoundObj::~CSoundObj()
 {
-  //FSOUND_Sample_Free((FSOUND_SAMPLE  *)m_Sample);
-  //m_Sample = NULL;
+	FSOUND_StopSound(m_Channel);
 }
 
 int CSoundObj::setSample(CSndSample *s)
 {
 	m_Channel = s->attachToChannel(FSOUND_FREE);
-	FSOUND_SetPaused(m_Channel, FALSE);
+	FSOUND_SetPaused(m_Channel, 0);
 	m_OriginalFrequency = FSOUND_GetFrequency(m_Channel);
 
   return 0;

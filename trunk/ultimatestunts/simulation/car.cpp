@@ -19,8 +19,11 @@
 #include "carinput.h"
 CCar::CCar()
 {
+	m_Position = CVector(400.0,0.8,450.0); //TODO: put this somewhere else
+
 	m_InputData = new CCarInput;
 
+	//Five bodies:
 	CBody body, wheel1, wheel2, wheel3, wheel4;
 	body.m_Body = 0;
 	wheel1.m_Body = 0;
@@ -28,7 +31,15 @@ CCar::CCar()
 	wheel3.m_Body = 0;
 	wheel4.m_Body = 0;
 
-	m_WheelRPM =  m_rotationAngle = 0.0;
+	//One sound:
+	m_Sounds.push_back(0);
+
+	m_FrontWheelNeutral = CVector(0.8, -0.5, -1.35);
+	m_BackWheelNeutral = CVector(0.8, -0.5, 1.45);
+	m_Mass = 1000.0; //kilogram
+	m_WheelRadius = 0.35; //meter
+
+	m_WheelVelocity =  m_WheelAngle = 0.0;
 	m_wheelHeight1 = m_wheelHeight2 = m_wheelHeight3 = m_wheelHeight4 = 0.0;
 
 	m_Bodies.push_back(body);
@@ -43,27 +54,42 @@ CCar::CCar()
 CCar::~CCar(){
 }
 
-void CCar::updateBodyData()
-{
-	float x = 0.8;
-	float y = -0.45;
-	float zfr = -1.35;
-	float zba = 1.45;
-
-	float steeringangle = 0.5 * ((CCarInput *)m_InputData)->m_Right;
-
-	m_Bodies[1].m_Position = CVector(-x, y - m_wheelHeight1, zfr);	//Left front
-	m_Bodies[1].m_Orientation.rotY(steeringangle);
-	m_Bodies[2].m_Position = CVector(x, y - m_wheelHeight2, zfr);	//Right front
-	m_Bodies[2].m_Orientation.rotY(3.1416 + steeringangle);
-	m_Bodies[3].m_Position = CVector(-x, y - m_wheelHeight3, zba);	//Left back
-	m_Bodies[3].m_Orientation.rotY(0.0);
-	m_Bodies[4].m_Position = CVector(x, y - m_wheelHeight4, zba);	//Right back
-	m_Bodies[4].m_Orientation.rotY(3.1416);
-}
-
 void CCar::simulate(CPhysics &theSimulator)
 {
 	; //dummy implementation
 	//TODO: something useful
+}
+
+void CCar::updateBodyData()
+{
+	CMatrix wheelmatrix;
+	wheelmatrix.rotX(m_WheelAngle);
+
+#define xfr	(m_FrontWheelNeutral.x)
+#define xba	(m_BackWheelNeutral.x)
+#define yfr	(m_FrontWheelNeutral.y)
+#define yba	(m_BackWheelNeutral.y)
+#define zfr	(m_FrontWheelNeutral.z)
+#define zba	(m_BackWheelNeutral.z)
+
+	float steeringangle = 0.5 * ((CCarInput *)m_InputData)->m_Right;
+
+	CMatrix &leftm = m_Bodies[1].m_Orientation;
+	CMatrix &rightm = m_Bodies[2].m_Orientation;
+
+	leftm.rotY(steeringangle);
+	rightm.rotY(3.1416 + steeringangle);
+
+	leftm = wheelmatrix * leftm;
+	rightm = wheelmatrix * rightm;
+
+	CMatrix flipRight;
+	flipRight.rotY(3.1416); //TODO: faster CMatrix method
+
+	m_Bodies[1].m_Position = CVector(-xfr, yfr - m_wheelHeight1, zfr);	//Left front
+	m_Bodies[2].m_Position = CVector(xfr, yfr - m_wheelHeight2, zfr);	//Right front
+	m_Bodies[3].m_Position = CVector(-xba, yba - m_wheelHeight3, zba);	//Left back
+	m_Bodies[3].m_Orientation = wheelmatrix;
+	m_Bodies[4].m_Position = CVector(xba, yba - m_wheelHeight4, zba);	//Right back
+	m_Bodies[4].m_Orientation = wheelmatrix * flipRight;
 }

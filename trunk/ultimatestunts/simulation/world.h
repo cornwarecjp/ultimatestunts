@@ -51,6 +51,8 @@ public:
 	vector<CMaterial *> m_TileMaterials;
 	vector<CMaterial *> m_MovObjMaterials;
 
+	vector<CString> m_MovObjSounds;
+
 	CString getBackgroundFilename() const
 		{return m_BackgroundFilename;}
 

@@ -1,7 +1,7 @@
 /***************************************************************************
-                          sound.h  -  The basic sound system
+                          soundworld.h  -  All the sound data
                              -------------------
-    begin                : di feb 25 2003
+    begin                : ma aug 11 2003
     copyright            : (C) 2003 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
@@ -15,49 +15,39 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef SOUND_H
-#define SOUND_H
+#ifndef SOUNDWORLD_H
+#define SOUNDWORLD_H
 
 #include <vector>
 namespace std {}
 using namespace std;
-
-#include "gamecamera.h"
 #include "lconfig.h"
-#include "usmacros.h"
 
-#include "soundworld.h"
-#include "music.h"
+#include "sndsample.h"
+#include "soundobj.h"
+
+#include "world.h"
 
 /**
   *@author CJP
   */
 
-class CSound {
+class CSoundWorld {
 public: 
-	CSound(const CLConfig &conf, const CWorld *world);
-	~CSound();
-
-	void setCamera(const CCamera *cam)
-		{m_Camera = (CGameCamera *)cam;}
-
-	void playNextSong();
-
-	bool load(); //loads samples, using the world object
-	void unload(); //unloads the world samples
-
-	void update();
-
-protected:
-	const CGameCamera *m_Camera;
-
-	CMusic *m_Music;
-	CSoundObj *m_MusicObject;
+	CSoundWorld(const CWorld *world, const CLConfig &conf);
+	~CSoundWorld();
 
 	const CWorld *m_World;
-	CSoundWorld *m_SoundWorld;
 
-	int m_MusicVolume, m_SoundVolume;
+	//bool loadWorld();
+	//void unloadWorld();
+	bool loadObjects();
+	void unloadObjects();
+
+	vector<CSoundObj *> m_Channels;
+	vector<int> m_ObjIDs;
+
+	vector<CSndSample *> m_Samples;
 };
 
 #endif

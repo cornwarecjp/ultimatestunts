@@ -92,6 +92,9 @@ bool mainloop()
 	if(winsys->wasPressed('c')) camera->swithCameraMode();
 	if(winsys->wasPressed('t')) camera->switchTrackedObject();
 
+	//Next song:
+	if(winsys->wasPressed('n')) soundsystem->playNextSong();
+
 	for(unsigned int i=0; i<players.size(); i++)
 		players[i]->update(); //Makes moving decisions
 

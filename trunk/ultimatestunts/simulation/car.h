@@ -37,7 +37,13 @@ public:
 
 	virtual void simulate(CPhysics &theSimulator);
 
-	float m_WheelRPM, m_rotationAngle;
+	//constant
+	CVector m_FrontWheelNeutral;
+	CVector m_BackWheelNeutral;
+	float m_WheelRadius;
+
+	//Changing during the game
+	float m_WheelVelocity, m_WheelAngle;
 	float m_wheelHeight1, m_wheelHeight2, m_wheelHeight3, m_wheelHeight4;
 };
 

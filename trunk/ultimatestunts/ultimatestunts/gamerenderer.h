@@ -21,7 +21,7 @@
 #include "renderer.h"
 
 #include "graphicworld.h"
-#include "car.h"
+#include "movingobject.h"
 
 /**
   *@author CJP
@@ -40,7 +40,7 @@ public:
 	virtual void update();
 protected:
 	void viewBackground();
-	void viewCar(CCar *car);
+	void viewMovObj(CMovingObject *mo);
 	void viewPilaar(int x, int y, int cur_zpos);
 
 	void viewTrackPart(

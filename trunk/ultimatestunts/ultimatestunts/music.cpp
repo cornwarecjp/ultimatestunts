@@ -1,7 +1,7 @@
 /***************************************************************************
-                          sndsample.cpp  -  A 3D sound sample class
+                          music.cpp  -  A Music class
                              -------------------
-    begin                : di feb 25 2003
+    begin                : wo aug 13 2003
     copyright            : (C) 2003 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
@@ -15,7 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "sndsample.h"
+#include "music.h"
 
 #include <stdio.h>
 #ifdef HAVE_LIBFMOD
@@ -25,52 +25,72 @@
 #include <fmod/fmod_errors.h>
 #endif
 
-CSndSample::CSndSample()
+void (CALLBACKFUN *_endCallbackFunc)();
+
+signed char endCallback(FSOUND_STREAM *stream, void *buff, int len, int param)
 {
-	  m_Sample = NULL;
+	if(param) //not disabled
+		_endCallbackFunc();
+
+	return 1;
 }
 
-CSndSample::~CSndSample()
+CMusic::CMusic()
 {
-  FSOUND_Sample_Free(m_Sample);
-  m_Sample = NULL;
+	  m_Stream = NULL;
 }
 
-int CSndSample::loadFromFile(CString filename)
+CMusic::~CMusic()
 {
-	m_Sample = FSOUND_Sample_Load(FSOUND_FREE, filename.c_str(), FSOUND_HW3D, 0);
+	if(m_Stream != NULL) FSOUND_Stream_Close(m_Stream);
+}
 
-	if (!m_Sample)
+int CMusic::loadFromFile(CString filename)
+{
+	m_Stream = FSOUND_Stream_OpenFile(filename.c_str(), FSOUND_NORMAL, 0);
+
+	if (!m_Stream)
 	{
 		printf("   FMOD error: %s\n", FMOD_ErrorString(FSOUND_GetError()));
 		return 1;
 	}
-
-	// increasing mindistnace makes it louder in 3d space
-	FSOUND_Sample_SetMinMaxDistance((FSOUND_SAMPLE  *)m_Sample, 4.0f, 1000.0f);
-	FSOUND_Sample_SetLoopMode((FSOUND_SAMPLE  *)m_Sample, FSOUND_LOOP_NORMAL);
-
-	return 0;
 }
 
-int CSndSample::attachToChannel(int c)
+int CMusic::attachToChannel(int c)
 {
-	return FSOUND_PlaySoundEx(c, m_Sample, NULL, true);
+  return FSOUND_Stream_PlayEx(c, m_Stream, NULL, true);
 }
+
+void CMusic::setEndCallback(void (CALLBACKFUN *endfunc)())
+{
+	if(endfunc == NULL) //disable callback
+	{
+		FSOUND_Stream_SetEndCallback(m_Stream, endCallback, false);
+	}
+	else
+	{
+		_endCallbackFunc = endfunc;
+		FSOUND_Stream_SetEndCallback(m_Stream, endCallback, true);
+	}
+}
+
 
 #else //libfmod
 
-CSndSample::~CSndSample()
+CMusic::~CMusic()
 {;}
 
-int CSndSample::loadFromFile(CString filename)
+int CMusic::loadFromFile(CString filename)
 {
   return 1;
 }
 
-int CSndSample::attachToChannel(int c)
+int CMusic::attachToChannel(int c)
 {
   return -1; //no sound implementation
 }
+
+void CMusic::setEndCallback(void (CALLBACKFUN *endfunc)())
+{;}
 
 #endif //libfmod

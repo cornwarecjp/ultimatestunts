@@ -46,6 +46,7 @@ public:
 	CMessage *m_InputData;
 
 	vector<CBody> m_Bodies; //The object bodies
+	vector<int> m_Sounds; //The object sounds
 
 };
 
