@@ -29,15 +29,19 @@ public:
 	CReflection(bool smooth, unsigned int size);
 	~CReflection();
 
-	void update(CRenderer *renderer, CCamera *cam);
+	void update(CRenderer *renderer, CCamera *cam, int side = -1);
 	void draw() const;
 
 protected:
-	unsigned int m_Texture;
+	unsigned int m_Texture; //spheremap texture
+	unsigned int m_ReflectionTexture[6]; //side textures
+	float m_CentralPixel[4]; //the front color = clear color for the spheremap
+
+
+	void initialiseReflections();
+
 	unsigned int m_Size;
 	bool m_TexSmooth;
-
-	void initialiseReflections(char *data);
 };
 
 #endif

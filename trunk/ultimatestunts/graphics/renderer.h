@@ -51,9 +51,9 @@ protected:
 	bool m_TexSmooth;
 	bool m_ShadowSmooth;
 	float m_ReflectionDist;
+	bool m_UpdRef, m_UpdRefAllSides, m_UpdRefAllObjs;
 	int m_ReflectionSize;
-	int m_ReflectionUpdateFrames;
-	bool m_ReflectionSkipMovingObjects;
+	bool m_ReflectionDrawMovingObjects;
 };
 
 #endif

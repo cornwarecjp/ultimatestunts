@@ -56,21 +56,23 @@ protected:
 
 	void viewBackground();
 	void viewMovObj(unsigned int n);
-	void viewPilaar(int x, int y, int cur_zpos);
+
+	void viewTrack_normal();
+	void viewTrack_displaylist();
 
 	void viewTrackPart(
 		int xmin,int ymin,
 		int xmax,int ymax,
 		int dx,  int dy,
 		int cur_zpos);
+	void viewPilaar(int x, int y, int cur_zpos);
 
 	const CWorld *m_World;
 	CGraphicWorld *m_GraphicWorld;
 
 	vector<CReflection> m_MovingObjectReflections;
-	int m_UpdateBodyReflection; //>= 0 when updating a reflection
 
-	int m_FrameCounter;
+	int m_UpdateBodyReflection;
 };
 
 #endif

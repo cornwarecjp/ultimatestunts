@@ -790,8 +790,20 @@ install=false
 install_location=
 type=DATA
 
+[stunts3dedit/3ds.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[stunts3dedit/3ds.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
 [stunts3dedit/Makefile.am]
-files=stunts3dedit/main.cpp,stunts3dedit/editrenderer.cpp,stunts3dedit/editrenderer.h,stunts3dedit/editcamera.cpp,stunts3dedit/editcamera.h,stunts3dedit/textureloader.cpp,stunts3dedit/textureloader.h,stunts3dedit/editgraphobj.cpp,stunts3dedit/editgraphobj.h,stunts3dedit/generalfuncs.cpp,stunts3dedit/toolfuncs.cpp,stunts3dedit/transformfuncs.cpp,stunts3dedit/editfuncs.cpp
+files=stunts3dedit/main.cpp,stunts3dedit/editrenderer.cpp,stunts3dedit/editrenderer.h,stunts3dedit/editcamera.cpp,stunts3dedit/editcamera.h,stunts3dedit/textureloader.cpp,stunts3dedit/textureloader.h,stunts3dedit/editgraphobj.cpp,stunts3dedit/editgraphobj.h,stunts3dedit/generalfuncs.cpp,stunts3dedit/toolfuncs.cpp,stunts3dedit/transformfuncs.cpp,stunts3dedit/editfuncs.cpp,stunts3dedit/3ds.h,stunts3dedit/3ds.cpp
 sub_dirs=
 type=static_library
 

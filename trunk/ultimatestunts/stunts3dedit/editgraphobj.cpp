@@ -18,6 +18,9 @@
 #include <GL/gl.h>
 #include <cstdio> //for sscanf
 #include <cmath> //for fabs
+
+#include "3ds.h"
+
 #include "editgraphobj.h"
 #include "cfile.h"
 
@@ -243,6 +246,120 @@ bool CEditGraphObj::import_raw(CString filename, CTexture **matarray)
 	return true;
 }
 
+bool CEditGraphObj::import_3ds(CString filename, CTexture **matarray)
+{
+	m_MatArray = matarray;
+	clear();
+
+	CLoad3DS g_Load3ds;                                     // This is 3DS class.  This should go in a good model class.
+	t3DModel g_3DModel;                                     // This holds the 3D Model info that we load in
+
+	g_Load3ds.Import3DS(&g_3DModel, filename.c_str());         // Load our .3DS file into our model structure
+
+	/*
+	We won't load the textures, as we're only interested in the
+	texture coordinates. Load textures with textures.dat.
+	*/
+	/*
+	for(int i = 0; i < g_3DModel.numOfMaterials; i++)
+	{
+		// Check to see if there is a file name to load in this material
+		if(strlen(g_3DModel.pMaterials[i].strFile) > 0)
+		{
+			// Use the name of the texture file to load the bitmap, with a texture ID (i).
+			// We pass in our global texture array, the name of the texture, and an ID to reference it.
+			CreateTexture(g_Texture, g_3DModel.pMaterials[i].strFile, i);
+		}
+
+
+		// Set the texture ID for this material
+		g_3DModel.pMaterials[i].texureId = i;
+	}
+	*/
+
+	// Since we know how many objects our model has, go through each of them.
+	for(int i = 0; i < g_3DModel.numOfObjects; i++)
+	{
+		// Make sure we have valid objects just in case. (size() is in the vector class)
+		if(g_3DModel.pObject.size() <= 0) break;
+
+		// Get the current object that we are displaying
+		t3DObject *pObject = &g_3DModel.pObject[i];
+
+		CPrimitive pr;
+		pr.m_Name = pObject->strName;
+		pr.m_Type = GL_TRIANGLES;
+		pr.m_LODs = "1234c";
+
+		// Check to see if this object has a texture map, if so bind the texture to it.
+		if(pObject->bHasTexture)
+		{
+			pr.m_Texture = -1;
+		}
+		else
+		{
+			//default to no texture even if there is a texture
+			pr.m_Texture = -1;
+			//pr.m_Texture = pObject->materialID;
+		}
+
+		// Go through all of the faces (polygons) of the object and draw them
+		for(int j = 0; j < pObject->numOfFaces; j++)
+		{
+			// Go through each corner of the triangle and draw it.
+			for(int whichVertex = 0; whichVertex < 3; whichVertex++)
+			{
+				// Get the index for each point of the face
+				int index = pObject->pFaces[j].vertIndex[whichVertex];
+
+				CVertex vt;
+				vt.col = CVector(1,1,1);
+				vt.opacity = 1.0;
+				vt.reflectance = 0.0;
+
+				// Give OpenGL the normal for this vertex.
+				vt.nor = CVector(pObject->pNormals[ index ].x, pObject->pNormals[ index ].y, pObject->pNormals[ index ].z);
+
+				// If the object has a texture associated with it, give it a texture coordinate.
+				if(pObject->bHasTexture)
+				{
+					// Make sure there was a UVW map applied to the object or else it won't have tex coords.
+					if(pObject->pTexVerts)
+						vt.tex = CVector(pObject->pTexVerts[ index ].x, pObject->pTexVerts[ index ].y, 0.0);
+				}
+				else
+				{
+
+					// Make sure there is a valid material/color assigned to this object.
+					// You should always at least assign a material color to an object,
+					// but just in case we want to check the size of the material list.
+					// if the size is at least one, and the material ID != -1,
+					// then we have a valid material.
+					if(g_3DModel.pMaterials.size() && pObject->materialID >= 0)
+					{
+						// Get and set the color that the object is, since it must not have a texture
+						BYTE *pColor = g_3DModel.pMaterials[pObject->materialID].color;
+
+						// Assign the current color to this model
+						vt.col.x = (float)(pColor[0]) / 255.0;
+						vt.col.y = (float)(pColor[1]) / 255.0;
+						vt.col.z = (float)(pColor[2]) / 255.0;
+					}
+				}
+
+				// Pass in the current vertex of the object (Corner of current face)
+				vt.pos = CVector(pObject->pVerts[ index ].x, pObject->pVerts[ index ].y, pObject->pVerts[ index ].z);
+				pr.m_Vertex.push_back(vt);
+			}
+
+		}
+
+		m_Primitives.push_back(pr);
+	}
+
+	return true;
+}
+
 void CEditGraphObj::merge(const CEditGraphObj &obj, const CString &lods)
 {
 	//merge 2 objects
@@ -456,6 +573,7 @@ void CEditGraphObj::render(const CString &visibleLODs)
 				{doit = true; break;}
 		if(!doit) continue;
 		
+		//printf("test begin\n");
 		if(pr.m_Texture < 0)
 			{glDisable(GL_TEXTURE_2D);}
 		else
@@ -463,6 +581,7 @@ void CEditGraphObj::render(const CString &visibleLODs)
 			glEnable(GL_TEXTURE_2D);
 			m_MatArray[pr.m_Texture]->draw(1);
 		}
+		//printf("test eind\n");
 
 		glBegin(pr.m_Type);
 		for(unsigned int j=0; j<pr.m_Vertex.size(); j++)
@@ -483,7 +602,6 @@ void CEditGraphObj::render(const CString &visibleLODs)
 
 	glEndList();
 
-	
 	//Reflection model
 	m_ObjListRef = glGenLists(1);
 	glNewList(m_ObjListRef, GL_COMPILE);

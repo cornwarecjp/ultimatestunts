@@ -24,7 +24,8 @@ void loadFunc()
 		CEditGraphObj obj2;
 		printf("Opening file. Choose from:\n"
 			"1: *.gl file\n"
-			"2: 3dto3d smooth *.raw file\n");
+			"2: 3dto3d smooth *.raw file\n"
+			"3: 3D Studio *.3ds file\n");
 		switch(getInput("Your choice: ").toInt())
 		{
 			case 1:
@@ -35,8 +36,12 @@ void loadFunc()
 				obj2.import_raw(
 					topdir + getInput("Enter filename: "),
 					texloader->m_TexArray); break;
+			case 3:
+				obj2.import_3ds(
+					topdir + getInput("Enter filename: "),
+					texloader->m_TexArray); break;
 			default:
-				printf("Please choose between 1 and 2\n");
+				printf("Please choose between 1, 2 and 3\n");
 		}
 		graphobj->merge(obj2, lods);
 	}
@@ -44,7 +49,8 @@ void loadFunc()
 	{
 		printf("Opening file. Choose from:\n"
 			"1: *.gl file\n"
-			"2: 3dto3d smooth *.raw file\n");
+			"2: 3dto3d smooth *.raw file\n"
+			"3: 3D Studio *.3ds file\n");
 		switch(getInput("Your choice: ").toInt())
 		{
 			case 1:
@@ -55,8 +61,12 @@ void loadFunc()
 				graphobj->import_raw(
 					topdir + getInput("Enter filename: "),
 					texloader->m_TexArray); break;
+			case 3:
+				graphobj->import_3ds(
+					topdir + getInput("Enter filename: "),
+					texloader->m_TexArray); break;
 			default:
-				printf("Please choose between 1 and 2\n");
+				printf("Please choose between 1, 2 and 3\n");
 		}
 	}
 	graphobj->render(VisibleLODs);

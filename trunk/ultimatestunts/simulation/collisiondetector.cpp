@@ -253,7 +253,7 @@ void CCollisionDetector::ObjObjTest(const CBody &body1, const CBody &body2)
 
 	if(!sphereTest(p1, b1, p2, b2)) return;
 
-	fprintf(stderr, "Sphere collision\n");
+	//fprintf(stderr, "Sphere collision\n");
 
 	/*
 	Now do the polyhedra collision detection

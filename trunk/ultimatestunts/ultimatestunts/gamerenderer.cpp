@@ -27,8 +27,8 @@ CGameRenderer::CGameRenderer(const CWinSystem *winsys) : CRenderer(winsys)
 	m_World = theWorld;
 	m_GraphicWorld = new CGraphicWorld();
 	m_NumCameras = 1;
+
 	m_UpdateBodyReflection = -1;
-	m_FrameCounter = 0;
 }
 
 CGameRenderer::~CGameRenderer()
@@ -87,31 +87,22 @@ void CGameRenderer::update()
 	}
 	else
 	{
-		//fprintf(stderr, "rendering start: %.3f\n", _DebugTimer.getTime());
+		//float tstart = _DebugTimer.getTime();
 		
-		if(m_FrameCounter == 1)
-			updateReflections();
-		
+		updateReflections();
+		//fprintf(stderr, "Update reflections: %.5f\n\n\n", _DebugTimer.getTime() - tstart);
+
 		clearScreen();
 		for(unsigned int i=0; i < m_NumCameras; i++)
 		{
+			//float tcam = _DebugTimer.getTime();
 			m_CurrentCamera = i;
 			selectCamera(i);
 			renderScene();
-		}
-		
-		m_FrameCounter++;
-		if(m_FrameCounter > m_ReflectionUpdateFrames)
-		{
-			if(m_ReflectionUpdateFrames == 0 && m_FrameCounter >= 2)
-			{
-				m_FrameCounter = 2;
-			}
-			else
-				{m_FrameCounter = 1;}
+			//fprintf(stderr, "Viewport output: %.5f\n\n\n", _DebugTimer.getTime() - tcam);
 		}
 
-		//fprintf(stderr, "rendering stop: %.3f\n\n\n", _DebugTimer.getTime());
+		//fprintf(stderr, "Rendering: %.5f\n\n\n", _DebugTimer.getTime() - tstart);
 	}
 }
 
@@ -125,6 +116,17 @@ void CGameRenderer::clearScreen()
 
 void CGameRenderer::updateReflections()
 {
+	static int currentSide = 0;
+	static int currentObject = 0;
+	currentSide++;
+	if(currentSide >= 6) currentSide = 0;
+
+	if(currentSide == 0 || m_UpdRefAllSides)
+	{
+		currentObject++;
+		if(currentObject >= (int)(m_NumCameras * m_World->m_MovObjs.size())) currentObject = 0;
+	}
+
 	//initialising reflections if they don't exist
 	unsigned int numRequired = m_NumCameras * m_World->m_MovObjs.size();
 	unsigned int numPresent = m_MovingObjectReflections.size();
@@ -136,17 +138,50 @@ void CGameRenderer::updateReflections()
 		}
 
 	//Updating the reflection images
-	for(unsigned int cam=0; cam < m_NumCameras; cam++)
+	if(m_UpdRefAllObjs)
 	{
-		m_CurrentCamera = cam;
-		for(unsigned int obj=0; obj < m_World->m_MovObjs.size(); obj++)
+		for(unsigned int cam=0; cam < m_NumCameras; cam++)
 		{
-			CMovingObject *mo = theWorld->m_MovObjs[obj];
-			CVector pos = mo->m_Bodies[0].getPosition();
+			m_CurrentCamera = cam;
 
-			//we don't have to update a reflection that is not visible
-			if((pos - m_Cameras[cam]->getPosition()).abs() > m_ReflectionDist) continue;
+			for(unsigned int obj=0; obj < m_World->m_MovObjs.size(); obj++)
+			{
+				CMovingObject *mo = theWorld->m_MovObjs[obj];
+				CVector pos = mo->m_Bodies[0].getPosition();
 
+				//we don't have to update a reflection that is not visible
+				if((pos - m_Cameras[cam]->getPosition()).abs() > m_ReflectionDist) continue;
+
+				//camera
+				CCamera front;
+				pos += mo->m_Bodies[0].getOrientationMatrix() * mo->getCameraPos();
+				front.setPosition(pos);
+				front.setOrientation(m_Cameras[cam]->getOrientation());
+
+				//update reflection
+				m_UpdateBodyReflection = obj;
+				unsigned int index = cam + m_NumCameras * obj;
+
+				if(m_UpdRefAllSides)
+					{m_MovingObjectReflections[index].update(this, &front);}
+				else
+					{m_MovingObjectReflections[index].update(this, &front, currentSide);}
+			}
+
+		}
+	}
+	else
+	{
+		unsigned int obj = currentObject / m_NumCameras;
+		unsigned int cam = currentObject - m_NumCameras * obj;
+		m_CurrentCamera = cam;
+
+		CMovingObject *mo = theWorld->m_MovObjs[obj];
+		CVector pos = mo->m_Bodies[0].getPosition();
+
+		//we don't have to update a reflection that is not visible
+		if((pos - m_Cameras[cam]->getPosition()).abs() <= m_ReflectionDist)
+		{
 			//camera
 			CCamera front;
 			pos += mo->m_Bodies[0].getOrientationMatrix() * mo->getCameraPos();
@@ -156,7 +191,11 @@ void CGameRenderer::updateReflections()
 			//update reflection
 			m_UpdateBodyReflection = obj;
 			unsigned int index = cam + m_NumCameras * obj;
-			m_MovingObjectReflections[index].update(this, &front);
+
+			if(m_UpdRefAllSides)
+				{m_MovingObjectReflections[index].update(this, &front);}
+			else
+				{m_MovingObjectReflections[index].update(this, &front, currentSide);}
 		}
 	}
 
@@ -234,65 +273,22 @@ void CGameRenderer::renderScene()
 
 	glTranslatef (-camera.x, -camera.y, -camera.z);
 
+	camx = (int)(0.5 + (camera.x)/TILESIZE);
+	camy = (int)(0.5 + (camera.y)/VERTSIZE);
+	camz = (int)(0.5 + (camera.z)/TILESIZE);
 
-	glPushMatrix();
+	viewTrack_displaylist();
 
-	//Nu volgt de weergave-routine
-	int lengte = m_World->m_L;
-	int  breedte = m_World->m_W;
-
-	int x = (int)(0.5 + (camera.x)/TILESIZE);
-	int y = (int)(0.5 + (camera.y)/VERTSIZE);
-	int z = (int)(0.5 + (camera.z)/TILESIZE);
-
-	camx=x;
-	camy=y;
-	camz=z;
-	//printf ("x,y,z = %d,%d,%d\n",x,y,z);
-
-	//Nu: de dynamische begrenzing om weergavesnelheid te vergroten
-	int xmin = (x-m_VisibleTiles < 0)? 0 : x-m_VisibleTiles;
-	int xmax = (x+m_VisibleTiles > lengte)? lengte : x+m_VisibleTiles;
-	int zmin = (z-m_VisibleTiles < 0)? 0 : z-m_VisibleTiles;
-	int zmax = (z+m_VisibleTiles > breedte)? breedte : z+m_VisibleTiles;
-
-	//if(!m_ZBuffer)
-	//always back to front
-	{
-		if (x >= 0) //Linker deel
-		{
-			if (z <= breedte) viewTrackPart(xmin,zmax-1, x,z, 1,-1, y); //achter
-			if (z >= 0) viewTrackPart(xmin,zmin, x,z+1, 1,1, y); //voor+linker strook
-		}
-		if (x <= lengte) //Rechter deel
-		{
-			if (z <= breedte) viewTrackPart(xmax-1,zmax-1, x-1,z, -1,-1, y); //achter
-			if (z >= 0) viewTrackPart(xmax-1,zmin, x-1,z+1, -1,1, y); //voor+rechter strook
-		}
-
-	}
-	/*
-	else //zbuffer
-	{
-		//printf("Using z-buffering\n");
-		viewTrackPart(xmin, zmin, xmax, zmax, 1, 1, y);
-	}
-	*/
-
-	//fprintf(stderr, "renderTrack stop: %.3f\n", _DebugTimer.getTime());
-
-	glPopMatrix();
-
-	if(m_ReflectionSkipMovingObjects && m_UpdateBodyReflection >= 0)
+	if(!m_ReflectionDrawMovingObjects && m_UpdateBodyReflection >= 0)
 		return; //don't draw moving objects
 
 	//Tijdelijke plaats om auto's te renderen: achteraan
+	//float tobj = _DebugTimer.getTime();
 	int num_objs = m_World->m_MovObjs.size();
 	for(int i=0; i<num_objs; i++)
 		if(i != m_UpdateBodyReflection) //don't draw the body in its own reflection
 			viewMovObj(i);
-
-	//fprintf(stderr, "renderMovObj stop: %.3f\n", _DebugTimer.getTime());
+	//fprintf(stderr, "Drawing moving objects: %.5f\n", _DebugTimer.getTime() - tobj);
 }
 
 void CGameRenderer::viewBackground()
@@ -308,6 +304,86 @@ void CGameRenderer::viewBackground()
 	//	glEnable(GL_FOG);
 	if(m_ZBuffer)
 		glEnable(GL_DEPTH_TEST);
+}
+
+void CGameRenderer::viewTrack_displaylist()
+{
+	static vector<int> x;
+	static vector<int> y;
+	static vector<int> z;
+	static vector<unsigned int> dispList;
+
+	while(m_CurrentCamera >= x.size())
+	{
+		//generate new camera info
+		x.push_back(-1);
+		y.push_back(-1);
+		z.push_back(-1);
+		dispList.push_back(glGenLists(1));
+	}
+
+	unsigned int cam = m_CurrentCamera;
+	//fprintf(stderr, "Camera %d\n", cam);
+
+	if(camx != x[cam] || camy != y[cam] || camz != z[cam]) //the display list should be updated
+	{
+		x[cam] = camx;
+		y[cam] = camy;
+		z[cam] = camz;
+		//float tstart = _DebugTimer.getTime();
+		glNewList(dispList[cam], GL_COMPILE);
+		viewTrack_normal();
+		glEndList();
+		//fprintf(stderr, "Updating dispList: %.5f\n", _DebugTimer.getTime() - tstart);
+	}
+
+	//float tstart = _DebugTimer.getTime();
+	glCallList(dispList[cam]);
+	//fprintf(stderr, "Calling dispList: %.5f\n", _DebugTimer.getTime() - tstart);
+
+	//TODO: find some way to delete unused lists
+}
+
+void CGameRenderer::viewTrack_normal()
+{
+	glPushMatrix();
+
+	//Nu volgt de weergave-routine
+	int lengte = m_World->m_L;
+	int  breedte = m_World->m_W;
+
+	//printf ("x,y,z = %d,%d,%d\n",camx,camy,camz);
+
+	//Nu: de dynamische begrenzing om weergavesnelheid te vergroten
+	int xmin = (camx-m_VisibleTiles < 0)? 0 : camx-m_VisibleTiles;
+	int xmax = (camx+m_VisibleTiles > lengte)? lengte : camx+m_VisibleTiles;
+	int zmin = (camz-m_VisibleTiles < 0)? 0 : camz-m_VisibleTiles;
+	int zmax = (camz+m_VisibleTiles > breedte)? breedte : camz+m_VisibleTiles;
+
+	//if(!m_ZBuffer)
+	//always back to front (because of transparency)
+	{
+		if (camx >= 0) //Linker deel
+		{
+			if (camz <= breedte) viewTrackPart(xmin,zmax-1, camx,camz, 1,-1, camy); //achter
+			if (camz >= 0) viewTrackPart(xmin,zmin, camx,camz+1, 1,1, camy); //voor+linker strook
+		}
+		if (camx <= lengte) //Rechter deel
+		{
+			if (camz <= breedte) viewTrackPart(xmax-1,zmax-1, camx-1,camz, -1,-1, camy); //achter
+			if (camz >= 0) viewTrackPart(xmax-1,zmin, camx-1,camz+1, -1,1, camy); //voor+rechter strook
+		}
+
+	}
+	/*
+	else //zbuffer
+	{
+		//printf("Using z-buffering\n");
+		viewTrackPart(xmin, zmin, xmax, zmax, 1, 1, camy);
+	}
+	*/
+
+	glPopMatrix();
 }
 
 void CGameRenderer::viewTrackPart(

@@ -79,8 +79,10 @@ CRenderer::CRenderer(const CWinSystem *winsys)
 
 	m_ReflectionSize = theMainConfig->getValue("graphics", "reflection_size").toInt();
 	m_ReflectionDist = theMainConfig->getValue("graphics", "reflectiondist").toFloat();
-	m_ReflectionUpdateFrames = theMainConfig->getValue("graphics", "reflectionupdateframes").toInt();
-	m_ReflectionSkipMovingObjects = theMainConfig->getValue("graphics", "reflectionskipmovingobjects") == "true";
+	m_UpdRef = theMainConfig->getValue("graphics", "updatereflection") == "true";
+	m_UpdRefAllSides = theMainConfig->getValue("graphics", "updatereflectionallsides") == "true";
+	m_UpdRefAllObjs = theMainConfig->getValue("graphics", "updatereflectionallobjects") == "true";
+	m_ReflectionDrawMovingObjects = theMainConfig->getValue("graphics", "reflectiondrawmovingobjects") == "true";
 
 	m_MovingObjectLOD = theMainConfig->getValue("graphics", "movingobjectlod").toInt();
 

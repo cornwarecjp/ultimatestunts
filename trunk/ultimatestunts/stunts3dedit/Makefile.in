@@ -140,10 +140,10 @@ target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
 bin_PROGRAMS = stunts3dedit
-stunts3dedit_SOURCES = editcamera.cpp editgraphobj.cpp editrenderer.cpp main.cpp textureloader.cpp
+stunts3dedit_SOURCES = 3ds.cpp editcamera.cpp editgraphobj.cpp editrenderer.cpp main.cpp textureloader.cpp
 stunts3dedit_LDADD = ../graphics/libgraphics.a ../shared/libshared.a @sdllibs@ @graphlibs@
 
-EXTRA_DIST = editcamera.cpp editcamera.h editgraphobj.cpp editgraphobj.h editrenderer.cpp editrenderer.h main.cpp textureloader.cpp textureloader.h
+EXTRA_DIST = 3ds.cpp 3ds.h editcamera.cpp editcamera.h editgraphobj.cpp editgraphobj.h editrenderer.cpp editrenderer.h main.cpp textureloader.cpp textureloader.h
 
 # set the include path found by configure
 INCLUDES = $(all_includes) -I../shared -I../graphics
@@ -157,8 +157,9 @@ CONFIG_CLEAN_FILES =
 bin_PROGRAMS = stunts3dedit$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS)
 
-am_stunts3dedit_OBJECTS = editcamera.$(OBJEXT) editgraphobj.$(OBJEXT) \
-	editrenderer.$(OBJEXT) main.$(OBJEXT) textureloader.$(OBJEXT)
+am_stunts3dedit_OBJECTS = 3ds.$(OBJEXT) editcamera.$(OBJEXT) \
+	editgraphobj.$(OBJEXT) editrenderer.$(OBJEXT) main.$(OBJEXT) \
+	textureloader.$(OBJEXT)
 stunts3dedit_OBJECTS = $(am_stunts3dedit_OBJECTS)
 stunts3dedit_DEPENDENCIES = ../graphics/libgraphics.a \
 	../shared/libshared.a
@@ -166,7 +167,7 @@ stunts3dedit_DEPENDENCIES = ../graphics/libgraphics.a \
 DEFAULT_INCLUDES =  -I. -I$(srcdir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/editcamera.Po \
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/3ds.Po ./$(DEPDIR)/editcamera.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/editgraphobj.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/editrenderer.Po ./$(DEPDIR)/main.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/textureloader.Po
@@ -222,6 +223,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/3ds.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/editcamera.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/editgraphobj.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/editrenderer.Po@am__quote@

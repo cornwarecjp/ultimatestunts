@@ -185,12 +185,8 @@ int main(int argc, char *argv[])
 	printf("\nLoading textures from textures.dat\n");
 	texloader = new CTextureLoader(*theMainConfig, "textures.dat");
 
-	CString fn = getInput("Enter the filename: ");
 	graphobj = new CEditGraphObj;
-	printf("Loading graphic object...\n");
-	graphobj->loadFromFile(topdir + fn, texloader->m_TexArray);
 	graphobj->render(VisibleLODs);
-	printf("...done\n");
 
 	printf("\nInitialising the rendering engine\n");
 	renderer = new CEditRenderer(winsys);
