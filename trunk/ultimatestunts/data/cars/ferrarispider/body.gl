@@ -8,13 +8,13 @@ Reflectance 0
 
 
 #Tedit-name FERRARI_SP
+Lod 1234
+Notex
 Triangles
 End
 
 
 #Tedit-name BACKLIGHT
-Lod 1234
-Notex
 Triangles
 
 Color 1.000000, 1.000000, 1.000000
