@@ -22,6 +22,9 @@
 /**
   *@author CJP
   */
+
+#include <ode/ode.h>
+
 #include "simulation.h"
 #include "timer.h"
 #include "collisiondetector.h"
@@ -38,6 +41,7 @@ public:
 	void addContactForces(unsigned int body, CVector &Ftot, CVector &Mtot);
 protected:
 	CTimer m_Timer;
+	bool m_firstTime;
 
 	void calculateRestingContacts();
 	CCollision getFirstCollision();
@@ -49,8 +53,9 @@ protected:
 
 
 	//used by addContactForces:
+	/*
 	vector<CCollision> m_col; //the relevant collisions
-	
+
 	CGeneralVector *m_a, *m_b, *m_f;
 	CGeneralMatrix *m_A;
 	vector<unsigned int> m_C, m_NC;
@@ -58,6 +63,7 @@ protected:
 	void driveToZero(unsigned int d);
 	CGeneralVector fdirection(unsigned int d);
 	void maxstep(float &s, unsigned int &j, const CGeneralVector &df, const CGeneralVector &da, unsigned int d);
+	*/
 };
 
 #endif

@@ -18,6 +18,8 @@
 #ifndef BODY_H
 #define BODY_H
 
+#include <ode/ode.h>
+
 #include "collisionmodel.h"
 #include "vector.h"
 #include "matrix.h"
@@ -31,15 +33,24 @@ class CWorld;
 class CBody
 {
 public:
-	int m_Body;
-	CVector m_Position;
-	CMatrix m_OrientationMatrix;
-	CVector m_PreviousPosition;
-	CMatrix m_PreviousOrientationMatrix;
-
-	CVector m_FBB_min, m_FBB_max; //Fixed bounding box
+	void createODE();
+	void destroyODE();
 
 	void updateFixedBounds(const CCollisionModel& coll);
+
+	CVector getPosition() const;
+	CMatrix getOrientationMatrix() const;
+	CVector getVelocity() const;
+
+	void setPosition(CVector v);
+	void setOrientationMatrix(const CMatrix &m);
+
+	int m_Body;
+	CVector m_FBB_min, m_FBB_max; //Fixed bounding box
+
+	
+	//ODE data
+	dBodyID m_ODEBody;
 };
 
 #endif

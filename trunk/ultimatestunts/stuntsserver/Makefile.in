@@ -125,6 +125,7 @@ libexecdir = @libexecdir@
 localstatedir = @localstatedir@
 mandir = @mandir@
 netlibs = @netlibs@
+odelibs = @odelibs@
 oldincludedir = @oldincludedir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
@@ -140,7 +141,7 @@ target_os = @target_os@
 target_vendor = @target_vendor@
 bin_PROGRAMS = stuntsserver
 stuntsserver_SOURCES = main.cpp
-stuntsserver_LDADD = ../simulation/libsimulation.a ../shared/libshared.a @sdllibs@ @netlibs@
+stuntsserver_LDADD = ../simulation/libsimulation.a ../shared/libshared.a @sdllibs@ @netlibs@ @odelibs@
 
 EXTRA_DIST = main.cpp 
 

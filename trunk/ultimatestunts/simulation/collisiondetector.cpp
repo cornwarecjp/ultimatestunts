@@ -60,7 +60,7 @@ void CCollisionDetector::calculateCollisions(bool resting)
 	int hoogte = m_World->m_H;
 	for(unsigned int i=0; i < m_World->m_MovObjs.size(); i++)
 	{
-		CVector pos = m_World->m_MovObjs[i]->getPosition();
+		CVector pos; // = m_World->m_MovObjs[i]->getPosition();
 
 		int x = (int)(0.5 + (pos.x)/TILESIZE);
 		int z = (int)(0.5 + (pos.z)/TILESIZE);
@@ -110,15 +110,15 @@ void CCollisionDetector::calculateTrackBounds()
 void CCollisionDetector::ObjTrackBoundTest(int n)
 {
 	const CMovingObject *o = m_World->m_MovObjs[n];
-	CVector pos0 = o->getPreviousPosition();
-	CVector pos1 = o->getPosition();
-	CVector mom = o->getMomentum(); //an approximation for the momentum at collision time
+	CVector pos0; // = o->getPreviousPosition();
+	CVector pos1; // = o->getPosition();
+	CVector mom; // = o->getMomentum(); //an approximation for the momentum at collision time
 
 	for(unsigned int i=0; i<o->m_Bodies.size(); i++)
 	{
 		//TODO: time-dependent body position
-		CVector p0 = pos0 + o->m_Bodies[i].m_Position;
-		CVector p1 = pos1 + o->m_Bodies[i].m_Position;
+		CVector p0 = pos0 + o->m_Bodies[i].getPosition();
+		CVector p1 = pos1 + o->m_Bodies[i].getPosition();
 		const CBound *b = m_World->m_MovObjBounds[o->m_Bodies[i].m_Body];
 		float r = b->m_BSphere_r;
 
@@ -271,15 +271,13 @@ void CCollisionDetector::ObjObjTest(int n1, int n2)
 {
 	CMovingObject *o1 = m_World->m_MovObjs[n1];
 	CMovingObject *o2 = m_World->m_MovObjs[n2];
-	CVector pos1 = o1->getPosition();
-	CVector pos2 = o2->getPosition();
 
 	//TODO: per body collision
 	for(unsigned int i=0; i<o1->m_Bodies.size(); i++)
 		for(unsigned int j=0; j<o2->m_Bodies.size(); j++)
 		{
-			CVector p1 = pos1 + o1->m_Bodies[i].m_Position;
-			CVector p2 = pos2 + o2->m_Bodies[j].m_Position;
+			CVector p1 = o1->m_Bodies[i].getPosition();
+			CVector p2 = o2->m_Bodies[j].getPosition();
 			const CBound *b1 = m_World->m_MovObjBounds[o1->m_Bodies[i].m_Body];
 			const CBound *b2 = m_World->m_MovObjBounds[o2->m_Bodies[i].m_Body];
 			if(sphereTest(p1, b1, p2, b2))
@@ -303,12 +301,14 @@ void CCollisionDetector::ObjObjTest(int n1, int n2)
 
 				//determine momentum transfer
 				{
+					/*
 					float p1 = o1->getMomentum().dotProduct(c.nor);
 					float p2 = o2->getMomentum().dotProduct(c.nor);
 					float m1 = 1.0 / o1->getInvMass();
 					float m2 = 1.0 / o2->getInvMass();
 					float vcg = (p1 + p2)/(m1 + m2);
 					c.p = responsefactor*m1*(vcg - p1);
+					*/
 				}
 
 				m_Collisions.push_back(c);
@@ -325,15 +325,12 @@ void CCollisionDetector::ObjTileTest_collision(int nobj, int xtile, int ztile, i
 
 	//Object data
 	CMovingObject *theObj = m_World->m_MovObjs[nobj];
-	CVector objpos0 = theObj->getPreviousPosition();
-	CVector objpos1 = theObj->getPosition();
-	const CMatrix &objori = theObj->getOrientationMatrix();
 
 	for(unsigned int i=0; i<theObj->m_Bodies.size(); i++)
 	{
 		//body position
-		CVector pos0 = objpos0 + theObj->m_Bodies[i].m_PreviousPosition;
-		CVector pos1 = objpos1 + theObj->m_Bodies[i].m_Position;
+		CVector pos0 = theObj->m_Bodies[i].getPosition(); //m_PreviousPosition;
+		CVector pos1 = theObj->m_Bodies[i].getPosition();
 
 		//relative to the tile
 		CVector r0 = pos0 - tilepos;
@@ -416,10 +413,10 @@ void CCollisionDetector::ObjTileTest_collision(int nobj, int xtile, int ztile, i
 
 			//2.1: Rotate + translate the face
 			theFace += -r1;
-			theFace /= objori;
+			//theFace /= objori;
 
 			//2.2: Rotate the dr vector
-			dr /= objori;
+			//dr /= objori;
 
 			//2.3: Cut pieces away per plane
 			for(unsigned int of=0; of < theBound->m_Faces.size(); of++)
@@ -461,7 +458,7 @@ void CCollisionDetector::ObjTileTest_collision(int nobj, int xtile, int ztile, i
 			c.isResting = false;
 
 			//normal+position
-			c.nor = objori * theFace.nor; //rotate back
+			//c.nor = objori * theFace.nor; //rotate back
 			c.pos = (1-c.t)*pos0 + c.t*pos1 + theBound->m_Points[colpt];
 
 			//Objects+materials
@@ -473,6 +470,7 @@ void CCollisionDetector::ObjTileTest_collision(int nobj, int xtile, int ztile, i
 
 			//determine momentum transfer
 			{
+				/*
 				CMatrix R1; R1.setCrossProduct(theBound->m_Points[colpt]);
 				float v_eff = c.nor.dotProduct(-(theObj->getVelocity()) + R1 * theObj->getAngularVelocity());
 
@@ -491,7 +489,7 @@ void CCollisionDetector::ObjTileTest_collision(int nobj, int xtile, int ztile, i
 					fprintf(stderr, "Added collision: pos = %.3f,%.3f,%.3f; nor = %.3f,%.3f,%.3f; v_eff = %.3f\n",
 						c.pos.x, c.pos.y, c.pos.z, c.nor.x, c.nor.y, c.nor.z, v_eff);
 				}
-
+				*/
 			}
 
 			m_Collisions.push_back(c);
@@ -509,14 +507,14 @@ void CCollisionDetector::ObjTileTest_resting(int nobj, int xtile, int ztile, int
 
 	//Object data
 	CMovingObject *theObj = m_World->m_MovObjs[nobj];
-	CVector objpos1 = theObj->getPosition();
-	const CMatrix &objori = theObj->getOrientationMatrix();
-	CVector p = theObj->getMomentum();
+	//CVector objpos1 = theObj->getPosition();
+	//const CMatrix &objori = theObj->getOrientationMatrix();
+	CVector p; // = theObj->getMomentum();
 
 	for(unsigned int i=0; i<theObj->m_Bodies.size(); i++)
 	{
 		//body position
-		CVector pos1 = objpos1 + theObj->m_Bodies[i].m_Position;
+		CVector pos1 = theObj->m_Bodies[i].getPosition();
 
 		//relative to the tile
 		CVector r1 = pos1 - tilepos;
@@ -560,10 +558,10 @@ void CCollisionDetector::ObjTileTest_resting(int nobj, int xtile, int ztile, int
 
 			//2.1: Rotate + translate the face
 			theFace += -r1;
-			theFace /= objori;
+			//theFace /= objori;
 
 			//2.2: Rotate the p vector
-			p /= objori;
+			//p /= objori;
 
 			//2.3: Cut pieces away per plane
 			for(unsigned int of=0; of < theBound->m_Faces.size(); of++)
@@ -588,6 +586,7 @@ void CCollisionDetector::ObjTileTest_resting(int nobj, int xtile, int ztile, int
 			//3: Generate collision info
 			for(unsigned int j=0; j < theFace.size(); j++)
 			{
+				/*
 				CCollision c;
 
 				c.isResting = true;
@@ -609,6 +608,7 @@ void CCollisionDetector::ObjTileTest_resting(int nobj, int xtile, int ztile, int
 				if(v_eff < 0.0) continue;
 
 				m_Collisions.push_back(c);
+				*/
 			}
 
 		} //for tf

@@ -518,7 +518,7 @@ s,@am__fastdepCC_TRUE@,,;t t
 s,@am__fastdepCC_FALSE@,#,;t t
 s,@CPP@,gcc -E,;t t
 s,@CXX@,g++,;t t
-s,@CXXFLAGS@,-Wall -g -O2 -I/usr/include/SDL -D_REENTRANT,;t t
+s,@CXXFLAGS@,-Wall -g -O2 -I/usr/include/SDL -D_REENTRANT -I/usr/include/SDL -D_REENTRANT,;t t
 s,@ac_ct_CXX@,g++,;t t
 s,@CXXDEPMODE@,depmode=gcc3,;t t
 s,@am__fastdepCXX_TRUE@,,;t t
@@ -552,6 +552,7 @@ s,@netlibs@,-lresolv -lnsl ,;t t
 s,@soundlibs@,-lfmod ,;t t
 s,@graphlibs@,-lGLU -lGL  -L/usr/X11R6/lib  -lSM -lICE -lX11 -lXi -lXext -lXmu  -lm,;t t
 s,@sdllibs@,-L/usr/lib -Wl,-rpath,/usr/lib -lSDL -lpthread ,;t t
+s,@odelibs@,-lode ,;t t
 s,@LIBOBJS@,,;t t
 s,@LTLIBOBJS@,,;t t
 CEOF

@@ -29,12 +29,21 @@ public:
 	CCar();
 	~CCar();
 
+	virtual void resetBodyPositions(CVector pos, const CMatrix &ori);
+
 	virtual CMessageBuffer::eMessageType getType() const {return CMessageBuffer::car;}
 
 	//CRuleStatus m_RuleStatus;
 
 	virtual void update(CPhysics *simulator, float dt);
 
+	//Temporary collision info for ODE
+	dGeomID m_body, m_wheel1, m_wheel2, m_wheel3, m_wheel4;
+	dGeomID m_geomgroup;
+
+	//Contact info
+	dJointID m_joint1, m_joint2, m_joint3, m_joint4;
+	
 	//constant
 	CVector m_FrontWheelNeutral;
 	CVector m_BackWheelNeutral;
@@ -43,8 +52,8 @@ public:
 	//Changing during the game
 	//TODO: add these to the message
 	//TODO: update these during simulation
-	float m_WheelVelocity, m_WheelAngle;
-	float m_wheelHeight1, m_wheelHeight2, m_wheelHeight3, m_wheelHeight4;
+	//float m_WheelVelocity, m_WheelAngle;
+	//float m_wheelHeight1, m_wheelHeight2, m_wheelHeight3, m_wheelHeight4;
 
 protected:
 	virtual void getForces(CVector &Ftot, CVector &Mtot);

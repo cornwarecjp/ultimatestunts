@@ -94,22 +94,22 @@ void CGameCamera::update()
 	{
 		case In:
 			//viewpoint is higher than center of mass
-			tp = to->getPosition() + CVector(0.0,0.3,0.0);
+			tp = to->m_Bodies[0].getPosition() + CVector(0.0,0.3,0.0);
 			if(m_Reached)
-				{tm = to->getOrientationMatrix();}
+				{tm = to->m_Bodies[0].getOrientationMatrix();}
 			//else: autotarget
 
-			tv = to->getVelocity();
+			tv = to->m_Bodies[0].getVelocity();
 			break;
 		case Tracking:
 			{
-				tv = to->getVelocity();
+				tv = to->m_Bodies[0].getVelocity();
 				float vabs = tv.abs();
 				float z = 0.5 * vabs + 15.0;
 				float y = 0.05 * vabs + 3.0;
 				tp = CVector(0.0, y, z); //further away when going faster
-				tp *= to->getOrientationMatrix();
-				tp += to->getPosition();
+				tp *= to->m_Bodies[0].getOrientationMatrix();
+				tp += to->m_Bodies[0].getPosition();
 				autotarget = true; //point the camera to the object
 				m_Reached = false; //always have "smooth" camera movement
 			}
@@ -117,9 +117,9 @@ void CGameCamera::update()
 		case Top:
 			{
 				reach_thr = 5.0;
-				tv = to->getVelocity();
+				tv = to->m_Bodies[0].getVelocity();
 				float vabs = tv.abs();
-				tp = to->getPosition() + CVector(0.0, 20.0 + 5.0*vabs, 0.0);
+				tp = to->m_Bodies[0].getPosition() + CVector(0.0, 20.0 + 5.0*vabs, 0.0);
 				if(m_Reached)
 				{
 					CMatrix m;
@@ -134,7 +134,7 @@ void CGameCamera::update()
 			break;
 		case Television:
 			{
-				tp = to->getPosition();
+				tp = to->m_Bodies[0].getPosition();
 				int x = (int)tp.x;
 				int y = (int)tp.y;
 				int z = (int)tp.z;
@@ -177,7 +177,7 @@ void CGameCamera::update()
 	}
 
 	if(autotarget)
-		{m_Orientation.targetZ(m_Position - to->getPosition(), true);}
+		{m_Orientation.targetZ(m_Position - to->m_Bodies[0].getPosition(), true);}
 	else
 		{m_Orientation = tm;}
 }

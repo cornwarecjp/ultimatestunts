@@ -163,29 +163,29 @@ void CGameRenderer::viewBackground()
 
 void CGameRenderer::viewMovObj(CMovingObject *mo)
 {
-	glPushMatrix();
+	//glPushMatrix();
 
-	CVector r = mo->getPosition();
-	const CMatrix &m = mo->getOrientationMatrix();
+	//CVector r = mo->getPosition();
+	//const CMatrix &m = mo->getOrientationMatrix();
 	//printf("Drawing a car at position %f,%f,%f\n", r.x,r.y,r.z);
 
-	glTranslatef (r.x, r.y, r.z);
-	glMultMatrixf(m.gl_mtr());
+	//glTranslatef (r.x, r.y, r.z);
+	//glMultMatrixf(m.gl_mtr());
 
 	for(unsigned int i=mo->m_Bodies.size(); i > 0; i--) //TODO: depth sorting?
 	{
 		glPushMatrix();
 
 		CBody &b = mo->m_Bodies[i-1];
-		r = b.m_Position;
+		CVector r = b.getPosition();
 		glTranslatef (r.x, r.y, r.z);
-		glMultMatrixf(b.m_OrientationMatrix.gl_mtr());
+		glMultMatrixf(b.getOrientationMatrix().gl_mtr());
 		m_GraphicWorld->m_MovingObjects[b.m_Body].draw(1); //TODO: LOD
 
 		glPopMatrix();
 	}
 
-	glPopMatrix();
+	//glPopMatrix();
 }
 
 void CGameRenderer::viewTrackPart(

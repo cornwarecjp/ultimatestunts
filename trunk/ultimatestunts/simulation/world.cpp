@@ -20,14 +20,31 @@
 #include "car.h"
 #include "datafile.h"
 
+CWorld *theWorld = NULL;
+
 CWorld::CWorld()
 {
 	printDebug = false;
+	m_Paused = true;
+
+	m_ODEWorld = dWorldCreate();
+	dWorldSetGravity(m_ODEWorld, 0.0, -9.81, 0.0);
+	m_Space = dHashSpaceCreate(0);
+	m_ContactGroup = dJointGroupCreate(0);
+	m_Ground = dCreatePlane(m_Space, 0,1,0,0);
+
+	theWorld = this;
 }
 
 CWorld::~CWorld(){
 	unloadTrack();
 	unloadMovObjs();
+
+	dJointGroupDestroy(m_ContactGroup);
+	dSpaceDestroy(m_Space);
+	dWorldDestroy(m_ODEWorld);
+
+	theWorld = NULL;
 }
 
 bool CWorld::loadTrack(CString filename)

@@ -26,6 +26,8 @@
 namespace std {}
 using namespace std;
 
+#include <ode/ode.h>
+
 #include "bound.h"
 #include "tilemodel.h"
 #include "movingobject.h"
@@ -76,10 +78,21 @@ public:
 
 	//debug
 	bool printDebug;
+	bool m_Paused;
+
+
+	//ODE data
+	dWorldID m_ODEWorld;
+	dSpaceID m_Space;
+	dJointGroupID m_ContactGroup;
+	dGeomID m_Ground;
+
 protected:
 	CMaterial **getMaterialSubset(CString indices);
 
 	CString m_BackgroundFilename;
 };
+
+extern CWorld *theWorld;
 
 #endif

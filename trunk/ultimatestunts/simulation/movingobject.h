@@ -35,7 +35,10 @@ public:
 	CMovingObject();
 	~CMovingObject();
 
+	virtual void resetBodyPositions(CVector pos, const CMatrix &ori)=0; //should be called after setting object position, orientation
+
 	//Various gets
+	/*
 	float getInvMass() const {return m_InvMass;}
 	const CMatrix &getInvMomentInertia() const {return m_InvMomentInertia;}
 	const CMatrix &getActualInvMomentInertia() const {return m_ActualInvMomentInertia;}
@@ -59,8 +62,9 @@ public:
 
 	//Old position + orientation sub-API (for collision detection)
 	void rememberCurrentState();
-	virtual CVector getPreviousPosition() const {return m_PreviousPosition;}
-	virtual const CMatrix &getPreviousOrientationMatrix() const {return m_PreviousOrientationMatrix;}
+	CVector getPreviousPosition() const {return m_PreviousPosition;}
+	const CMatrix &getPreviousOrientationMatrix() const {return m_PreviousOrientationMatrix;}
+	*/
 
 	virtual CMessageBuffer::eMessageType getType() const {return CMessageBuffer::movingObject;}
 
@@ -75,6 +79,7 @@ public:
 	virtual bool setData(const CBinBuffer &b);   // rebuild class data from binbuffer
 
 protected:
+	/*
 	//constant:
 	float m_InvMass;
 	CMatrix m_InvMomentInertia;
@@ -90,11 +95,12 @@ protected:
 	//Remember for collision detection
 	CVector m_PreviousPosition;
 	CMatrix m_PreviousOrientationMatrix;
+	*/
 
 	virtual void getForces(CVector &Ftot, CVector &Mtot);
-	void getAllForces(CPhysics *simulator, CVector &Ftot, CVector &Mtot); //including contact forces
+	//void getAllForces(CPhysics *simulator, CVector &Ftot, CVector &Mtot); //including contact forces
 
-	void updateActualInvMomentInertia();
+	//void updateActualInvMomentInertia();
 };
 
 #endif

@@ -1,6 +1,6 @@
 bin_PROGRAMS = stuntsserver
 stuntsserver_SOURCES = main.cpp
-stuntsserver_LDADD   = ../simulation/libsimulation.a ../shared/libshared.a @sdllibs@ @netlibs@
+stuntsserver_LDADD   = ../simulation/libsimulation.a ../shared/libshared.a @sdllibs@ @netlibs@ @odelibs@
 
 
 EXTRA_DIST = main.cpp 

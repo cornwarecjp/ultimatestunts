@@ -33,14 +33,16 @@ bool CRuleControl::update()
 	if(firstUpdate)
 	{
 		firstUpdate = false;
-		 m_World->m_GameStartTime = m_Timer.getTime() + 3.0;
+		theWorld->m_GameStartTime = m_Timer.getTime() + 3.0;
 
 		if(!findStartFinish()) //error with starts/finishes
 			return false; //stop
+
+		placeStart();
 	}
 
-	if(m_Timer.getTime() < m_World->m_GameStartTime)
-		placeStart();
+	if(m_Timer.getTime() > theWorld->m_GameStartTime)
+		theWorld->m_Paused = false;
 
 	return !checkFinished();
 }
@@ -108,9 +110,7 @@ void CRuleControl::placeStart()
 			6.0*(i-i%2) + 3.0
 		);
 
-		m_World->m_MovObjs[i]->setPosition(tilePos + carPos);
-		m_World->m_MovObjs[i]->setMomentum(CVector(0,0,0));
-		//m_World->m_MovObjs[i]->rememberCurrentState(); //for previous stuff
+		m_World->m_MovObjs[i]->resetBodyPositions(tilePos + carPos, CMatrix());
 	}
 }
 

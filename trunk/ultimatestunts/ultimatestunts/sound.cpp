@@ -215,8 +215,8 @@ void CSound::update()
 	{
 		CSoundObj *chn = m_SoundWorld->m_Channels[i];
 		CMovingObject *o = m_World->m_MovObjs[m_SoundWorld->m_ObjIDs[i]];
-		CVector v = o->getVelocity();
-		chn->setPosVel(o->getPosition(), v);
+		CVector v = o->m_Bodies[0].getVelocity();
+		chn->setPosVel(o->m_Bodies[0].getPosition(), v);
 		int vol = 20 + (int)(4*v.abs());
 		float freq = 0.05 + 0.05 * v.abs();
 		//printf("Setting vol,freq of %d to %d,%3.3f\n", i, vol, freq);

@@ -12,3 +12,5 @@ rm -rf */.deps
 
 rm -f *.stdout
 rm -f *.stderr
+rm -f debuglog.*
+

@@ -79,10 +79,10 @@ bool mainloop()
 	for(unsigned int i=0; i<world->m_MovObjs.size(); i++)
 	{
 		CMovingObject *mo = world->m_MovObjs[i];
-		CVector r = mo->getPosition();
-		CVector v = mo->getVelocity();
-		printf("Object %d: position (%.2f,%.2f,%.2f), velocity (%.2f,%.2f,%.2f)\n",
-		               i,            r.x, r.y, r.z,       v.x, v.y, v.z);
+		CVector r = mo->m_Bodies[0].getPosition();
+		//CVector v = mo->getVelocity();
+		printf("Object %d: position (%.2f,%.2f,%.2f)\n",
+		               i,            r.x, r.y, r.z);
 	}
 	printf("**********\n");
 

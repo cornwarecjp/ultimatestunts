@@ -136,95 +136,97 @@ m4trace:configure.in:11: -1- AC_SUBST([INSTALL_DATA])
 m4trace:configure.in:12: -1- AC_PROG_RANLIB
 m4trace:configure.in:12: -1- AC_SUBST([RANLIB])
 m4trace:configure.in:12: -1- AC_SUBST([ac_ct_RANLIB])
-m4trace:configure.in:32: -1- AC_HEADER_STDC
-m4trace:configure.in:32: -1- AC_SUBST([EGREP])
-m4trace:configure.in:32: -1- AC_DEFINE_TRACE_LITERAL([STDC_HEADERS])
-m4trace:configure.in:32: -1- AH_OUTPUT([STDC_HEADERS], [/* Define to 1 if you have the ANSI C header files. */
+m4trace:configure.in:35: -1- AC_HEADER_STDC
+m4trace:configure.in:35: -1- AC_SUBST([EGREP])
+m4trace:configure.in:35: -1- AC_DEFINE_TRACE_LITERAL([STDC_HEADERS])
+m4trace:configure.in:35: -1- AH_OUTPUT([STDC_HEADERS], [/* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS])
-m4trace:configure.in:32: -1- AC_CHECK_HEADERS([sys/types.h sys/stat.h stdlib.h string.h memory.h strings.h \
+m4trace:configure.in:35: -1- AC_CHECK_HEADERS([sys/types.h sys/stat.h stdlib.h string.h memory.h strings.h \
                   inttypes.h stdint.h unistd.h], [], [], [$ac_includes_default])
-m4trace:configure.in:32: -1- AH_OUTPUT([HAVE_SYS_TYPES_H], [/* Define to 1 if you have the <sys/types.h> header file. */
+m4trace:configure.in:35: -1- AH_OUTPUT([HAVE_SYS_TYPES_H], [/* Define to 1 if you have the <sys/types.h> header file. */
 #undef HAVE_SYS_TYPES_H])
-m4trace:configure.in:32: -1- AH_OUTPUT([HAVE_SYS_STAT_H], [/* Define to 1 if you have the <sys/stat.h> header file. */
+m4trace:configure.in:35: -1- AH_OUTPUT([HAVE_SYS_STAT_H], [/* Define to 1 if you have the <sys/stat.h> header file. */
 #undef HAVE_SYS_STAT_H])
-m4trace:configure.in:32: -1- AH_OUTPUT([HAVE_STDLIB_H], [/* Define to 1 if you have the <stdlib.h> header file. */
+m4trace:configure.in:35: -1- AH_OUTPUT([HAVE_STDLIB_H], [/* Define to 1 if you have the <stdlib.h> header file. */
 #undef HAVE_STDLIB_H])
-m4trace:configure.in:32: -1- AH_OUTPUT([HAVE_STRING_H], [/* Define to 1 if you have the <string.h> header file. */
+m4trace:configure.in:35: -1- AH_OUTPUT([HAVE_STRING_H], [/* Define to 1 if you have the <string.h> header file. */
 #undef HAVE_STRING_H])
-m4trace:configure.in:32: -1- AH_OUTPUT([HAVE_MEMORY_H], [/* Define to 1 if you have the <memory.h> header file. */
+m4trace:configure.in:35: -1- AH_OUTPUT([HAVE_MEMORY_H], [/* Define to 1 if you have the <memory.h> header file. */
 #undef HAVE_MEMORY_H])
-m4trace:configure.in:32: -1- AH_OUTPUT([HAVE_STRINGS_H], [/* Define to 1 if you have the <strings.h> header file. */
+m4trace:configure.in:35: -1- AH_OUTPUT([HAVE_STRINGS_H], [/* Define to 1 if you have the <strings.h> header file. */
 #undef HAVE_STRINGS_H])
-m4trace:configure.in:32: -1- AH_OUTPUT([HAVE_INTTYPES_H], [/* Define to 1 if you have the <inttypes.h> header file. */
+m4trace:configure.in:35: -1- AH_OUTPUT([HAVE_INTTYPES_H], [/* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H])
-m4trace:configure.in:32: -1- AH_OUTPUT([HAVE_STDINT_H], [/* Define to 1 if you have the <stdint.h> header file. */
+m4trace:configure.in:35: -1- AH_OUTPUT([HAVE_STDINT_H], [/* Define to 1 if you have the <stdint.h> header file. */
 #undef HAVE_STDINT_H])
-m4trace:configure.in:32: -1- AH_OUTPUT([HAVE_UNISTD_H], [/* Define to 1 if you have the <unistd.h> header file. */
+m4trace:configure.in:35: -1- AH_OUTPUT([HAVE_UNISTD_H], [/* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H])
-m4trace:configure.in:38: -1- AC_PATH_X
-m4trace:configure.in:38: -1- AC_DEFINE_TRACE_LITERAL([X_DISPLAY_MISSING])
-m4trace:configure.in:38: -1- AH_OUTPUT([X_DISPLAY_MISSING], [/* Define to 1 if the X Window System is missing or not being used. */
+m4trace:configure.in:41: -1- AC_PATH_X
+m4trace:configure.in:41: -1- AC_DEFINE_TRACE_LITERAL([X_DISPLAY_MISSING])
+m4trace:configure.in:41: -1- AH_OUTPUT([X_DISPLAY_MISSING], [/* Define to 1 if the X Window System is missing or not being used. */
 #undef X_DISPLAY_MISSING])
-m4trace:configure.in:38: -1- AC_CHECK_LIB([dnet], [dnet_ntoa], [X_EXTRA_LIBS="$X_EXTRA_LIBS -ldnet"])
-m4trace:configure.in:38: -1- AC_CHECK_LIB([dnet_stub], [dnet_ntoa], [X_EXTRA_LIBS="$X_EXTRA_LIBS -ldnet_stub"])
-m4trace:configure.in:38: -1- AC_CHECK_LIB([nsl], [gethostbyname], [X_EXTRA_LIBS="$X_EXTRA_LIBS -lnsl"])
-m4trace:configure.in:38: -1- AC_CHECK_LIB([bsd], [gethostbyname], [X_EXTRA_LIBS="$X_EXTRA_LIBS -lbsd"])
-m4trace:configure.in:38: -1- AC_CHECK_LIB([socket], [connect], [X_EXTRA_LIBS="-lsocket $X_EXTRA_LIBS"], [], [$X_EXTRA_LIBS])
-m4trace:configure.in:38: -1- AC_CHECK_LIB([posix], [remove], [X_EXTRA_LIBS="$X_EXTRA_LIBS -lposix"])
-m4trace:configure.in:38: -1- AC_CHECK_LIB([ipc], [shmat], [X_EXTRA_LIBS="$X_EXTRA_LIBS -lipc"])
-m4trace:configure.in:38: -1- AC_CHECK_LIB([ICE], [IceConnectionNumber], [X_PRE_LIBS="$X_PRE_LIBS -lSM -lICE"], [], [$X_EXTRA_LIBS])
-m4trace:configure.in:38: -1- AC_SUBST([X_CFLAGS])
-m4trace:configure.in:38: -1- AC_SUBST([X_PRE_LIBS])
-m4trace:configure.in:38: -1- AC_SUBST([X_LIBS])
-m4trace:configure.in:38: -1- AC_SUBST([X_EXTRA_LIBS])
-m4trace:configure.in:45: -1- AC_CHECK_LIB([GL], [glNewList], [graphlibs="-lGL $graphlibs" ], [], [$graphlibs])
-m4trace:configure.in:48: -1- AC_CHECK_LIB([MesaGL], [glNewList], [graphlibs="-lMesaGL $graphlibs"], [], [$graphlibs])
-m4trace:configure.in:55: -1- AM_CONDITIONAL([ENABLE_XMESA_FX], [\
+m4trace:configure.in:41: -1- AC_CHECK_LIB([dnet], [dnet_ntoa], [X_EXTRA_LIBS="$X_EXTRA_LIBS -ldnet"])
+m4trace:configure.in:41: -1- AC_CHECK_LIB([dnet_stub], [dnet_ntoa], [X_EXTRA_LIBS="$X_EXTRA_LIBS -ldnet_stub"])
+m4trace:configure.in:41: -1- AC_CHECK_LIB([nsl], [gethostbyname], [X_EXTRA_LIBS="$X_EXTRA_LIBS -lnsl"])
+m4trace:configure.in:41: -1- AC_CHECK_LIB([bsd], [gethostbyname], [X_EXTRA_LIBS="$X_EXTRA_LIBS -lbsd"])
+m4trace:configure.in:41: -1- AC_CHECK_LIB([socket], [connect], [X_EXTRA_LIBS="-lsocket $X_EXTRA_LIBS"], [], [$X_EXTRA_LIBS])
+m4trace:configure.in:41: -1- AC_CHECK_LIB([posix], [remove], [X_EXTRA_LIBS="$X_EXTRA_LIBS -lposix"])
+m4trace:configure.in:41: -1- AC_CHECK_LIB([ipc], [shmat], [X_EXTRA_LIBS="$X_EXTRA_LIBS -lipc"])
+m4trace:configure.in:41: -1- AC_CHECK_LIB([ICE], [IceConnectionNumber], [X_PRE_LIBS="$X_PRE_LIBS -lSM -lICE"], [], [$X_EXTRA_LIBS])
+m4trace:configure.in:41: -1- AC_SUBST([X_CFLAGS])
+m4trace:configure.in:41: -1- AC_SUBST([X_PRE_LIBS])
+m4trace:configure.in:41: -1- AC_SUBST([X_LIBS])
+m4trace:configure.in:41: -1- AC_SUBST([X_EXTRA_LIBS])
+m4trace:configure.in:48: -1- AC_CHECK_LIB([GL], [glNewList], [graphlibs="-lGL $graphlibs" ], [], [$graphlibs])
+m4trace:configure.in:51: -1- AC_CHECK_LIB([MesaGL], [glNewList], [graphlibs="-lMesaGL $graphlibs"], [], [$graphlibs])
+m4trace:configure.in:58: -1- AM_CONDITIONAL([ENABLE_XMESA_FX], [\
                 test "x$ac_cv_header_GL_xmesa_h" = "xyes"])
-m4trace:configure.in:55: -1- AC_SUBST([ENABLE_XMESA_FX_TRUE])
-m4trace:configure.in:55: -1- AC_SUBST([ENABLE_XMESA_FX_FALSE])
-m4trace:configure.in:58: -1- AM_CONDITIONAL([ENABLE_XMESA_FX], [test "no" = "yes"])
 m4trace:configure.in:58: -1- AC_SUBST([ENABLE_XMESA_FX_TRUE])
 m4trace:configure.in:58: -1- AC_SUBST([ENABLE_XMESA_FX_FALSE])
-m4trace:configure.in:61: -1- AC_CHECK_LIB([GLU], [gluLookAt], [graphlibs="-lGLU $graphlibs" ], [], [$graphlibs])
-m4trace:configure.in:64: -1- AC_CHECK_LIB([MesaGLU], [gluLookAt], [graphlibs="-lMesaGLU $graphlibs" ], [], [$graphlibs])
-m4trace:configure.in:74: -1- AM_CONDITIONAL([ENABLE_XMESA_FX], [test "no" = "yes"])
-m4trace:configure.in:74: -1- AC_SUBST([ENABLE_XMESA_FX_TRUE])
-m4trace:configure.in:74: -1- AC_SUBST([ENABLE_XMESA_FX_FALSE])
-m4trace:configure.in:78: -2- AC_DEFINE_TRACE_LITERAL([HAVE_SDL])
-m4trace:configure.in:78: -1- AC_CANONICAL_HOST
-m4trace:configure.in:78: -1- AC_SUBST([build], [$ac_cv_build])
-m4trace:configure.in:78: -1- AC_SUBST([build_cpu], [`echo $ac_cv_build | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\1/'`])
-m4trace:configure.in:78: -1- AC_SUBST([build_vendor], [`echo $ac_cv_build | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\2/'`])
-m4trace:configure.in:78: -1- AC_SUBST([build_os], [`echo $ac_cv_build | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\3/'`])
-m4trace:configure.in:78: -1- AC_SUBST([host], [$ac_cv_host])
-m4trace:configure.in:78: -1- AC_SUBST([host_cpu], [`echo $ac_cv_host | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\1/'`])
-m4trace:configure.in:78: -1- AC_SUBST([host_vendor], [`echo $ac_cv_host | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\2/'`])
-m4trace:configure.in:78: -1- AC_SUBST([host_os], [`echo $ac_cv_host | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\3/'`])
-m4trace:configure.in:78: -1- AC_SUBST([target], [$ac_cv_target])
-m4trace:configure.in:78: -1- AC_SUBST([target_cpu], [`echo $ac_cv_target | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\1/'`])
-m4trace:configure.in:78: -1- AC_SUBST([target_vendor], [`echo $ac_cv_target | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\2/'`])
-m4trace:configure.in:78: -1- AC_SUBST([target_os], [`echo $ac_cv_target | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\3/'`])
-m4trace:configure.in:78: -1- AC_SUBST([SDL_CONFIG], [$ac_cv_path_SDL_CONFIG])
-m4trace:configure.in:78: -1- AC_SUBST([SDL_CFLAGS])
-m4trace:configure.in:78: -1- AC_SUBST([SDL_LIBS])
-m4trace:configure.in:86: -1- AC_CHECK_LIB([socket], [socket], [netlibs="-lsocket $netlibs"])
-m4trace:configure.in:87: -1- AC_CHECK_LIB([nsl], [gethostbyname], [netlibs="-lnsl $netlibs"])
-m4trace:configure.in:88: -1- AC_CHECK_LIB([resolv], [inet_aton], [netlibs="-lresolv $netlibs"])
-m4trace:configure.in:94: -1- AC_HEADER_STDC
-m4trace:configure.in:94: -1- AC_DEFINE_TRACE_LITERAL([STDC_HEADERS])
-m4trace:configure.in:94: -1- AH_OUTPUT([STDC_HEADERS], [/* Define to 1 if you have the ANSI C header files. */
+m4trace:configure.in:61: -1- AM_CONDITIONAL([ENABLE_XMESA_FX], [test "no" = "yes"])
+m4trace:configure.in:61: -1- AC_SUBST([ENABLE_XMESA_FX_TRUE])
+m4trace:configure.in:61: -1- AC_SUBST([ENABLE_XMESA_FX_FALSE])
+m4trace:configure.in:64: -1- AC_CHECK_LIB([GLU], [gluLookAt], [graphlibs="-lGLU $graphlibs" ], [], [$graphlibs])
+m4trace:configure.in:67: -1- AC_CHECK_LIB([MesaGLU], [gluLookAt], [graphlibs="-lMesaGLU $graphlibs" ], [], [$graphlibs])
+m4trace:configure.in:77: -1- AM_CONDITIONAL([ENABLE_XMESA_FX], [test "no" = "yes"])
+m4trace:configure.in:77: -1- AC_SUBST([ENABLE_XMESA_FX_TRUE])
+m4trace:configure.in:77: -1- AC_SUBST([ENABLE_XMESA_FX_FALSE])
+m4trace:configure.in:81: -2- AC_DEFINE_TRACE_LITERAL([HAVE_SDL])
+m4trace:configure.in:81: -1- AC_CANONICAL_HOST
+m4trace:configure.in:81: -1- AC_SUBST([build], [$ac_cv_build])
+m4trace:configure.in:81: -1- AC_SUBST([build_cpu], [`echo $ac_cv_build | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\1/'`])
+m4trace:configure.in:81: -1- AC_SUBST([build_vendor], [`echo $ac_cv_build | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\2/'`])
+m4trace:configure.in:81: -1- AC_SUBST([build_os], [`echo $ac_cv_build | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\3/'`])
+m4trace:configure.in:81: -1- AC_SUBST([host], [$ac_cv_host])
+m4trace:configure.in:81: -1- AC_SUBST([host_cpu], [`echo $ac_cv_host | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\1/'`])
+m4trace:configure.in:81: -1- AC_SUBST([host_vendor], [`echo $ac_cv_host | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\2/'`])
+m4trace:configure.in:81: -1- AC_SUBST([host_os], [`echo $ac_cv_host | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\3/'`])
+m4trace:configure.in:81: -1- AC_SUBST([target], [$ac_cv_target])
+m4trace:configure.in:81: -1- AC_SUBST([target_cpu], [`echo $ac_cv_target | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\1/'`])
+m4trace:configure.in:81: -1- AC_SUBST([target_vendor], [`echo $ac_cv_target | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\2/'`])
+m4trace:configure.in:81: -1- AC_SUBST([target_os], [`echo $ac_cv_target | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\3/'`])
+m4trace:configure.in:81: -1- AC_SUBST([SDL_CONFIG], [$ac_cv_path_SDL_CONFIG])
+m4trace:configure.in:81: -1- AC_SUBST([SDL_CFLAGS])
+m4trace:configure.in:81: -1- AC_SUBST([SDL_LIBS])
+m4trace:configure.in:89: -1- AC_CHECK_LIB([socket], [socket], [netlibs="-lsocket $netlibs"])
+m4trace:configure.in:90: -1- AC_CHECK_LIB([nsl], [gethostbyname], [netlibs="-lnsl $netlibs"])
+m4trace:configure.in:91: -1- AC_CHECK_LIB([resolv], [inet_aton], [netlibs="-lresolv $netlibs"])
+m4trace:configure.in:96: -1- AC_CHECK_LIB([ode], [dCloseODE], [odelibs="-lode $odelibs"], [odelibs=])
+m4trace:configure.in:101: -1- AC_HEADER_STDC
+m4trace:configure.in:101: -1- AC_DEFINE_TRACE_LITERAL([STDC_HEADERS])
+m4trace:configure.in:101: -1- AH_OUTPUT([STDC_HEADERS], [/* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS])
-m4trace:configure.in:105: -2- AC_DEFINE_TRACE_LITERAL([HAVE_LIBFMOD])
-m4trace:configure.in:105: -1- AC_CHECK_LIB([fmod], [FSOUND_Close], [soundlibs="-lfmod $soundlibs";cat >>confdefs.h <<\_ACEOF
+m4trace:configure.in:112: -2- AC_DEFINE_TRACE_LITERAL([HAVE_LIBFMOD])
+m4trace:configure.in:112: -1- AC_CHECK_LIB([fmod], [FSOUND_Close], [soundlibs="-lfmod $soundlibs";cat >>confdefs.h <<\_ACEOF
 @%:@define HAVE_LIBFMOD 1
 _ACEOF
 ])
-m4trace:configure.in:106: -2- AC_DEFINE_TRACE_LITERAL([FMOD_HEADER])
-m4trace:configure.in:133: -1- AC_SUBST([netlibs])
-m4trace:configure.in:134: -1- AC_SUBST([soundlibs])
-m4trace:configure.in:135: -1- AC_SUBST([graphlibs])
-m4trace:configure.in:136: -1- AC_SUBST([sdllibs])
-m4trace:configure.in:138: -1- AC_CONFIG_FILES([Makefile shared/Makefile simulation/Makefile graphics/Makefile stuntsserver/Makefile stuntsai/Makefile stunts3dedit/Makefile trackedit/Makefile ultimatestunts/Makefile])
-m4trace:configure.in:138: -1- AC_SUBST([LIB@&t@OBJS], [$ac_libobjs])
-m4trace:configure.in:138: -1- AC_SUBST([LTLIBOBJS], [$ac_ltlibobjs])
+m4trace:configure.in:113: -2- AC_DEFINE_TRACE_LITERAL([FMOD_HEADER])
+m4trace:configure.in:146: -1- AC_SUBST([netlibs])
+m4trace:configure.in:147: -1- AC_SUBST([soundlibs])
+m4trace:configure.in:148: -1- AC_SUBST([graphlibs])
+m4trace:configure.in:149: -1- AC_SUBST([sdllibs])
+m4trace:configure.in:150: -1- AC_SUBST([odelibs])
+m4trace:configure.in:152: -1- AC_CONFIG_FILES([Makefile shared/Makefile simulation/Makefile graphics/Makefile stuntsserver/Makefile stuntsai/Makefile stunts3dedit/Makefile trackedit/Makefile ultimatestunts/Makefile])
+m4trace:configure.in:152: -1- AC_SUBST([LIB@&t@OBJS], [$ac_libobjs])
+m4trace:configure.in:152: -1- AC_SUBST([LTLIBOBJS], [$ac_ltlibobjs])

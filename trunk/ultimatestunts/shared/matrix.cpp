@@ -115,7 +115,7 @@ CMatrix const CMatrix::operator/(float val) const
 	return (*this) * (1.0/val);
 }
 
-CMatrix CMatrix::operator*(CMatrix const &val)
+CMatrix CMatrix::operator*(CMatrix const &val) const
 {
 	CMatrix temp;
 

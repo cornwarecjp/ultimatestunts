@@ -34,7 +34,7 @@ class CMatrix
 		CMatrix const &operator=(CMatrix const &val);
 		CMatrix const &operator*=(CMatrix const &val);
 		CMatrix const &operator/=(CMatrix const &val);
-		CMatrix operator*(CMatrix const &val);
+		CMatrix operator*(CMatrix const &val) const;
 		CMatrix transpose() const;
 
 		//Multiplication with a vector

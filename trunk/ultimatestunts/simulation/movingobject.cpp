@@ -30,17 +30,16 @@ CMovingObject::CMovingObject()
 CMovingObject::~CMovingObject()
 {
 	delete m_InputData; //I guess this will happen for all CMovingObject-derived classes
+
+	for(unsigned int i=0; i < m_Bodies.size(); i++)
+		m_Bodies[i].destroyODE();
 }
 
+/*
 void CMovingObject::rememberCurrentState()
 {
 	m_PreviousOrientationMatrix = m_OrientationMatrix;
 	m_PreviousPosition = m_Position;
-	for(unsigned int i=0; i < m_Bodies.size(); i++)
-	{
-		m_Bodies[i].m_PreviousPosition = m_Bodies[i].m_Position;
-		m_Bodies[i].m_PreviousOrientationMatrix = m_Bodies[i].m_OrientationMatrix;
-	}
 }
 
 void CMovingObject::setOrientation(CVector v)
@@ -70,6 +69,7 @@ void CMovingObject::updateActualInvMomentInertia()
 {
 	m_ActualInvMomentInertia = m_OrientationMatrix * m_InvMomentInertia * m_OrientationMatrix.transpose();
 }
+*/
 
 void CMovingObject::update(CPhysics *simulator, float dt)
 {
@@ -77,6 +77,8 @@ void CMovingObject::update(CPhysics *simulator, float dt)
 	//improved euler method:
 	//x += v*dt + a*dt*dt
 	//I got the idea from Racer (www.racer.nl)
+
+	/*
 	CVector Ftot, Mtot;
 
 	getAllForces(simulator, Ftot, Mtot);
@@ -86,6 +88,7 @@ void CMovingObject::update(CPhysics *simulator, float dt)
 
 	m_Momentum += dt * Ftot;
 	m_AngularMomentum += dt * Mtot;
+	*/
 }
 
 #define g 9.81
@@ -98,7 +101,8 @@ void CMovingObject::getForces(CVector &Ftot, CVector &Mtot)
 
 	Bugs Bunny
 	*/
-	
+
+	/*
 	//Standard gravity
 	Ftot += CVector(0, -g/m_InvMass, 0);
 
@@ -117,29 +121,32 @@ void CMovingObject::getForces(CVector &Ftot, CVector &Mtot)
 		{Mtot -= w;}
 	else
 		{Mtot -= w*50.0*cwA*wabs;} //just guessing...
+	*/
 }
 
+/*
 void CMovingObject::getAllForces(CPhysics *simulator, CVector &Ftot, CVector &Mtot)
 {
 	getForces(Ftot, Mtot);
 	simulator->addContactForces(0, Ftot, Mtot);
 }
+*/
 
 CBinBuffer &CMovingObject::getData(CBinBuffer &b) const
 {
-	b.addVector32(m_Position, 0.001);
-	b.addVector16(m_Momentum, 50.0);
-	b.addVector16(m_Orientation, 0.0001);
-	b.addVector16(m_AngularMomentum, 15.0);
+	//b.addVector32(m_Position, 0.001);
+	//b.addVector16(m_Momentum, 50.0);
+	//b.addVector16(m_Orientation, 0.0001);
+	//b.addVector16(m_AngularMomentum, 15.0);
 	return b;
 }
 
 bool CMovingObject::setData(const CBinBuffer &b)
 {
-	unsigned int pos = 0;
-	setPosition(b.getVector32(pos, 0.001));
-	m_Momentum = b.getVector16(pos, 50.0);
-	setOrientation(b.getVector16(pos, 0.0001));
-	m_AngularMomentum = b.getVector16(pos, 15.0);
+	//unsigned int pos = 0;
+	//setPosition(b.getVector32(pos, 0.001));
+	//m_Momentum = b.getVector16(pos, 50.0);
+	//setOrientation(b.getVector16(pos, 0.0001));
+	//m_AngularMomentum = b.getVector16(pos, 15.0);
 	return true;
 }
