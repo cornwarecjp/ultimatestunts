@@ -67,10 +67,29 @@ public:
 	vector<CBody> m_Bodies; //The object bodies
 	CMovObjInput *m_InputData;
 
+	//State variables:
+	CVector m_Velocity, m_AngularVelocity;
+	CVector m_Position;
+	CMatrix m_OrientationMatrix;
+
 protected:
 	CVector m_CameraPos; //the relative position of the inside camera
 
 	Uint8 m_MovObjID;
+
+	//Force accumulation:
+	void addForce(CVector F);
+	void addTorque(CVector M);
+	void addForceAt(CVector F, CVector pos);
+
+	//placing the bodies:
+	virtual void placeBodies() = 0;
+
+	//static data:
+	float m_InvMass;
+	CMatrix m_InvInertia;
+
+	CVector m_Ftot, m_Mtot;
 };
 
 #endif

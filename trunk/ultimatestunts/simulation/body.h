@@ -18,7 +18,6 @@
 #ifndef BODY_H
 #define BODY_H
 
-#include <ode/ode.h>
 #include <vector>
 namespace std {}
 using namespace std;
@@ -32,36 +31,14 @@ using namespace std;
   *@author CJP
   */
 
-struct SCollisionData
-{
-};
 
 class CBody
 {
 public:
-	void createODE();
-	void destroyODE();
-
-	void updateFixedBounds(const CCollisionModel& coll);
-
-	CVector getPosition() const;
-	CMatrix getOrientationMatrix() const;
-	CVector getOrientationVector() const;
-	CVector getVelocity() const;
-	CVector getAngularVelocity() const;
-
-	void setPosition(CVector v);
-	void setOrientationMatrix(const CMatrix &m);
-	void setOrientationVector(CVector v);
-	void setVelocity(CVector v);
-	void setAngularVelocity(CVector v);
+	CVector m_Position;
+	CMatrix m_OrientationMatrix;
 
 	int m_Body;
-	CVector m_FBB_min, m_FBB_max; //Fixed bounding box
-
-	
-	//ODE data
-	dBodyID m_ODEBody;
 
 	//collision properties:
 	float m_mu;

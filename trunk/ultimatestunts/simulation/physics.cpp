@@ -91,14 +91,21 @@ bool CPhysics::update()
 		vector<CDataObject *> objs = theWorld->getObjectArray(CDataObject::eMovingObject);
 		for(unsigned int step=0; step < N; step++)
 		{
+			//do object-specific simulation things
 			for(unsigned int i=0; i < objs.size(); i++)
 				((CMovingObject *)objs[i])->update(this, dt);
 
+			//old simulation code:
+			/*
 			m_Detector->calculateCollisions();
-			dWorldStep(theWorld->m_ODEWorld, dt);
+			*/
 		}
 	}
 	return true;
 }
 
+const CCollisionFace *CPhysics::getGroundFace(const CVector &pos)
+{
+	return m_Detector->getGroundFace(pos);
+}
 

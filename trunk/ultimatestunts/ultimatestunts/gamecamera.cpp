@@ -93,23 +93,23 @@ void CGameCamera::update()
 	switch(m_Mode)
 	{
 		case In:
-			tp = to->m_Bodies[0].getPosition() + to->m_Bodies[0].getOrientationMatrix() * to->getCameraPos();
+			tp = to->m_Position + to->m_OrientationMatrix * to->getCameraPos();
 			if(m_Reached)
-				{tm = to->m_Bodies[0].getOrientationMatrix();}
+				{tm = to->m_OrientationMatrix;}
 			//else: autotarget
 
-			tv = to->m_Bodies[0].getVelocity();
+			tv = to->m_Velocity;
 			break;
 		case Tracking:
 			{
-				tv = to->m_Bodies[0].getVelocity();
+				tv = to->m_Velocity;
 				float vabs = tv.abs();
-				const CMatrix &rmat = to->m_Bodies[0].getOrientationMatrix();
+				const CMatrix &rmat = to->m_OrientationMatrix;
 				tp = CVector(rmat.Element(2,0), 0.0, rmat.Element(2,2));
 				tp.normalise();
 				tp *= 0.5 * vabs + 15.0; //further away when going faster
 				tp.y = 0.01 * vabs + 3.0;
-				tp += to->m_Bodies[0].getPosition();
+				tp += to->m_Position;
 				autotarget = true; //point the camera to the object
 				m_Reached = false; //always have "smooth" camera movement
 			}
@@ -117,9 +117,9 @@ void CGameCamera::update()
 		case Top:
 			{
 				reach_thr = 5.0;
-				tv = to->m_Bodies[0].getVelocity();
+				tv = to->m_Velocity;
 				float vabs = tv.abs();
-				tp = to->m_Bodies[0].getPosition() + CVector(0.0, 20.0 + 5.0*vabs, 0.0);
+				tp = to->m_Position + CVector(0.0, 20.0 + 5.0*vabs, 0.0);
 				if(m_Reached)
 				{
 					CMatrix m;
@@ -134,7 +134,7 @@ void CGameCamera::update()
 			break;
 		case Television:
 			{
-				tp = to->m_Bodies[0].getPosition();
+				tp = to->m_Position;
 				int x = (int)tp.x;
 				int y = (int)tp.y;
 				int z = (int)tp.z;
@@ -177,7 +177,7 @@ void CGameCamera::update()
 	}
 
 	if(autotarget)
-		{m_Orientation.targetZ(m_Position - to->m_Bodies[0].getPosition(), true);}
+		{m_Orientation.targetZ(m_Position - to->m_Position, true);}
 	else
 		{m_Orientation = tm;}
 }

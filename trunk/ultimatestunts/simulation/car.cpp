@@ -18,10 +18,17 @@
 #include <cstdio>
 #include <cmath>
 
+#ifndef M_PI
+#define M_PI 3.1415926536
+#endif
+#define DBLPI (2.0*M_PI)
+
 #include "bound.h"
 #include "car.h"
 #include "carinput.h"
 #include "world.h"
+
+#include "physics.h"
 
 #include "datafile.h"
 #include "lconfig.h"
@@ -43,11 +50,14 @@ bool CCar::load(const CString &filename, const CParamList &list)
 	//TODO: make a way to find out if this file exists
 	//and return false if it doesn't
 
+	//Mass
+	m_InvMass = 1.0 / cfile.getValue("body", "mass").toFloat();
+	m_BodySize = cfile.getValue("body", "size").toVector();
+	m_InvInertia *= m_InvMass;
+
 	//body
 	CString bodygeomfile = cfile.getValue("body", "geometry");
 	m_BodyMu = cfile.getValue("body", "mu").toFloat();
-	m_BodyMass = cfile.getValue("body", "mass").toFloat();
-	m_BodySize = cfile.getValue("body", "size").toVector();
 	m_CameraPos = cfile.getValue("body", "camerapos").toVector();
 	m_cwA = cfile.getValue("body", "cwa").toFloat();
 	m_RotationDamping = cfile.getValue("body", "rotationdamping").toFloat();
@@ -57,18 +67,8 @@ bool CCar::load(const CString &filename, const CParamList &list)
 	CString rearwheelgeomfile = cfile.getValue("rearwheels", "geometry");
 	m_FrontWheelMu = cfile.getValue("frontwheels", "mu").toFloat();
 	m_RearWheelMu = cfile.getValue("rearwheels", "mu").toFloat();
-	m_FrontWheelMass = cfile.getValue("frontwheels", "mass").toFloat();
-	m_RearWheelMass = cfile.getValue("rearwheels", "mass").toFloat();
 	m_FrontWheelNeutral = cfile.getValue("frontwheels", "position").toVector();
 	m_RearWheelNeutral = cfile.getValue("rearwheels", "position").toVector();
-	m_FrontStopERP = cfile.getValue("frontwheels", "stoperp").toFloat();
-	m_RearStopERP = cfile.getValue("rearwheels", "stoperp").toFloat();
-	m_FrontStopCFM = cfile.getValue("frontwheels", "stopcfm").toFloat();
-	m_RearStopCFM = cfile.getValue("rearwheels", "stopcfm").toFloat();
-	m_FrontSuspERP = cfile.getValue("frontwheels", "susperp").toFloat();
-	m_RearSuspERP = cfile.getValue("rearwheels", "susperp").toFloat();
-	m_FrontSuspCFM = cfile.getValue("frontwheels", "suspcfm").toFloat();
-	m_RearSuspCFM = cfile.getValue("rearwheels", "suspcfm").toFloat();
 	m_FrontBrakeMax = cfile.getValue("frontwheels", "brakemax").toFloat();
 	m_RearBrakeMax = cfile.getValue("rearwheels", "brakemax").toFloat();
 	m_FrontSteerMax = cfile.getValue("frontwheels", "steermax").toFloat();
@@ -105,9 +105,13 @@ bool CCar::load(const CString &filename, const CParamList &list)
 
 	//initial state
 	m_Gear = 1;
-	m_MainAxisVelocity = 0.0;
 	m_MainAxisTorque = 0.0;
 	m_gas = 0.0;
+	m_a1 = m_a2 = m_a3 = m_a4 = 0.0;
+	m_w1 = m_w2 = m_w3 = m_w4 = 0.0;
+	m_M1 = m_M2 = m_M3 = m_M4 = 0.0;
+	m_DesiredSteering = m_DesiredSt1 = m_DesiredSt2 = m_DesiredSt3 = m_DesiredSt4 = 0.0;
+	m_MainAxisVelocity = 0.0;
 
 	//Five bodies:
 	CBody body, wheel1, wheel2, wheel3, wheel4;
@@ -154,33 +158,14 @@ bool CCar::load(const CString &filename, const CParamList &list)
 	wheel3.m_mu = m_RearWheelMu;
 	wheel4.m_mu = m_RearWheelMu;
 
+	/*
+	//Temporary. TODO: replace ODE things
 	body.createODE();
 	wheel1.createODE();
 	wheel2.createODE();
 	wheel3.createODE();
 	wheel4.createODE();
-
-
-	dMass mbody, mfrontwheel, mrearwheel;
-
-	dMassSetBox(&mbody, 1, m_BodySize.x, m_BodySize.y, m_BodySize.z);
-	dMassAdjust(&mbody, m_BodyMass);
-	dBodySetMass(body.m_ODEBody, &mbody);
-
-	dMassSetSphere(&mfrontwheel, 1, m_FrontWheelRadius);
-	dMassAdjust(&mfrontwheel, m_FrontWheelMass);
-	dBodySetMass(wheel1.m_ODEBody, &mfrontwheel);
-	dBodySetMass(wheel2.m_ODEBody, &mfrontwheel);
-
-	dMassSetSphere(&mrearwheel, 1, m_RearWheelRadius);
-	dMassAdjust(&mrearwheel, m_RearWheelMass);
-	dBodySetMass(wheel3.m_ODEBody, &mrearwheel);
-	dBodySetMass(wheel4.m_ODEBody, &mrearwheel);
-
-	dBodySetFiniteRotationMode(wheel1.m_ODEBody, 1);
-	dBodySetFiniteRotationMode(wheel2.m_ODEBody, 1);
-	dBodySetFiniteRotationMode(wheel3.m_ODEBody, 1);
-	dBodySetFiniteRotationMode(wheel4.m_ODEBody, 1);
+	*/
 
 	m_Bodies.push_back(body);
 	m_Bodies.push_back(wheel1);
@@ -189,72 +174,7 @@ bool CCar::load(const CString &filename, const CParamList &list)
 	m_Bodies.push_back(wheel4);
 
 	//Setting the initial positions
-
-	m_DesiredSteering = m_MainAxisVelocity = 0.0;
-
 	resetBodyPositions(CVector(0,0,0), CMatrix());
-
-	//Setting the connections
-	m_joint1 = dJointCreateHinge2(theWorld->m_ODEWorld, 0);
-	m_joint2 = dJointCreateHinge2(theWorld->m_ODEWorld, 0);
-	m_joint3 = dJointCreateHinge2(theWorld->m_ODEWorld, 0);
-	m_joint4 = dJointCreateHinge2(theWorld->m_ODEWorld, 0);
-	dJointAttach(m_joint1, body.m_ODEBody, wheel1.m_ODEBody);
-	dJointAttach(m_joint2, body.m_ODEBody, wheel2.m_ODEBody);
-	dJointAttach(m_joint3, body.m_ODEBody, wheel3.m_ODEBody);
-	dJointAttach(m_joint4, body.m_ODEBody, wheel4.m_ODEBody);
-	CVector p1 = wheel1.getPosition();
-	CVector p2 = wheel2.getPosition();
-	CVector p3 = wheel3.getPosition();
-	CVector p4 = wheel4.getPosition();
-	dJointSetHinge2Anchor(m_joint1, p1.x, p1.y, p1.z); // + 0.5 * m_FrontWheelWidth, p1.y, p1.z);
-	dJointSetHinge2Anchor(m_joint2, p2.x, p2.y, p2.z); // - 0.5 * m_FrontWheelWidth, p2.y, p2.z);
-	dJointSetHinge2Anchor(m_joint3, p3.x, p3.y, p3.z); // + 0.5 * m_RearWheelWidth, p3.y, p3.z);
-	dJointSetHinge2Anchor(m_joint4, p4.x, p4.y, p4.z); // - 0.5 * m_RearWheelWidth, p4.y, p4.z);
-	dJointSetHinge2Axis1(m_joint1, 0,1,0);
-	dJointSetHinge2Axis1(m_joint2, 0,1,0);
-	dJointSetHinge2Axis1(m_joint3, 0,1,0);
-	dJointSetHinge2Axis1(m_joint4, 0,1,0);
-	dJointSetHinge2Axis2(m_joint1, 1,0,0);
-	dJointSetHinge2Axis2(m_joint2, 1,0,0);
-	dJointSetHinge2Axis2(m_joint3, 1,0,0);
-	dJointSetHinge2Axis2(m_joint4, 1,0,0);
-
-	//The stops
-	dJointSetHinge2Param(m_joint1, dParamLoStop, -m_FrontSteerMax);
-	dJointSetHinge2Param(m_joint2, dParamLoStop, -m_FrontSteerMax);
-	dJointSetHinge2Param(m_joint3, dParamLoStop, -m_RearSteerMax);
-	dJointSetHinge2Param(m_joint4, dParamLoStop, -m_RearSteerMax);
-	dJointSetHinge2Param(m_joint1, dParamHiStop, m_FrontSteerMax);
-	dJointSetHinge2Param(m_joint2, dParamHiStop, m_FrontSteerMax);
-	dJointSetHinge2Param(m_joint3, dParamHiStop, m_RearSteerMax);
-	dJointSetHinge2Param(m_joint4, dParamHiStop, m_RearSteerMax);
-	dJointSetHinge2Param(m_joint1, dParamStopERP, m_FrontStopERP);
-	dJointSetHinge2Param(m_joint2, dParamStopERP, m_FrontStopERP);
-	dJointSetHinge2Param(m_joint3, dParamStopERP, m_RearStopERP);
-	dJointSetHinge2Param(m_joint4, dParamStopERP, m_RearStopERP);
-	dJointSetHinge2Param(m_joint1, dParamStopCFM, m_FrontStopCFM);
-	dJointSetHinge2Param(m_joint2, dParamStopCFM, m_FrontStopCFM);
-	dJointSetHinge2Param(m_joint3, dParamStopCFM, m_RearStopCFM);
-	dJointSetHinge2Param(m_joint4, dParamStopCFM, m_RearStopCFM);
-	dJointSetHinge2Param(m_joint1, dParamFudgeFactor, 0);
-	dJointSetHinge2Param(m_joint2, dParamFudgeFactor, 0);
-	dJointSetHinge2Param(m_joint3, dParamFudgeFactor, 0);
-	dJointSetHinge2Param(m_joint4, dParamFudgeFactor, 0);
-	dJointSetHinge2Param(m_joint1, dParamFMax, 100000.0);
-	dJointSetHinge2Param(m_joint2, dParamFMax, 100000.0);
-	dJointSetHinge2Param(m_joint3, dParamFMax, 100000.0);
-	dJointSetHinge2Param(m_joint4, dParamFMax, 100000.0);
-
-	//The suspension
-	dJointSetHinge2Param(m_joint1, dParamSuspensionERP, m_FrontSuspERP);
-	dJointSetHinge2Param(m_joint2, dParamSuspensionERP, m_FrontSuspERP);
-	dJointSetHinge2Param(m_joint3, dParamSuspensionERP, m_RearSuspERP);
-	dJointSetHinge2Param(m_joint4, dParamSuspensionERP, m_RearSuspERP);
-	dJointSetHinge2Param(m_joint1, dParamSuspensionCFM, m_FrontSuspCFM);
-	dJointSetHinge2Param(m_joint2, dParamSuspensionCFM, m_FrontSuspCFM);
-	dJointSetHinge2Param(m_joint3, dParamSuspensionCFM, m_RearSuspCFM);
-	dJointSetHinge2Param(m_joint4, dParamSuspensionCFM, m_RearSuspCFM);
 
 	return true;
 }
@@ -267,6 +187,14 @@ void CCar::unload()
 
 void CCar::resetBodyPositions(CVector pos, const CMatrix &ori)
 {
+	m_Position = pos;	//Main body
+	m_OrientationMatrix = ori;
+
+	placeBodies();
+}
+
+void CCar::placeBodies()
+{
 #define xfr	(m_FrontWheelNeutral.x)
 #define xba	(m_RearWheelNeutral.x)
 #define yfr	(m_FrontWheelNeutral.y)
@@ -274,65 +202,186 @@ void CCar::resetBodyPositions(CVector pos, const CMatrix &ori)
 #define zfr	(m_FrontWheelNeutral.z)
 #define zba	(m_RearWheelNeutral.z)
 
-	CMatrix flipRight;
-	flipRight.rotY(3.1416); //TODO: faster CMatrix method
+	//wheel steering matrices
+	CMatrix s1, s2, s3, s4;
+	s1.rotY(m_DesiredSt1);
+	s2.rotY(M_PI+m_DesiredSt2);
+	s3.rotY(m_DesiredSt3);
+	s4.rotY(M_PI+m_DesiredSt4);
 
-	m_Bodies[0].setPosition(pos);	//Main body
-	m_Bodies[1].setPosition(pos + CVector(-xfr, yfr, zfr));	//Left front
-	m_Bodies[2].setPosition(pos + CVector(xfr, yfr, zfr));	//Right front
-	m_Bodies[3].setPosition(pos + CVector(-xba, yba, zba));	//Left back
-	m_Bodies[4].setPosition(pos + CVector(xba, yba, zba));	//Right back
-	m_Bodies[0].setOrientationMatrix(ori);
-	m_Bodies[1].setOrientationMatrix(ori);
-	m_Bodies[2].setOrientationMatrix(ori * flipRight);
-	m_Bodies[3].setOrientationMatrix(ori);
-	m_Bodies[4].setOrientationMatrix(ori * flipRight);
+	//wheel rotation matrices
+	CMatrix r1, r2, r3, r4;
+	r1.rotX(m_a1);
+	r2.rotX(-m_a2);
+	r3.rotX(m_a3);
+	r4.rotX(-m_a4);
+
+	m_Bodies[0].m_Position = m_Position;
+	m_Bodies[0].m_OrientationMatrix = m_OrientationMatrix;
+
+	m_Bodies[1].m_Position = m_Position + m_OrientationMatrix * CVector(-xfr, yfr, zfr);	//Left front
+	m_Bodies[2].m_Position = m_Position + m_OrientationMatrix * CVector(xfr, yfr, zfr);	//Right front
+	m_Bodies[3].m_Position = m_Position + m_OrientationMatrix * CVector(-xba, yba, zba);	//Left back
+	m_Bodies[4].m_Position = m_Position + m_OrientationMatrix * CVector(xba, yba, zba);	//Right back
+
+	m_Bodies[1].m_OrientationMatrix = r1 * s1 * m_OrientationMatrix;
+	m_Bodies[2].m_OrientationMatrix = r2 * s2 * m_OrientationMatrix;
+	m_Bodies[3].m_OrientationMatrix = r3 * s3 * m_OrientationMatrix;
+	m_Bodies[4].m_OrientationMatrix = r4 * s4 * m_OrientationMatrix;
+}
+
+void CCar::placeOnGround(const CCollisionFace *theGround)
+{
+	//fprintf(stderr, "ground normal = %s\n", CString(theGround->nor).c_str());
+
+	//The right rotation:
+	
+	CMatrix &Mnu = m_OrientationMatrix;
+	CVector ynu;
+	ynu.x = Mnu.Element(1,0);
+	ynu.y = Mnu.Element(1,1);
+	ynu.z = Mnu.Element(1,2);
+
+	CVector ystr = theGround->nor;
+	CVector cp = ystr.crossProduct(ynu);
+	
+	float abscp = cp.abs();
+	if(abscp > 0.001) cp *= (asin(abscp) / abscp);
+
+	CMatrix rotate;
+	rotate.setRotation(cp);
+
+	Mnu *= rotate;
+
+	//The right position:
+
+	CVector &pos = m_Position;
+	float dobj = pos.dotProduct(theGround->nor) - theGround->d;
+	pos -= (dobj - 0.5) * theGround->nor;
+	
+	//align the linear velocity:
+	float vvert = m_Velocity.dotProduct(theGround->nor);
+	if(vvert < 0.0)
+	{
+		m_Velocity -= vvert * theGround->nor;
+	}
+
+	//align the angular velocity
+	m_AngularVelocity = m_AngularVelocity.component(theGround->nor);
+
+	//placeBodies(); //not needed
 }
 
 void CCar::update(CPhysics *simulator, float dt)
 {
 	doSteering(dt);
 
-	m_Gear = ((CCarInput *)m_InputData)->m_Gear;
-	updateAxisData();
-	updateMainAxisVelocity(dt);
-	updateMainAxisTorque();
-	applyWheelTorques();
+	const CCollisionFace *theGround = simulator->getGroundFace(m_Position);
+
+	simulateGeneral(simulator, dt);
+	if(theGround == NULL)
+	{
+		//fprintf(stderr, "ground plane NOT found\n");
+		simulateAir(simulator, dt);
+	}
+	else
+	{
+		float vvert = m_Velocity.dotProduct(theGround->nor);
+		float dobj = m_Bodies[0].m_Position.dotProduct(theGround->nor) - theGround->d;
+		if(vvert > 0.1 || dobj > 2.0) //TODO: calculate this value
+		{
+			//fprintf(stderr, "ground plane far below\n");
+			simulateAir(simulator, dt);
+		}
+		else
+		{
+			//fprintf(stderr, "ground plane found\n");
+			placeOnGround(theGround);
+			simulateGround(simulator, dt);
+		}
+	}
+
+
+	//the wheels
+	m_a1 += m_w1 * dt;
+	m_a2 += m_w2 * dt;
+	m_a3 += m_w3 * dt;
+	m_a4 += m_w4 * dt;
+	if(m_a1 > DBLPI) m_a1 -= DBLPI;
+	if(m_a2 > DBLPI) m_a2 -= DBLPI;
+	if(m_a3 > DBLPI) m_a3 -= DBLPI;
+	if(m_a4 > DBLPI) m_a4 -= DBLPI;
+	if(m_a1 < 0.0) m_a1 += DBLPI;
+	if(m_a2 < 0.0) m_a2 += DBLPI;
+	if(m_a3 < 0.0) m_a3 += DBLPI;
+	if(m_a4 < 0.0) m_a4 += DBLPI;
+
+	m_w1 += dt * m_M1 / 10.0; //TODO: fill in the wheel inertia
+	m_w2 += dt * m_M2 / 10.0;
+	m_w3 += dt * m_M3 / 10.0;
+	m_w4 += dt * m_M4 / 10.0;
+
+	//----------------------
+	//Integration step and other general things
+	//----------------------
+	CMovingObject::update(simulator, dt);
+}
+
+void CCar::simulateGeneral(CPhysics *simulator, float dt)
+{
+	/*
+	I know that this defies the law of gravity, but,
+	you see, I never studied law.
+
+	Bugs Bunny
+	*/
+	addForce(CVector(0,-9.81 / m_InvMass, 0));
+
 	addDownforce();
 
 	//----------------------
 	//Air resistance
 	//----------------------
-	const dReal *vptr = dBodyGetLinearVel(m_Bodies[0].m_ODEBody);
-	CVector v(vptr[0], vptr[1], vptr[2]);
-	CVector F = -m_cwA * v.abs() * v;
-	dBodyAddForce(m_Bodies[0].m_ODEBody, F.x, F.y, F.z);
+	addForce(-m_cwA * m_Velocity.abs() * m_Velocity);
 
 	//----------------------
 	//Rotation damping
 	//----------------------
-	const dReal *wptr = dBodyGetAngularVel(m_Bodies[0].m_ODEBody);
-	CVector w(wptr[0], wptr[1], wptr[2]);
-	CVector M = -m_RotationDamping * w.abs() * w;
-	dBodyAddTorque(m_Bodies[0].m_ODEBody, M.x, M.y, M.z);
-	
+	addTorque(-m_RotationDamping * m_AngularVelocity.abs() * m_AngularVelocity);
+
 	//----------------------
-	//Common other things
+	//Engine simulation
 	//----------------------
-	CMovingObject::update(simulator, dt);
+	m_Gear = ((CCarInput *)m_InputData)->m_Gear;
+	updateWheelOrientation();
+	updateMainAxisVelocity(dt);
+	updateMainAxisTorque();
+	updateWheelTorques();
+}
+
+void CCar::simulateAir(CPhysics *simulator, float dt)
+{
+	//maybe there is something...
+}
+
+void CCar::simulateGround(CPhysics *simulator, float dt)
+{
+	applyWheelForces();
 }
 
 void CCar::addDownforce()
 {
-	CMatrix ori = m_Bodies[0].getOrientationMatrix();
+	const CMatrix &ori = m_Bodies[0].m_OrientationMatrix;
 	
-	const dReal *vptr = dBodyGetLinearVel(m_Bodies[0].m_ODEBody);
-	CVector v(vptr[0], vptr[1], vptr[2]);
+	CVector v = m_Velocity;
 
 	v /= ori;
 
 	if(v.z < 0.0) //moving forward
 	{
+		//TODO
+
+		/*
 		dBodyAddRelForceAtRelPos(m_Bodies[0].m_ODEBody,
 			0.0, -m_FrontDownforce*v.z*v.z, 0.0,
 			0.0, 0.0, m_FrontWheelNeutral.z);
@@ -340,84 +389,79 @@ void CCar::addDownforce()
 		dBodyAddRelForceAtRelPos(m_Bodies[0].m_ODEBody,
 			0.0, -m_RearDownforce*v.z*v.z, 0.0,
 			0.0, 0.0, m_RearWheelNeutral.z);
+		*/
 	}
 }
 
-void CCar::updateAxisData()
+void CCar::doSteering(float dt)
 {
-	//This is what they *are*:
-	CVector a1, a2, a3, a4;
-	a1 = a2 = a3 = a4 = CVector(1,0,0);
-	CMatrix ori1 = m_Bodies[1].getOrientationMatrix();
-	CMatrix ori2 = m_Bodies[2].getOrientationMatrix();
-	CMatrix ori3 = m_Bodies[3].getOrientationMatrix();
-	CMatrix ori4 = m_Bodies[4].getOrientationMatrix();
-	m_a1 = ori1 * a1;
-	m_a2 = ori2 * a2;
-	m_a3 = ori3 * a3;
-	m_a4 = ori4 * a4;
+	CCarInput *input = (CCarInput *)m_InputData;
+	float steer = input->m_Right;
 
-	//This is what they *should* be (including desired steering):
-	a1 = a3 = CVector(1,0,0);
-	a2 = a4 = CVector(-1,0,0);
-	CMatrix ori0 = m_Bodies[0].getOrientationMatrix();
-	a1 *= ori0;
-	a2 *= ori0;
-	a3 *= ori0;
-	a4 *= ori0;
+	float factor = exp(-1.0*dt);
+	if(fabsf(steer) < fabsf(m_DesiredSteering))
+		factor = exp(-25.0*dt);
 
-	CMatrix st1, st2, st3, st4;
-	st1.rotY(m_DesiredSt1);
-	st2.rotY(m_DesiredSt2);
-	st3.rotY(m_DesiredSt3);
-	st4.rotY(m_DesiredSt4);
+	m_DesiredSteering = factor * m_DesiredSteering + (1.0-factor) * steer;
 
-	a1 *= st1;
-	a2 *= st2;
-	a3 *= st3;
-	a4 *= st4;
+	//if the wheels were in the middle of the car
+	float desiredfront = m_FrontSteerMax * m_DesiredSteering;
+	float desiredrear = m_RearSteerMax * m_DesiredSteering;
 
-	//fprintf(stderr, "wheel 1: %.3f\n", a1.dotProduct(m_a1));
-	//fprintf(stderr, "wheel 2: %.3f\n", a2.dotProduct(m_a2));
-	//fprintf(stderr, "wheel 3: %.3f\n", a3.dotProduct(m_a3));
-	//fprintf(stderr, "wheel 4: %.3f\n", a4.dotProduct(m_a4));
+	//desired angles
+	//important: default to zero
+	m_DesiredSt1 = 0.0, m_DesiredSt2 = 0.0, m_DesiredSt3 = 0.0, m_DesiredSt4 = 0.0;
 
-	//Set to the mean of the two:
-	/*
-	m_a1 = 0.5 * (a1 + m_a1);
-	m_a2 = 0.5 * (a2 + m_a2);
-	m_a3 = 0.5 * (a3 + m_a3);
-	m_a4 = 0.5 * (a4 + m_a4);
-	*/
-	m_a1 = a1;
-	m_a2 = a2;
-	m_a3 = a3;
-	m_a4 = a4;
+	if(fabs(desiredfront) > 0.0001 || fabs(desiredrear) > 0.0001)
+	{
+		//This correction is actually better than that
+		//is possible in a real car
+		float lth = m_RearWheelNeutral.z  - m_FrontWheelNeutral.z;
+		float halfwthf = m_FrontWheelNeutral.x;
+		float halfwthr = m_RearWheelNeutral.x;
+		float tanaf = tanf(desiredfront);
+		float tanar = tanf(-desiredrear);
+		float yf = lth * tanaf / (tanar + tanaf);
+		float yr = lth - yf;
+		float x;
+		if(fabs(tanaf) > 0.0001)
+			{x = 0.5*lth / tanaf;} //yf / tanaf}
+		else
+			{x = yr / tanar;}
 
-	/*
-	dBodySetFiniteRotationAxis(m_Bodies[1].m_ODEBody, a1.x, a1.y, a1.z);
-	dBodySetFiniteRotationAxis(m_Bodies[2].m_ODEBody, a2.x, a2.y, a2.z);
-	dBodySetFiniteRotationAxis(m_Bodies[3].m_ODEBody, a3.x, a3.y, a3.z);
-	dBodySetFiniteRotationAxis(m_Bodies[4].m_ODEBody, a4.x, a4.y, a4.z);
-	*/
+		m_DesiredSt1 = atanf(yf / (x + halfwthf));
+		m_DesiredSt2 = atanf(yf / (x - halfwthf));
+		m_DesiredSt3 = -atanf(yr / (x + halfwthr));
+		m_DesiredSt4 = -atanf(yr / (x - halfwthr));
+	}
+
+}
+
+void CCar::updateWheelOrientation()
+{
+	//body orientation:
+	CVector zaxis;
+	zaxis.x = m_OrientationMatrix.Element(2,0);
+	zaxis.y = m_OrientationMatrix.Element(2,1);
+	zaxis.z = m_OrientationMatrix.Element(2,2);
+
+	//steering matrices
+	CMatrix s1, s2, s3, s4;
+	s1.rotY(m_DesiredSt1);
+	s2.rotY(m_DesiredSt2);
+	s3.rotY(m_DesiredSt3);
+	s4.rotY(m_DesiredSt4);
+
+	m_Zwheel1 = s1 * zaxis;
+	m_Zwheel2 = s2 * zaxis;
+	m_Zwheel3 = s3 * zaxis;
+	m_Zwheel4 = s4 * zaxis;
 }
 
 void CCar::updateMainAxisVelocity(float dt) //from the wheel velocities
 {
-	/*
-	const dReal *angvel = dBodyGetAngularVel(m_Bodies[1].m_ODEBody);
-	dReal w1 = sqrt(angvel[0]*angvel[0] + angvel[1]*angvel[1] + angvel[2]*angvel[2]);
-	angvel = dBodyGetAngularVel(m_Bodies[2].m_ODEBody);
-	dReal w2 = sqrt(angvel[0]*angvel[0] + angvel[1]*angvel[1] + angvel[2]*angvel[2]);
-	*/
-	
-	dReal w1 = dJointGetHinge2Angle2Rate(m_joint1);
-	dReal w2 = dJointGetHinge2Angle2Rate(m_joint2);
-	dReal w3 = dJointGetHinge2Angle2Rate(m_joint3);
-	dReal w4 = dJointGetHinge2Angle2Rate(m_joint4);
-
 	float factor = exp(-100.0*dt);
-	m_MainAxisVelocity = factor * m_MainAxisVelocity + (1.0-factor) * 0.25 * (w1 + w2 + w3 + w4);
+	m_MainAxisVelocity = factor * m_MainAxisVelocity + (1.0-factor) * 0.25 * (m_w1 + m_w2 + m_w3 + m_w4);
 }
 
 float CCar::getEngineTorque(float wengine)
@@ -456,135 +500,153 @@ void CCar::updateMainAxisTorque()   //engine + gearbox simulation
 	m_MainAxisTorque = MEngine * getGearRatio();
 }
 
-void CCar::applyWheelTorques()      //engine + brakes
-{
-	//angular velocities
-	dReal w1 = dJointGetHinge2Angle2Rate(m_joint1);
-	dReal w2 = dJointGetHinge2Angle2Rate(m_joint2);
-	dReal w3 = dJointGetHinge2Angle2Rate(m_joint3);
-	dReal w4 = dJointGetHinge2Angle2Rate(m_joint4);
-
-	CCarInput *input = (CCarInput *)m_InputData;
-	dReal frontbrake = m_FrontBrakeMax * input->m_Backward;
-	dReal rearbrake = m_RearBrakeMax * input->m_Backward;
-
-	dReal m1 = 0.5 * (m_FrontTraction * m_MainAxisTorque - frontbrake * w1);
-	dReal m2 = 0.5 * (m_FrontTraction * m_MainAxisTorque - frontbrake * w2);
-	dReal m3 = 0.5 * (m_RearTraction * m_MainAxisTorque - rearbrake * w3);
-	dReal m4 = 0.5 * (m_RearTraction * m_MainAxisTorque - rearbrake * w4);
-
-	/*
-	if(m1 > m_MaxTorque) m1 = m_MaxTorque;
-	if(m1 < -m_MaxTorque) m1 = -m_MaxTorque;
-	if(m2 > m_MaxTorque) m2 = m_MaxTorque;
-	if(m2 < -m_MaxTorque) m2 = -m_MaxTorque;
-	if(m3 > m_MaxTorque) m3 = m_MaxTorque;
-	if(m3 < -m_MaxTorque) m3 = -m_MaxTorque;
-	if(m4 > m_MaxTorque) m4 = m_MaxTorque;
-	if(m4 < -m_MaxTorque) m4 = -m_MaxTorque;
-	*/
-
-	CVector M1 = -m1 * m_a1;
-	CVector M2 = m2 * m_a2;
-	CVector M3 = -m3 * m_a3;
-	CVector M4 = m4 * m_a4;
-
-	CVector Mt = -M1 -M2 -M3 -M4;
-	dBodyAddTorque(m_Bodies[0].m_ODEBody, Mt.x, Mt.y, Mt.z);
-	dBodyAddTorque(m_Bodies[1].m_ODEBody, M1.x, M1.y, M1.z);
-	dBodyAddTorque(m_Bodies[2].m_ODEBody, M2.x, M2.y, M2.z);
-	dBodyAddTorque(m_Bodies[3].m_ODEBody, M3.x, M3.y, M3.z);
-	dBodyAddTorque(m_Bodies[4].m_ODEBody, M4.x, M4.y, M4.z);
-
-	//dJointAddHinge2Torques(m_joint1, 0, Maxis);
-	//dJointAddHinge2Torques(m_joint2, 0, Maxis);
-	//dJointAddHinge2Torques(m_joint3, 0, Maxis);
-	//dJointAddHinge2Torques(m_joint4, 0, Maxis);
-}
-
 float CCar::getGearRatio(int gear)
 {
 	if(gear < 0) gear = m_Gear;
 	return m_DifferentialRatio * m_GearRatios[gear];
 }
 
-void CCar::doSteering(float dt)
+void CCar::updateWheelTorques()      //engine + brakes
 {
 	CCarInput *input = (CCarInput *)m_InputData;
-	dReal steer = input->m_Right;
+	float frontbrake = m_FrontBrakeMax * input->m_Backward;
+	float rearbrake = m_RearBrakeMax * input->m_Backward;
 
-	float factor = exp(-1.0*dt);
-	if(fabsf(steer) < fabsf(m_DesiredSteering))
-		factor = exp(-25.0*dt);
+	m_M1 = 0.5 * (m_FrontTraction * m_MainAxisTorque - frontbrake * m_w1);
+	m_M2 = 0.5 * (m_FrontTraction * m_MainAxisTorque - frontbrake * m_w2);
+	m_M3 = 0.5 * (m_RearTraction * m_MainAxisTorque - rearbrake * m_w3);
+	m_M4 = 0.5 * (m_RearTraction * m_MainAxisTorque - rearbrake * m_w4);
+}
 
-	m_DesiredSteering = factor * m_DesiredSteering + (1.0-factor) * steer;
+void CCar::applyWheelForces()
+{
+	//The contact parameters:
+	float staticfric = 1.3;
+	float mrotf = 0.01;
+	float cornerstiffness = 0.5;
+	float tractionconstant = 2.0;
 
-	//current angles
-	float angle1 = dJointGetHinge2Angle1(m_joint1);
-	float angle2 = dJointGetHinge2Angle1(m_joint2);
-	float angle3 = dJointGetHinge2Angle1(m_joint3);
-	float angle4 = dJointGetHinge2Angle1(m_joint4);
+	//This function mainly works in the car coordinate system
+	CMatrix Rmat_inv = m_OrientationMatrix.transpose();
 
-	//if the wheels were in the middle of the car
-	float desiredfront = m_FrontSteerMax * m_DesiredSteering;
-	float desiredrear = m_RearSteerMax * m_DesiredSteering;
+	//Wheel z axes:
+	CVector wz[4];
+	wz[0] = Rmat_inv * m_Zwheel1;
+	wz[1] = Rmat_inv * m_Zwheel2;
+	wz[2] = Rmat_inv * m_Zwheel3;
+	wz[3] = Rmat_inv * m_Zwheel4;
 
-	//desired angles
-	//important: default to zero
-	m_DesiredSt1 = 0.0, m_DesiredSt2 = 0.0, m_DesiredSt3 = 0.0, m_DesiredSt4 = 0.0;
+	//required normal force:
+	CVector Fext = Rmat_inv * m_Ftot;
+	float Fy_tot = -Fext.y;
+	if(Fy_tot < 0.0) Fy_tot = 0.0; //no "glue" forces
 
-	if(fabs(desiredfront) > 0.0001 || fabs(desiredrear) > 0.0001)
+	//position of the wheels:
+	CVector r[4];
+	r[0] = CVector(-xfr, yfr, zfr);	//Left front
+	r[1] = CVector(xfr, yfr, zfr);	//Right front
+	r[2] = CVector(-xba, yba, zba);	//Left back
+	r[3] = CVector(xba, yba, zba);	//Right back
+
+	//radii:
+	float WheelRadius[4];
+	WheelRadius[0] = m_FrontWheelRadius;
+	WheelRadius[1] = m_FrontWheelRadius;
+	WheelRadius[2] = m_RearWheelRadius;
+	WheelRadius[3] = m_RearWheelRadius;
+
+	//angular velocities:
+	float w[4];
+	w[0] = m_w1;
+	w[1] = m_w2;
+	w[2] = m_w3;
+	w[3] = m_w4;
+
+	CVector LinVel = Rmat_inv * m_Velocity;
+	CVector AngVel = Rmat_inv * m_AngularVelocity;
+
+	float Mdrive[4];
+	Mdrive[0] = m_M1;
+	Mdrive[1] = m_M2;
+	Mdrive[2] = m_M3;
+	Mdrive[3] = m_M4;
+
+	for(unsigned int i=0; i < 4; i++)
 	{
-		//This correction is actually better than that
-		//is possible in a real car
-		float lth = m_RearWheelNeutral.z  - m_FrontWheelNeutral.z;
-		float halfwthf = m_FrontWheelNeutral.x;
-		float halfwthr = m_RearWheelNeutral.x;
-		float tanaf = tanf(desiredfront);
-		float tanar = tanf(-desiredrear);
-		float yf = lth * tanaf / (tanar + tanaf);
-		float yr = lth - yf;
-		float x;
-		if(fabs(tanaf) > 0.0001)
-			{x = 0.5*lth / tanaf;} //yf / tanaf}
-		else
-			{x = yr / tanar;}
+		//make sure that the z axis is not flipped
+		if(wz[i].z < 0.0)
+			wz[i] = -wz[i];
 
-		m_DesiredSt1 = atanf(yf / (x + halfwthf));
-		m_DesiredSt2 = atanf(yf / (x - halfwthf));
-		m_DesiredSt3 = -atanf(yr / (x + halfwthr));
-		m_DesiredSt4 = -atanf(yr / (x - halfwthr));
+		//x direction:
+		CVector wx = wz[i].crossProduct(CVector(0,-1,0));
+
+		//normal force:
+		float Fnormal = 0.25 * Fy_tot; //temporary solution to normal forces
+
+		//velocities:
+		CVector Vw = (w[i] * WheelRadius[i]) * wz[i];
+		CVector Vopp = LinVel + r[i].crossProduct(AngVel);
+		CVector Vrel = Vopp + Vw; //The velocity of the tyre surface
+
+		float vlong = -Vopp.dotProduct(wz[i]); //longitudinal velocity. Positive is forward
+		float vlat =  Vopp.dotProduct(wx); //lateral velocity. Positive is right
+
+		float slipratio = (w[i] * WheelRadius[i] - vlong) / (0.01 + fabs(vlong));
+
+		//find the slip angle:
+		float slipangle = atan2f(-vlat, vlong); //positive is counterclockwise
+
+		if(fabs(vlat) < 1.0 && fabs(vlong) < 1.0) slipangle = 0.0; //TODO: put this in some magic formula
+
+		//Now calculate a torque that depends on the slipangle:
+		//TODO: correct translation of this torques
+		addTorque(CVector(0, -mrotf * Fnormal * fabs(vlong) * sin(2*slipangle), 0));
+
+		//The longitudinal force (traction + braking)
+		//The lateral force (steering)
+		//both normalised with respect to the normal force
+		float Flong = tractionconstant * slipratio; //positive points forward
+		float Flat = -cornerstiffness * vlat / (1.0 + 0.01 * fabs(vlong)); //positive points right
+
+		//printf("Flong, Flat = %.3f, %.3f\n", Flong, Flat);
+
+		//static friction:
+		float fhor_abs = sqrt(Flong*Flong + Flat*Flat);
+		if(fhor_abs > staticfric)
+		{
+			float factor = staticfric / fhor_abs;
+
+			printf("static friction exceeded with factor %.3f\n", 1.0 / factor);
+
+			Flong *= factor;
+			Flat *= factor;
+		}
+
+		//printf("Flat %d = %.3f\n", i, Flat);
+
+		//feedback to the net torque on the wheel:
+		Mdrive[i] -= Fnormal * Flong * WheelRadius[i];
+
+		//add forces to the wheel
+		CVector F = Fnormal * (CVector(0,1,0) + Flong * -wz[i] + Flat * wx);
+
+		F *= m_OrientationMatrix;
+		r[i] *= m_OrientationMatrix;
+
+		addForceAt(F, r[i]);
 	}
-	
 
-	//desired angles
-	//m_DesiredSt1 = desiredfront;
-	//m_DesiredSt2 = desiredfront;
-	//m_DesiredSt3 = desiredrear;
-	//m_DesiredSt4 = desiredrear;
-
-	float v1 = m_DesiredSt1 - angle1;
-	float v2 = m_DesiredSt2 - angle2;
-	float v3 = m_DesiredSt3 - angle3;
-	float v4 = m_DesiredSt4 - angle4;
-
-	dJointSetHinge2Param(m_joint1, dParamVel, 10.0*v1);
-	dJointSetHinge2Param(m_joint2, dParamVel, 10.0*v2);
-	dJointSetHinge2Param(m_joint3, dParamVel, 10.0*v3);
-	dJointSetHinge2Param(m_joint4, dParamVel, 10.0*v4);
-	dJointSetHinge2Param(m_joint1, dParamLoStop, m_DesiredSt1-0.00001);
-	dJointSetHinge2Param(m_joint2, dParamLoStop, m_DesiredSt2-0.00001);
-	dJointSetHinge2Param(m_joint3, dParamLoStop, m_DesiredSt3-0.00001);
-	dJointSetHinge2Param(m_joint4, dParamLoStop, m_DesiredSt4-0.00001);
-	dJointSetHinge2Param(m_joint1, dParamHiStop, m_DesiredSt1+0.00001);
-	dJointSetHinge2Param(m_joint2, dParamHiStop, m_DesiredSt2+0.00001);
-	dJointSetHinge2Param(m_joint3, dParamHiStop, m_DesiredSt3+0.00001);
-	dJointSetHinge2Param(m_joint4, dParamHiStop, m_DesiredSt4+0.00001);
+	m_M1 = Mdrive[0];
+	m_M2 = Mdrive[1];
+	m_M3 = Mdrive[2];
+	m_M4 = Mdrive[3];
 }
 
 CBinBuffer &CCar::getData(CBinBuffer &b) const
 {
 	CMovingObject::getData(b);
+
+	//TODO: update this
 
 	b += Uint8(m_Gear);
 	b.addFloat16(m_MainAxisVelocity, 0.4);
@@ -597,6 +659,8 @@ CBinBuffer &CCar::getData(CBinBuffer &b) const
 bool CCar::setData(const CBinBuffer &b, unsigned int &pos)
 {
 	if(!CMovingObject::setData(b, pos)) return false;
+
+	//TODO: update this
 
 	m_Gear = b.getUint8(pos);
 	m_MainAxisVelocity = b.getFloat16(pos, 0.4);

@@ -59,7 +59,7 @@ bool CCollisionModel::loadGLB(const CString &filename, const CParamList &list)
 	{
 		CGLBFile::SPrimitive &pr = f.m_Primitives[p];
 
-		if((pr.LODs & 16) == 0) continue; //only collision primitives
+		if((pr.LODs & (16+32)) == 0) continue; //only collision+surface primitives
 
 		//printf("    Processing primitive %s\n", pr.Name.c_str());
 
@@ -84,6 +84,10 @@ bool CCollisionModel::loadGLB(const CString &filename, const CParamList &list)
 			theFace.push_back(v1);
 			theFace.push_back(v2);
 			theFace.push_back(v3);
+
+			theFace.isSurface = (pr.LODs & 32) != 0;
+			//if(theFace.isSurface) printf("%d is is a surface\n", t);
+			theFace.isWater = (pr.LODs & 32) != 0 && (pr.LODs & 16) != 0;
 
 			theFace.material = mat;
 			theFace.reverse = false;

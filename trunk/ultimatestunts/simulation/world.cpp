@@ -28,25 +28,14 @@ CWorld::CWorld()
 	printDebug = false;
 	m_Paused = true;
 
-	m_ODEWorld = dWorldCreate();
-
-	/*
-	I know that this defies the law of gravity, but,
-	you see, I never studied law.
-
-	Bugs Bunny
-	*/
-	dWorldSetGravity(m_ODEWorld, 0.0, -9.81, 0.0);
-	m_ContactGroup = dJointGroupCreate(0);
-
 	theWorld = this;
 }
 
 CWorld::~CWorld(){
 	unloadAll();
 
-	dJointGroupDestroy(m_ContactGroup);
-	dWorldDestroy(m_ODEWorld);
+	//dJointGroupDestroy(m_ContactGroup);
+	//dWorldDestroy(m_ODEWorld);
 
 	theWorld = NULL;
 }

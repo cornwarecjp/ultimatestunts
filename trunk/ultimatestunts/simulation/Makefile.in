@@ -148,7 +148,6 @@ libexecdir = @libexecdir@
 localstatedir = @localstatedir@
 mandir = @mandir@
 netlibs = @netlibs@
-odelibs = @odelibs@
 oldincludedir = @oldincludedir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
@@ -166,10 +165,10 @@ target_vendor = @target_vendor@
 usdatadir = @usdatadir@
 noinst_LIBRARIES = libsimulation.a
 
-libsimulation_a_SOURCES = aiplayercar.cpp body.cpp bound.cpp car.cpp carinput.cpp chatmessage.cpp clientnet.cpp clientplayercontrol.cpp clientsim.cpp collisiondata.cpp collisiondetector.cpp collisionface.cpp collisionmodel.cpp gamecore.cpp material.cpp message.cpp messagebuffer.cpp movingobject.cpp movobjinput.cpp objectchoice.cpp physics.cpp player.cpp playercontrol.cpp rulecontrol.cpp simulation.cpp stuntsnet.cpp textmessage.cpp tilemodel.cpp track.cpp udpnet.cpp world.cpp
+libsimulation_a_SOURCES = aiplayercar.cpp bound.cpp car.cpp carinput.cpp chatmessage.cpp clientnet.cpp clientplayercontrol.cpp clientsim.cpp collisiondata.cpp collisiondetector.cpp collisionface.cpp collisionmodel.cpp gamecore.cpp material.cpp message.cpp messagebuffer.cpp movingobject.cpp movobjinput.cpp objectchoice.cpp physics.cpp player.cpp playercontrol.cpp rulecontrol.cpp simulation.cpp stuntsnet.cpp textmessage.cpp tilemodel.cpp track.cpp udpnet.cpp world.cpp
 INCLUDES = $(all_includes) -I../intl -I../shared
 
-EXTRA_DIST = aiplayercar.cpp aiplayercar.h body.cpp body.h bound.cpp bound.h car.cpp car.h carinput.cpp carinput.h chatmessage.cpp chatmessage.h clientnet.cpp clientnet.h clientplayercontrol.cpp clientplayercontrol.h clientsim.cpp clientsim.h collisiondata.cpp collisiondata.h collisiondetector.cpp collisiondetector.h collisionface.cpp collisionface.h collisionmodel.cpp collisionmodel.h dynamicobject.cpp gamecore.cpp gamecore.h material.cpp material.h message.cpp message.h messagebuffer.cpp messagebuffer.h movingobject.cpp movingobject.h movobjinput.cpp movobjinput.h objectchoice.cpp objectchoice.h physics.cpp physics.h player.cpp player.h playercontrol.cpp playercontrol.h rulecontrol.cpp rulecontrol.h simulation.cpp simulation.h stuntsnet.cpp stuntsnet.h textmessage.cpp textmessage.h tilemodel.cpp tilemodel.h track.cpp track.h udpnet.cpp udpnet.h world.cpp world.h
+EXTRA_DIST = aiplayercar.cpp aiplayercar.h body.h bound.cpp bound.h car.cpp car.h carinput.cpp carinput.h chatmessage.cpp chatmessage.h clientnet.cpp clientnet.h clientplayercontrol.cpp clientplayercontrol.h clientsim.cpp clientsim.h collisiondata.cpp collisiondata.h collisiondetector.cpp collisiondetector.h collisionface.cpp collisionface.h collisionmodel.cpp collisionmodel.h dynamicobject.cpp gamecore.cpp gamecore.h material.cpp material.h message.cpp message.h messagebuffer.cpp messagebuffer.h movingobject.cpp movingobject.h movobjinput.cpp movobjinput.h objectchoice.cpp objectchoice.h physics.cpp physics.h player.cpp player.h playercontrol.cpp playercontrol.h rulecontrol.cpp rulecontrol.h simulation.cpp simulation.h stuntsnet.cpp stuntsnet.h textmessage.cpp textmessage.h tilemodel.cpp tilemodel.h track.cpp track.h udpnet.cpp udpnet.h world.cpp world.h
 subdir = simulation
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -179,16 +178,16 @@ LIBRARIES = $(noinst_LIBRARIES)
 
 libsimulation_a_AR = $(AR) cru
 libsimulation_a_LIBADD =
-am_libsimulation_a_OBJECTS = aiplayercar.$(OBJEXT) body.$(OBJEXT) \
-	bound.$(OBJEXT) car.$(OBJEXT) carinput.$(OBJEXT) \
-	chatmessage.$(OBJEXT) clientnet.$(OBJEXT) \
-	clientplayercontrol.$(OBJEXT) clientsim.$(OBJEXT) \
-	collisiondata.$(OBJEXT) collisiondetector.$(OBJEXT) \
-	collisionface.$(OBJEXT) collisionmodel.$(OBJEXT) \
-	gamecore.$(OBJEXT) material.$(OBJEXT) message.$(OBJEXT) \
-	messagebuffer.$(OBJEXT) movingobject.$(OBJEXT) \
-	movobjinput.$(OBJEXT) objectchoice.$(OBJEXT) physics.$(OBJEXT) \
-	player.$(OBJEXT) playercontrol.$(OBJEXT) rulecontrol.$(OBJEXT) \
+am_libsimulation_a_OBJECTS = aiplayercar.$(OBJEXT) bound.$(OBJEXT) \
+	car.$(OBJEXT) carinput.$(OBJEXT) chatmessage.$(OBJEXT) \
+	clientnet.$(OBJEXT) clientplayercontrol.$(OBJEXT) \
+	clientsim.$(OBJEXT) collisiondata.$(OBJEXT) \
+	collisiondetector.$(OBJEXT) collisionface.$(OBJEXT) \
+	collisionmodel.$(OBJEXT) gamecore.$(OBJEXT) material.$(OBJEXT) \
+	message.$(OBJEXT) messagebuffer.$(OBJEXT) \
+	movingobject.$(OBJEXT) movobjinput.$(OBJEXT) \
+	objectchoice.$(OBJEXT) physics.$(OBJEXT) player.$(OBJEXT) \
+	playercontrol.$(OBJEXT) rulecontrol.$(OBJEXT) \
 	simulation.$(OBJEXT) stuntsnet.$(OBJEXT) textmessage.$(OBJEXT) \
 	tilemodel.$(OBJEXT) track.$(OBJEXT) udpnet.$(OBJEXT) \
 	world.$(OBJEXT)
@@ -197,10 +196,9 @@ libsimulation_a_OBJECTS = $(am_libsimulation_a_OBJECTS)
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/aiplayercar.Po ./$(DEPDIR)/body.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/bound.Po ./$(DEPDIR)/car.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/carinput.Po ./$(DEPDIR)/chatmessage.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/clientnet.Po \
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/aiplayercar.Po ./$(DEPDIR)/bound.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/car.Po ./$(DEPDIR)/carinput.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/chatmessage.Po ./$(DEPDIR)/clientnet.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/clientplayercontrol.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/clientsim.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/collisiondata.Po \
@@ -253,7 +251,6 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/aiplayercar.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/body.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bound.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/car.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/carinput.Po@am__quote@

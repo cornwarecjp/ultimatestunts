@@ -148,7 +148,6 @@ libexecdir = @libexecdir@
 localstatedir = @localstatedir@
 mandir = @mandir@
 netlibs = @netlibs@
-odelibs = @odelibs@
 oldincludedir = @oldincludedir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
@@ -167,7 +166,7 @@ usdatadir = @usdatadir@
 
 stunts_PROGRAMS = stuntsai
 stuntsai_SOURCES = main.cpp
-stuntsai_LDADD = ../shared/libshared.a ../simulation/libsimulation.a @sdllibs@ @netlibs@ @odelibs@ @LIBINTL@
+stuntsai_LDADD = ../shared/libshared.a ../simulation/libsimulation.a @sdllibs@ @netlibs@ @LIBINTL@
 
 EXTRA_DIST = main.cpp 
 

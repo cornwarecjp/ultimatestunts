@@ -257,8 +257,8 @@ void CSound::update()
 		if(o->getType() == CMessageBuffer::car)
 		{
 			CCar *theCar = (CCar *)o;
-			CVector v = theCar->m_Bodies[0].getVelocity();
-			chn->setPosVel(theCar->m_Bodies[0].getPosition(), v);
+			CVector v = theCar->m_Velocity;
+			chn->setPosVel(theCar->m_Position, v);
 
 			if(i & 1) //small test to see if it is a skid sound (temporary)
 			{ //skid sound

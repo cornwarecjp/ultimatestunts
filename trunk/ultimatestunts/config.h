@@ -8,7 +8,7 @@
 #define PACKAGE "ultimatestunts"
 
 /* Version number of package */
-#define VERSION "0.5.3"
+#define VERSION "0.5.4"
 
 #define HAVE_GLEXT_H 1
 

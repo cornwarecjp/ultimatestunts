@@ -36,6 +36,9 @@ public:
 	float d;
 	bool reverse; //points are defined clockwise instead of ccw
 
+	bool isWater;
+	bool isSurface;
+
 	CMaterial *material; //points to material array
 
 	CCollisionFace(){material = NULL;}

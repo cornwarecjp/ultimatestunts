@@ -46,28 +46,36 @@ public:
 	float getGearRatio(int gear = -1);
 	float getEngineTorque(float wengine);
 
-	//Contact info
-	dJointID m_joint1, m_joint2, m_joint3, m_joint4;
-
 	//State variables:
 	unsigned int m_Gear;
 	float m_MainAxisVelocity;
+	float m_w1, m_w2, m_w3, m_w4; //angular velocities of the wheels
+	float m_a1, m_a2, m_a3, m_a4; //rotation angles of the wheels
 	float m_DesiredSteering;
 	float m_gas;
 	
 protected:
 	//car specific physics
-	void updateAxisData();
-	void updateMainAxisVelocity(float dt);  //from the wheel velocities
-	void updateMainAxisTorque(); //engine + gearbox simulation
-	void applyWheelTorques();    //engine + brakes
+	void simulateGeneral(CPhysics *simulator, float dt);
+	void simulateAir(CPhysics *simulator, float dt);
+	void simulateGround(CPhysics *simulator, float dt);
+
+	void updateWheelOrientation();
+	void updateMainAxisVelocity(float dt); //from the wheel velocities
+	void updateMainAxisTorque();           //engine + gearbox simulation
+	void updateWheelTorques();             //engine + brakes
+	void applyWheelForces();               //tyre surface
+
 	void addDownforce();         //aerodynamic downforce
 	void doSteering(float dt);
 
-	//Cached data about the wheels' axes
-	CVector m_a1, m_a2, m_a3, m_a4;
+	void placeOnGround(const CCollisionFace *theGround);
 
-	//Other temorary data
+	virtual void placeBodies();
+
+	//Temorary data
+	CVector m_Zwheel1, m_Zwheel2, m_Zwheel3, m_Zwheel4; //z axis of the wheels
+	float m_M1, m_M2, m_M3, m_M4; //engine+brake torques on the wheels
 	float m_MainAxisTorque;
 
 	//desired steering angles of the wheels
@@ -77,7 +85,7 @@ protected:
 	//car specific settings:
 
 	//body
-	float m_BodyMu, m_BodyMass;
+	float m_BodyMu;
 	CVector m_BodySize;
 	float m_cwA, m_RotationDamping;
 
@@ -87,9 +95,6 @@ protected:
 	CVector m_RearWheelNeutral;
 	float m_FrontWheelRadius, m_RearWheelRadius;
 	float m_FrontWheelWidth, m_RearWheelWidth;
-	float m_FrontWheelMass, m_RearWheelMass;
-	float m_FrontStopERP, m_RearStopERP, m_FrontStopCFM, m_RearStopCFM;
-	float m_FrontSuspERP, m_RearSuspERP, m_FrontSuspCFM, m_RearSuspCFM;
 	float m_FrontBrakeMax, m_RearBrakeMax, m_FrontSteerMax, m_RearSteerMax;
 	float m_FrontTraction, m_RearTraction;
 	float m_FrontDownforce, m_RearDownforce;

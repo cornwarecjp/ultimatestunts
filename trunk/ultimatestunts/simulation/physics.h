@@ -23,11 +23,10 @@
   *@author CJP
   */
 
-#include <ode/ode.h>
-
 #include "simulation.h"
 #include "timer.h"
 #include "collisiondetector.h"
+#include "collisionface.h"
 #include "generalmatrix.h"
 #include "lconfig.h"
 
@@ -38,7 +37,7 @@ public:
 
 	virtual bool update();
 
-	void addContactForces(unsigned int body, CVector &Ftot, CVector &Mtot);
+	const CCollisionFace *getGroundFace(const CVector &pos);
 protected:
 	CTimer m_Timer;
 	bool m_FastCPUMode;

@@ -146,7 +146,7 @@ Nmax = 10
 #If the language is not supported, then english is
 #used. Hint: use the following format:
 #language_country
-#for intance: nl_NL, pt_BR, hu_HU
+#for intance: fr_FR, hu_HU, nl_NL, pt_BR
 language = system
 
 

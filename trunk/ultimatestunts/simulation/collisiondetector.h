@@ -25,6 +25,7 @@ using namespace std;
 #include "material.h"
 #include "vector.h"
 #include "collisionmodel.h"
+#include "collisionface.h"
 #include "bound.h"
 #include "body.h"
 /**
@@ -37,6 +38,8 @@ public:
 	~CCollisionDetector();
 
 	void calculateCollisions();
+
+	const CCollisionFace *getGroundFace(const CVector &pos);
 
 protected:
 	CVector m_TrackMin, m_TrackMax;
@@ -55,6 +58,10 @@ protected:
 	//Object <-> track bound collisions
 	void calculateTrackBounds();
 	void ObjTrackBoundTest(const CBody &body);
+
+	//Ground face tests
+	const CCollisionFace *getTileGround(int xtile, int ztile, int htile, const CVector &pos, float &dmax);
+	CCollisionFace m_LastGroundFace;
 
 	//Generic
 	bool sphereTest(const CVector &p1, const CCollisionModel *b1, const CVector &p2, const CCollisionModel *b2);

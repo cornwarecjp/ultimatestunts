@@ -26,8 +26,6 @@
 namespace std {}
 using namespace std;
 
-#include <ode/ode.h>
-
 #include "track.h"
 #include "tilemodel.h"
 #include "movingobject.h"
@@ -70,11 +68,6 @@ public:
 	//debug
 	bool printDebug;
 	bool m_Paused;
-
-
-	//ODE data
-	dWorldID m_ODEWorld;
-	dJointGroupID m_ContactGroup;
 
 protected:
 	virtual CDataObject *createObject(const CString &filename, const CParamList &plist, CDataObject::eDataType type);

@@ -95,7 +95,7 @@ bool CUSCore::update()
 		if(mo->getType() == CMessageBuffer::car)
 		{
 			CCar * theCar = (CCar *)mo;
-			float vel = theCar->m_Bodies[0].getVelocity().abs();
+			float vel = theCar->m_Velocity.abs();
 			if(vel > topspeed) topspeed = vel;
 			float wEngine = theCar->getGearRatio() * theCar->m_MainAxisVelocity;
 				

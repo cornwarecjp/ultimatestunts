@@ -2,7 +2,7 @@ stuntsdir=@stuntsdir@
 
 stunts_PROGRAMS = stuntsserver
 stuntsserver_SOURCES = consolethread.cpp gamecorethread.cpp main.cpp networkthread.cpp
-stuntsserver_LDADD   = ../simulation/libsimulation.a ../shared/libshared.a @sdllibs@ @netlibs@ @odelibs@ @LIBINTL@
+stuntsserver_LDADD   = ../simulation/libsimulation.a ../shared/libshared.a @sdllibs@ @netlibs@ @LIBINTL@
 
 
 EXTRA_DIST = consolethread.cpp consolethread.h gamecorethread.cpp gamecorethread.h main.cpp networkthread.cpp networkthread.h

@@ -2,7 +2,7 @@ stuntsdir=@stuntsdir@
 
 stunts_PROGRAMS = stuntsai
 stuntsai_SOURCES = main.cpp
-stuntsai_LDADD   = ../shared/libshared.a ../simulation/libsimulation.a @sdllibs@ @netlibs@ @odelibs@ @LIBINTL@
+stuntsai_LDADD   = ../shared/libshared.a ../simulation/libsimulation.a @sdllibs@ @netlibs@ @LIBINTL@
 
 
 EXTRA_DIST = main.cpp 

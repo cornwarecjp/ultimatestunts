@@ -49,7 +49,7 @@ int CPlayer::setAutomaticGear(float &gas, float &brake)
 	float w = theCar->m_MainAxisVelocity * r;
 	float M = theCar->getEngineTorque(w) * r;
 
-	float speed = theCar->m_Bodies[0].getVelocity().abs();
+	float speed = theCar->m_Velocity.abs();
 
 	if(gear < maxgear && gear > 0) //gear up if possible (and no reverse gear)
 	{

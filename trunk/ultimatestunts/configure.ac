@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT([Ultimate Stunts], [0.5.3], [cornware-cjp@users.sourceforge.net], [ultimatestunts])
+AC_INIT([Ultimate Stunts], [0.5.4], [cornware-cjp@users.sourceforge.net], [ultimatestunts])
 AC_CONFIG_SRCDIR([ultimatestunts/main.cpp])
 AC_CONFIG_HEADER(config.h)
 AC_CANONICAL_TARGET
@@ -28,7 +28,6 @@ graphlibs=""
 netlibs=""
 soundlibs=""
 sdllibs=""
-odelibs=""
 
 dnl ----------------------------------
 dnl check for OpenGL related libraries
@@ -152,13 +151,6 @@ if test "x$soundlibs" = "x" ; then
 fi
 
 
-dnl -----------------------
-dnl Check for ODE library
-dnl -----------------------
-AC_CHECK_HEADER(ode/ode.h)
-AC_CHECK_LIB(ode, dCloseODE,odelibs="-lode $odelibs")
-
-
 dnl -------------------
 dnl Set the c/c++ flags
 dnl -------------------
@@ -195,7 +187,6 @@ echo "Network libraries: \"$netlibs\""
 echo "Sound libraries: \"$soundlibs\""
 echo "Graphics libraries: \"$graphlibs\""
 echo "SDL libraries: \"$sdllibs\""
-echo "ODE libraries: \"$odelibs\""
 echo "usdatadir: \"$usdatadir\""
 echo "stuntsdir: \"$stuntsdir\""
 
@@ -219,13 +210,6 @@ if test "x$sdllibs" = "x"; then
   echo "You may still be able to compile the non-graphical programs,"
   echo "but that is not guaranteed"
 fi
-if test "x$odelibs" = "x"; then
-  echo ""
-  echo "WARNING: ODE library not found"
-  echo "Ultimate Stunts really depends on ODE, so you will"
-  echo "probably only be able to compile the tile editor"
-  echo "and the track editor"
-fi
 
 echo ""
 
@@ -233,7 +217,6 @@ AC_SUBST(netlibs)
 AC_SUBST(soundlibs)
 AC_SUBST(graphlibs)
 AC_SUBST(sdllibs)
-AC_SUBST(odelibs)
 
 AC_SUBST(PACKAGE_VERSION)
 AC_SUBST(usdatadir)

@@ -147,14 +147,14 @@ void CGameRenderer::updateReflections()
 			for(unsigned int obj=0; obj < m_World->getNumObjects(CDataObject::eMovingObject); obj++)
 			{
 				CMovingObject *mo = theWorld->getMovingObject(obj);
-				CVector pos = mo->m_Bodies[0].getPosition();
+				CVector pos = mo->m_Position;
 
 				//we don't have to update a reflection that is not visible
 				if((pos - m_Cameras[cam]->getPosition()).abs() > m_Settings.m_ReflectionDist) continue;
 
 				//camera
 				CCamera front;
-				pos += mo->m_Bodies[0].getOrientationMatrix() * mo->getCameraPos();
+				pos += mo->m_OrientationMatrix * mo->getCameraPos();
 				front.setPosition(pos);
 				front.setOrientation(m_Cameras[cam]->getOrientation());
 
@@ -177,14 +177,14 @@ void CGameRenderer::updateReflections()
 		m_CurrentCamera = cam;
 
 		CMovingObject *mo = theWorld->getMovingObject(obj);
-		CVector pos = mo->m_Bodies[0].getPosition();
+		CVector pos = mo->m_Position;
 
 		//we don't have to update a reflection that is not visible
 		if((pos - m_Cameras[cam]->getPosition()).abs() <= m_Settings.m_ReflectionDist)
 		{
 			//camera
 			CCamera front;
-			pos += mo->m_Bodies[0].getOrientationMatrix() * mo->getCameraPos();
+			pos += mo->m_OrientationMatrix * mo->getCameraPos();
 			front.setPosition(pos);
 			front.setOrientation(m_Cameras[cam]->getOrientation());
 
@@ -522,7 +522,7 @@ void CGameRenderer::viewMovObj(unsigned int n)
 	for(unsigned int i=mo->m_Bodies.size(); i > 0; i--) //TODO: depth sorting?
 	{
 		CBody &b = mo->m_Bodies[i-1];
-		CVector r = b.getPosition();
+		CVector r = b.m_Position;
 
 		float dist = (m_Camera->getPosition() - r).abs();
 		if(dist > TILESIZE * m_Settings.m_VisibleTiles) continue; //not visible
@@ -543,7 +543,7 @@ void CGameRenderer::viewMovObj(unsigned int n)
 
 		glPushMatrix();
 		glTranslatef (r.x, r.y, r.z);
-		glMultMatrixf(b.getOrientationMatrix().gl_mtr());
+		glMultMatrixf(b.m_OrientationMatrix.gl_mtr());
 
 		//The model
 

@@ -623,7 +623,7 @@ install_location=
 type=HEADER
 
 [simulation/Makefile.am]
-files=simulation/physics.cpp,simulation/physics.h,simulation/simulation.cpp,simulation/simulation.h,simulation/player.cpp,simulation/player.h,simulation/world.cpp,simulation/world.h,simulation/movingobject.cpp,simulation/movingobject.h,simulation/car.cpp,simulation/car.h,simulation/message.cpp,simulation/message.h,simulation/messagebuffer.cpp,simulation/messagebuffer.h,simulation/objectchoice.cpp,simulation/objectchoice.h,simulation/carinput.cpp,simulation/carinput.h,simulation/movobjinput.cpp,simulation/movobjinput.h,simulation/aiplayercar.cpp,simulation/aiplayercar.h,simulation/clientsim.cpp,simulation/clientsim.h,simulation/bound.cpp,simulation/bound.h,simulation/material.h,simulation/clientnet.cpp,simulation/clientnet.h,simulation/rulecontrol.cpp,simulation/rulecontrol.h,simulation/playercontrol.cpp,simulation/playercontrol.h,simulation/clientplayercontrol.cpp,simulation/clientplayercontrol.h,simulation/collisionmodel.cpp,simulation/collisionmodel.h,simulation/tilemodel.cpp,simulation/tilemodel.h,simulation/body.cpp,simulation/body.h,simulation/collisionface.cpp,simulation/collisionface.h,simulation/collision.h,simulation/collisiondetector.cpp,simulation/collisiondetector.h,simulation/collisiondata.cpp,simulation/collisiondata.h,simulation/gamecore.cpp,simulation/gamecore.h,simulation/material.cpp,simulation/track.cpp,simulation/track.h,simulation/stuntsnet.cpp,simulation/stuntsnet.h,simulation/chatmessage.cpp,simulation/chatmessage.h,simulation/textmessage.cpp,simulation/textmessage.h,simulation/confirmation.h,simulation/udpnet.cpp,simulation/udpnet.h
+files=simulation/physics.cpp,simulation/physics.h,simulation/simulation.cpp,simulation/simulation.h,simulation/player.cpp,simulation/player.h,simulation/world.cpp,simulation/world.h,simulation/movingobject.cpp,simulation/movingobject.h,simulation/car.cpp,simulation/car.h,simulation/message.cpp,simulation/message.h,simulation/messagebuffer.cpp,simulation/messagebuffer.h,simulation/objectchoice.cpp,simulation/objectchoice.h,simulation/carinput.cpp,simulation/carinput.h,simulation/movobjinput.cpp,simulation/movobjinput.h,simulation/aiplayercar.cpp,simulation/aiplayercar.h,simulation/clientsim.cpp,simulation/clientsim.h,simulation/bound.cpp,simulation/bound.h,simulation/material.h,simulation/clientnet.cpp,simulation/clientnet.h,simulation/rulecontrol.cpp,simulation/rulecontrol.h,simulation/playercontrol.cpp,simulation/playercontrol.h,simulation/clientplayercontrol.cpp,simulation/clientplayercontrol.h,simulation/collisionmodel.cpp,simulation/collisionmodel.h,simulation/tilemodel.cpp,simulation/tilemodel.h,simulation/body.h,simulation/collisionface.cpp,simulation/collisionface.h,simulation/collision.h,simulation/collisiondetector.cpp,simulation/collisiondetector.h,simulation/collisiondata.cpp,simulation/collisiondata.h,simulation/gamecore.cpp,simulation/gamecore.h,simulation/material.cpp,simulation/track.cpp,simulation/track.h,simulation/stuntsnet.cpp,simulation/stuntsnet.h,simulation/chatmessage.cpp,simulation/chatmessage.h,simulation/textmessage.cpp,simulation/textmessage.h,simulation/confirmation.h,simulation/udpnet.cpp,simulation/udpnet.h
 sub_dirs=
 type=static_library
 
@@ -638,12 +638,6 @@ dist=true
 install=false
 install_location=
 type=HEADER
-
-[simulation/body.cpp]
-dist=true
-install=false
-install_location=
-type=SOURCE
 
 [simulation/body.h]
 dist=true

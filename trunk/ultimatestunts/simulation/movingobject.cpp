@@ -22,6 +22,9 @@
 
 CMovingObject::CMovingObject(CDataManager *manager) : CDataObject(manager, CDataObject::eMovingObject)
 {
+	//default mass:
+	m_InvMass = 1.0;
+
 	m_InputData = new CMovObjInput;
 }
 
@@ -42,8 +45,8 @@ bool CMovingObject::load(const CString &filename, const CParamList &list)
 
 void CMovingObject::unload()
 {
-	for(unsigned int i=0; i < m_Bodies.size(); i++)
-		m_Bodies[i].destroyODE();
+	//for(unsigned int i=0; i < m_Bodies.size(); i++)
+	//	m_Bodies[i].destroyODE();
 	m_Bodies.clear();
 
 	m_Sounds.clear();
@@ -52,26 +55,65 @@ void CMovingObject::unload()
 	CDataObject::unload();
 }
 
+void CMovingObject::addForce(CVector F)
+{
+	m_Ftot += F;
+}
+
+void CMovingObject::addTorque(CVector M)
+{
+	m_Mtot += M;
+}
+
+void CMovingObject::addForceAt(CVector F, CVector pos)
+{
+	m_Ftot += F;
+	m_Mtot += F.crossProduct(pos); //TODO: is the sign right??
+}
+
 void CMovingObject::update(CPhysics *simulator, float dt)
 {
+	//Integration step of the simulation:
+
+	//printf("Ftot = (%s) kN\n", CString(m_Ftot/1000.0).c_str());
+	
+	//linear things:
+	CVector accel = m_Ftot * m_InvMass;
+
+	m_Position += (m_Velocity + 0.5*dt*accel)*dt;
+	m_Velocity += dt*accel;
+
+	//angular things:
+	CVector angaccel = m_InvInertia * m_Mtot; //TODO: inertia tensor
+
+	CMatrix dM;
+	dM.setRotation((m_AngularVelocity + 0.5*dt*angaccel)*dt);
+	m_OrientationMatrix *= dM;
+	m_AngularVelocity += dt*angaccel;
+
+
+	//Place the bodies:
+	placeBodies();
+
+	//Reset the forces:
+	m_Ftot = CVector (0,0,0);
+	m_Mtot = CVector (0,0,0);
 }
 
 CBinBuffer &CMovingObject::getData(CBinBuffer &b) const
 {
 	b += (Uint8)m_MovObjID;
 
+	//TODO: update this
+
 	for(unsigned int i=0; i < m_Bodies.size(); i++)
 	{
 		CVector
-			p = m_Bodies[i].getPosition(),
-			v = m_Bodies[i].getVelocity(),
-			o = m_Bodies[i].getOrientationVector(),
-			w = m_Bodies[i].getAngularVelocity();
+			p = m_Bodies[i].m_Position,
+			o = m_Bodies[i].m_OrientationMatrix.getRotation();
 
 		b.addVector32(p, 0.001);
-		b.addVector16(v, 0.01);
 		b.addVector16(o, 0.0002);
-		b.addVector16(w, 0.01);
 	}
 
 	return b;
@@ -82,19 +124,17 @@ bool CMovingObject::setData(const CBinBuffer &b, unsigned int &pos)
 	Uint8 ID = b.getUint8(pos);
 	if(ID != m_MovObjID) return false;
 
+	//TODO: update this
+
 	//TODO: check the number of objects
 	for(unsigned int i=0; i < m_Bodies.size(); i++)
 	{
 		CVector
 			p = b.getVector32(pos, 0.001),
-			v = b.getVector16(pos, 0.01),
-			o = b.getVector16(pos, 0.0002),
-			w = b.getVector16(pos, 0.01);
+			o = b.getVector16(pos, 0.0002);
 
-		m_Bodies[i].setPosition(p);
-		m_Bodies[i].setVelocity(v);
-		m_Bodies[i].setOrientationVector(o);
-		m_Bodies[i].setAngularVelocity(w);
+		m_Bodies[i].m_Position = p;
+		m_Bodies[i].m_OrientationMatrix.setRotation(o);
 	}
 
 	return true;

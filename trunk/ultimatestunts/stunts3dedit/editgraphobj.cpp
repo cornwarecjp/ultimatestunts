@@ -263,6 +263,7 @@ bool CEditGraphObj::loadGLBFile(CString filename)
 		if(pr1.LODs & 4) pr2.m_LODs += '3';
 		if(pr1.LODs & 8) pr2.m_LODs += '4';
 		if(pr1.LODs & 16) pr2.m_LODs += 'c';
+		if(pr1.LODs & 32) pr2.m_LODs += 's';
 		pr2.m_ModulationColor = pr1.ModulationColor;
 		pr2.m_Name = pr1.Name;
 		pr2.m_Opacity = pr1.Opacity;
@@ -705,6 +706,7 @@ void CEditGraphObj::saveGLBFile(const CString &filename)
 		if(pr1.m_LODs.inStr('3') >= 0) pr2.LODs += 4;
 		if(pr1.m_LODs.inStr('4') >= 0) pr2.LODs += 8;
 		if(pr1.m_LODs.inStr('c') >= 0) pr2.LODs += 16;
+		if(pr1.m_LODs.inStr('s') >= 0) pr2.LODs += 32;
 		pr2.ModulationColor = pr1.m_ModulationColor;
 		pr2.Name = pr1.m_Name;
 		pr2.Opacity = pr1.m_Opacity;

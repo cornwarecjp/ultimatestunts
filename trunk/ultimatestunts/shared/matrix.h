@@ -30,11 +30,12 @@ class CMatrix
 		void setCrossProduct(CVector v);
 		
 		void setRotation(CVector v);
-		CVector getRotation();
+		CVector getRotation() const;
 
 		//Matrix-operations:
 		CMatrix const &operator=(CMatrix const &val);
 		CMatrix const &operator*=(CMatrix const &val);
+		CMatrix const &operator*=(float val);
 		CMatrix const &operator/=(CMatrix const &val);
 		CMatrix operator*(CMatrix const &val) const;
 		CMatrix transpose() const;

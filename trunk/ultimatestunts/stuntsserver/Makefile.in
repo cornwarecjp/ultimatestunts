@@ -148,7 +148,6 @@ libexecdir = @libexecdir@
 localstatedir = @localstatedir@
 mandir = @mandir@
 netlibs = @netlibs@
-odelibs = @odelibs@
 oldincludedir = @oldincludedir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
@@ -167,7 +166,7 @@ usdatadir = @usdatadir@
 
 stunts_PROGRAMS = stuntsserver
 stuntsserver_SOURCES = consolethread.cpp gamecorethread.cpp main.cpp networkthread.cpp
-stuntsserver_LDADD = ../simulation/libsimulation.a ../shared/libshared.a @sdllibs@ @netlibs@ @odelibs@ @LIBINTL@
+stuntsserver_LDADD = ../simulation/libsimulation.a ../shared/libshared.a @sdllibs@ @netlibs@ @LIBINTL@
 
 EXTRA_DIST = consolethread.cpp consolethread.h gamecorethread.cpp gamecorethread.h main.cpp networkthread.cpp networkthread.h
 

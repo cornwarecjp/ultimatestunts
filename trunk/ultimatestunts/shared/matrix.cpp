@@ -70,6 +70,15 @@ CMatrix const &CMatrix::operator*=(CMatrix const &val)
 	return (*this);
 }
 
+CMatrix const &CMatrix::operator*=(float val)
+{
+	for (int i=0; i<3; i++)
+		for (int j=0; j<3; j++)
+			setElement(i, j, Element(i, j) * val);
+
+	return (*this);
+}
+
 CMatrix const &CMatrix::operator/=(CMatrix const &val)
 {
 	CMatrix temp = *this;
@@ -270,7 +279,7 @@ void CMatrix::setRotation(CVector v)
 	this->operator/=(A);
 }
 
-CVector CMatrix::getRotation()
+CVector CMatrix::getRotation() const
 {
 	//movement of the unit axes
 	//they are perpendicular to the rotation axis
