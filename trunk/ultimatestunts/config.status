@@ -2,7 +2,7 @@
 # Generated automatically by configure.
 # Run this file to recreate the current configuration.
 # This directory was configured as follows,
-# on host bones:
+# on host das3fs.tn.tudelft.nl:
 #
 # ./configure 
 #
@@ -40,7 +40,7 @@ s%@CFLAGS@%-g -O2%g
 s%@CPPFLAGS@%%g
 s%@CXXFLAGS@%-g -O2%g
 s%@FFLAGS@%%g
-s%@DEFS@% -DPACKAGE=\"ultimatestunts\" -DVERSION=\"0.3.0\" -DSTDC_HEADERS=1 -DHAVE_GL_GL_H=1 -DHAVE_GL_GLUT_H=1 -DLINUX_JOYSTICK_IS_PRESENT=1 %g
+s%@DEFS@% -DPACKAGE=\"ultimatestunts\" -DVERSION=\"0.3.0\" -DSTDC_HEADERS=1 -DLINUX_JOYSTICK_IS_PRESENT=1 %g
 s%@LDFLAGS@%%g
 s%@LIBS@%%g
 s%@exec_prefix@%${prefix}%g
