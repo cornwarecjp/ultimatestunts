@@ -29,10 +29,13 @@ void (CALLBACKFUN *_endCallbackFunc)();
 
 signed char endCallback(FSOUND_STREAM *stream, void *buff, int len, int param)
 {
-	if(param) //not disabled
+	//printf("endCallback:\n");
+
+	if(param)
 		_endCallbackFunc();
 
-	return 1;
+	//printf("...endCallback done\n");
+	return true;
 }
 
 CMusic::CMusic()

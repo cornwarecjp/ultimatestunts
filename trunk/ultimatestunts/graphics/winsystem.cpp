@@ -87,6 +87,13 @@ CWinSystem::CWinSystem(const CLConfig &conf)
 
 	m_NumJoysticks = SDL_NumJoysticks();
 	printf("   Found %d joysticks\n", m_NumJoysticks);
+	if(conf.getValue("input", "enablejoysticks") == "false")
+	{
+		printf("  Disabling joysticks according to conf file\n");
+		m_NumJoysticks = 0;
+		SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
+	}
+
 	if(m_NumJoysticks > 0)
 	{
 		SDL_JoystickEventState(SDL_ENABLE);

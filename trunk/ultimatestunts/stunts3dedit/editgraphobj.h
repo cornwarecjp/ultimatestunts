@@ -45,6 +45,8 @@ public:
 	CEditGraphObj();
 	virtual ~CEditGraphObj();
 	virtual bool loadFromFile(CString filename, CTexture **matarray);
+	bool import_raw(CString filename, CTexture **matarray);
+
 	void render(); //updates openGL data when primitives are changed
 
 	void clear();

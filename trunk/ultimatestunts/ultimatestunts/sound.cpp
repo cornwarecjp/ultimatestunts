@@ -25,10 +25,13 @@
 #include "datafile.h"
 
 CSound *_theSoundObject;
+bool _song_has_ended;
 
 void musicEndCallback()
 {
-	_theSoundObject->playNextSong();
+	//_theSoundObject->playNextSong();
+	//printf("musicEndCallback done\n");
+	_song_has_ended = true;
 }
 
 #ifdef HAVE_LIBFMOD
@@ -112,6 +115,20 @@ CSound::CSound(const CLConfig &conf, const CWorld *world)
 	m_MusicVolume = conf.getValue("sound", "musicvolume").toInt();
 	m_SoundVolume = conf.getValue("sound", "soundvolume").toInt();
 
+	//Defining the playlist
+	{
+		CDataFile f(conf.getValue("sound", "playlist"));
+		while(true)
+		{
+			CString line = f.readl();
+			if(line == "\n") break;
+			line = line.Trim();
+			if(line != "")
+				m_Playlist.push_back(line);
+		}
+	}
+	m_PlaylistItem = m_Playlist.size()-1;
+
 	//Loading data:
 	m_Music = NULL;
 	m_MusicObject = NULL;
@@ -154,17 +171,29 @@ void CSound::playNextSong()
 	m_Music = new CMusic;
 	m_MusicObject = new CSoundObj;
 
-	CDataFile f("music/sv.ogg");
+	m_PlaylistItem++;
+	if(m_PlaylistItem >= m_Playlist.size()) m_PlaylistItem = 0;
+
+	CDataFile f(m_Playlist[m_PlaylistItem]);
 	printf("   Loading music file %s\n\n", f.getName().c_str());
 	m_Music->loadFromFile(f.useExtern());
 
+	//printf("setSample\n");
 	m_MusicObject->setSample(m_Music);
+	//printf("setEndCallback\n");
 	m_Music->setEndCallback(musicEndCallback);
+	//printf("setVolume\n");
 	m_MusicObject->setVolume(m_MusicVolume);
+	//printf("done\n");
+	_song_has_ended = false;
 }
 
 void CSound::update()
 {
+	//Music:
+	if(_song_has_ended)
+		playNextSong();
+
 	//Microphone:
 	CVector p = m_Camera->getPosition();
 	float pos[] = {p.x/10, p.y/10, p.z/10};

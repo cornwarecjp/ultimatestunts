@@ -86,13 +86,28 @@ bool mainloop()
 		ret = false;
 
 	if(winsys->wasPressed(eLoad))
-		graphobj->loadFromFile(
-			topdir + getInput("Opening file.\nEnter filename: "),
-			texloader->m_TexArray);
+	{
+		printf("Opening file. Choose from:\n"
+			"1: *.gl file\n"
+			"2: 3dto3d smooth *.raw file\n");
+		switch(getInput("Your choice: ").toInt())
+		{
+			case 1:
+				graphobj->loadFromFile(
+					topdir + getInput("Enter filename: "),
+					texloader->m_TexArray); break;
+			case 2:
+				graphobj->import_raw(
+					topdir + getInput("Enter filename: "),
+					texloader->m_TexArray); break;
+			default:
+				printf("Please choose between 1 and 2\n");
+		}
+	}
 
 	if(winsys->wasPressed(eSave))
 		graphobj->saveToFile(
-			topdir + getInput("Saving file.\nEnter filename: "));
+			topdir + getInput("Saving *.gl file.\nEnter filename: "));
 
 	if(winsys->wasPressed(ePrimitive))
 	{

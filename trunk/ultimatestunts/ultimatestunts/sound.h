@@ -53,6 +53,8 @@ protected:
 
 	CMusic *m_Music;
 	CSoundObj *m_MusicObject;
+	vector<CString> m_Playlist;
+	unsigned int m_PlaylistItem;
 
 	const CWorld *m_World;
 	CSoundWorld *m_SoundWorld;

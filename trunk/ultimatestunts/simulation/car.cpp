@@ -34,8 +34,8 @@ CCar::CCar()
 	//One sound:
 	m_Sounds.push_back(0);
 
-	m_FrontWheelNeutral = CVector(0.8, -0.5, -1.35);
-	m_BackWheelNeutral = CVector(0.8, -0.5, 1.45);
+	m_FrontWheelNeutral = CVector(0.8, -0.4, -1.75);
+	m_BackWheelNeutral = CVector(0.8, -0.4, 1.1);
 	m_Mass = 1000.0; //kilogram
 	m_WheelRadius = 0.35; //meter
 

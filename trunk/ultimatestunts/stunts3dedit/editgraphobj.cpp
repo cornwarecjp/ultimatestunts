@@ -16,6 +16,7 @@
  ***************************************************************************/
 
 #include <GL/gl.h>
+#include <stdio.h> //for sscanf
 #include "editgraphobj.h"
 #include "cfile.h"
 
@@ -172,7 +173,52 @@ bool CEditGraphObj::loadFromFile(CString filename, CTexture **matarray)
 	}
 
 	render();
+	return true;
+}
 
+bool CEditGraphObj::import_raw(CString filename, CTexture **matarray)
+{
+	m_MatArray = matarray;
+	clear();
+
+	CFile f(filename);
+
+	while(true)
+	{
+		CString line = f.readl();
+		if(line[0] == '\n') break; //EOF
+
+		if(line[0] > '9') //it is an alphabetical character
+		{
+				CPrimitive pr;
+				pr.m_Name = line;
+				pr.m_Texture = -1;
+				pr.m_Type = GL_TRIANGLES;
+				m_Primitives.push_back(pr);
+		}
+		else
+		{
+			CVector r1,r2,r3,n1,n2,n3;
+			sscanf(line.c_str(), " %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f ",
+				&r1.x, &r1.y, &r1.z, &r2.x, &r2.y, &r2.z, &r3.x, &r3.y, &r3.z,
+				&n1.x, &n1.y, &n1.z, &n2.x, &n2.y, &n2.z, &n3.x, &n3.y, &n3.z);
+
+			CVertex v1, v2, v3;
+			v1.pos = r1;
+			v2.pos = r2;
+			v3.pos = r3;
+			v1.nor = -n1;
+			v2.nor = -n2;
+			v3.nor = -n3;
+			v1.col = v2.col = v3.col = CVector(1,1,1);
+
+			m_Primitives[m_Primitives.size()-1].m_Vertex.push_back(v1);
+			m_Primitives[m_Primitives.size()-1].m_Vertex.push_back(v2);
+			m_Primitives[m_Primitives.size()-1].m_Vertex.push_back(v3);
+		}
+	}
+
+	render();
 	return true;
 }
 
