@@ -19,8 +19,6 @@
 #include "carinput.h"
 CCar::CCar()
 {
-	m_Position = CVector(0.0,0.8,0.0); //vertical position
-
 	m_InputData = new CCarInput;
 
 	//Five bodies:

@@ -393,7 +393,7 @@ install_location=
 type=HEADER
 
 [simulation/Makefile.am]
-files=simulation/physics.cpp,simulation/physics.h,simulation/simulation.cpp,simulation/simulation.h,simulation/player.cpp,simulation/player.h,simulation/world.cpp,simulation/world.h,simulation/tile.h,simulation/movingobject.cpp,simulation/movingobject.h,simulation/car.cpp,simulation/car.h,simulation/message.cpp,simulation/message.h,simulation/messagebuffer.cpp,simulation/messagebuffer.h,simulation/dynamicobject.cpp,simulation/dynamicobject.h,simulation/objectchoice.cpp,simulation/objectchoice.h,simulation/netudp.h,simulation/netudp.cpp,simulation/netmessage.cpp,simulation/netmessage.h,simulation/carinput.cpp,simulation/carinput.h,simulation/movobjinput.cpp,simulation/movobjinput.h,simulation/aiplayercar.cpp,simulation/aiplayercar.h,simulation/clientsim.cpp,simulation/clientsim.h,simulation/shape.cpp,simulation/shape.h,simulation/bound.cpp,simulation/bound.h,simulation/material.h,simulation/clientnet.cpp,simulation/clientnet.h,simulation/rulecontrol.cpp,simulation/rulecontrol.h,simulation/playercontrol.cpp,simulation/playercontrol.h,simulation/clientplayercontrol.cpp,simulation/clientplayercontrol.h
+files=simulation/physics.cpp,simulation/physics.h,simulation/simulation.cpp,simulation/simulation.h,simulation/player.cpp,simulation/player.h,simulation/world.cpp,simulation/world.h,simulation/movingobject.cpp,simulation/movingobject.h,simulation/car.cpp,simulation/car.h,simulation/message.cpp,simulation/message.h,simulation/messagebuffer.cpp,simulation/messagebuffer.h,simulation/dynamicobject.cpp,simulation/dynamicobject.h,simulation/objectchoice.cpp,simulation/objectchoice.h,simulation/netudp.h,simulation/netudp.cpp,simulation/netmessage.cpp,simulation/netmessage.h,simulation/carinput.cpp,simulation/carinput.h,simulation/movobjinput.cpp,simulation/movobjinput.h,simulation/aiplayercar.cpp,simulation/aiplayercar.h,simulation/clientsim.cpp,simulation/clientsim.h,simulation/shape.cpp,simulation/shape.h,simulation/bound.cpp,simulation/bound.h,simulation/material.h,simulation/clientnet.cpp,simulation/clientnet.h,simulation/rulecontrol.cpp,simulation/rulecontrol.h,simulation/playercontrol.cpp,simulation/playercontrol.h,simulation/clientplayercontrol.cpp,simulation/clientplayercontrol.h
 sub_dirs=
 type=static_library
 
@@ -650,12 +650,6 @@ install_location=
 type=SOURCE
 
 [simulation/simulation.h]
-dist=true
-install=false
-install_location=
-type=HEADER
-
-[simulation/tile.h]
 dist=true
 install=false
 install_location=

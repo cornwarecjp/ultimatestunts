@@ -76,6 +76,7 @@ bool CWorld::loadTrack(CString filename)
 	while(true)
 	{
 		CString texture_indices;
+		CString tile_flags;
 		line = tfile.readl();
 		if(line == "END") break;
 		int pos = line.inStr(' ');
@@ -85,18 +86,28 @@ bool CWorld::loadTrack(CString filename)
 				{texture_indices = line.mid(pos+1, line.length()-pos-1);}
 			line = line.mid(0, pos);
 		}
+		pos = line.inStr(':');
+		if(pos > 0) //a : exists
+		{
+			if((unsigned int)pos < line.length()-1)
+				{tile_flags = line.mid(pos+1, line.length()-pos-1);}
+			line = line.mid(0, pos);
+		}
 
-		CShape *b = new CShape;
+		CTileShape *b = new CTileShape;
 
 		CMaterial **subset = getMaterialSubset(texture_indices);
 		//printf("Loading %s\n", line.c_str());
 		b->loadFromFile(line, texture_indices, subset);
 		delete [] subset;
 
+		b->m_isStart = tile_flags.inStr('s') >= 0;
+		b->m_isFinish = tile_flags.inStr('f') >= 0;
+		b->m_Time = 1.0;
+
 		m_TileShapes.push_back(b);
 	}
 	printf("\n   Loaded %d tile shapes\n\n", m_TileShapes.size());
-
 
 	//Third: initialising track array
 	m_Track.resize(m_L * m_W * m_H);

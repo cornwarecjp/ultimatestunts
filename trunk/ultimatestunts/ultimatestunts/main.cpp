@@ -166,7 +166,7 @@ void start(int argc, char *argv[]) //first things before becoming interactive
 	}
 
 	printf("Initialising Ultimate Stunts:\n---Window system\n");
-	winsys = new CWinSystem(conffile);
+	winsys = new CWinSystem("Ultimate Stunts", conffile);
 
 	world = new CWorld();
 

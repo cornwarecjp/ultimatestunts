@@ -381,7 +381,7 @@ int main(int argc, char *argv[])
 	} else {printf("Using ultimatestunts.conf\n");}
 
 	printf("\nCreating a window\n");
-	winsys = new CWinSystem(conffile);
+	winsys = new CWinSystem("Stunts 3D Edit", conffile);
 
 	topdir = conffile.getValue("files", "datadir");
 	if(topdir != "" && topdir[topdir.length()-1] != '/')

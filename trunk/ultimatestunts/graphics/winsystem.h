@@ -20,6 +20,7 @@
 
 #include <SDL/SDL.h>
 
+#include "cstring.h"
 #include "usmacros.h"
 #include "lconfig.h"
 
@@ -34,7 +35,7 @@ public:
 
 class CWinSystem {
 public: 
-	CWinSystem(const CLConfig &conf);
+	CWinSystem(const CString &caption, const CLConfig &conf);
 	~CWinSystem();
 
 	int runLoop( bool (CALLBACKFUN *loopfunc)(), bool swp = false);

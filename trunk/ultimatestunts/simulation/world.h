@@ -26,32 +26,53 @@
 namespace std {}
 using namespace std;
 
-#include "tile.h"
 #include "bound.h"
+#include "shape.h"
 #include "movingobject.h"
 #include "objectchoice.h"
+
+class CTile {
+public:
+	int m_Shape;
+	int m_Z, m_R; //height, orientation. 0 <= m_R <= 3
+
+	bool m_isStart, m_isFinish;
+	float m_Time;
+};
+
+class CTileShape : public CShape {
+public:
+	bool m_isStart, m_isFinish;
+	float m_Time;
+};
 
 class CWorld {
 public: 
 	CWorld();
 	virtual ~CWorld();
 
+	//Track
 	vector<CTile> m_Track; //refer to elements from m_TileShapes
 	int m_L, m_W, m_H;
 	bool loadTrack(CString filename);
 	void unloadTrack();
 
+	vector<CTileShape *> m_TileShapes;
+	vector<CMaterial *> m_TileMaterials;
+
+
+	//Moving objects
 	vector<CMovingObject *> m_MovObjs; //refer to elements from m_MovObjBounds
 	bool loadMovObjs(CString filename);
 	void unloadMovObjs();
 
-	vector<CShape *>m_TileShapes;
 	vector<CBound *>m_MovObjBounds;
-
-	vector<CMaterial *> m_TileMaterials;
 	vector<CMaterial *> m_MovObjMaterials;
-
 	vector<CString> m_MovObjSounds;
+
+
+	//Rule data
+	float m_GameStartTime;
 
 	CString getBackgroundFilename() const
 		{return m_BackgroundFilename;}

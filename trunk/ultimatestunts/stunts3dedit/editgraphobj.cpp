@@ -232,6 +232,9 @@ void CEditGraphObj::saveToFile(CString filename)
 	CFile f(filename, true);
 	f.writel("#CornWare UltimateStunts graphics file");
 	f.writel("#created by the stunts3dedit editor");
+	f.writel("");
+	f.writel("Normal 0,1,0");
+	f.writel("Color 1,1,1");
 
 	//State variables:
 	CVertex state;

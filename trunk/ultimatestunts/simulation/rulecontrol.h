@@ -19,6 +19,7 @@
 #define RULECONTROL_H
 
 #include "simulation.h"
+#include "timer.h"
 
 /**
   *@author CJP
@@ -34,8 +35,15 @@ public:
 protected:
 	bool firstUpdate;
 
+	bool findStartFinish();
+
 	void placeStart();
 	bool checkFinished();
+
+	int m_StartX, m_StartY, m_StartH,
+		m_FinishX, m_FinishY, m_FinishH;
+
+	CTimer m_Timer;
 };
 
 #endif

@@ -15,6 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
+#include <stdio.h> //debugging
+
 #include "rulecontrol.h"
 #include "usmacros.h"
 
@@ -31,18 +33,65 @@ bool CRuleControl::update()
 	if(firstUpdate)
 	{
 		firstUpdate = false;
-		placeStart();
+		 m_World->m_GameStartTime = m_Timer.getTime() + 3.0;
+
+		if(!findStartFinish()) //error with starts/finishes
+			return false; //stop
 	}
 
+	if(m_Timer.getTime() < m_World->m_GameStartTime)
+		placeStart();
+
 	return !checkFinished();
+}
+
+bool CRuleControl::findStartFinish()
+{
+	bool founds = false, foundf = false;
+
+	int wth = m_World->m_W;
+	int hth = m_World->m_H;
+	for(int x = 0; x < m_World->m_L; x++)
+		for(int y = 0; y < wth; y++)
+			for(int h = 0; h < hth; h++)
+			{
+				unsigned int i = h + hth*(y + wth*x);
+
+				if(m_World->m_TileShapes[
+					m_World->m_Track[i].m_Shape]->m_isStart)
+
+					if(founds) //more than 1 start position
+						{return false;}
+					else
+					{
+						founds = true;
+						m_StartX = x; m_StartY = y; m_StartH = h;
+					}
+
+				if(m_World->m_TileShapes[
+					m_World->m_Track[i].m_Shape]->m_isFinish)
+
+					if(foundf) //more than 1 finish position
+						{return false;}
+					else
+					{
+						foundf = true;
+						m_FinishX = x; m_FinishY = y; m_FinishH = h;
+					}
+			}
+
+	if(!founds || !foundf) //no start or finish position
+		return false;
+
+	return true;
 }
 
 void CRuleControl::placeStart()
 {
 	CVector tilePos = CVector(
-		TILESIZE * (int)(0.6 * m_World->m_L),
-		0.0,
-		TILESIZE * (int)(0.6 * m_World->m_W)
+		TILESIZE * m_StartX,
+		VERTSIZE * m_StartH,
+		TILESIZE * m_StartY
 	);
 
 	/*
@@ -58,15 +107,12 @@ void CRuleControl::placeStart()
 	{
 		CVector carPos = CVector(
 			-3.0*(i%2==0) +3.0*(i%2!=0),
-			0.0,
-			6.0*(i-i%2)
+			0.8,
+			6.0*(i-i%2) + 3.0
 		);
 
-		m_World->m_MovObjs[i]->setPosition(
-			m_World->m_MovObjs[i]->getPosition() +
-			tilePos +
-			carPos
-		);
+		m_World->m_MovObjs[i]->setPosition(tilePos + carPos);
+		m_World->m_MovObjs[i]->setVelocity(CVector(0,0,0));
 	}
 }
 

@@ -25,7 +25,7 @@
 bool dummy_loopfunc()
 {return false;} //exit immediately
 
-CWinSystem::CWinSystem(const CLConfig &conf)
+CWinSystem::CWinSystem(const CString &caption, const CLConfig &conf)
 {
 	//Default values:
 	m_Flags = SDL_OPENGL |SDL_RESIZABLE|SDL_ANYFORMAT;
@@ -64,9 +64,10 @@ CWinSystem::CWinSystem(const CLConfig &conf)
 	//Some code coming from SDL gears
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK);
 
-	//SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 8 );
-	//SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, 8 );
-	//SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, 8 );
+	//Minimum values:
+	SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 5);
+	SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, 5);
+	SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, 5);
 	SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 16 );
 	SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
 
@@ -83,7 +84,7 @@ CWinSystem::CWinSystem(const CLConfig &conf)
 	m_BPP = m_Screen->format->BitsPerPixel;
 	printf("   ...Now working at %dx%d:%d\n", m_W, m_H, m_BPP);
 
-	SDL_WM_SetCaption("UltimateStunts", "ultimatestunts");
+	SDL_WM_SetCaption(caption.c_str(), "ultimatestunts");
 
 	m_NumJoysticks = SDL_NumJoysticks();
 	printf("   Found %d joysticks\n", m_NumJoysticks);
