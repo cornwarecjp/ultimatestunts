@@ -20,7 +20,7 @@
 
 #include "player.h"
 #include "usmacros.h"
-#include "winsystem.h"
+#include "gamewinsystem.h"
 
 /**
   *@author CJP
@@ -28,12 +28,13 @@
 
 class CHumanPlayer : public CPlayer  {
 public: 
-	CHumanPlayer(CWinSystem *ws);
+	CHumanPlayer(CGameWinSystem *ws, unsigned int ID);
 	~CHumanPlayer();
 
 	virtual bool update();
 protected:
-	CWinSystem *m_WinSys;
+	CGameWinSystem *m_WinSys;
+	unsigned int m_LocalHumanPlayerID;
 };
 
 #endif

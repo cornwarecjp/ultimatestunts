@@ -1,8 +1,8 @@
 /***************************************************************************
-                          background.h  -  description
+                          reflection.h  -  description
                              -------------------
-    begin                : di feb 4 2003
-    copyright            : (C) 2003 by CJP
+    begin                : ma sep 20 2004
+    copyright            : (C) 2004 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
 
@@ -15,25 +15,29 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef BACKGROUND_H
-#define BACKGROUND_H
+#ifndef REFLECTION_H
+#define REFLECTION_H
 
-#include "texture.h"
-#include "timer.h"
+#include "renderer.h"
 
 /**
   *@author CJP
   */
 
-class CBackground : public CTexture
-{
+class CReflection  {
 public: 
-	CBackground();
-	virtual ~CBackground();
+	CReflection(bool smooth, unsigned int size);
+	~CReflection();
 
+	void update(CRenderer *renderer, CCamera *cam);
 	void draw() const;
+
 protected:
-	CTimer m_Timer;
+	unsigned int m_Texture;
+	unsigned int m_Size;
+	bool m_TexSmooth;
+
+	void initialiseReflections(char *data);
 };
 
 #endif

@@ -33,11 +33,14 @@ what we say about nature.
 Niels Bohr
 */
 
-CPhysics::CPhysics(CWorld *w) : CSimulation(w)
+CPhysics::CPhysics(const CLConfig *conf, CWorld *w) : CSimulation(w)
 {
 	m_Detector = new CCollisionDetector;
 	m_firstTime = true;
 	m_FastCPUMode = true; //start mode; not really important
+
+	m_dtMin = conf->getValue("simulation", "dtmin").toFloat();
+	m_NMax = conf->getValue("simulation", "nmax").toInt();
 }
 
 CPhysics::~CPhysics()
@@ -47,12 +50,9 @@ CPhysics::~CPhysics()
 
 bool CPhysics::update()
 {
-	float dtmin = 0.005; //max. 200 fps simulation
-	unsigned int Nmax = 10; //max. 10 simulation steps per loop
-
 	if(!(theWorld->m_Paused))
 	{
-		float dt = m_Timer.getdt(dtmin + 0.0001);
+		float dt = m_Timer.getdt(m_dtMin + 0.0001);
 
 		if(m_firstTime)
 		{
@@ -70,26 +70,26 @@ bool CPhysics::update()
 
 		if(m_FastCPUMode)
 		{
-			N = (unsigned int)(dtreal / dtmin);
-			dt = dtmin;
+			N = (unsigned int)(dtreal / m_dtMin);
+			dt = m_dtMin;
 
-			if(N > Nmax)
+			if(N > m_NMax)
 			{
 				m_FastCPUMode = false;
-				N = Nmax;
-				dt = dtreal / Nmax;
+				N = m_NMax;
+				dt = dtreal / m_NMax;
 			}
 		}
 		else
 		{
-			N = Nmax;
-			dt = dtreal / Nmax;
+			N = m_NMax;
+			dt = dtreal / m_NMax;
 
-			if(dt < dtmin)
+			if(dt < m_dtMin)
 			{
 				m_FastCPUMode = true;
-				N = (unsigned int)(dtreal / dtmin);
-				dt = dtmin;
+				N = (unsigned int)(dtreal / m_dtMin);
+				dt = m_dtMin;
 			}
 		}
 

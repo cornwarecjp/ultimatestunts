@@ -34,9 +34,13 @@ public:
 
 	const CVector &getPosition() const
 		{return m_Position;}
-
 	const CMatrix &getOrientation() const
 		{return m_Orientation;}
+
+	virtual void setPosition(const CVector &pos)
+		{m_Position = pos;}
+	virtual void setOrientation(const CMatrix &ori)
+		{m_Orientation = ori;}
 
 	virtual void update(){;}
 

@@ -307,7 +307,7 @@ void CWorld::unloadMovObjs()
 CMaterial **CWorld::getMaterialSubset(CString indices)
 {
 	//printf("Indices: \"%s\"\n", indices.c_str());
-	CMaterial **ret = new (CMaterial *)[1+indices.length()/2]; //We don't need more
+	CMaterial **ret = new CMaterial *[1+indices.length()/2]; //We don't need more
 	int i=0;
 	while(true)
 	{

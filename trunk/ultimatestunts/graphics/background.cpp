@@ -31,12 +31,14 @@ CBackground::CBackground(){
 CBackground::~CBackground(){
 }
 
-bool CBackground::loadFromFile(CString filename, int xs, int ys)
+void CBackground::draw() const
 {
-	if(!(  CTexture::loadFromFile(filename, xs, ys)  )) return false;
+	float hmax = 1000.0;
+	float vmax = 10.0;
+	float tiling = 10.0;
 
-	m_ObjList = glGenLists(1);
-	glNewList(m_ObjList, GL_COMPILE);
+	float t = 0.01 * m_Timer.getTime();
+	float drift = t - (float)((int)t);
 
 	GLfloat color[] = {1.0, 1.0, 1.0};
 	if(getSizeX(1) <=4 || getSizeY(1) <= 4)
@@ -53,52 +55,41 @@ bool CBackground::loadFromFile(CString filename, int xs, int ys)
 	glDisable(GL_LIGHTING);
 	glDisable(GL_CULL_FACE);
 
-	//sphere creation coming from a glutdemo (envmap.c)
-	float r = 5.0, r1, r2, z1, z2;
-	float theta1, theta2, phi;
-	int nlon = 8, nlat = 4;
-	int i=2, j=0;
-
-#define TEXTUREMUL 4.0
-
+	glNormal3f(0.0, -1.0, 0.0);
 	glBegin(GL_TRIANGLE_FAN);
-	theta2 = 0.67*M_PI / nlat;
-	r2 = r * sin(theta2);
-	z2 = r * cos(theta2);
-	glTexCoord2f(0.0, -TEXTUREMUL);
-	glVertex3f(0.0, r,   0.0);
-	for (j = 0, phi = 0.0; j <= nlon; j++, phi = 2 * M_PI * j / nlon) {
-		glTexCoord2f((float)j/nlon, -TEXTUREMUL*(float)i/nlat);
-		glVertex3f(r2 * cos(phi), z2, r2 * sin(phi));  // top
-	}
-	glEnd();
-	for (i = 2; i < nlat; i++) {
-		//Why 2/3 and not 1/2?? I don't understand.
-		theta2 = 0.67*M_PI * i / nlat;
-		theta1 = 0.67*M_PI * (i - 1) / nlat;
-		r1 = r * sin(theta1);
-		z1 = r * cos(theta1);
-		r2 = r * sin(theta2);
-		z2 = r * cos(theta2);
-		glBegin(GL_QUAD_STRIP);
-		for (j = 0, phi = 0; j <= nlon; j++, phi = 2 * M_PI * j / nlon) {
-			glTexCoord2f((float)j/nlon, -TEXTUREMUL*(float)(i-1)/nlat);
-			glVertex3f(r1 * cos(phi), z1, r1 * sin(phi));
-			glTexCoord2f((float)j/nlon, -TEXTUREMUL*(float)i/nlat);
-			glVertex3f(r2 * cos(phi), z2, r2 * sin(phi));
-		}
-		glEnd();
-	}
 
+	glTexCoord2f(drift, drift);
+	glVertex3f(0.0, vmax, 0.0);
+
+	glTexCoord2f(drift, -tiling + drift);
+	glVertex3f(0.0, vmax, -hmax);
+
+	glTexCoord2f(-tiling + drift, -tiling + drift);
+	glVertex3f(-hmax, vmax, -hmax);
+
+	glTexCoord2f(-tiling + drift, drift);
+	glVertex3f(-hmax, vmax, 0.0);
+
+	glTexCoord2f(-tiling + drift, tiling + drift);
+	glVertex3f(-hmax, vmax, hmax);
+
+	glTexCoord2f(drift, tiling + drift);
+	glVertex3f(0.0, vmax, hmax);
+
+	glTexCoord2f(tiling + drift, tiling + drift);
+	glVertex3f(hmax, vmax, hmax);
+
+	glTexCoord2f(tiling + drift, drift);
+	glVertex3f(hmax, vmax, 0.0);
+
+	glTexCoord2f(tiling + drift, -tiling + drift);
+	glVertex3f(hmax, vmax, -hmax);
+
+	glTexCoord2f(drift, -tiling + drift);
+	glVertex3f(0.0, vmax, -hmax);
+
+	glEnd();
+	
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_LIGHTING);
-
-	glEndList();
-
-	return true;
-}
-
-void CBackground::draw() const
-{
-	glCallList(m_ObjList);
 }

@@ -88,12 +88,14 @@ CWinSystem::CWinSystem(const CString &caption, const CLConfig &conf)
 
 	m_NumJoysticks = SDL_NumJoysticks();
 	printf("   Found %d joysticks\n", m_NumJoysticks);
+	/*
 	if(conf.getValue("input", "enablejoysticks") == "false")
 	{
 		printf("  Disabling joysticks according to conf file\n");
 		m_NumJoysticks = 0;
 		SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
 	}
+	*/
 
 	if(m_NumJoysticks > 0)
 	{
@@ -113,9 +115,6 @@ CWinSystem::CWinSystem(const CString &caption, const CLConfig &conf)
 
 	}
 
-	//To set up openGL correctly, call reshape
-	reshape(m_W, m_H);
-
 	runLoop(dummy_loopfunc, true); //catch startup-events
 
 	m_KeyState = SDL_GetKeyState(&m_NumKeys);
@@ -123,12 +122,16 @@ CWinSystem::CWinSystem(const CString &caption, const CLConfig &conf)
 	for(int i=0; i<m_NumKeys; i++)
 		m_WasPressed[i] = false;
 
-	m_JoyState.x = m_JoyState.y = 0;
+	m_NumJoyBtns = SDL_JoystickNumButtons(m_Joystick);
+	m_JoyButtonWasPressed = new bool[m_NumJoyBtns];
+	for(int i=0; i<m_NumJoyBtns; i++)
+		m_JoyButtonWasPressed[i] = false;
 }
 
 CWinSystem::~CWinSystem()
 {
 	delete [] m_WasPressed;
+	delete [] m_JoyButtonWasPressed;
 
 	if(m_NumJoysticks > 0)
 	{
@@ -157,7 +160,8 @@ int CWinSystem::runLoop( bool (CALLBACKFUN *loopfunc)(), bool swp)
 						SDL_OPENGL|SDL_RESIZABLE);
 					if ( m_Screen )
 					{
-						reshape(m_Screen->w, m_Screen->h);
+						m_W = m_Screen->w;
+						m_H = m_Screen->h;
 					}
 					else
 					{
@@ -185,9 +189,8 @@ int CWinSystem::runLoop( bool (CALLBACKFUN *loopfunc)(), bool swp)
 					break;
 
 				//Joystick
-				case SDL_JOYAXISMOTION:
-					m_JoyState.x = SDL_JoystickGetAxis(m_Joystick, 0);
-					m_JoyState.y = SDL_JoystickGetAxis(m_Joystick, 1);
+				case SDL_JOYBUTTONDOWN:
+					m_JoyButtonWasPressed[event.jbutton.button] = true;
 					break;
 			}
 		}
@@ -201,32 +204,21 @@ int CWinSystem::runLoop( bool (CALLBACKFUN *loopfunc)(), bool swp)
 	return 0;
 }
 
-void CWinSystem::reshape(int w, int h)
+bool CWinSystem::getKeyState(int c) const
 {
-	m_W = w; m_H = h;
-
-	//Do some openGL stuff to adapt rendering to new window size
-
-	float ratio = (float) w / (float) h;
-	GLfloat near = 1.0;
-	GLfloat far = TILESIZE * m_VisibleTiles;
-	float hor_mul = near / 5.0;
-	GLfloat xs = ratio*hor_mul;
-	GLfloat ys = 1.0*hor_mul;
-
-	glViewport( 0, 0, w, h );
-
-	glMatrixMode( GL_PROJECTION );
-	glLoadIdentity();
-	glFrustum( -xs, xs, -ys, ys, near, far );
-
-	glMatrixMode( GL_MODELVIEW );
-	glLoadIdentity();
+	return (bool)(m_KeyState[c]);
 }
 
 bool CWinSystem::wasPressed(int c)
 {
 	bool ret = m_WasPressed[c];
 	m_WasPressed[c] = false;
+	return ret;
+}
+
+bool CWinSystem::joyBtnWasPressed(int c)
+{
+	bool ret = m_JoyButtonWasPressed[c];
+	m_JoyButtonWasPressed[c] = false;
 	return ret;
 }

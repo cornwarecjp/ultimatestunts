@@ -122,7 +122,7 @@ sub_dirs=
 type=static_library
 
 [graphics/Makefile.am]
-files=graphics/winsystem.cpp,graphics/winsystem.h,graphics/graphobj.cpp,graphics/graphobj.h,graphics/image.c,graphics/image.h,graphics/texture.cpp,graphics/texture.h,graphics/renderer.cpp,graphics/renderer.h,graphics/graphicworld.cpp,graphics/graphicworld.h,graphics/gui.cpp,graphics/gui.h,graphics/camera.h,graphics/background.cpp,graphics/background.h
+files=graphics/winsystem.cpp,graphics/winsystem.h,graphics/graphobj.cpp,graphics/graphobj.h,graphics/image.c,graphics/image.h,graphics/texture.cpp,graphics/texture.h,graphics/renderer.cpp,graphics/renderer.h,graphics/graphicworld.cpp,graphics/graphicworld.h,graphics/gui.cpp,graphics/gui.h,graphics/camera.h,graphics/background.cpp,graphics/background.h,graphics/reflection.cpp,graphics/reflection.h
 sub_dirs=
 type=static_library
 
@@ -187,6 +187,18 @@ install_location=
 type=SOURCE
 
 [graphics/image.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[graphics/reflection.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[graphics/reflection.h]
 dist=true
 install=false
 install_location=
@@ -767,7 +779,7 @@ install_location=
 type=DATA
 
 [stunts3dedit/Makefile.am]
-files=stunts3dedit/main.cpp,stunts3dedit/editrenderer.cpp,stunts3dedit/editrenderer.h,stunts3dedit/editcamera.cpp,stunts3dedit/editcamera.h,stunts3dedit/textureloader.cpp,stunts3dedit/textureloader.h,stunts3dedit/editgraphobj.cpp,stunts3dedit/editgraphobj.h
+files=stunts3dedit/main.cpp,stunts3dedit/editrenderer.cpp,stunts3dedit/editrenderer.h,stunts3dedit/editcamera.cpp,stunts3dedit/editcamera.h,stunts3dedit/textureloader.cpp,stunts3dedit/textureloader.h,stunts3dedit/editgraphobj.cpp,stunts3dedit/editgraphobj.h,stunts3dedit/generalfuncs.cpp,stunts3dedit/toolfuncs.cpp,stunts3dedit/transformfuncs.cpp,stunts3dedit/editfuncs.cpp
 sub_dirs=
 type=static_library
 
@@ -782,6 +794,12 @@ dist=true
 install=false
 install_location=
 type=HEADER
+
+[stunts3dedit/editfuncs.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
 
 [stunts3dedit/editgraphobj.cpp]
 dist=true
@@ -807,6 +825,12 @@ install=false
 install_location=
 type=HEADER
 
+[stunts3dedit/generalfuncs.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
 [stunts3dedit/main.cpp]
 dist=true
 install=false
@@ -824,6 +848,18 @@ dist=true
 install=false
 install_location=
 type=HEADER
+
+[stunts3dedit/toolfuncs.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[stunts3dedit/transformfuncs.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
 
 [stuntsai/Makefile.am]
 files=stuntsai/main.cpp,
@@ -888,7 +924,7 @@ install_location=
 type=DATA
 
 [ultimatestunts/Makefile.am]
-files=ultimatestunts/main.cpp,ultimatestunts/humanplayer.cpp,ultimatestunts/humanplayer.h,ultimatestunts/gamecamera.cpp,ultimatestunts/gamecamera.h,ultimatestunts/sound.cpp,ultimatestunts/sound.h,ultimatestunts/sndsample.cpp,ultimatestunts/sndsample.h,ultimatestunts/soundobj.cpp,ultimatestunts/soundobj.h,ultimatestunts/gamerenderer.cpp,ultimatestunts/gamerenderer.h,ultimatestunts/usserver.cpp,ultimatestunts/usserver.h,ultimatestunts/soundworld.cpp,ultimatestunts/soundworld.h,ultimatestunts/music.cpp,ultimatestunts/music.h
+files=ultimatestunts/main.cpp,ultimatestunts/humanplayer.cpp,ultimatestunts/humanplayer.h,ultimatestunts/gamecamera.cpp,ultimatestunts/gamecamera.h,ultimatestunts/sound.cpp,ultimatestunts/sound.h,ultimatestunts/sndsample.cpp,ultimatestunts/sndsample.h,ultimatestunts/soundobj.cpp,ultimatestunts/soundobj.h,ultimatestunts/gamerenderer.cpp,ultimatestunts/gamerenderer.h,ultimatestunts/usserver.cpp,ultimatestunts/usserver.h,ultimatestunts/soundworld.cpp,ultimatestunts/soundworld.h,ultimatestunts/music.cpp,ultimatestunts/music.h,ultimatestunts/gamewinsystem.cpp,ultimatestunts/gamewinsystem.h
 sub_dirs=
 type=prog_main
 
@@ -911,6 +947,18 @@ install_location=
 type=SOURCE
 
 [ultimatestunts/gamerenderer.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[ultimatestunts/gamewinsystem.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[ultimatestunts/gamewinsystem.h]
 dist=true
 install=false
 install_location=

@@ -246,33 +246,65 @@ void CCollisionDetector::ObjObjTest(const CBody &body1, const CBody &body2)
 {
 	CVector p1 = body1.getPosition();
 	CVector p2 = body2.getPosition();
+	const CMatrix &o1 = body1.getOrientationMatrix();
+	const CMatrix &o2 = body2.getOrientationMatrix();
 	const CBound *b1 = theWorld->m_MovObjBounds[body1.m_Body];
 	const CBound *b2 = theWorld->m_MovObjBounds[body2.m_Body];
 
-	if(sphereTest(p1, b1, p2, b2))
+	if(!sphereTest(p1, b1, p2, b2)) return;
+
+	fprintf(stderr, "Sphere collision\n");
+
+	/*
+	Now do the polyhedra collision detection
+	If two convex polyhedra are not penetrating, then there
+	must be a plane that separates them.
+	We'll just try to find that plane, and if that fails,
+	we conclude that a collision has occured
+
+	TODO:
+	cache the separation plane
+	find the collision point
+	*/
+
+	//first try all faces of body 1
+	for(unsigned int i=0; i < b1->m_Faces.size(); i++)
 	{
-		//printf("Collision between %d and %d\n", n1, n2);
-		CVector nor = p2 - p1;
-		nor.normalise();
-		CVector pos = p1 + b1->m_BSphere_r * nor;
-		
-		dContact c;
-		c.geom.pos[0] = pos.x;
-		c.geom.pos[1] = pos.y;
-		c.geom.pos[2] = pos.z;
-		c.geom.normal[0] = nor.x;
-		c.geom.normal[1] = nor.y;
-		c.geom.normal[2] = nor.z;
-		c.geom.depth = -0.5 * (b1->m_BSphere_r + b2->m_BSphere_r - (p2-p1).abs());
-		c.geom.g1 = 0; //I don't use geoms here
-		c.geom.g2 = 0;
-		c.surface.mode = dContactSlip1 | dContactSlip2 | dContactApprox1;
-		c.surface.mu = 0.5*(body1.m_mu + body2.m_mu);
-		c.surface.slip1 = 0.00001;
-		c.surface.slip2 = 0.00001;
-		dJointID cid = dJointCreateContact(theWorld->m_ODEWorld, theWorld->m_ContactGroup, &c);
-		dJointAttach(cid, body2.m_ODEBody, body1.m_ODEBody);
+		CCollisionFace theFace = b1->m_Faces[i];
+		theFace *= o1;
+		theFace += p1;
+		if(!faceTest(p1, o1, b1, p2, o2, b2, theFace)) return;
 	}
+
+	//then try all faces of body 2
+	for(unsigned int i=0; i < b2->m_Faces.size(); i++)
+	{
+		CCollisionFace theFace = b2->m_Faces[i];
+		theFace *= o2;
+		theFace += p2;
+		if(!faceTest(p1, o1, b1, p2, o2, b2, theFace)) return;
+	}
+	
+	CVector nor = p2 - p1;
+	nor.normalise();
+	CVector pos = p1 + b1->m_BSphere_r * nor;
+		
+	dContact c;
+	c.geom.pos[0] = pos.x;
+	c.geom.pos[1] = pos.y;
+	c.geom.pos[2] = pos.z;
+	c.geom.normal[0] = nor.x;
+	c.geom.normal[1] = nor.y;
+	c.geom.normal[2] = nor.z;
+	c.geom.depth = -0.5 * (b1->m_BSphere_r + b2->m_BSphere_r - (p2-p1).abs());
+	c.geom.g1 = 0; //I don't use geoms here
+	c.geom.g2 = 0;
+	c.surface.mode = dContactSlip1 | dContactSlip2 | dContactApprox1;
+	c.surface.mu = 0.5*(body1.m_mu + body2.m_mu);
+	c.surface.slip1 = 0.00001;
+	c.surface.slip2 = 0.00001;
+	dJointID cid = dJointCreateContact(theWorld->m_ODEWorld, theWorld->m_ContactGroup, &c);
+	dJointAttach(cid, body2.m_ODEBody, body1.m_ODEBody);
 }
 
 void CCollisionDetector::ObjTileTest(int nobj, int xtile, int ztile, int htile)
@@ -532,9 +564,64 @@ void CCollisionDetector::tileRotate(CVector &v, int rot)
 	}
 }
 
+//generic tests:
+//return true if there could be a collision
+
 bool CCollisionDetector::sphereTest(const CVector &p1, const CCollisionModel *b1, const CVector &p2, const CCollisionModel *b2)
 {
 	float abs2 = (p2-p1).abs2();
 	float rsum = b1->m_BSphere_r + b2->m_BSphere_r;
 	return abs2 < (rsum * rsum);
+}
+
+#define MINDDIFF 0.01 //1 cm
+
+bool CCollisionDetector::faceTest(const CVector &p1, const CMatrix &o1, const CBound *b1, const CVector &p2, const CMatrix &o2, const CBound *b2, const CCollisionFace &theFace)
+{
+	//0 = undetermined, 1 = front, -1 = back
+	int side1 = 0, side2 = 0;
+
+	//determine the side of the points of body 1
+	for(unsigned int i=0; i < b1->m_Points.size(); i++)
+	{
+		CVector thePoint = b1->m_Points[i];
+		thePoint *= o1;
+		thePoint += p1;
+		float ddiff = thePoint.dotProduct(theFace.nor) - theFace.d;
+
+		if(ddiff > MINDDIFF)
+		{
+			if(side1 < 0) return true; //there could be a collision
+			side1 = 1;
+		}
+		else if(ddiff < -MINDDIFF)
+		{
+			if(side1 > 0) return true; //there could be a collision
+			side1 = -1;
+		}
+	}
+	
+	//determine the side of the points of body 2
+	for(unsigned int i=0; i < b2->m_Points.size(); i++)
+	{
+		CVector thePoint = b2->m_Points[i];
+		thePoint *= o2;
+		thePoint += p2;
+		float ddiff = thePoint.dotProduct(theFace.nor) - theFace.d;
+
+		if(ddiff > MINDDIFF)
+		{
+			if(side2 < 0) return true; //there could be a collision
+			side2 = 1;
+		}
+		else if(ddiff < -MINDDIFF)
+		{
+			if(side2 > 0) return true; //there could be a collision
+			side2 = -1;
+		}
+	}
+
+	if(side1 == side2 && side1 != 0) return true; //both on the same side
+
+	return false; //separation plane -> no collision
 }

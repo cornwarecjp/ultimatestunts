@@ -22,9 +22,10 @@
 #include "car.h"
 #include "carinput.h"
 
-CHumanPlayer::CHumanPlayer(CWinSystem *ws) : CPlayer()
+CHumanPlayer::CHumanPlayer(CGameWinSystem *ws, unsigned int ID) : CPlayer()
 {
 	m_WinSys = ws;
+	m_LocalHumanPlayerID = ID;
 }
 
 CHumanPlayer::~CHumanPlayer(){
@@ -34,8 +35,10 @@ bool CHumanPlayer::update()
 {
 	if(m_MovingObjectId >= 0)
 	{
-		const Uint8 *keystate = m_WinSys->getKeyState();
-		CJoyState joy = m_WinSys->getJoyState(0);
+		float up = m_WinSys->getPlayerControlState(eUp, m_LocalHumanPlayerID);
+		float down = m_WinSys->getPlayerControlState(eDown, m_LocalHumanPlayerID);
+		float left = m_WinSys->getPlayerControlState(eLeft, m_LocalHumanPlayerID);
+		float right = m_WinSys->getPlayerControlState(eRight, m_LocalHumanPlayerID);
 
 		//This is called 'input', as it is the input of the moving object.
 		//But it is the output of the player.
@@ -46,18 +49,9 @@ bool CHumanPlayer::update()
 
 		CCarInput *carin = (CCarInput *)input;
 
-		carin->m_Forward = 1.0 * keystate[SDLK_UP];
-		carin->m_Backward = 1.0 * keystate[SDLK_DOWN];
-		carin->m_Right = 1.0 * keystate[SDLK_RIGHT] - 1.0 * keystate[SDLK_LEFT];
-
-		//Override with joystick:
-#define THR 1000
-		if(joy.x < -THR || joy.x > THR)
-			carin->m_Right = (float)joy.x / 32767;
-		if(joy.y > THR)
-			carin->m_Backward = (float)joy.y / 32767;
-		if(joy.y < -THR)
-			carin->m_Forward = (float)-joy.y / 32767;
+		carin->m_Forward = up;
+		carin->m_Backward = down;
+		carin->m_Right = right - left;
 
 		//default
 		carin->m_Gear = ((CCar *)theWorld->m_MovObjs[m_MovingObjectId])->m_Gear;
@@ -66,12 +60,12 @@ bool CHumanPlayer::update()
 		setAutomaticGear(carin->m_Forward, carin->m_Backward);
 
 		//Try the manual thing
-		if(m_WinSys->wasPressed('a') && carin->m_Gear < 6)
+		if(m_WinSys->playerKeyWasPressed(eShiftUp, m_LocalHumanPlayerID) && carin->m_Gear < 6)
 			carin->m_Gear++;
-		if(m_WinSys->wasPressed('z') && carin->m_Gear > 0)
+		if(m_WinSys->playerKeyWasPressed(eShiftDown, m_LocalHumanPlayerID) && carin->m_Gear > 0)
 			carin->m_Gear--;
 		
-		carin->m_CarHorn = true;
+		carin->m_CarHorn = m_WinSys->playerKeyWasPressed(eHorn, m_LocalHumanPlayerID);
 
 		return true; //input has changed (TODO: make a better system)
 	}

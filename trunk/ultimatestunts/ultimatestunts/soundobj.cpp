@@ -82,7 +82,64 @@ void CSoundObj::setVolume(int v)
 	FSOUND_SetVolume(m_Channel, v);
 }
 
-#else //no libfmod
+#elif defined HAVE_LIBOPENAL
+
+#ifdef OPENAL_HEADER
+#include <AL/al.h>
+#endif
+
+CSoundObj::CSoundObj()
+{
+	alGenSources(1, &m_Source);
+	alSourcei(m_Source, AL_LOOPING, AL_TRUE);
+}
+
+CSoundObj::~CSoundObj()
+{
+	alSourceStop(m_Source);
+	alDeleteSources(1, &m_Source);
+}
+
+void CSoundObj::setPos(CVector p)
+{
+	m_Pos = p;
+	alSource3f(m_Source, AL_POSITION, p.x/10, p.y/10, p.z/10);
+}
+
+void CSoundObj::setVel(CVector v)
+{
+	m_Vel = v;
+	alSource3f(m_Source, AL_VELOCITY, v.x/10, v.y/10, v.z/10);
+}
+
+void CSoundObj::setPosVel(CVector p, CVector v)
+{
+	setPos(p);
+	setVel(v);
+}
+
+void CSoundObj::setFrequency(float f)
+{
+	//F***ing openAL only supports pitch from 0.5 to 2.0!!!
+	if(f < 0.5) f = 0.5;
+	if(f > 2.0) f = 2.0;
+	alSourcef(m_Source, AL_PITCH, f);
+}
+
+void CSoundObj::setVolume(int v)
+{
+	alSourcef(m_Source, AL_GAIN, ((float)v) / 255.0);
+}
+
+int CSoundObj::setSample(CSndSample *s)
+{
+	s->attachToChannel(m_Source);
+	alSourcePlay(m_Source);
+	return 0;
+}
+
+#else //libfmod and libopenAL
+
 CSoundObj::CSoundObj()
 {;}
 
@@ -107,4 +164,4 @@ void CSoundObj::setVolume(int v)
 int CSoundObj::setSample(CSndSample *s)
 {return 0;}
 
-#endif //libfmod
+#endif //libfmod and libopenAL

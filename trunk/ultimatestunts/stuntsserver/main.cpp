@@ -155,13 +155,13 @@ int main(int argc, char *argv[])
 
 		simulations.push_back(csim);
 		trackfile = csim->getTrackname();
-		simulations.push_back(new CPhysics(world));
+		simulations.push_back(new CPhysics(theMainConfig, world));
 	}
 	else
 	{
 		pctrl = new CPlayerControl;
 		simulations.push_back(new CRuleControl(world));
-		simulations.push_back(new CPhysics(world));
+		simulations.push_back(new CPhysics(theMainConfig, world));
 
 		trackfile = getInput("Please enter the track file: ");
 		printf("\nYou entered %s\n", trackfile.c_str());

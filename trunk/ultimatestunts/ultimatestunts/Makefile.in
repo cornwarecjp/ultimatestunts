@@ -140,10 +140,10 @@ target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
 bin_PROGRAMS = ultimatestunts
-ultimatestunts_SOURCES = main.cpp gamecamera.cpp gamerenderer.cpp humanplayer.cpp music.cpp sndsample.cpp sound.cpp soundobj.cpp soundworld.cpp usserver.cpp
+ultimatestunts_SOURCES = main.cpp gamecamera.cpp gamerenderer.cpp gamewinsystem.cpp humanplayer.cpp music.cpp sndsample.cpp sound.cpp soundobj.cpp soundworld.cpp usserver.cpp
 ultimatestunts_LDADD = ../graphics/libgraphics.a ../simulation/libsimulation.a ../shared/libshared.a @sdllibs@ @graphlibs@ @soundlibs@ @netlibs@ @odelibs@
 
-EXTRA_DIST = main.cpp gamecamera.cpp gamecamera.h gamerenderer.cpp gamerenderer.h humanplayer.cpp humanplayer.h music.cpp music.h sndsample.cpp sndsample.h sound.cpp sound.h soundobj.cpp soundobj.h soundworld.cpp soundworld.h usserver.cpp usserver.h
+EXTRA_DIST = main.cpp gamecamera.cpp gamecamera.h gamerenderer.cpp gamerenderer.h gamewinsystem.cpp gamewinsystem.h humanplayer.cpp humanplayer.h music.cpp music.h sndsample.cpp sndsample.h sound.cpp sound.h soundobj.cpp soundobj.h soundworld.cpp soundworld.h usserver.cpp usserver.h
 # set the include path found by configure
 INCLUDES = $(all_includes) -I../shared -I../simulation -I../graphics
 
@@ -157,9 +157,10 @@ bin_PROGRAMS = ultimatestunts$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS)
 
 am_ultimatestunts_OBJECTS = main.$(OBJEXT) gamecamera.$(OBJEXT) \
-	gamerenderer.$(OBJEXT) humanplayer.$(OBJEXT) music.$(OBJEXT) \
-	sndsample.$(OBJEXT) sound.$(OBJEXT) soundobj.$(OBJEXT) \
-	soundworld.$(OBJEXT) usserver.$(OBJEXT)
+	gamerenderer.$(OBJEXT) gamewinsystem.$(OBJEXT) \
+	humanplayer.$(OBJEXT) music.$(OBJEXT) sndsample.$(OBJEXT) \
+	sound.$(OBJEXT) soundobj.$(OBJEXT) soundworld.$(OBJEXT) \
+	usserver.$(OBJEXT)
 ultimatestunts_OBJECTS = $(am_ultimatestunts_OBJECTS)
 ultimatestunts_DEPENDENCIES = ../graphics/libgraphics.a \
 	../simulation/libsimulation.a ../shared/libshared.a
@@ -169,6 +170,7 @@ depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/gamecamera.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/gamerenderer.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/gamewinsystem.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/humanplayer.Po ./$(DEPDIR)/main.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/music.Po ./$(DEPDIR)/sndsample.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/sound.Po ./$(DEPDIR)/soundobj.Po \
@@ -227,6 +229,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gamecamera.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gamerenderer.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gamewinsystem.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/humanplayer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/music.Po@am__quote@

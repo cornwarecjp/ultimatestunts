@@ -50,6 +50,7 @@ enum eKeyconf {
 	eChange = 'c',
 	eChangePrimitive = 'C',
 	eDuplicatePrimitive = 'd',
+	eSetCollision = 'l',
 
 	eRotate = 'r',
 	eScale = 's',
@@ -91,527 +92,68 @@ CString getInput(CString question="")
 	return out;
 }
 
+//Now the functions:
+#include "generalfuncs.cpp"
+#include "transformfuncs.cpp"
+#include "toolfuncs.cpp"
+#include "editfuncs.cpp"
+
 bool mainloop()
 {
 	bool ret = true;
-
-	const Uint8 *keystate = winsys->getKeyState();
-
 
 	if(winsys->wasPressed(eExit))
 		ret = false;
 
 	if(winsys->wasPressed(eLoad))
-	{
-		if(getInput("Do you want to merge the file as a LOD (y/n)? ") == "y")
-		{
-			CString lods = getInput("Enter the LODs of the new objects: ");
-
-			CEditGraphObj obj2;
-			printf("Opening file. Choose from:\n"
-				"1: *.gl file\n"
-				"2: 3dto3d smooth *.raw file\n");
-			switch(getInput("Your choice: ").toInt())
-			{
-				case 1:
-					obj2.loadFromFile(
-						topdir + getInput("Enter filename: "),
-						texloader->m_TexArray); break;
-				case 2:
-					obj2.import_raw(
-						topdir + getInput("Enter filename: "),
-						texloader->m_TexArray); break;
-				default:
-					printf("Please choose between 1 and 2\n");
-			}
-			graphobj->merge(obj2, lods);
-		}
-		else
-		{
-			printf("Opening file. Choose from:\n"
-				"1: *.gl file\n"
-				"2: 3dto3d smooth *.raw file\n");
-			switch(getInput("Your choice: ").toInt())
-			{
-				case 1:
-					graphobj->loadFromFile(
-						topdir + getInput("Enter filename: "),
-						texloader->m_TexArray); break;
-				case 2:
-					graphobj->import_raw(
-						topdir + getInput("Enter filename: "),
-						texloader->m_TexArray); break;
-				default:
-					printf("Please choose between 1 and 2\n");
-			}
-		}
-		graphobj->render(VisibleLODs);
-	}
-
+		loadFunc();
 	if(winsys->wasPressed(eSave))
-		graphobj->saveToFile(
-			topdir + getInput("Saving *.gl file.\nEnter filename: "));
-
+		saveFunc();
 	if(winsys->wasPressed(eSettings))
-	{
-		VisibleLODs = getInput("Set visible LODs: ");
-		graphobj->render(VisibleLODs);
-	}
-
+		settingsFunc();
 	if(winsys->wasPressed(ePrimitive))
-	{
-		for(unsigned int i=0; i<graphobj->m_Primitives.size(); i++)
-			printf("%d: %s\n", i, graphobj->m_Primitives[i].m_Name.c_str());
-		curr_primitive = getInput("Select primitive: ").toInt();
-		curr_vertex = 0;
-	}
-
+		primitiveFunc();
 	if(winsys->wasPressed(eVertex))
-	{
-		CPrimitive &pr = graphobj->m_Primitives[curr_primitive];
-		unsigned int nv = pr.m_Vertex.size();
-		printf("%s has %d vertices:\n", pr.m_Name.c_str(), nv);
-		for(unsigned int i=0; i<nv; i++)
-			printf("\t%d: %f,%f,%f\n", i,
-				pr.m_Vertex[i].pos.x,
-				pr.m_Vertex[i].pos.y,
-				pr.m_Vertex[i].pos.z);
-		curr_vertex = getInput("Select vertex: ").toInt();
-	}
-
+		vertexFunc();
 	if(winsys->wasPressed(eNew))
-	{
-		if(getInput("Do you want to add a new vertex (y/n)? ") == "y")
-		{
-			CVertex vt;
-			vt.pos = getInput("Give position: ").toVector();
-			vt.nor = getInput("Give normal: ").toVector();
-			vt.col = getInput("Give color: ").toVector();
-			vt.opacity = getInput("Give opacity: ").toFloat();
-			vt.reflectance = getInput("Give reflectance: ").toFloat();
-			vt.tex = getInput("Give texcoord: ").toVector();
-			graphobj->m_Primitives[curr_primitive].m_Vertex.push_back(vt);
-		}
-		else if(getInput("Do you want to add a new primitive (y/n)? ") == "y")
-		{
-			CPrimitive p;
-			p.m_Name = getInput("Enter the name: ");
-			printf("Choose the type:\n"
-				"1: Triangles\n"
-				"2: Quads\n"
-				"3: Trianglestrip\n"
-				"4: Quadstrip\n"
-				"5: Polygon\n"
-			);
-			switch(getInput(": ").toInt())
-			{
-			case 1: p.m_Type = GL_TRIANGLES; break;
-			case 2: p.m_Type = GL_QUADS; break;
-			case 3: p.m_Type = GL_TRIANGLE_STRIP; break;
-			case 4: p.m_Type = GL_QUAD_STRIP; break;
-			case 5: p.m_Type = GL_POLYGON; break;
-			}
-			p.m_Texture = getInput("Which texture should be attached? ").toInt();
-			p.m_LODs = getInput("In which LODs should it be visible? ");
-			graphobj->m_Primitives.push_back(p);
-			curr_primitive = graphobj->m_Primitives.size()-1;
-		}
-
-		graphobj->render(VisibleLODs);
-	}
-
+		newFunc();
 	if(winsys->wasPressed(eChange))
-	{
-		CVertex &vt = graphobj->m_Primitives[curr_primitive].m_Vertex[curr_vertex];
-		printf("Pos: %f,%f,%f\n", vt.pos.x, vt.pos.y, vt.pos.z);
-		printf("Nor: %f,%f,%f\n", vt.nor.x, vt.nor.y, vt.nor.z);
-		printf("Col: %f,%f,%f\n", vt.col.x, vt.col.y, vt.col.z);
-		printf("Opacity: %f\n", vt.opacity);
-		printf("Reflectance: %f\n", vt.reflectance);
-		printf("Tex: %f,%f\n", vt.tex.x, vt.tex.y);
-
-		CString answ = getInput("Give new position: ");
-		if(answ != "-")
-			vt.pos = answ.toVector();
-
-		answ = getInput("Give new normal: ");
-		if(answ != "-")
-			vt.nor = answ.toVector();
-
-		answ = getInput("Give new color: ");
-		if(answ != "-")
-			vt.col = answ.toVector();
-
-		answ = getInput("Give new opacity: ");
-		if(answ != "-")
-			vt.opacity = answ.toFloat();
-
-		answ = getInput("Give new reflectance: ");
-		if(answ != "-")
-			vt.reflectance = answ.toFloat();
-
-		answ = getInput("Give new texcoord: ");
-		if(answ != "-")
-			vt.tex = answ.toVector();
-
-		graphobj->render(VisibleLODs);
-	}
-
+		changeFunc();
 	if(winsys->wasPressed(eChangePrimitive))
-	{
-		CPrimitive &p = graphobj->m_Primitives[curr_primitive];
-		printf("Name: %s\n", p.m_Name.c_str());
-		printf("Type: ");
-		switch(p.m_Type)
-		{
-		case GL_TRIANGLES: printf("Triangles\n"); break;
-		case GL_QUADS: printf("Quads\n"); break;
-		case GL_TRIANGLE_STRIP: printf("Trianglestrip\n"); break;
-		case GL_QUAD_STRIP: printf("Quadstrip\n"); break;
-		case GL_POLYGON: printf("Polygon\n"); break;
-		}
-		printf("Texture: %d\n", p.m_Texture);
-		printf("LODs: %s\n", p.m_LODs.c_str());
-		printf("Entering \"-\" will leave a property unchanged\n");
-
-		CString answ = getInput("Enter new name: ");
-		if(answ != "-")
-			p.m_Name = answ;
-
-		printf("Choose the type:\n"
-			"1: Triangles\n"
-			"2: Quads\n"
-			"3: Trianglestrip\n"
-			"4: Quadstrip\n"
-			"5: Polygon\n"
-		);
-		answ = getInput(": ");
-		if(answ != "-")
-			switch(answ.toInt())
-			{
-			case 1: p.m_Type = GL_TRIANGLES; break;
-			case 2: p.m_Type = GL_QUADS; break;
-			case 3: p.m_Type = GL_TRIANGLE_STRIP; break;
-			case 4: p.m_Type = GL_QUAD_STRIP; break;
-			case 5: p.m_Type = GL_POLYGON; break;
-			}
-
-		answ = getInput("Enter new color: ");
-		if(answ != "-")
-		{
-			CVector c = answ.toVector();
-			for(unsigned int i=0; i < p.m_Vertex.size(); i++)
-				p.m_Vertex[i].col = c;
-		}
-
-		answ = getInput("Enter new opacity: ");
-		if(answ != "-")
-		{
-			float o = answ.toFloat();
-			for(unsigned int i=0; i < p.m_Vertex.size(); i++)
-				p.m_Vertex[i].opacity = o;
-		}
-
-		answ = getInput("Enter new reflectance: ");
-		if(answ != "-")
-		{
-			float o = answ.toFloat();
-			for(unsigned int i=0; i < p.m_Vertex.size(); i++)
-				p.m_Vertex[i].reflectance = o;
-		}
-
-		answ = getInput("Enter new texture: ");
-		if(answ != "-")
-			p.m_Texture = answ.toInt();
-
-		answ = getInput("Enter new LODs: ");
-		if(answ != "-")
-			p.m_LODs = answ;
-
-		graphobj->render(VisibleLODs);
-	}
-
+		changePrimitiveFunc();
 	if(winsys->wasPressed(eDuplicatePrimitive))
-	{
-		CPrimitive p = graphobj->m_Primitives[curr_primitive];
-		graphobj->m_Primitives.push_back(p);
-		curr_primitive =graphobj->m_Primitives.size()-1;
-		graphobj->render(VisibleLODs);
-	}
-
+		duplicatePrimitiveFunc();
+	if(winsys->wasPressed(eSetCollision))
+		setCollisionFunc();
 	if(winsys->wasPressed(eRotate))
-	{
-		bool scene = getInput("Do you want to rotate the entire scene? ") == "y";
-
-		CMatrix m;
-		if(getInput("Do you want to rotate around the x-axis (y/n)? ")=="y")
-		{
-			float angle = getInput("Enter the angle in degrees: ").toFloat() * (3.1415926536/180.0);
-			m.rotX(angle);
-		}
-		else if(getInput("Do you want to rotate around the y-axis (y/n)? ")=="y")
-		{
-			float angle = getInput("Enter the angle in degrees: ").toFloat() * (3.1415926536/180.0);
-			m.rotY(angle);
-		}
-		else if(getInput("Do you want to rotate around the z-axis (y/n)? ")=="y")
-		{
-			float angle = getInput("Enter the angle in degrees: ").toFloat() * (3.1415926536/180.0);
-			m.rotZ(angle);
-		}
-		else
-		{
-			CVector x = getInput("Enter the new position of the x-axis: ").toVector();
-			CVector y = getInput("Enter the new position of the y-axis: ").toVector();
-			CVector z = getInput("Enter the new position of the z-axis: ").toVector();
-
-			m.setElement(0,0, x.x); m.setElement(0,1, y.x); m.setElement(0,2, z.x);
-			m.setElement(1,0, x.y); m.setElement(1,1, y.y); m.setElement(1,2, z.y);
-			m.setElement(2,0, x.z); m.setElement(2,1, y.z); m.setElement(2,2, z.z);
-		}
-
-		if(scene)
-		{
-			for(unsigned int i=0; i<graphobj->m_Primitives.size(); i++)
-			{
-				CPrimitive &pr = graphobj->m_Primitives[i];
-				for(unsigned int j=0; j<pr.m_Vertex.size(); j++)
-				{
-					CVertex &vt = pr.m_Vertex[j];
-					vt.pos *= m;
-					vt.nor *= m;
-					vt.nor.normalise();
-				}
-			}
-		}
-		else
-		{
-				CPrimitive &pr = graphobj->m_Primitives[curr_primitive];
-				for(unsigned int j=0; j<pr.m_Vertex.size(); j++)
-				{
-					CVertex &vt = pr.m_Vertex[j];
-					vt.pos *= m;
-					vt.nor *= m;
-					vt.nor.normalise();
-				}
-		}
-
-		graphobj->render(VisibleLODs);
-	}
-
+		rotateFunc();
 	if(winsys->wasPressed(eScale))
-	{
-		bool scene = getInput("Do you want to autoscale the entire scene (y/n)? ") == "y";
-		bool cg = getInput("Do you want to scale around 1:the origin or 2:the CG? ") == "2";
-		float maxs = getInput("Enter new size: ").toFloat();
-
-		//determine center
-		CVector center = CVector(0,0,0);
-		if(cg)
-			if(scene)
-			{
-				int num = 0;
-				for(unsigned int i=0; i<graphobj->m_Primitives.size(); i++)
-				{
-					CPrimitive &pr = graphobj->m_Primitives[i];
-					for(unsigned int j=0; j<pr.m_Vertex.size(); j++)
-					{
-						center += pr.m_Vertex[j].pos;
-						num++;
-					}
-				}
-				center /= num;
-			}
-			else
-			{
-				int num = 0;
-				CPrimitive &pr = graphobj->m_Primitives[curr_primitive];
-				for(unsigned int j=0; j<pr.m_Vertex.size(); j++)
-				{
-					center += pr.m_Vertex[j].pos;
-					num++;
-				}
-				center /= num;
-			}
-
-		//determine scalefactor
-		float min = 1.0e10;
-		float max = -min;
-		if(scene)
-		{
-			for(unsigned int i=0; i<graphobj->m_Primitives.size(); i++)
-			{
-				CPrimitive &pr = graphobj->m_Primitives[i];
-				for(unsigned int j=0; j<pr.m_Vertex.size(); j++)
-				{
-					CVector p = pr.m_Vertex[j].pos - center;
-					if(p.x > max) max = p.x;
-					if(p.y > max) max = p.y;
-					if(p.z > max) max = p.z;
-					if(p.x < min) min = p.x;
-					if(p.y < min) min = p.y;
-					if(p.z < min) min = p.z;
-				}
-			}
-		}
-		else
-		{
-			CPrimitive &pr = graphobj->m_Primitives[curr_primitive];
-			for(unsigned int j=0; j<pr.m_Vertex.size(); j++)
-			{
-				CVector p = pr.m_Vertex[j].pos - center;
-				if(p.x > max) max = p.x;
-				if(p.y > max) max = p.y;
-				if(p.z > max) max = p.z;
-				if(p.x < min) min = p.x;
-				if(p.y < min) min = p.y;
-				if(p.z < min) min = p.z;
-			}
-		}
-
-		float sf = maxs / (max-min);
-		printf("Scaling with scalefactor %f\n", sf);
-
-		//Apply scaling
-		if(scene)
-		{
-			for(unsigned int i=0; i<graphobj->m_Primitives.size(); i++)
-			{
-				CPrimitive &pr = graphobj->m_Primitives[i];
-				for(unsigned int j=0; j<pr.m_Vertex.size(); j++)
-					pr.m_Vertex[j].pos = center + (pr.m_Vertex[j].pos-center)*sf;
-			}
-		}
-		else
-		{
-				CPrimitive &pr = graphobj->m_Primitives[curr_primitive];
-				for(unsigned int j=0; j<pr.m_Vertex.size(); j++)
-					pr.m_Vertex[j].pos = center + (pr.m_Vertex[j].pos-center)*sf;
-		}
-
-		graphobj->render(VisibleLODs);
-	}
-
+		scaleFunc();
 	if(winsys->wasPressed(eMirror))
-	{
-		bool normals = getInput("Do you want to mirror the normals? ") == "y";
-		bool vertices = getInput("Do you want to mirror the vertices? ") == "y";
-		CPrimitive &pr = graphobj->m_Primitives[curr_primitive];
-
-		if(normals)
-		{
-			for(unsigned int j=0; j<pr.m_Vertex.size(); j++)
-			{
-				CVertex &vt = pr.m_Vertex[j];
-				if(normals)
-					vt.nor = -vt.nor;
-			}
-		}
-
-		if(vertices)
-		{
-			unsigned int size =pr.m_Vertex.size();
-			for(unsigned int j=0; j<size/2; j++)
-			{
-				CVertex vt = pr.m_Vertex[j];  //swapping the vertices; putting in reverse order
-				pr.m_Vertex[j] = pr.m_Vertex[size-j-1];
-				pr.m_Vertex[size-j-1] = vt;
-			}
-		}
-
-		graphobj->render(VisibleLODs);
-	}
-
+		mirrorFunc();
 	if(winsys->wasPressed(eTranslate))
-	{
-		bool scene = getInput("Do you want to translate the entire scene? ") == "y";
-		CVector v = getInput("Enter translation vector: ").toVector();
-
-		if(scene)
-		{
-			for(unsigned int i=0; i<graphobj->m_Primitives.size(); i++)
-			{
-				CPrimitive &pr = graphobj->m_Primitives[i];
-				for(unsigned int j=0; j<pr.m_Vertex.size(); j++)
-					pr.m_Vertex[j].pos += v;
-			}
-		}
-		else
-		{
-			CPrimitive &pr = graphobj->m_Primitives[curr_primitive];
-			for(unsigned int j=0; j<pr.m_Vertex.size(); j++)
-				pr.m_Vertex[j].pos += v;
-		}
-
-		graphobj->render(VisibleLODs);
-	}
-
+		translateFunc();
 	if(winsys->wasPressed(eRotateTexture))
-	{
-		CVector x = getInput("Enter the new position of the x-axis: ").toVector();
-		CVector y = getInput("Enter the new position of the y-axis: ").toVector();
-
-		CMatrix m;
-		m.setElement(0,0, x.x); m.setElement(0,1, y.x);
-		m.setElement(1,0, x.y); m.setElement(1,1, y.y);
-
-		CPrimitive &pr = graphobj->m_Primitives[curr_primitive];
-		for(unsigned int j=0; j<pr.m_Vertex.size(); j++)
-			pr.m_Vertex[j].tex *= m;
-
-		graphobj->render(VisibleLODs);
-	}
-
+		rotateTextureFunc();
 	if(winsys->wasPressed(eTranslateTexture))
-	{
-		CVector v = getInput("Enter translation vector: ").toVector();
-
-		CPrimitive &pr = graphobj->m_Primitives[curr_primitive];
-		for(unsigned int j=0; j<pr.m_Vertex.size(); j++)
-			pr.m_Vertex[j].tex += v;
-
-		graphobj->render(VisibleLODs);
-	}
-
+		translateTextureFunc();
 	if(winsys->wasPressed(eHelp))
-		printf("Keys:\n"
-			"Esc: Exit\n"
-			"%c: Load\n"
-			"%c: Save\n"
-			"%c: Settings\n"
-			"%c: Primitive\n"
-			"%c: Vertex\n"
-			"%c: New primitive or vertex\n"
-			"%c: Change\n"
-			"%c: Change primitive\n"
-			"%c: Duplicate primitive\n"
-			"%c: Rotate\n"
-			"%c: Scale\n"
-			"%c: Mirror\n"
-			"%c: Translate\n"
-			"%c: Rotate Texture\n"
-			"%c: Translate Texture\n"
-			"%c: Help\n",
-			eLoad, eSave, eSettings, ePrimitive, eVertex, eNew, eChange,
-			eChangePrimitive, eDuplicatePrimitive, eRotate, eScale,
-			eMirror, eTranslate, eRotateTexture, eTranslateTexture,
-			eHelp
-		);
+		helpFunc();
 
 	if(winsys->wasPressed(SDLK_END))
 		camera->flipCameraCenter();
 
-	if(keystate[SDLK_PAGEUP])
+	if(winsys->getKeyState(SDLK_PAGEUP))
 		camera->incrDist(-0.1);
-	if(keystate[SDLK_PAGEDOWN])
+	if(winsys->getKeyState(SDLK_PAGEDOWN))
 		camera->incrDist(0.1);
-	if(keystate[SDLK_LEFT])
+	if(winsys->getKeyState(SDLK_LEFT))
 		camera->incrXAngle(0.01);
-	if(keystate[SDLK_RIGHT])
+	if(winsys->getKeyState(SDLK_RIGHT))
 		camera->incrXAngle(-0.01);
-	if(keystate[SDLK_UP])
+	if(winsys->getKeyState(SDLK_UP))
 		camera->incrYAngle(0.01);
-	if(keystate[SDLK_DOWN])
+	if(winsys->getKeyState(SDLK_DOWN))
 		camera->incrYAngle(-0.01);
 
 	renderer->update();
@@ -651,7 +193,7 @@ int main(int argc, char *argv[])
 	printf("...done\n");
 
 	printf("\nInitialising the rendering engine\n");
-	renderer = new CEditRenderer();
+	renderer = new CEditRenderer(winsys);
 	camera = new CEditCamera();
 	renderer->setCamera(camera);
 	renderer->setGraphobj(graphobj);

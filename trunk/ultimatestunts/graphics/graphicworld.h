@@ -23,6 +23,7 @@
 #include "background.h"
 #include "world.h"
 #include "lconfig.h"
+#include "reflection.h"
 
 /**
   *@author CJP

@@ -240,7 +240,7 @@ CString CGUI::viewTrackMenu()
 
 CString CGUI::viewPlayerMenu()
 {
-	CString defaultcar = "cars/porsche.conf";
+	CString defaultcar = "cars/diablo.conf";
 	m_PlayerDescr.clear();
 
 	printf("Player menu:\n");
@@ -253,7 +253,7 @@ CString CGUI::viewPlayerMenu()
 
 	while(true)
 	{
-		printf("\nDo you want to add an AI player(y/n)? ");
+		printf("\nDo you want to add a player(y/n)? ");
 		CString answ = getInput();
 		if(!(answ == "y" || answ == "Y")) break;
 
@@ -262,7 +262,10 @@ CString CGUI::viewPlayerMenu()
 		printf("Enter the car file (default is %s):", defaultcar.c_str());
 		carfile = getInput();
 		if(carfile == "") carfile = defaultcar;
-		addPlayer(name, false, carfile);
+		printf("Is it an AI player(y/n)? ");
+		answ = getInput();
+		bool isHuman = !(answ == "y" || answ == "Y");
+		addPlayer(name, isHuman, carfile);
 	}
 
 	m_PassedPlayerMenu = true;

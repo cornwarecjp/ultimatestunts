@@ -50,7 +50,7 @@ CMusic::~CMusic()
 	if(m_Stream != NULL) FSOUND_Stream_Close(m_Stream);
 }
 
-int CMusic::loadFromFile(CString filename)
+int CMusic::loadFromFile(const CString &filename)
 {
 	m_Stream = FSOUND_Stream_Open(filename.c_str(), FSOUND_NORMAL, 0, 0);
 
@@ -82,13 +82,44 @@ void CMusic::setEndCallback(void (CALLBACKFUN *endfunc)())
 	}
 }
 
+#elif defined HAVE_LIBOPENAL
 
-#else //libfmod
+#ifdef OPENAL_HEADER
+#include <AL/al.h>
+#include <AL/alut.h>
+#endif
+
+CMusic::CMusic()
+{
+}
+
+CMusic::~CMusic()
+{
+}
+
+int CMusic::loadFromFile(const CString &filename)
+{
+	//TODO: streaming
+	return CSndSample::loadFromFile(filename);
+}
+
+int CMusic::attachToChannel(int c)
+{
+	return CSndSample::attachToChannel(c);
+}
+
+void CMusic::setEndCallback(void (CALLBACKFUN *endfunc)())
+{;}
+
+#else //libfmod and libopenal
+
+CMusic::CMusic()
+{;}
 
 CMusic::~CMusic()
 {;}
 
-int CMusic::loadFromFile(CString filename)
+int CMusic::loadFromFile(const CString &filename)
 {
   return 1;
 }

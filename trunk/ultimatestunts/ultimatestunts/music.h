@@ -38,15 +38,21 @@ class CMusic : public CSndSample
 	CMusic();
 	virtual ~CMusic();
 
-	virtual int loadFromFile(CString filename);
+	virtual int loadFromFile(const CString &filename);
 
 	virtual int attachToChannel(int c);
 
 	void setEndCallback(void (CALLBACKFUN *endfunc)());
 
 protected:
+
 #ifdef HAVE_LIBFMOD
 	FSOUND_STREAM *m_Stream;
+#endif
+
+#ifdef HAVE_LIBOPENAL
+	unsigned int m_Buffer;
+	bool m_isLoaded;
 #endif
 };
 

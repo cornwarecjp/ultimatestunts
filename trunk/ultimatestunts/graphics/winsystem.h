@@ -27,11 +27,6 @@
 /**
   *@author CJP
   */
-class CJoyState
-{
-public:
-	int x, y;
-};
 
 class CWinSystem {
 public: 
@@ -40,29 +35,38 @@ public:
 
 	int runLoop( bool (CALLBACKFUN *loopfunc)(), bool swp = false);
 
-	const Uint8 *getKeyState() const {return m_KeyState;}
+	bool getKeyState(int c) const;
 	bool wasPressed(int c);
-
-	CJoyState getJoyState(int n) const {return m_JoyState;}
+	bool joyBtnWasPressed(int c);
 
 	SDL_Surface *getScreen(){return m_Screen;}
+
+	unsigned int getWidth() const
+		{return m_W;}
+	unsigned int getHeight() const
+		{return m_H;}
+	unsigned int getBPP() const
+		{return m_BPP;}
 protected:
-	int m_W, m_H, m_BPP;
+	unsigned int m_W, m_H, m_BPP;
 	bool m_Fullscreen;
 	Uint32 m_Flags;
-	void reshape(int w, int h);
 
 	int m_VisibleTiles;
 
 	SDL_Surface *m_Screen;
 
+	//keyboard
 	Uint8 *m_KeyState;
 	bool *m_WasPressed;
 	int m_NumKeys;
 
+	//joystick
+	bool *m_JoyButtonWasPressed;
+	int m_NumJoyBtns;
+
 	int m_NumJoysticks;
 	SDL_Joystick *m_Joystick;
-	CJoyState m_JoyState;
 };
 
 #endif

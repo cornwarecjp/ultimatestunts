@@ -28,7 +28,7 @@
 
 class CEditRenderer : public CRenderer  {
 public: 
-	CEditRenderer();
+	CEditRenderer(const CWinSystem *winsys);
 	virtual ~CEditRenderer();
 
 	void setGraphobj(const CGraphObj *obj)

@@ -20,11 +20,11 @@
 #include "usmacros.h"
 #include "datafile.h"
 
-CEditRenderer::CEditRenderer() : CRenderer()
+CEditRenderer::CEditRenderer(const CWinSystem *winsys) : CRenderer(winsys)
 {
 	m_EnvMap = new CTexture;
 	CDataFile df("environment/spheremap.rgb");
-	m_EnvMap->loadFromFile(df.useExtern(), 512, 512);
+	m_EnvMap->loadFromFile(df.useExtern(), m_ReflectionSize, m_ReflectionSize);
 }
 
 CEditRenderer::~CEditRenderer()
@@ -34,6 +34,7 @@ CEditRenderer::~CEditRenderer()
 
 void CEditRenderer::update()
 {
+	CRenderer::update(); //set up viewport
 	//printf("Updating graphics\n");
 
 	//Clear the screen

@@ -203,7 +203,7 @@ bool CTexture::loadFromFile(CString filename, int xs, int ys)
 	return true;
 }
 
-void CTexture::draw(int lod)
+void CTexture::draw(int lod) const
 {
   if (getSizeX(lod) <= 4 || getSizeY(lod) <= 4)
     {printf("   Error: trying to draw a too small texture:\n"
@@ -225,7 +225,7 @@ void CTexture::draw(int lod)
   }
 }
 
-int CTexture::getSizeX(int i)
+int CTexture::getSizeX(int i) const
 {
 	switch(i)
 	{
@@ -241,7 +241,7 @@ int CTexture::getSizeX(int i)
   return 0;
 }
 
-int CTexture::getSizeY(int i)
+int CTexture::getSizeY(int i) const
 {
 	switch(i)
 	{

@@ -29,7 +29,7 @@
 
 class CGameRenderer : public CRenderer  {
 public: 
-	CGameRenderer();
+	CGameRenderer(const CWinSystem *winsys);
 	virtual ~CGameRenderer();
 
 	bool loadTrackData();
@@ -37,10 +37,25 @@ public:
 	bool loadObjData();
 	void unloadObjData();
 
+	//DON't use setCamera with CGameRenderer, use this instead!
+	void setCameras(CCamera **cams, unsigned int num);
+
 	virtual void update();
+
 protected:
+	CCamera **m_Cameras;
+	unsigned int m_NumCameras;
+	unsigned int m_CurrentCamera;
+	int camx, camy, camz;
+
+
+	void clearScreen();
+	void updateReflections();
+	void selectCamera(unsigned int n);
+	void renderScene();
+
 	void viewBackground();
-	void viewMovObj(CMovingObject *mo);
+	void viewMovObj(unsigned int n);
 	void viewPilaar(int x, int y, int cur_zpos);
 
 	void viewTrackPart(
@@ -51,6 +66,11 @@ protected:
 
 	const CWorld *m_World;
 	CGraphicWorld *m_GraphicWorld;
+
+	vector<CReflection> m_MovingObjectReflections;
+	int m_UpdateBodyReflection; //>= 0 when updating a reflection
+
+	int m_FrameCounter;
 };
 
 #endif

@@ -37,13 +37,20 @@ public:
 	CSndSample();
 	virtual ~CSndSample();
 
-	virtual int loadFromFile(CString filename);
+	virtual int loadFromFile(const CString &filename);
 
 	virtual int attachToChannel(int c);
 protected:
+
 #ifdef HAVE_LIBFMOD
 	FSOUND_SAMPLE *m_Sample;
 #endif
+
+#ifdef HAVE_LIBOPENAL
+	unsigned int m_Buffer;
+	bool m_isLoaded;
+#endif
+
 };
 
 #endif

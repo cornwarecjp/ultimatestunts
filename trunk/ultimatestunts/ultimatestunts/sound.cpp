@@ -34,19 +34,35 @@ void musicEndCallback()
 	_song_has_ended = true;
 }
 
-#ifdef HAVE_LIBFMOD
-
 #ifdef FMOD_HEADER
 #include <fmod/fmod.h>
 #include <fmod/fmod_errors.h>
 #include <fmod/wincompat.h> //debugging
 #endif
 
+#ifdef OPENAL_HEADER
+#include <AL/al.h>
+#include <AL/alut.h>
+#endif
+
+
 CSound::CSound(const CLConfig &conf)
 {
 	//The world object:
 	m_World = theWorld;
 
+#ifdef HAVE_LIBOPENAL
+	int argc = 1;
+	char *argv[1];
+	argv[0] = "ultimatestunts";
+	alutInit(&argc, argv);
+
+	alListenerf(AL_GAIN, 1.0);
+	alDopplerFactor(1.0);
+	alDopplerVelocity(340.0);
+#endif
+
+#ifdef HAVE_LIBFMOD
 	//Initialising the sound library:
 	CString drivername = "nosound"; //Default for unknown system types
 
@@ -106,6 +122,8 @@ CSound::CSound(const CLConfig &conf)
     printf("  Init: %s\n", FMOD_ErrorString(FSOUND_GetError()));
     return;
   }
+#endif //libfmod
+
 
 	//The sound world:
 	m_SoundWorld = new CSoundWorld(conf);
@@ -144,7 +162,13 @@ CSound::~CSound()
 		delete m_Music;
 	}
 
+#ifdef HAVE_LIBFMOD
 	FSOUND_Close();
+#endif
+
+#ifdef HAVE_LIBOPENAL
+	alutExit();
+#endif
 }
 
 bool CSound::load()
@@ -179,7 +203,9 @@ void CSound::playNextSong()
 	//printf("setSample\n");
 	m_MusicObject->setSample(m_Music);
 	//printf("setEndCallback\n");
+#ifndef __CYGWIN__
 	m_Music->setEndCallback(musicEndCallback);
+#endif
 	//printf("setVolume\n");
 	m_MusicObject->setVolume(m_MusicVolume);
 	//printf("done\n");
@@ -194,22 +220,33 @@ void CSound::update()
 
 	//Microphone:
 	CVector p = m_Camera->getPosition();
-	float pos[] = {p.x/10, p.y/10, p.z/10};
 	CVector v = m_Camera->getVelocity();
-	float vel[] = {v.x/10, v.y/10, v.z/10};
 	const CMatrix &ori = m_Camera->getOrientation();
 
+#ifdef HAVE_LIBOPENAL
+	//Arguments: pos, vel, front x,y,z, top x,y,z
+	float ori_arr[] =
+		{-ori.Element(0,2), ori.Element(1,2), ori.Element(2,2),
+		-ori.Element(0,1), ori.Element(1,1), ori.Element(2,1)};
+	alListener3f(AL_POSITION, p.x/10, p.y/10, p.z/10);
+	alListener3f(AL_VELOCITY, v.x/10, v.y/10, v.z/10);
+	alListenerfv(AL_ORIENTATION, ori_arr);
+#endif
+
+#ifdef HAVE_LIBFMOD
+	float pos[] = {p.x/10, p.y/10, p.z/10};
+	float vel[] = {v.x/10, v.y/10, v.z/10};
 	//Arguments: pos, vel, front x,y,z, top x,y,z
 	FSOUND_3D_Listener_SetAttributes(
 		&pos[0], &vel[0],
 		-ori.Element(0,2), ori.Element(1,2), ori.Element(2,2),
 		-ori.Element(0,1), ori.Element(1,1), ori.Element(2,1)
 	);
+#endif
 
 
 	//Objects:
-	unsigned int s = m_SoundWorld->m_Channels.size();
-	for(unsigned int i=0; i<s; i++)
+	for(unsigned int i=0; i<m_SoundWorld->m_Channels.size(); i++)
 	{
 		CMovingObject *o = m_World->m_MovObjs[m_SoundWorld->m_ObjIDs[i]];
 		if(o->getType() == CMessageBuffer::car)
@@ -240,32 +277,14 @@ void CSound::update()
 				float engineRPS = theCar->m_MainAxisVelocity * theCar->getGearRatio();
 				int vol = 100 + (int)(100 * theCar->m_gas);
 				if(vol > 255) vol = 255;
-				chn->setFrequency(0.005 * engineRPS); //correct for sound sample frequency & 2*pi
+				chn->setFrequency(0.0025 * engineRPS); //correct for sound sample frequency & 2*pi
 				chn->setVolume((vol * m_SoundVolume) >> 8);
 			}
 		}
 	}
 
+#ifdef HAVE_LIBFMOD
 	//Update:
 	FSOUND_Update();
+#endif
 }
-
-#else
-
-CSound::CSound(const CLConfig &conf)
-{
-	printf("   No sound: sound support not compiled in\n");
-}
-
-CSound::~CSound()
-{;}
-
-bool CSound::load()
-{return true;}
-
-void CSound::playNextSong()
-{;}
-
-void CSound::update()
-{;}
-#endif //libfmod

@@ -25,16 +25,16 @@ class CTexture
 {
 public:
 	CTexture();
-	virtual void setTextureSmooth(bool texture_smooth)
+	void setTextureSmooth(bool texture_smooth)
 		{m_TextureSmooth = texture_smooth;}
 
 	virtual bool loadFromFile(CString filename, int xs, int ys);
 
-	int getSizeX(int i);
-	int getSizeY(int i);
+	int getSizeX(int i) const;
+	int getSizeY(int i) const;
 	CVector getColor() const;
 
-  void draw(int lod);
+  void draw(int lod) const;
 
 protected:
   RGBImageRec *scaleImage(RGBImageRec *in, int xs, int ys);

@@ -49,7 +49,7 @@ using namespace std;
 #include "humanplayer.h"
 
 //Graphics stuff
-#include "winsystem.h"
+#include "gamewinsystem.h"
 #include "gamerenderer.h"
 #include "gui.h"
 #include "gamecamera.h"
@@ -66,10 +66,12 @@ vector<CSimulation *> simulations;
 CClientNet *clientnet = NULL;
 CUSServer *server = NULL;
 
-CWinSystem *winsys = NULL;
+CGameWinSystem *winsys = NULL;
 CGameRenderer *renderer = NULL;
 CGUI *gui = NULL;
-CGameCamera *camera = NULL;
+
+CCamera *cameras[16]; //max. 16 cameras should be enough
+unsigned int numCameras = 0;
 
 CSound *soundsystem = NULL;
 
@@ -94,8 +96,8 @@ bool mainloop()
 			printf("Top speed in this session: %.2f km/h\n", topspeed * 3.6);
 			printf("Car %d: velocity %.2f km/h; gear %d; %.2f RPM\n"
 					"wheel %.2f rad/s; axis %.2f rad/s; engine %.2f rad/s\n",
-			             i,          vel * 3.6, theCar->m_Gear, 60.0 * wEngine / 6.28,
-			             vel / 0.35, theCar->m_MainAxisVelocity, wEngine);
+						i,          vel * 3.6, theCar->m_Gear, 60.0 * wEngine / 6.28,
+						vel / 0.35, theCar->m_MainAxisVelocity, wEngine);
 		}
 	}
 	printf("**********\n");
@@ -104,17 +106,21 @@ bool mainloop()
 	bool retval = true;
 
 	//Escape:
-	retval = retval && ( !(bool)(winsys->wasPressed('\e')) );
+	retval = retval && ( !(winsys->globalKeyWasPressed(eExit)) );
 
-	//Camera:
-	if(winsys->wasPressed('c')) camera->swithCameraMode();
-	if(winsys->wasPressed('t')) camera->switchTrackedObject();
+	//Cameras:
+	for(unsigned int i=0; i < numCameras; i++)
+	{
+		CGameCamera *theCam = (CGameCamera *)cameras[i];
+		if(winsys->playerKeyWasPressed(eCameraChange, i)) theCam->swithCameraMode();
+		if(winsys->playerKeyWasPressed(eCameraToggle, i)) theCam->switchTrackedObject();
+	}
 
 	//Next song:
-	if(winsys->wasPressed('n')) soundsystem->playNextSong();
+	if(winsys->globalKeyWasPressed(eNextSong)) soundsystem->playNextSong();
 
 	//Debug messages
-	world->printDebug = winsys->getKeyState()['d'];
+	world->printDebug = winsys->getKeyState('d');
 
 	for(unsigned int i=0; i<players.size(); i++)
 		players[i]->update(); //Makes moving decisions
@@ -122,7 +128,9 @@ bool mainloop()
 	for(unsigned int i=0; i<simulations.size(); i++)
 		retval = retval && simulations[i]->update(); //Modifies world object
 
-	camera->update();
+	for(unsigned int i=0; i < numCameras; i++)
+		cameras[i]->update();
+
 	renderer->update();
 	soundsystem->update();
 
@@ -134,7 +142,7 @@ bool addPlayer(bool isHuman, CString name, CObjectChoice choice)
 	CPlayer *p;
 
 	if(isHuman)
-		p = new CHumanPlayer(winsys);
+		p = new CHumanPlayer(winsys, numCameras);
 	else
 		p = new CAIPlayerCar();
 
@@ -149,7 +157,12 @@ bool addPlayer(bool isHuman, CString name, CObjectChoice choice)
 	}
 
 	if(isHuman) //set the camera to this player:
-		camera->setTrackedObject(id);
+	{
+		CGameCamera *theCam = new CGameCamera(world);
+		theCam->setTrackedObject(id);
+		*(cameras + numCameras) = theCam;
+		numCameras++;
+	}
 
 	players.push_back(p);
 	return true;
@@ -181,7 +194,7 @@ void start(int argc, char *argv[]) //first things before becoming interactive
 	}
 
 	printf("Initialising Ultimate Stunts:\n---Window system\n");
-	winsys = new CWinSystem("Ultimate Stunts", *theMainConfig);
+	winsys = new CGameWinSystem("Ultimate Stunts", *theMainConfig);
 
 	world = new CWorld();
 
@@ -192,12 +205,7 @@ void start(int argc, char *argv[]) //first things before becoming interactive
 	soundsystem = new CSound(*theMainConfig);
 
 	printf("---Rendering engine\n");
-	renderer = new CGameRenderer();
-
-	printf("---Camera\n");
-	camera = new CGameCamera(world);
-	renderer->setCamera(camera);
-	soundsystem->setCamera(camera);
+	renderer = new CGameRenderer(winsys);
 }
 
 void end() //Last things before exiting
@@ -208,6 +216,12 @@ void end() //Last things before exiting
 	printf("---Rendering engine\n");
 	if(renderer!=NULL)
 		delete renderer;
+	printf("---Cameras\n");
+	if(cameras != NULL)
+	{
+		for(unsigned int i=0; i < numCameras; i++)
+			delete *(cameras+i);
+	}
 	printf("---Simulations\n");
 	for(unsigned int i=0; i<simulations.size(); i++)
 		delete simulations[i];
@@ -263,7 +277,7 @@ int main(int argc, char *argv[])
 		case CGUI::LocalGame:
 			pctrl = new CPlayerControl;
 			simulations.push_back(new CRuleControl(world));
-			simulations.push_back(new CPhysics(world));
+			simulations.push_back(new CPhysics(theMainConfig, world));
 			while(!( gui->isPassed("trackmenu") )); //waiting for input
 			trackfile = gui->getValue("trackmenu");
 			break;
@@ -283,7 +297,7 @@ int main(int argc, char *argv[])
 			clientnet = new CClientNet(name, port);
 			pctrl = new CClientPlayerControl(clientnet);
 			simulations.push_back(new CClientSim(clientnet, world));
-			simulations.push_back(new CPhysics(world));
+			simulations.push_back(new CPhysics(theMainConfig, world));
 			break;
 		}
 		case CGUI::JoinNetwork:
@@ -297,7 +311,7 @@ int main(int argc, char *argv[])
 			CClientSim *csim = new CClientSim(clientnet, world);
 			trackfile = csim->getTrackname();
 			simulations.push_back(csim);
-			simulations.push_back(new CPhysics(world));
+			simulations.push_back(new CPhysics(theMainConfig, world));
 			break;
 		}
 		default:
@@ -310,6 +324,7 @@ int main(int argc, char *argv[])
 	world->loadTrack(trackfile);
 	renderer->loadTrackData();
 
+	//Set up the players
 	while(!( gui->isPassed("playermenu") )); //waiting for input
 	int num_players = gui->getValue("playermenu", "number").toInt();
 	printf("\nNumber of players to be added: %d\n", num_players);
@@ -323,6 +338,10 @@ int main(int argc, char *argv[])
 		printf("%d: \"%s\" driving %s\n", i, name.c_str(), carFile.c_str());
 		addPlayer(isHuman, name, oc);
 	}
+
+	//Now the players are set, we can give the cameras to the renderer and sound system:
+	renderer->setCameras(cameras, numCameras);
+	soundsystem->setCamera(cameras[0]); //first camera
 
 	printf("\nLoading moving objects\n");
 	if(!pctrl->loadObjects())

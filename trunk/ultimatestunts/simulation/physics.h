@@ -29,11 +29,11 @@
 #include "timer.h"
 #include "collisiondetector.h"
 #include "generalmatrix.h"
-
+#include "lconfig.h"
 
 class CPhysics : public CSimulation {
 public: 
-	CPhysics(CWorld *w);
+	CPhysics(const CLConfig *conf, CWorld *w);
 	virtual ~CPhysics();
 
 	virtual bool update();
@@ -43,6 +43,9 @@ protected:
 	CTimer m_Timer;
 	bool m_firstTime;
 	bool m_FastCPUMode;
+
+	float m_dtMin;
+	unsigned int m_NMax;
 
 	CCollisionDetector *m_Detector;
 };

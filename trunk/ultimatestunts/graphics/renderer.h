@@ -20,6 +20,7 @@
 
 #include "lconfig.h"
 #include "camera.h"
+#include "winsystem.h"
 
 /**
   *@author CJP
@@ -27,32 +28,32 @@
 
 class CRenderer {
 public: 
-	CRenderer();
+	CRenderer(const CWinSystem *winsys);
 	virtual ~CRenderer();
 
 	void setCamera(const CCamera *cam)
 		{m_Camera = cam;}
 
-	virtual void update();
+	virtual void update(); //default: set up viewport
 
 protected:
 	const CCamera *m_Camera;
+	const CWinSystem *m_WinSys;
 
 	float *m_FogColor;
 
 	bool m_UseBackground;
 	bool m_ZBuffer;
-	float m_ReflectionDist;
 	int m_VisibleTiles;
 	int m_FogMode;
 	int m_MovingObjectLOD;
 	enum {off, blend} m_Transparency;
-	bool m_TexPerspective;
 	bool m_TexSmooth;
 	bool m_ShadowSmooth;
-
-	int camx, camy, camz;
-	int lengte, breedte, hoogte;
+	float m_ReflectionDist;
+	int m_ReflectionSize;
+	int m_ReflectionUpdateFrames;
+	bool m_ReflectionSkipMovingObjects;
 };
 
 #endif

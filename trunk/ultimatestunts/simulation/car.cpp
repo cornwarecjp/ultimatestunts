@@ -150,7 +150,7 @@ CCar::CCar(const CString &conffile)
 
 	//Setting the initial positions
 
-	m_DesiredSteeringAngle = m_MainAxisVelocity = 0.0;
+	m_DesiredSteering = m_MainAxisVelocity = 0.0;
 
 	resetBodyPositions(CVector(0,0,0), CMatrix());
 
@@ -167,10 +167,10 @@ CCar::CCar(const CString &conffile)
 	CVector p2 = wheel2.getPosition();
 	CVector p3 = wheel3.getPosition();
 	CVector p4 = wheel4.getPosition();
-	dJointSetHinge2Anchor(m_joint1, p1.x + 0.5 * m_FrontWheelWidth, p1.y, p1.z);
-	dJointSetHinge2Anchor(m_joint2, p2.x - 0.5 * m_FrontWheelWidth, p2.y, p2.z);
-	dJointSetHinge2Anchor(m_joint3, p3.x + 0.5 * m_RearWheelWidth, p3.y, p3.z);
-	dJointSetHinge2Anchor(m_joint4, p4.x - 0.5 * m_RearWheelWidth, p4.y, p4.z);
+	dJointSetHinge2Anchor(m_joint1, p1.x, p1.y, p1.z); // + 0.5 * m_FrontWheelWidth, p1.y, p1.z);
+	dJointSetHinge2Anchor(m_joint2, p2.x, p2.y, p2.z); // - 0.5 * m_FrontWheelWidth, p2.y, p2.z);
+	dJointSetHinge2Anchor(m_joint3, p3.x, p3.y, p3.z); // + 0.5 * m_RearWheelWidth, p3.y, p3.z);
+	dJointSetHinge2Anchor(m_joint4, p4.x, p4.y, p4.z); // - 0.5 * m_RearWheelWidth, p4.y, p4.z);
 	dJointSetHinge2Axis1(m_joint1, 0,1,0);
 	dJointSetHinge2Axis1(m_joint2, 0,1,0);
 	dJointSetHinge2Axis1(m_joint3, 0,1,0);
@@ -217,8 +217,8 @@ CCar::CCar(const CString &conffile)
 	dJointSetHinge2Param(m_joint4, dParamSuspensionCFM, m_RearSuspCFM);
 	
 	//Two sounds:
-	m_Sounds.push_back(theWorld->getMovObjSoundID("sounds/engine.ogg"));
-	m_Sounds.push_back(theWorld->getMovObjSoundID("sounds/skid.ogg"));
+	m_Sounds.push_back(theWorld->getMovObjSoundID("sounds/engine.wav"));
+	m_Sounds.push_back(theWorld->getMovObjSoundID("sounds/skid.wav"));
 }
 
 CCar::~CCar()
@@ -441,24 +441,54 @@ void CCar::doSteering(float dt)
 	dReal steer = input->m_Right;
 
 	float factor = exp(-2.0*dt);
-	if(fabsf(steer) < fabsf(m_DesiredSteeringAngle))
+	if(fabsf(steer) < fabsf(m_DesiredSteering))
 		factor = exp(-25.0*dt);
 
-	m_DesiredSteeringAngle = factor * m_DesiredSteeringAngle + (1.0-factor) * steer;
+	m_DesiredSteering = factor * m_DesiredSteering + (1.0-factor) * steer;
 
-	float desiredfront = m_FrontSteerMax * m_DesiredSteeringAngle;
-	float desiredrear = m_RearSteerMax * m_DesiredSteeringAngle;
-	
+	//current angles
 	float angle1 = dJointGetHinge2Angle1(m_joint1);
 	float angle2 = dJointGetHinge2Angle1(m_joint2);
 	float angle3 = dJointGetHinge2Angle1(m_joint3);
 	float angle4 = dJointGetHinge2Angle1(m_joint4);
 
-	//Stability (TODO: more general)
-	float a1 = desiredfront + 0.01;
-	float a2 = desiredfront - 0.01;
-	float a3 = desiredrear;
-	float a4 = desiredrear;
+	//if the wheels were in the middle of the car
+	float desiredfront = m_FrontSteerMax * m_DesiredSteering;
+	float desiredrear = m_RearSteerMax * m_DesiredSteering;
+
+	//desired angles
+	//important: default to zero
+	float a1 = 0.0, a2 = 0.0, a3 = 0.0, a4 = 0.0;
+
+	if(fabs(desiredfront) > 0.0001 || fabs(desiredrear) > 0.0001)
+	{
+		//This correction is actually better than that
+		//is possible in a real car
+		float lth = m_RearWheelNeutral.z  - m_FrontWheelNeutral.z;
+		float halfwthf = m_FrontWheelNeutral.x;
+		float halfwthr = m_RearWheelNeutral.x;
+		float tanaf = tanf(desiredfront);
+		float tanar = tanf(-desiredrear);
+		float yf = lth * tanaf / (tanar + tanaf);
+		float yr = lth - yf;
+		float x;
+		if(fabs(tanaf) > 0.0001)
+			{x = 0.5*lth / tanaf;} //yf / tanaf}
+		else
+			{x = yr / tanar;}
+
+		a1 = atanf(yf / (x + halfwthf));
+		a2 = atanf(yf / (x - halfwthf));
+		a3 = -atanf(yr / (x + halfwthr));
+		a4 = -atanf(yr / (x - halfwthr));
+	}
+	
+
+	//desired angles
+	//a1 = desiredfront;
+	//a2 = desiredfront;
+	//a3 = desiredrear;
+	//a4 = desiredrear;
 
 	float v1 = a1 - angle1;
 	float v2 = a2 - angle2;

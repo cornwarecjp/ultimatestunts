@@ -96,6 +96,7 @@ bool CGraphicWorld::loadObjects()
 {
 	int molod = theMainConfig->getValue("graphics", "movingobjectlod").toInt();
 
+	//Body graphics
 	printf("Loading moving object graphics:\n");
 	for(unsigned int i=0; i<m_World->m_MovObjBounds.size(); i++)
 	{
@@ -104,6 +105,7 @@ bool CGraphicWorld::loadObjects()
 		printf("   Loading from %s LOD %d\n", f.getName().c_str(), molod);
 		obj.loadFromFile(&f, NULL, molod);
 		m_MovingObjects.push_back(obj);
+
 	}
 
 	return true;
@@ -111,6 +113,7 @@ bool CGraphicWorld::loadObjects()
 
 void CGraphicWorld::unloadObjects()
 {
+	//TODO
 }
 
 CTexture **CGraphicWorld::getTextureSubset(CString indices)

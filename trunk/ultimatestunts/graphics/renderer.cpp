@@ -21,8 +21,10 @@
 #include "renderer.h"
 #include "usmacros.h"
 
-CRenderer::CRenderer()
+CRenderer::CRenderer(const CWinSystem *winsys)
 {
+	m_WinSys = winsys;
+	
 	m_FogColor = new float[4];
 
 	//Default values:
@@ -31,7 +33,6 @@ CRenderer::CRenderer()
 	m_VisibleTiles = 10;
 	m_FogMode = GL_EXP;
 	m_Transparency = blend;
-	m_TexPerspective = true;
 	m_TexSmooth = true;
 	m_ShadowSmooth = true;
 
@@ -45,10 +46,6 @@ CRenderer::CRenderer()
 	//printf("Visible tiles: %s\n", cnf.c_str());
 	if(cnf != "")
 		m_VisibleTiles = cnf.toInt();
-
-	cnf = theMainConfig->getValue("graphics", "texture_perspective");
-	//printf("Texture perspective: %s\n", cnf.c_str());
-	m_TexPerspective = (cnf != "false");
 
 	cnf = theMainConfig->getValue("graphics", "zbuffer");
 	//printf("Z buffer: %s\n", cnf.c_str());
@@ -80,12 +77,12 @@ CRenderer::CRenderer()
 		if(cnf == "blend")	m_Transparency = blend;
 	}
 
-	cnf = theMainConfig->getValue("graphics", "reflectiondist");
-	//printf("Reflection: %s\n", cnf.c_str());
-	m_ReflectionDist = cnf.toFloat();
+	m_ReflectionSize = theMainConfig->getValue("graphics", "reflection_size").toInt();
+	m_ReflectionDist = theMainConfig->getValue("graphics", "reflectiondist").toFloat();
+	m_ReflectionUpdateFrames = theMainConfig->getValue("graphics", "reflectionupdateframes").toInt();
+	m_ReflectionSkipMovingObjects = theMainConfig->getValue("graphics", "reflectionskipmovingobjects") == "true";
 
-	cnf = theMainConfig->getValue("graphics", "movingobjectlod");
-	m_MovingObjectLOD = cnf.toInt();
+	m_MovingObjectLOD = theMainConfig->getValue("graphics", "movingobjectlod").toInt();
 
 	//Next: use these settings
 	if(m_ZBuffer)
@@ -113,7 +110,8 @@ CRenderer::CRenderer()
 	{
 		glDisable(GL_BLEND);
 	}
-	
+
+	/*
 	if(m_TexSmooth)
 	{
 		glHint( GL_POINT_SMOOTH_HINT, GL_NICEST );
@@ -124,11 +122,7 @@ CRenderer::CRenderer()
 		glHint( GL_POINT_SMOOTH_HINT, GL_FASTEST );
 		glHint( GL_POLYGON_SMOOTH_HINT, GL_FASTEST );
 	}
-
-	if(m_TexPerspective)
-		glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-	else
-		glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
+	*/
 
 	if(m_ShadowSmooth)
 		glShadeModel( GL_SMOOTH );
@@ -140,6 +134,7 @@ CRenderer::CRenderer()
 	glEnable(GL_LIGHT0);
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_CULL_FACE);
+	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 }
 
 CRenderer::~CRenderer()
@@ -149,5 +144,25 @@ CRenderer::~CRenderer()
 
 void CRenderer::update()
 {
+	unsigned int w = m_WinSys->getWidth();
+	unsigned int h = m_WinSys->getHeight();
+
+	//Set up openGL viewport + frustum stuff to window size
+
+	float ratio = (float) w / (float) h;
+	GLfloat near = 1.0;
+	GLfloat far = TILESIZE * m_VisibleTiles;
+	float hor_mul = near / 5.0;
+	GLfloat xs = ratio*hor_mul;
+	GLfloat ys = 1.0*hor_mul;
+
+	glViewport( 0, 0, w, h );
+
+	glMatrixMode( GL_PROJECTION );
+	glLoadIdentity();
+	glFrustum( -xs, xs, -ys, ys, near, far );
+
+	glMatrixMode( GL_MODELVIEW );
+	glLoadIdentity();
 }
 

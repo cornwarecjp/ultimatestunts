@@ -476,7 +476,7 @@ s,@mandir@,${prefix}/man,;t t
 s,@build_alias@,,;t t
 s,@host_alias@,,;t t
 s,@target_alias@,,;t t
-s,@DEFS@,-DPACKAGE_NAME=\"\" -DPACKAGE_TARNAME=\"\" -DPACKAGE_VERSION=\"\" -DPACKAGE_STRING=\"\" -DPACKAGE_BUGREPORT=\"\" -DPACKAGE=\"ultimatestunts\" -DVERSION=\"0.4.6\" -DSTDC_HEADERS=1 -DHAVE_SYS_TYPES_H=1 -DHAVE_SYS_STAT_H=1 -DHAVE_STDLIB_H=1 -DHAVE_STRING_H=1 -DHAVE_MEMORY_H=1 -DHAVE_STRINGS_H=1 -DHAVE_INTTYPES_H=1 -DHAVE_STDINT_H=1 -DHAVE_UNISTD_H=1 -DHAVE_SDL=1 -DSTDC_HEADERS=1 -DFMOD_HEADER=1 -DHAVE_LIBFMOD=1 ,;t t
+s,@DEFS@,-DPACKAGE_NAME=\"\" -DPACKAGE_TARNAME=\"\" -DPACKAGE_VERSION=\"\" -DPACKAGE_STRING=\"\" -DPACKAGE_BUGREPORT=\"\" -DPACKAGE=\"ultimatestunts\" -DVERSION=\"0.4.7\" -DSTDC_HEADERS=1 -DHAVE_SYS_TYPES_H=1 -DHAVE_SYS_STAT_H=1 -DHAVE_STDLIB_H=1 -DHAVE_STRING_H=1 -DHAVE_MEMORY_H=1 -DHAVE_STRINGS_H=1 -DHAVE_INTTYPES_H=1 -DHAVE_STDINT_H=1 -DHAVE_UNISTD_H=1 -DHAVE_SDL=1 -DSTDC_HEADERS=1 -DOPENAL_HEADER=1 -DHAVE_LIBOPENAL=1 ,;t t
 s,@ECHO_C@,,;t t
 s,@ECHO_N@,-n,;t t
 s,@ECHO_T@,,;t t
@@ -486,7 +486,7 @@ s,@INSTALL_SCRIPT@,${INSTALL},;t t
 s,@INSTALL_DATA@,${INSTALL} -m 644,;t t
 s,@CYGPATH_W@,echo,;t t
 s,@PACKAGE@,ultimatestunts,;t t
-s,@VERSION@,0.4.6,;t t
+s,@VERSION@,0.4.7,;t t
 s,@ACLOCAL@,${SHELL} /home/corne/programma-src/vrije-tijd/ultimatestunts/missing --run aclocal-1.7,;t t
 s,@AUTOCONF@,${SHELL} /home/corne/programma-src/vrije-tijd/ultimatestunts/missing --run autoconf,;t t
 s,@AUTOMAKE@,${SHELL} /home/corne/programma-src/vrije-tijd/ultimatestunts/missing --run automake-1.7,;t t
@@ -549,7 +549,7 @@ s,@SDL_CONFIG@,/usr/bin/sdl-config,;t t
 s,@SDL_CFLAGS@,-I/usr/include/SDL -D_REENTRANT,;t t
 s,@SDL_LIBS@,-L/usr/lib -Wl,-rpath,/usr/lib -lSDL -lpthread,;t t
 s,@netlibs@,-lresolv -lnsl ,;t t
-s,@soundlibs@,-lfmod ,;t t
+s,@soundlibs@,-lopenal ,;t t
 s,@graphlibs@,-lGLU -lGL  -L/usr/X11R6/lib  -lSM -lICE -lX11 -lXi -lXext -lXmu  -lm,;t t
 s,@sdllibs@,-L/usr/lib -Wl,-rpath,/usr/lib -lSDL -lpthread ,;t t
 s,@odelibs@,-lode ,;t t

@@ -48,7 +48,7 @@ public:
 	unsigned int m_Gear;
 	float m_MainAxisVelocity;
 	float m_MainAxisTorque;
-	float m_DesiredSteeringAngle;
+	float m_DesiredSteering;
 	float m_gas;
 	
 protected:

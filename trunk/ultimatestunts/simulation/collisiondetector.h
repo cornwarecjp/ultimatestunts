@@ -25,6 +25,7 @@ using namespace std;
 #include "material.h"
 #include "vector.h"
 #include "collisionmodel.h"
+#include "bound.h"
 #include "body.h"
 /**
   *@author CJP
@@ -57,6 +58,7 @@ protected:
 
 	//Generic
 	bool sphereTest(const CVector &p1, const CCollisionModel *b1, const CVector &p2, const CCollisionModel *b2);
+	bool faceTest(const CVector &p1, const CMatrix &o1, const CBound *b1, const CVector &p2, const CMatrix &o2, const CBound *b2, const CCollisionFace &theFace);
 };
 
 #endif
