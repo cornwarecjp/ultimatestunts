@@ -30,7 +30,7 @@ using namespace std;
 #include "tilemodel.h"
 #include "movingobject.h"
 #include "objectchoice.h"
-#include "collisiondata.h"
+#include "collision.h"
 
 class CTile {
 public:
@@ -66,7 +66,7 @@ public:
 	vector<CString> m_MovObjSounds;
 
 	//Collision data
-	CCollisionData *m_CollData;
+	vector<CCollision> m_Collisions; //is re-filled by the simulation on every frame
 
 	//Rule data
 	float m_GameStartTime;

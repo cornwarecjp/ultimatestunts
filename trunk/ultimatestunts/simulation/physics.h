@@ -24,19 +24,40 @@
   */
 #include "simulation.h"
 #include "timer.h"
+#include "collisiondetector.h"
+#include "generalmatrix.h"
+
 
 class CPhysics : public CSimulation {
 public: 
 	CPhysics(CWorld *w);
 	virtual ~CPhysics();
 
-  //virtual bool addPlayer(CPlayer *p, CObjectChoice choice); //Using the default ones
-  //virtual bool removePlayer(CPlayer *p);
+	virtual bool update();
 
-  virtual bool update();
-
+	void addContactForces(unsigned int body, CVector &Ftot, CVector &Mtot);
 protected:
 	CTimer m_Timer;
+
+	void calculateRestingContacts();
+	CCollision getFirstCollision();
+	void doCollision(CCollision &c);
+
+	unsigned int m_CurrentMovingObject;
+
+	CCollisionDetector *m_Detector;
+
+
+	//used by addContactForces:
+	vector<CCollision> m_col; //the relevant collisions
+	
+	CGeneralVector *m_a, *m_b, *m_f;
+	CGeneralMatrix *m_A;
+	vector<unsigned int> m_C, m_NC;
+	unsigned int m_N;
+	void driveToZero(unsigned int d);
+	CGeneralVector fdirection(unsigned int d);
+	void maxstep(float &s, unsigned int &j, const CGeneralVector &df, const CGeneralVector &da, unsigned int d);
 };
 
 #endif

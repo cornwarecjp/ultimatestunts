@@ -25,67 +25,64 @@
 
 
 
-class CMessageBuffer : public CBinBuffer {
+class CMessageBuffer : public CBinBuffer
+{
 public:
 
-typedef struct _s_msg_header {
+	typedef struct _s_msg_header
+	{
 		 Uint8 tid;		// type id
 		 Uint8 ac;		// acknowledge
 		 Uint16 counter; // package counter
 	} s_msg_header;
 
 
-enum eMessageType {   // more to add
-	badMessage = 0,
-	dummyMessage = 1,
-	objectChoice = 2,
-	movingObject = 3,
-	movObjInput = 4,
-	car = 5,
-	carInput = 6
-};
+	enum eMessageType
+	{   // more to add
+		badMessage = 0,
+		dummyMessage = 1,
+		objectChoice = 2,
+		movingObject = 3,
+		movObjInput = 4,
+		car = 5,
+		carInput = 6
+	};
 
 
 private:
+	s_msg_header * getHeader() const;
+	bool setHeader(s_msg_header &);
 
- s_msg_header * getHeader() const;
- bool setHeader(s_msg_header &);
-
- CIPNumber m_netIP;      // to be set to tranfer messages over network
- int m_netPort;        // this can be eigher source or destination address
-
+	CIPNumber m_netIP;      // to be set to tranfer messages over network
+	int m_netPort;        // this can be eigher source or destination address
 
 public:
+	CMessageBuffer(const CMessageBuffer::eMessageType & t);
+	CMessageBuffer();
+
+	bool setType(const eMessageType t);
+	bool setAC(const Uint8 acflag);
+	bool setCounter(const Uint16 counter);
+
+	eMessageType getType() const;
+	Uint8 getAC() const;
+	Uint16 getCounter() const;
 
 
- CMessageBuffer(const CMessageBuffer::eMessageType & t);
-
- CMessageBuffer();
-
- bool setType(const eMessageType t);
- bool setAC(const Uint8 acflag);
- bool setCounter(const Uint16 counter);
-
- eMessageType getType() const;
- Uint8 getAC() const;
- Uint16 getCounter() const;
+	bool setData(const CBinBuffer & b);
+	CBinBuffer & getData() const;
 
 
- bool setData(const CBinBuffer & b);
- CBinBuffer & getData() const;
+	int getHeaderLength() const;
 
-
- int getHeaderLength() const;
-
- bool setBuffer(const CBinBuffer & b);               // restore messagebuffer
- CBinBuffer & getBuffer();
+	bool setBuffer(const CBinBuffer & b);               // restore messagebuffer
+	CBinBuffer & getBuffer();
 	~CMessageBuffer();
 
- void setIP(const CIPNumber & ip) { m_netIP = ip; }
- void setPort(const int port) { m_netPort = port; }
- CIPNumber & getIP() const { return (* new CIPNumber(m_netIP)); }
- int getPort() const { return (m_netPort); }
-
+	void setIP(const CIPNumber & ip) { m_netIP = ip; }
+	void setPort(const int port) { m_netPort = port; }
+	CIPNumber & getIP() const { return (* new CIPNumber(m_netIP)); }
+	int getPort() const { return (m_netPort); }
 };
 
 

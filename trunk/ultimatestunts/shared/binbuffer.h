@@ -22,19 +22,21 @@ namespace std {}
 using namespace std;
 
 #include "cstring.h"
-#include "SDL.h"
 #include "usmacros.h"
+
+//Other types that should be added to the buffer:
+#include "vector.h"
+#include "matrix.h"
 
 
 class CBinBuffer : public vector<Uint8>
 {
-  public:
+public:
 
-	
-   enum eError {
-     eEndOfBuffer=1,
-     eOtherError
-   };
+	enum eError {
+		eEndOfBuffer=1,
+		eOtherError=2
+	};
 
 
 //	CBinBuffer & operator += (const char unsigned & c); //better use Uint8 ??
@@ -42,17 +44,33 @@ class CBinBuffer : public vector<Uint8>
 	CBinBuffer & operator = (const char unsigned * c);
 	CBinBuffer & operator += (const Uint8 & i);
 	CBinBuffer & operator += (const Uint16 & i);
+	CBinBuffer & operator += (const Uint32 & i);
 	CBinBuffer & operator += (const CBinBuffer & bb);
 	CBinBuffer & operator += (const CString & bs);
+	CBinBuffer & addFloat8(const float & v, float unit=0.001); //range -unit to unit; 16 bit precision
+	CBinBuffer & addFloat16(const float & v, float unit=0.001); //range -unit to unit; 16 bit precision
+	CBinBuffer & addFloat32(const float & v, float unit=0.001); //range -unit to unit; 16 bit precision
+	CBinBuffer & addVector16(const CVector & v, float unit=0.001);
+	CBinBuffer & addVector32(const CVector & v, float unit=0.001);
+	CBinBuffer & addMatrix8(const CMatrix & m, float unit=1.0);
+	CBinBuffer & addMatrix16(const CMatrix & m, float unit=1.0);
 
-   Uint8 getUint8(const int unsigned pos=0, int *newpos=NULL) const;
-   Uint16 getUint16(const int unsigned pos=0, int *newpos=NULL) const;
-   CString & getCString(const int unsigned pos=0, int *newpos=NULL) const;
+	Uint8 getUint8(int unsigned &pos) const;
+	Uint16 getUint16(int unsigned &pos) const;
+	Uint32 getUint32(int unsigned &pos) const;
+	CString getCString(int unsigned &pos) const;
+	float getFloat8(int unsigned &pos, float unit=0.001) const; //range -unit to unit; 16 bit precision
+	float getFloat16(int unsigned &pos, float unit=0.001) const; //range -unit to unit; 16 bit precision
+	float getFloat32(int unsigned &pos, float unit=0.001) const; //range -unit to unit; 16 bit precision
+	CVector getVector16(int unsigned &pos, float unit=0.001) const;
+	CVector getVector32(int unsigned &pos, float unit=0.001) const;
+	CMatrix getMatrix8(int unsigned &pos, float unit = 1.0) const; //only for rotation matrices
+	CMatrix getMatrix16(int unsigned &pos, float unit = 1.0) const; //only for rotation matrices
 
-   CString & dump() const;
-   CBinBuffer & substr(const int unsigned pos=0, const int n=-1) const ;
+	CString dump() const;
+	CBinBuffer & substr(const int unsigned pos=0, const int n=-1) const ;
 
-   char * raw_str() const;
+	char * raw_str() const;
 };
 
 #endif	//_CBinBuffer_H_

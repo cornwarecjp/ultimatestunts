@@ -1567,7 +1567,7 @@ fi
 
 # Define the identity of the package.
  PACKAGE=ultimatestunts
- VERSION=0.4.2
+ VERSION=0.4.3
 
 
 cat >>confdefs.h <<_ACEOF
@@ -5756,6 +5756,17 @@ fi
 else
 
     graphlibs="-lm -lwinmm -lglu32 -lopengl32 -luser32 -lgdi32 -mconsole"
+
+
+
+if test "no" = "yes"; then
+  ENABLE_XMESA_FX_TRUE=
+  ENABLE_XMESA_FX_FALSE='#'
+else
+  ENABLE_XMESA_FX_TRUE='#'
+  ENABLE_XMESA_FX_FALSE=
+fi
+
 fi
 
 # Make sure we can run config.sub.
@@ -6963,6 +6974,13 @@ if test -z "${am__fastdepCXX_TRUE}" && test -z "${am__fastdepCXX_FALSE}"; then
   { { echo "$as_me:$LINENO: error: conditional \"am__fastdepCXX\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
 echo "$as_me: error: conditional \"am__fastdepCXX\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
+if test -z "${ENABLE_XMESA_FX_TRUE}" && test -z "${ENABLE_XMESA_FX_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"ENABLE_XMESA_FX\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+echo "$as_me: error: conditional \"ENABLE_XMESA_FX\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi

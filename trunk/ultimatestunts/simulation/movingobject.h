@@ -22,7 +22,6 @@
 /**
   *@author CJP
   */
-
 #include "dynamicobject.h"
 #include "vector.h"
 #include "matrix.h"
@@ -32,53 +31,70 @@ class CPhysics;
 
 class CMovingObject : public CDynamicObject
 {
-	public:
-		CMovingObject();
-		~CMovingObject();
+public:
+	CMovingObject();
+	~CMovingObject();
 
-		//Simulation stuff:
-		virtual void simulate(CPhysics &theSimulator);
+	//Various gets
+	float getInvMass() const {return m_InvMass;}
+	const CMatrix &getInvMomentInertia() const {return m_InvMomentInertia;}
+	const CMatrix &getActualInvMomentInertia() const {return m_ActualInvMomentInertia;}
 
-		//Position+veloctiy gets+sets
-		virtual CVector getPosition(){return m_Position;}
-		virtual void setPosition(CVector v){m_Position = v;}
-		virtual CVector getVelocity(){return m_Velocity;}
-		virtual void setVelocity(CVector v){m_Velocity = v;}
-		virtual CVector getOrientationVector(){return m_OrientationVector;}
-		virtual void setOrientationVector(CVector v);
-		virtual CVector getAngularVelocity(){return m_AngularVelocity;}
-		virtual void setAngularVelocity(CVector v){m_AngularVelocity = v;}
+	CVector getPosition() const {return m_Position;}
+	CVector getMomentum() const {return m_Momentum;}
+	CVector getVelocity() const {return m_InvMass * m_Momentum;}
 
-		virtual const CMatrix &getOrientation(){return m_Orientation;}
-		virtual void setOrientation(const CMatrix &M);
+	CVector getOrientation() const {return m_Orientation;}
+	const CMatrix &getOrientationMatrix() const {return m_OrientationMatrix;}
+	CVector getAngularMomentum() const {return m_AngularMomentum;}
+	CVector getAngularVelocity() const {return getActualInvMomentInertia() * m_AngularMomentum;}
 
-		//Old position + orientation
-		void rememberCurrentState();
-		virtual CVector getPreviousPosition(){return m_PreviousPosition;}
-		virtual const CMatrix &getPreviousOrientation(){return m_PreviousOrientation;}
+	//Various sets
+	void setPosition(CVector v){m_Position = v;}
+	void setMomentum(CVector v){m_Momentum = v;}
 
-		virtual CMessageBuffer::eMessageType getType() const {return CMessageBuffer::movingObject;}
+	void setOrientation(CVector v);
+	void setOrientationMatrix(const CMatrix &M);
+	void setAngularMomentum(CVector v){m_AngularMomentum = v;}
 
-		virtual void updateBodyData() = 0;
+	//Old position + orientation sub-API (for collision detection)
+	void rememberCurrentState();
+	virtual CVector getPreviousPosition() const {return m_PreviousPosition;}
+	virtual const CMatrix &getPreviousOrientationMatrix() const {return m_PreviousOrientationMatrix;}
 
-		vector<CBody> m_Bodies; //The object bodies
-		vector<int> m_Sounds; //The object sounds
+	virtual CMessageBuffer::eMessageType getType() const {return CMessageBuffer::movingObject;}
 
-		//constant:
-		float m_InvMass;
-		CMatrix m_InvMomentInertia;
+	//Update: physics simulation
+	virtual void update(CPhysics *simulator, float dt);
 
-		const CMatrix &getActualInvMomentInertia(){return m_ActualInvMomentInertia;}
-	protected:
-		CVector m_Position, m_PreviousPosition,
-			m_Velocity,
-			m_OrientationVector,
-			m_AngularVelocity;
-			
-		CMatrix m_Orientation, m_PreviousOrientation,
-			m_ActualInvMomentInertia;
+	vector<CBody> m_Bodies; //The object bodies
+	vector<int> m_Sounds; //The object sounds
 
-		void updateActualInvMomentInertia();
+	//For network transfer & other stuff
+	virtual CBinBuffer &getData(CBinBuffer &b) const;       // returns class data as binbuffer
+	virtual bool setData(const CBinBuffer &b);   // rebuild class data from binbuffer
+
+protected:
+	//constant:
+	float m_InvMass;
+	CMatrix m_InvMomentInertia;
+	float cwA;
+
+	//state variables:
+	CVector m_Position, m_Momentum;
+	CVector m_Orientation, m_AngularMomentum;
+
+	//derived variables:
+	CMatrix m_OrientationMatrix, m_ActualInvMomentInertia;
+
+	//Remember for collision detection
+	CVector m_PreviousPosition;
+	CMatrix m_PreviousOrientationMatrix;
+
+	virtual void getForces(CVector &Ftot, CVector &Mtot);
+	void getAllForces(CPhysics *simulator, CVector &Ftot, CVector &Mtot); //including contact forces
+
+	void updateActualInvMomentInertia();
 };
 
 #endif

@@ -33,9 +33,7 @@ public:
 
 	//CRuleStatus m_RuleStatus;
 
-	virtual void updateBodyData();
-
-	virtual void simulate(CPhysics &theSimulator);
+	virtual void update(CPhysics *simulator, float dt);
 
 	//constant
 	CVector m_FrontWheelNeutral;
@@ -43,8 +41,13 @@ public:
 	float m_WheelRadius;
 
 	//Changing during the game
+	//TODO: add these to the message
+	//TODO: update these during simulation
 	float m_WheelVelocity, m_WheelAngle;
 	float m_wheelHeight1, m_wheelHeight2, m_wheelHeight3, m_wheelHeight4;
+
+protected:
+	virtual void getForces(CVector &Ftot, CVector &Mtot);
 };
 
 #endif

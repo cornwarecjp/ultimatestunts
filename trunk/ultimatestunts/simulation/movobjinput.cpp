@@ -21,22 +21,21 @@ CMovObjInput::CMovObjInput()
 	m_Forward = m_Backward = m_Up = m_Right = 0.0;
 }
 
-CBinBuffer & CMovObjInput::getData() const
+CBinBuffer &CMovObjInput::getData(CBinBuffer & b) const
 {
-	CBinBuffer *res = new CBinBuffer();
-	//(*res)+=m_Up; //+=float not yet implemented
-	//(*res)+=m_Forward;
-	//(*res)+=m_Backward;
-	//(*res)+=m_Right;
-	return (*res);
+	b.addFloat8(m_Up, 1.0);
+	b.addFloat8(m_Forward, 1.0);
+	b.addFloat8(m_Backward, 1.0);
+	b.addFloat8(m_Right, 1.0);
+	return b;
 }
 
 bool CMovObjInput::setData(const CBinBuffer & b)
 {
-	CBinBuffer bb = b;                           // const!
-	//m_Up = bb.getFloat(0); //getFloat not yet implemented
-	//m_Forward = bb.getFloat();
-	//m_Backward = bb.getFloat();
-	//m_Right = bb.getFloat();
-	return (true);
+	unsigned int pos = 0;
+	m_Up = b.getFloat8(pos, 1.0);
+	m_Forward = b.getFloat8(pos, 1.0);
+	m_Backward = b.getFloat8(pos, 1.0);
+	m_Right = b.getFloat8(pos, 1.0);
+	return true;
 }

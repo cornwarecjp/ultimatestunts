@@ -33,9 +33,9 @@ class CBody
 public:
 	int m_Body;
 	CVector m_Position;
-	CMatrix m_Orientation;
+	CMatrix m_OrientationMatrix;
 	CVector m_PreviousPosition;
-	CMatrix m_PreviousOrientation;
+	CMatrix m_PreviousOrientationMatrix;
 
 	CVector m_FBB_min, m_FBB_max; //Fixed bounding box
 

@@ -32,7 +32,7 @@ public:
   float m_Up, m_Forward, m_Backward, m_Right;
 
   bool setData(const CBinBuffer &);
-  CBinBuffer & getData() const;
+  CBinBuffer &getData(CBinBuffer &) const;
 
 	virtual CMessageBuffer::eMessageType getType() const {return CMessageBuffer::movObjInput;}
 };

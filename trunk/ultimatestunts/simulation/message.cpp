@@ -17,19 +17,18 @@
 
 #include "message.h"
 
-CMessageBuffer & CMessage::getBuffer() {
-  //CMessageBuffer *res = new CMessageBuffer();
-
-  //this->m_Data.setData(this->getData());
-  //*res = m_Data  ;
-  //return (*res);
+CMessageBuffer & CMessage::getBuffer()
+{
+	CBinBuffer b;
+	this->m_Data.setData(this->getData(b));
 	return m_Data;
 }
  	
-bool CMessage::setBuffer(const CMessageBuffer & b) {
- m_Data = b;
- //this->setData(m_Data.getData());
- return (true);
+bool CMessage::setBuffer(const CMessageBuffer & b)
+{
+	m_Data = b;
+	this->setData(m_Data.getData());
+	return true;
 }
 
 void CMessage::setType(const CMessageBuffer::eMessageType & t) {

@@ -166,7 +166,7 @@ void CGameRenderer::viewMovObj(CMovingObject *mo)
 	glPushMatrix();
 
 	CVector r = mo->getPosition();
-	const CMatrix &m = mo->getOrientation();
+	const CMatrix &m = mo->getOrientationMatrix();
 	//printf("Drawing a car at position %f,%f,%f\n", r.x,r.y,r.z);
 
 	glTranslatef (r.x, r.y, r.z);
@@ -179,7 +179,7 @@ void CGameRenderer::viewMovObj(CMovingObject *mo)
 		CBody &b = mo->m_Bodies[i-1];
 		r = b.m_Position;
 		glTranslatef (r.x, r.y, r.z);
-		glMultMatrixf(b.m_Orientation.gl_mtr());
+		glMultMatrixf(b.m_OrientationMatrix.gl_mtr());
 		m_GraphicWorld->m_MovingObjects[b.m_Body].draw(1); //TODO: LOD
 
 		glPopMatrix();

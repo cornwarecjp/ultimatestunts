@@ -1,8 +1,8 @@
 /***************************************************************************
-                          objectchoice.h  -  Describes which moving object is chosen
+                          collision.h  -  The data describing a collision
                              -------------------
-    begin                : Thu Dec 5 2002
-    copyright            : (C) 2002 by CJP
+    begin                : ma mrt 22 2004
+    copyright            : (C) 2004 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
 
@@ -14,32 +14,26 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
+#ifndef COLLISION_H
+#define COLLISION_H
 
-#ifndef OBJECTCHOICE_H
-#define OBJECTCHOICE_H
+class CCollision {
+public:
+	float t; //0 <= t <= 1
 
-#include "SDL.h"
-#include "message.h"
-#include "cstring.h"
+	//position in world coordinates
+	//normal pointing from object1.body1 to object2.body2
+	CVector pos, nor;
 
-/**
-  *@author bones
-  */
+	float p; //impulse transfer parallel to normal for non-resting contact (no friction included)
+	//float penetrationDepth;
+	bool isResting;
+	
 
-class CObjectChoice : public CMessage  {
-public: 
-	CObjectChoice();
-	~CObjectChoice();
-
-	bool setData(const CBinBuffer &);
-	CBinBuffer &getData(CBinBuffer &) const;
-
-	CMessageBuffer::eMessageType m_ObjType;
-	CString m_Filename;
-	//Additional: (car) settings
-	//Additional: selected skin / color
-
-	virtual CMessageBuffer::eMessageType getType() const {return CMessageBuffer::objectChoice;}
+	//objects & materials. 1 = the object itself 2 = the other object
+	int object1, object2; //the object that collided
+	int body1, body2; //the bodies that collided
+	int mat1, mat2; //The two materials
 };
 
 #endif

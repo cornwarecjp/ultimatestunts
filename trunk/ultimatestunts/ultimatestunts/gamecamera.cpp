@@ -96,7 +96,7 @@ void CGameCamera::update()
 			//viewpoint is higher than center of mass
 			tp = to->getPosition() + CVector(0.0,0.3,0.0);
 			if(m_Reached)
-				{tm = to->getOrientation();}
+				{tm = to->getOrientationMatrix();}
 			//else: autotarget
 
 			tv = to->getVelocity();
@@ -108,7 +108,7 @@ void CGameCamera::update()
 				float z = 0.5 * vabs + 15.0;
 				float y = 0.05 * vabs + 3.0;
 				tp = CVector(0.0, y, z); //further away when going faster
-				tp *= to->getOrientation();
+				tp *= to->getOrientationMatrix();
 				tp += to->getPosition();
 				autotarget = true; //point the camera to the object
 				m_Reached = false; //always have "smooth" camera movement

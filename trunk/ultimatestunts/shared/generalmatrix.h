@@ -28,7 +28,7 @@
 #define GM_GAUSS		1
 #define GM_PIVOT		2
 #define GM_SCALED		4
-#define GM_MODIFIED		8
+//#define GM_MODIFIED		8
 
 #define GM_INEQUAL		16
 
@@ -63,10 +63,11 @@ protected:
 	unsigned int m_numRows, m_numCols;
 
 	int solveGauss();
-	int solveModified();
 
-	int solveInequal();
+	//int solveModified();
+	//int solveInequal();
 	bool satisfiesInequalities(const CGeneralVector &m) const;
+	void restrictPositive(CGeneralVector &v, float desiredSize=-1.0) const;
 
 	void swaprow(unsigned int i, unsigned int j);
 	void addrow(unsigned int i, float mul, unsigned int j);

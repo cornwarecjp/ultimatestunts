@@ -40,6 +40,7 @@ public:
 
 	CGeneralVector operator*(float val) const;
 	CGeneralVector &operator*=(float val);
+	CGeneralVector &operator+=(const CGeneralVector &val);
 };
 
 #endif

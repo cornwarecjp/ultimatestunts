@@ -30,19 +30,20 @@ CObjectChoice::~CObjectChoice()
 {}
 
 
-CBinBuffer & CObjectChoice::getData() const {
-  CBinBuffer *res = new CBinBuffer();
-  (*res)+= (Uint8)m_ObjType;
-  (*res)+= m_Filename;
-  return (*res);
+CBinBuffer &CObjectChoice::getData(CBinBuffer &b) const
+{
+	b += (Uint8)m_ObjType;
+	b += m_Filename;
+	return b;
 }
 
-bool CObjectChoice::setData(const CBinBuffer & b) {
-  //CBinBuffer bb = b;                           // const!
-	int pos = 0;
-  m_ObjType = (CMessageBuffer::eMessageType)b.getUint8(0, &pos);
-  m_Filename = b.getCString(pos);
-  return (true);
+bool CObjectChoice::setData(const CBinBuffer & b)
+{
+	//CBinBuffer bb = b;                           // const!
+	unsigned int pos = 0;
+	m_ObjType = (CMessageBuffer::eMessageType)b.getUint8(pos);
+	m_Filename = b.getCString(pos);
+	return true;
 }
 
 

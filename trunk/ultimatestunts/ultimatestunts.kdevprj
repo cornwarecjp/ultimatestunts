@@ -19,28 +19,31 @@ type=DATA
 [Config for BinMakefileAm]
 addcxxflags=
 bin_program=execselect.x
-cxxflags=-O1
+cflags=
+cppflags=
+cxxflags=\s-O1
 ldadd=
-ldflags=
+ldflags=\s
+libtool_dir=
 path_to_bin_program=.
 
 [General]
 AMChanged=false
 author=CJP
-configure_args=
-dir_where_make_will_be_called=
+configure_args=\s--build=i386-linux --host=i386-linux --target=i386-linux\s
+dir_where_make_will_be_called=./
 email=cornware-cjp@users.sourceforge.net
 kdevprj_version=1.3
 lfv_open_groups=Headers,Sources
-make_options=-j1
+make_options=\s-j1
 makefiles=Makefile.am,ultimatestunts/Makefile.am,shared/Makefile.am,filetransfer/Makefile.am,graphics/Makefile.am,simulation/Makefile.am,stuntsai/Makefile.am,stuntsserver/Makefile.am,tileedit/Makefile.am,trackedit/Makefile.am,stunts3dedit/Makefile.am,__test/Makefile.am
 modifyMakefiles=false
 project_name=UltimateStunts
 project_type=normal_empty
-short_info=,
+short_info=
 showNonProjectFiles=true
 sub_dir=ultimatestunts/
-version=0.3.2
+version=0.4.3
 version_control=CVS
 workspace=1
 
@@ -417,7 +420,7 @@ install_location=
 type=HEADER
 
 [simulation/Makefile.am]
-files=simulation/physics.cpp,simulation/physics.h,simulation/simulation.cpp,simulation/simulation.h,simulation/player.cpp,simulation/player.h,simulation/world.cpp,simulation/world.h,simulation/movingobject.cpp,simulation/movingobject.h,simulation/car.cpp,simulation/car.h,simulation/message.cpp,simulation/message.h,simulation/messagebuffer.cpp,simulation/messagebuffer.h,simulation/dynamicobject.cpp,simulation/dynamicobject.h,simulation/objectchoice.cpp,simulation/objectchoice.h,simulation/netudp.h,simulation/netudp.cpp,simulation/netmessage.cpp,simulation/netmessage.h,simulation/carinput.cpp,simulation/carinput.h,simulation/movobjinput.cpp,simulation/movobjinput.h,simulation/aiplayercar.cpp,simulation/aiplayercar.h,simulation/clientsim.cpp,simulation/clientsim.h,simulation/bound.cpp,simulation/bound.h,simulation/material.h,simulation/clientnet.cpp,simulation/clientnet.h,simulation/rulecontrol.cpp,simulation/rulecontrol.h,simulation/playercontrol.cpp,simulation/playercontrol.h,simulation/clientplayercontrol.cpp,simulation/clientplayercontrol.h,simulation/collisiondata.cpp,simulation/collisiondata.h,simulation/collisionmodel.cpp,simulation/collisionmodel.h,simulation/tilemodel.cpp,simulation/tilemodel.h,simulation/body.cpp,simulation/body.h,simulation/collisionface.cpp,simulation/collisionface.h
+files=simulation/physics.cpp,simulation/physics.h,simulation/simulation.cpp,simulation/simulation.h,simulation/player.cpp,simulation/player.h,simulation/world.cpp,simulation/world.h,simulation/movingobject.cpp,simulation/movingobject.h,simulation/car.cpp,simulation/car.h,simulation/message.cpp,simulation/message.h,simulation/messagebuffer.cpp,simulation/messagebuffer.h,simulation/dynamicobject.cpp,simulation/dynamicobject.h,simulation/objectchoice.cpp,simulation/objectchoice.h,simulation/netudp.h,simulation/netudp.cpp,simulation/netmessage.cpp,simulation/netmessage.h,simulation/carinput.cpp,simulation/carinput.h,simulation/movobjinput.cpp,simulation/movobjinput.h,simulation/aiplayercar.cpp,simulation/aiplayercar.h,simulation/clientsim.cpp,simulation/clientsim.h,simulation/bound.cpp,simulation/bound.h,simulation/material.h,simulation/clientnet.cpp,simulation/clientnet.h,simulation/rulecontrol.cpp,simulation/rulecontrol.h,simulation/playercontrol.cpp,simulation/playercontrol.h,simulation/clientplayercontrol.cpp,simulation/clientplayercontrol.h,simulation/collisiondata.cpp,simulation/collisiondata.h,simulation/collisionmodel.cpp,simulation/collisionmodel.h,simulation/tilemodel.cpp,simulation/tilemodel.h,simulation/body.cpp,simulation/body.h,simulation/collisionface.cpp,simulation/collisionface.h,simulation/collision.h,simulation/collisiondetector.cpp,simulation/collisiondetector.h
 sub_dirs=
 type=static_library
 
@@ -517,6 +520,12 @@ install=false
 install_location=
 type=HEADER
 
+[simulation/collision.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
 [simulation/collisiondata.cpp]
 dist=true
 install=false
@@ -524,6 +533,18 @@ install_location=
 type=SOURCE
 
 [simulation/collisiondata.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[simulation/collisiondetector.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[simulation/collisiondetector.h]
 dist=true
 install=false
 install_location=

@@ -88,3 +88,11 @@ CGeneralVector &CGeneralVector::operator*=(float val)
 
 	return *this;
 }
+
+CGeneralVector &CGeneralVector::operator+=(const CGeneralVector &val)
+{
+	for(unsigned int i=0; i < size(); i++)
+		(*this)[i] += val[i];
+
+	return *this;
+}

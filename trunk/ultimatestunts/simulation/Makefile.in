@@ -140,10 +140,10 @@ target_os = @target_os@
 target_vendor = @target_vendor@
 noinst_LIBRARIES = libsimulation.a
 
-libsimulation_a_SOURCES = aiplayercar.cpp body.cpp bound.cpp car.cpp carinput.cpp clientnet.cpp clientplayercontrol.cpp clientsim.cpp collisiondata.cpp collisionface.cpp collisionmodel.cpp dynamicobject.cpp message.cpp messagebuffer.cpp movingobject.cpp movobjinput.cpp netmessage.cpp objectchoice.cpp physics.cpp player.cpp playercontrol.cpp rulecontrol.cpp simulation.cpp tilemodel.cpp world.cpp netudp.cpp
+libsimulation_a_SOURCES = aiplayercar.cpp body.cpp bound.cpp car.cpp carinput.cpp clientnet.cpp clientplayercontrol.cpp clientsim.cpp collisiondetector.cpp collisionface.cpp collisionmodel.cpp dynamicobject.cpp message.cpp messagebuffer.cpp movingobject.cpp movobjinput.cpp netmessage.cpp objectchoice.cpp physics.cpp player.cpp playercontrol.cpp rulecontrol.cpp simulation.cpp tilemodel.cpp world.cpp netudp.cpp
 INCLUDES = $(all_includes) -I../shared
 
-EXTRA_DIST = aiplayercar.cpp aiplayercar.h body.cpp body.h bound.cpp bound.h car.cpp car.h carinput.cpp carinput.h clientnet.cpp clientnet.h clientplayercontrol.cpp clientplayercontrol.h clientsim.cpp clientsim.h collisiondata.cpp collisiondata.h collisionface.cpp collisionface.h collisionmodel.cpp collisionmodel.h dynamicobject.cpp dynamicobject.h material.h message.cpp message.h messagebuffer.cpp messagebuffer.h movingobject.cpp movingobject.h movobjinput.cpp movobjinput.h netmessage.cpp netmessage.h objectchoice.cpp objectchoice.h physics.cpp physics.h player.cpp player.h playercontrol.cpp playercontrol.h rulecontrol.cpp rulecontrol.h simulation.cpp simulation.h tilemodel.cpp tilemodel.h world.cpp world.h
+EXTRA_DIST = aiplayercar.cpp aiplayercar.h body.cpp body.h bound.cpp bound.h car.cpp car.h carinput.cpp carinput.h clientnet.cpp clientnet.h clientplayercontrol.cpp clientplayercontrol.h clientsim.cpp clientsim.h collisiondetector.cpp collisiondetector.h collisionface.cpp collisionface.h collisionmodel.cpp collisionmodel.h dynamicobject.cpp dynamicobject.h material.h message.cpp message.h messagebuffer.cpp messagebuffer.h movingobject.cpp movingobject.h movobjinput.cpp movobjinput.h netmessage.cpp netmessage.h objectchoice.cpp objectchoice.h physics.cpp physics.h player.cpp player.h playercontrol.cpp playercontrol.h rulecontrol.cpp rulecontrol.h simulation.cpp simulation.h tilemodel.cpp tilemodel.h world.cpp world.h
 subdir = simulation
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -155,7 +155,7 @@ libsimulation_a_LIBADD =
 am_libsimulation_a_OBJECTS = aiplayercar.$(OBJEXT) body.$(OBJEXT) \
 	bound.$(OBJEXT) car.$(OBJEXT) carinput.$(OBJEXT) \
 	clientnet.$(OBJEXT) clientplayercontrol.$(OBJEXT) \
-	clientsim.$(OBJEXT) collisiondata.$(OBJEXT) \
+	clientsim.$(OBJEXT) collisiondetector.$(OBJEXT) \
 	collisionface.$(OBJEXT) collisionmodel.$(OBJEXT) \
 	dynamicobject.$(OBJEXT) message.$(OBJEXT) \
 	messagebuffer.$(OBJEXT) movingobject.$(OBJEXT) \
@@ -174,7 +174,7 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/carinput.Po ./$(DEPDIR)/clientnet.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/clientplayercontrol.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/clientsim.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/collisiondata.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/collisiondetector.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/collisionface.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/collisionmodel.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/dynamicobject.Po ./$(DEPDIR)/message.Po \
@@ -229,7 +229,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/clientnet.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/clientplayercontrol.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/clientsim.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/collisiondata.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/collisiondetector.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/collisionface.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/collisionmodel.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dynamicobject.Po@am__quote@

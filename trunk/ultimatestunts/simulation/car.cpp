@@ -32,6 +32,8 @@ CCar::CCar()
 	//One sound:
 	m_Sounds.push_back(0);
 
+	cwA = 10.0; //air friction
+	
 	m_FrontWheelNeutral = CVector(0.8, -0.4, -1.75);
 	m_BackWheelNeutral = CVector(0.8, -0.4, 1.1);
 	m_InvMass = 0.001; //kilogram^-1
@@ -40,9 +42,9 @@ CCar::CCar()
 	//It's better to guess too large than too small,
 	//as large values will result in better stability
 	float xs=2.5, ys=1.5, zs=5.0;
-	m_InvMomentInertia.setElement(0,0,m_InvMass/(ys*ys+zs*zs));
-	m_InvMomentInertia.setElement(1,1,m_InvMass/(xs*xs+zs*zs));
-	m_InvMomentInertia.setElement(2,2,m_InvMass/(xs*xs+ys*ys));
+	m_InvMomentInertia.setElement(0,0,12*m_InvMass/(ys*ys+zs*zs));
+	m_InvMomentInertia.setElement(1,1,12*m_InvMass/(xs*xs+zs*zs));
+	m_InvMomentInertia.setElement(2,2,12*m_InvMass/(xs*xs+ys*ys));
 	m_WheelRadius = 0.35; //meter
 
 	m_WheelVelocity =  m_WheelAngle = 0.0;
@@ -53,27 +55,16 @@ CCar::CCar()
 	m_Bodies.push_back(wheel2);
 	m_Bodies.push_back(wheel3);
 	m_Bodies.push_back(wheel4);
-
-	updateBodyData();
 }
 
 CCar::~CCar(){
 }
 
-void CCar::simulate(CPhysics &theSimulator)
-{
-	; //dummy implementation
-	//TODO: something useful
-}
+#define gasmax 25000
+#define remmax 10000
 
-void CCar::updateBodyData()
+void CCar::update(CPhysics *simulator, float dt)
 {
-	for(unsigned int i=0; i < m_Bodies.size(); i++)
-	{
-		m_Bodies[i].m_PreviousPosition = m_Bodies[i].m_Position;
-		m_Bodies[i].m_PreviousOrientation = m_Bodies[i].m_Orientation;
-	}
-
 	CMatrix wheelmatrix;
 	wheelmatrix.rotX(m_WheelAngle);
 
@@ -86,8 +77,8 @@ void CCar::updateBodyData()
 
 	float steeringangle = 0.5 * ((CCarInput *)m_InputData)->m_Right;
 
-	CMatrix &leftm = m_Bodies[1].m_Orientation;
-	CMatrix &rightm = m_Bodies[2].m_Orientation;
+	CMatrix &leftm = m_Bodies[1].m_OrientationMatrix;
+	CMatrix &rightm = m_Bodies[2].m_OrientationMatrix;
 
 	leftm.rotY(steeringangle);
 	rightm.rotY(3.1416 + steeringangle);
@@ -101,7 +92,27 @@ void CCar::updateBodyData()
 	m_Bodies[1].m_Position = CVector(-xfr, yfr - m_wheelHeight1, zfr);	//Left front
 	m_Bodies[2].m_Position = CVector(xfr, yfr - m_wheelHeight2, zfr);	//Right front
 	m_Bodies[3].m_Position = CVector(-xba, yba - m_wheelHeight3, zba);	//Left back
-	m_Bodies[3].m_Orientation = wheelmatrix;
+	m_Bodies[3].m_OrientationMatrix = wheelmatrix;
 	m_Bodies[4].m_Position = CVector(xba, yba - m_wheelHeight4, zba);	//Right back
-	m_Bodies[4].m_Orientation = wheelmatrix * flipRight;
+	m_Bodies[4].m_OrientationMatrix = wheelmatrix * flipRight;
+
+	CMovingObject::update(simulator, dt);
+}
+
+void CCar::getForces(CVector &Ftot, CVector &Mtot)
+{
+	CMovingObject::getForces(Ftot, Mtot);
+
+	CCarInput *input = (CCarInput *)m_InputData;
+
+	//Gas
+	Ftot += m_OrientationMatrix * CVector(0.0, 0.0, -gasmax * input->m_Forward);
+
+	//Brake
+	CVector direction = getMomentum();
+	direction.normalise();
+	Ftot -= direction * (remmax * input->m_Backward);
+
+	//Steering
+	Mtot += CVector(0,10000.0*input->m_Right,0);
 }

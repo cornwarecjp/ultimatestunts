@@ -104,13 +104,13 @@ void CRuleControl::placeStart()
 	{
 		CVector carPos = CVector(
 			-3.0*(i%2==0) +3.0*(i%2!=0),
-			0.8,
+			2.0, //0.8,
 			6.0*(i-i%2) + 3.0
 		);
 
 		m_World->m_MovObjs[i]->setPosition(tilePos + carPos);
-		m_World->m_MovObjs[i]->setVelocity(CVector(0,0,0));
-		m_World->m_MovObjs[i]->rememberCurrentState(); //for previous stuff
+		m_World->m_MovObjs[i]->setMomentum(CVector(0,0,0));
+		//m_World->m_MovObjs[i]->rememberCurrentState(); //for previous stuff
 	}
 }
 

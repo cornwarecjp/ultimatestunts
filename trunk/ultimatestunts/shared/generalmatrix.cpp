@@ -19,6 +19,13 @@
 #include <cstdio>
 #include "generalmatrix.h"
 
+/*
+It would be better for the true physics if there
+were no mathematicians on earth.
+
+Daniel Bernoulli
+*/
+
 CGeneralMatrix::CGeneralMatrix(unsigned int rows, unsigned int cols)
 {
 	//Create the matrix
@@ -46,14 +53,24 @@ int CGeneralMatrix::solve(CGeneralVector *b, unsigned int solvemethod)
 
 	m_Vector = b;
 
+	//special cases:
+	if(m_numRows == 0) return -1; //succes: empty matrix
+	if(m_numRows == 1) //scalar method
+	{
+		if(isSmall(m_Matrix[0][0])) return 0;
+
+		(*m_Vector)[0] /= m_Matrix[0][0];
+		return -1;
+	}
+
 	switch(solvemethod)
 	{
 	case GM_GAUSS:
 		return solveGauss();
-	case (GM_GAUSS | GM_MODIFIED):
-		return solveModified();
-	case (GM_INEQUAL):
-		return solveInequal();
+	//case (GM_GAUSS | GM_MODIFIED):
+	//	return solveModified();
+	//case (GM_INEQUAL):
+		//return solveInequal();
 	default:
 		;
 	}
@@ -63,6 +80,9 @@ int CGeneralMatrix::solve(CGeneralVector *b, unsigned int solvemethod)
 
 int CGeneralMatrix::solveGauss()
 {
+	fprintf(stderr, "solveGauss start\n");
+
+	fprintf(stderr, "Forward\n");
 	//Forward
 	for(unsigned int i=0; i < m_numRows-1; i++)
 	{
@@ -96,6 +116,7 @@ int CGeneralMatrix::solveGauss()
 
 	if(m_numRows > 1)
 	{
+		fprintf(stderr, "Backward\n");
 		//Backward
 		for(unsigned int i=m_numRows-2; i >= 0; i--)
 		{
@@ -111,9 +132,11 @@ int CGeneralMatrix::solveGauss()
 		}
 	}
 
+	fprintf(stderr, "solveGauss succesful\n");
 	return -1; //succes
 }
 
+/*
 int CGeneralMatrix::solveModified()
 {
 	if(m_debug)
@@ -360,11 +383,73 @@ int CGeneralMatrix::solveModified()
 
 	return -1; //succes
 }
+*/
 
+/*
 int CGeneralMatrix::solveInequal()
 {
 	//Find a minumum that satisfies all inequalities
 
+	if(m_debug)
+	{
+		fprintf(stderr, "Size: %dx%d\n", m_numRows, m_numCols);
+		for(unsigned int i=0; i < m_numRows; i++)
+		{
+			for(unsigned int j=0; j < m_numCols; j++)
+				fprintf(stderr, "% .3f  ", m_Matrix[i][j]);
+
+			fprintf(stderr, "   % .3f\n", (*m_Vector)[i]);
+		}
+	}
+
+	//New algoritm:
+	for(unsigned int i=0; i < m_numRows; i++)
+	{
+		restrictPositive(m_Matrix[i]);
+		float s = m_Matrix[i].abs();
+
+		if(s < 0.001) continue; //don't divide by zero
+		float mul = (*m_Vector)[i] / s;
+		m_Matrix[i] *= mul;
+	}
+
+	for(unsigned int i=0; i < m_numCols; i++)
+	{
+		(*m_Vector)[i] = 0.0;
+		float wtot = 0.0;
+		
+		for(unsigned int j=0; j < m_numRows; j++)
+		{
+			float s2 = m_Matrix[j].abs2();
+			float w = 1.0;
+			//	(s2 < 0.001)?
+			//		0.0
+			//	:
+			//		s2*s2;
+
+			(*m_Vector)[i] += w * m_Matrix[j][i];
+			wtot += w;
+		}
+
+		(*m_Vector)[i] /= wtot;
+	}
+
+	if(m_debug)
+	{
+		fprintf(stderr, "Size: %dx%d\n", m_numRows, m_numCols);
+		for(unsigned int i=0; i < m_numRows; i++)
+		{
+			for(unsigned int j=0; j < m_numCols; j++)
+				fprintf(stderr, "% .3f  ", m_Matrix[i][j]);
+
+			fprintf(stderr, "   % .3f\n", (*m_Vector)[i]);
+		}
+	}
+
+	return -1; //succes
+
+	//Old algoritm:
+	
 	//Normalise the vectors:
 	for(unsigned int i=0; i < m_numRows; i++)
 	{
@@ -391,20 +476,7 @@ int CGeneralMatrix::solveInequal()
 	for(unsigned int i=0; i < m_numRows; i++)
 	{
 		CGeneralVector smallest = m_Matrix[i];
-		bool restricted = false;
-		for(unsigned int j=0; j < m_numCols; j++)
-			if(smallest[j] < 0.0)
-				{smallest[j] = 0.0; restricted = true;} //restriction
-		if(restricted)
-		{
-			float dotpr = smallest.dotProduct(m_Matrix[i]);
-			if(dotpr < 0.01) continue;
-			smallest *= ((*m_Vector)[i] / dotpr);
-		}
-		else
-		{
-			smallest *= (*m_Vector)[i];
-		}
+		restrictPositive(smallest, (*m_Vector)[i]);
 		
 		if( satisfiesInequalities(smallest) )
 		{
@@ -427,19 +499,7 @@ int CGeneralMatrix::solveInequal()
 			fprintf(stderr, "found mini = %d\n", mini);
 
 		CGeneralVector smallest = m_Matrix[mini];
-		bool restricted = false;
-		for(unsigned int j=0; j < m_numCols; j++)
-			if(smallest[j] < 0.0)
-				{smallest[j] = 0.0; restricted = true;} //restriction
-		if(restricted)
-		{
-			float dotpr = smallest.dotProduct(m_Matrix[mini]);
-			smallest *= ((*m_Vector)[mini] / dotpr);
-		}
-		else
-		{
-			smallest *= (*m_Vector)[mini];
-		}
+		restrictPositive(smallest, (*m_Vector)[mini]);
 
 		for(unsigned int j=0; j < m_numRows; j++)
 		{
@@ -451,7 +511,7 @@ int CGeneralMatrix::solveInequal()
 		return -1;
 	}
 
-	/*
+	/_*
 	if(m_numRows > 2) //doing order=2,...,N-1 solving
 	for(unsigned int order=2; order < m_numRows; order++)
 	{
@@ -565,7 +625,7 @@ int CGeneralMatrix::solveInequal()
 			return -1;
 		}
 	}
-	*/
+	*_/
 
 	if(m_debug)
 		fprintf(stderr, "Other order solving failed; doing exact solving\n");
@@ -573,6 +633,7 @@ int CGeneralMatrix::solveInequal()
 	return 0; //failed
 	return solveGauss();
 }
+*/
 
 bool CGeneralMatrix::satisfiesInequalities(const CGeneralVector &m) const
 {
@@ -590,6 +651,18 @@ bool CGeneralMatrix::satisfiesInequalities(const CGeneralVector &m) const
 	}
 
 	return isvalid;
+}
+
+void CGeneralMatrix::restrictPositive(CGeneralVector &v, float desiredSize) const
+{
+	for(unsigned int j=0; j < v.size(); j++)
+		if(v[j] < 0.0)
+			v[j] = 0.0; //restriction
+
+	if(desiredSize < 0.0) return;
+
+	float s = v.abs();
+	v *= (desiredSize / s);
 }
 
 void CGeneralMatrix::swaprow(unsigned int i, unsigned int j)
@@ -681,5 +754,5 @@ CGeneralMatrix CGeneralMatrix::transpose()
 
 bool CGeneralMatrix::isSmall(float val)
 {
-	return (val > -0.001 && val < 0.001);
+	return (val > -0.0000001 && val < 0.0000001);
 }

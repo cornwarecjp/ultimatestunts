@@ -26,49 +26,29 @@
 #include "messagebuffer.h"
 
 class CMessage {
-
 private:
+	CMessageBuffer m_Data; //Class data plus network header
 
-  CMessageBuffer m_Data;
-	
- 	
 public:
-  CMessage();
-  CMessage(const CMessageBuffer &);
-  virtual ~CMessage();
-
-
-  //virtual CBinBuffer & getData() const = 0;         // returns class data as binbuffer
-  //virtual bool setData(const CBinBuffer &) = 0;   // rebuild class data from binbuffer
-
-	CMessageBuffer & getBuffer();
- 	bool setBuffer(const CMessageBuffer &);
-
-	
-      // header wrappers
-  void setType(const CMessageBuffer::eMessageType & t);
- 	void setCounter(const Uint16 & counter);
-  void setAC(const bool & ac);
-  virtual CMessageBuffer::eMessageType getType() const {return ((CMessageBuffer::eMessageType) m_Data.getType()); }
-  Uint16 getCounter() const { return (m_Data.getCounter()); }
-  Uint8 getAC() const { return (m_Data.getAC()); }
-
-	
-};
-
-
-/*
-class CMessage {
-
-public: 
 	CMessage();
-  CMessage(CMessageBuffer b);
+	CMessage(const CMessageBuffer &);
 	virtual ~CMessage();
 
-  virtual CMessageBuffer getBuffer();
-  virtual void setBuffer(CMessageBuffer b);
+
+	//Class data as binbuffer
+	virtual CBinBuffer &getData(CBinBuffer &) const = 0; //TODO: make this a little faster
+	virtual bool setData(const CBinBuffer &) = 0;
+
+	//Class data plus network header
+	CMessageBuffer & getBuffer();
+	bool setBuffer(const CMessageBuffer &);
+
+	// header wrappers
+	void setType(const CMessageBuffer::eMessageType & t);
+	void setCounter(const Uint16 & counter);
+	void setAC(const bool & ac);
+	virtual CMessageBuffer::eMessageType getType() const {return ((CMessageBuffer::eMessageType) m_Data.getType()); }
+	Uint16 getCounter() const { return (m_Data.getCounter()); }
+	Uint8 getAC() const { return (m_Data.getAC()); }
 };
-
-*/
-
 #endif

@@ -1,8 +1,8 @@
 /***************************************************************************
-                          collisiondata.h  -  data describing collision events
+                          collisiondetector.h  -  Detects collisions and resting contacts
                              -------------------
-    begin                : di sep 23 2003
-    copyright            : (C) 2003 by CJP
+    begin                : ma mrt 22 2004
+    copyright            : (C) 2004 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
 
@@ -15,13 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef COLLISIONDATA_H
-#define COLLISIONDATA_H
-
-
-/**
-  *@author CJP
-  */
+#ifndef COLLISIONDETECTOR_H
+#define COLLISIONDETECTOR_H
 
 #include <vector> //STL vector template
 namespace std {}
@@ -30,42 +25,24 @@ using namespace std;
 #include "material.h"
 #include "vector.h"
 #include "collisionmodel.h"
+#include "collision.h"
+#include "world.h"
 
-class CWorld;
+/**
+  *@author CJP
+  */
 
-class CCollision {
-public:
-	//position relative to body center
-	//normal pointing outwards
-	//momentum transfer to body
-	CVector pos, nor;
-
-	float p; //impulse transfer parallel to normal (no friction)
-	float penetrationDepth;
-
-	//objects & materials. 1 = the object itself 2 = the other object
-	int object2; //the object that collided
-	int body1, body2; //the bodies that collided
-	int mat1, mat2; //The two materials
-};
-
-class CColEvents : public vector<CCollision>
-{
-public:
-	bool isHit;
-};
-
-class CCollisionData {
+class CCollisionDetector {
 public: 
-	CCollisionData(const CWorld *w);
-	~CCollisionData();
+	CCollisionDetector(const CWorld *w);
+	~CCollisionDetector();
 
-	vector<CColEvents> m_Events; //one per dynamic object
-
-	void calculateCollisions();
+	void calculateCollisions(bool resting=false);
+	vector<CCollision> m_Collisions; //the result of calculate...
 
 protected:
 	const CWorld *m_World;
+
 	CVector m_TrackMin, m_TrackMax;
 	bool m_FirstUpdate;
 
@@ -73,7 +50,8 @@ protected:
 	void ObjObjTest(int n1, int n2);
 
 	//Object <-> tile collisions
-	void ObjTileTest(int nobj, int xtile, int ztile, int htile);
+	void ObjTileTest_collision(int nobj, int xtile, int ztile, int htile);
+	void ObjTileTest_resting(int nobj, int xtile, int ztile, int htile);
 	void tileRotate(CVector &v, int rot);
 
 	//Object <-> track bound collisions
