@@ -119,15 +119,16 @@ bool CPhysics::update()
 				for(unsigned int j=0; j<a.size(); j++)
 					a_copy.push_back(a[j]);
 				
-				//Solve it
 				if(m_World->printDebug)
 				{
 					CVector p = mo->getVelocity() / mo->m_InvMass;
 					fprintf(stderr, "Current momentum: %.3f, %.3f, %.3f\n", p.x, p.y, p.z);
 				}
 					
+				//Solve it
 				M.m_debug = m_World->printDebug;
-				int solve_ret = M.solve(a, GM_GAUSS | GM_MODIFIED);
+				int solve_ret = M.solve(&a, GM_INEQUAL);
+				
 				if(solve_ret == -2)
 					{printf("physics.cpp: Matrix size error\n");}
 				else if(solve_ret == -1)
@@ -142,6 +143,11 @@ bool CPhysics::update()
 							{p = a_copy[j];}
 						dp += p * e[j].nor;
 						dL -= p * e[j].pos.crossProduct(e[j].nor);
+					}
+					
+					if(m_World->printDebug)
+					{
+						fprintf(stderr, "dp = %.3f, %.3f, %.3f\n", dp.x, dp.y, dp.z);
 					}
 				}
 				else

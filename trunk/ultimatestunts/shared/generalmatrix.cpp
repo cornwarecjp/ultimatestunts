@@ -1,5 +1,5 @@
 /***************************************************************************
-                          generalmatrix.cpp  -  description
+                          generalmatrix.cpp  -  A matrix class to solve matrix equations
                              -------------------
     begin                : do feb 5 2004
     copyright            : (C) 2004 by CJP
@@ -38,16 +38,20 @@ CGeneralMatrix::~CGeneralMatrix()
 {
 }
 
-int CGeneralMatrix::solve(CGeneralVector &b, unsigned int solvemethod)
+int CGeneralMatrix::solve(CGeneralVector *b, unsigned int solvemethod)
 {
-	if(b.size() != m_numRows) return -2; //bad size
+	if(b->size() != m_numRows) return -2; //bad size
+
+	m_Vector = b;
 
 	switch(solvemethod)
 	{
 	case GM_GAUSS:
-		return solveGauss(b);
+		return solveGauss();
 	case (GM_GAUSS | GM_MODIFIED):
-		return solveModified(b);
+		return solveModified();
+	case (GM_INEQUAL):
+		return solveInequal();
 	default:
 		;
 	}
@@ -55,7 +59,7 @@ int CGeneralMatrix::solve(CGeneralVector &b, unsigned int solvemethod)
 	return -1; //succes
 }
 
-int CGeneralMatrix::solveGauss(CGeneralVector &b)
+int CGeneralMatrix::solveGauss()
 {
 	//Forward
 	for(unsigned int i=0; i < m_numRows-1; i++)
@@ -72,13 +76,13 @@ int CGeneralMatrix::solveGauss(CGeneralVector &b)
 		}
 
 		if(p != i)
-			swaprow(i, p, b);
+			swaprow(i, p);
 
 		float aii = m_Matrix[i][i];
 		for(unsigned int j=i+1; j < m_numRows; j++)
 		{
 			float mji = m_Matrix[j][i] / aii;
-			addrow(j, -mji, i, b);
+			addrow(j, -mji, i);
 		}
 
 	}
@@ -86,7 +90,7 @@ int CGeneralMatrix::solveGauss(CGeneralVector &b)
 	float ann = m_Matrix[m_numRows-1][m_numCols-1];
 	if(isSmall(ann)) return m_numRows-1; //no unique solution exists
 
-	b[m_numRows-1] /= ann;
+	(*m_Vector)[m_numRows-1] /= ann;
 
 	if(m_numRows > 1)
 	{
@@ -96,10 +100,10 @@ int CGeneralMatrix::solveGauss(CGeneralVector &b)
 			float sum = 0.0;
 			for(unsigned int j=i+1; j < m_numCols; j++)
 			{
-				sum += m_Matrix[i][j] * b[j];
+				sum += m_Matrix[i][j] * (*m_Vector)[j];
 			}
 
-			b[i] = (b[i] - sum) / m_Matrix[i][i];
+			(*m_Vector)[i] = ((*m_Vector)[i] - sum) / m_Matrix[i][i];
 
 			if(i == 0) break; //bugfix for unsigned int behaviour
 		}
@@ -108,7 +112,7 @@ int CGeneralMatrix::solveGauss(CGeneralVector &b)
 	return -1; //succes
 }
 
-int CGeneralMatrix::solveModified(CGeneralVector &b)
+int CGeneralMatrix::solveModified()
 {
 	if(m_debug)
 		fprintf(stderr, "Modified Gauss solving...\n");
@@ -134,7 +138,7 @@ int CGeneralMatrix::solveModified(CGeneralVector &b)
 			for(unsigned int j=0; j < m_numCols; j++)
 				fprintf(stderr, "% .3f  ", m_Matrix[i][j]);
 
-			fprintf(stderr, "   % .3f\n", b[i]);
+			fprintf(stderr, "   % .3f\n", (*m_Vector)[i]);
 		}
 	}
 
@@ -163,7 +167,7 @@ int CGeneralMatrix::solveModified(CGeneralVector &b)
 
 			if(!isSmall(pval)) //!= 0
 			{
-				if(row != i) swaprow(i, row, b);
+				if(row != i) swaprow(i, row);
 				break;
 			}
 			p++;
@@ -179,7 +183,7 @@ int CGeneralMatrix::solveModified(CGeneralVector &b)
 		for(unsigned int ii=i+1; ii < m_numRows; ii++)
 		{
 			float miip = m_Matrix[ii][p] / pval;
-			addrow(ii, -miip, i, b);
+			addrow(ii, -miip, i);
 		}
 
 	}
@@ -195,7 +199,7 @@ int CGeneralMatrix::solveModified(CGeneralVector &b)
 			for(unsigned int j=0; j < m_numCols; j++)
 				fprintf(stderr, "% .3f  ", m_Matrix[i][j]);
 
-			fprintf(stderr, "   % .3f\n", b[i]);
+			fprintf(stderr, "   % .3f\n", (*m_Vector)[i]);
 		}
 	}
 
@@ -209,9 +213,9 @@ int CGeneralMatrix::solveModified(CGeneralVector &b)
 			unsigned int nump = ppoints[i+1-rowOffset]-ppoints[i-rowOffset];
 
 			//First set the sign of b to positive
-			if(b[i] < 0.0)
+			if((*m_Vector)[i] < 0.0)
 			{
-				b[i]=-b[i];
+				(*m_Vector)[i]=-(*m_Vector)[i];
 				for(unsigned int j=p; j<m_numCols; j++)
 					m_Matrix[i][j] = -m_Matrix[i][j];
 			}
@@ -269,9 +273,9 @@ int CGeneralMatrix::solveModified(CGeneralVector &b)
 
 				//Add the vector element
 				if(pval > 0.0)
-					{b.insert(b.begin()+ii, b[i] * pval / psum);}
+					{m_Vector->insert(m_Vector->begin()+ii, (*m_Vector)[i] * pval / psum);}
 				else
-					{b.insert(b.begin()+ii, 0.0);}
+					{m_Vector->insert(m_Vector->begin()+ii, 0.0);}
 
 			}
 
@@ -283,9 +287,9 @@ int CGeneralMatrix::solveModified(CGeneralVector &b)
 					for(unsigned int j=p+nump; j < m_numCols; j++)
 						m_Matrix[i][j] = 0.0;
 			if(m_Matrix[i][p] > 0.0)
-				{b[i] = b[i] * m_Matrix[i][p] / psum;}
+				{(*m_Vector)[i] = (*m_Vector)[i] * m_Matrix[i][p] / psum;}
 			else
-				{b[i] = 0.0;}
+				{(*m_Vector)[i] = 0.0;}
 
 			if(m_debug)
 				fprintf(stderr, "Added %d rows after row %d\n", nump-1, i-rowOffset);
@@ -304,16 +308,16 @@ int CGeneralMatrix::solveModified(CGeneralVector &b)
 			for(unsigned int j=0; j < m_numCols; j++)
 				fprintf(stderr, "% .3f  ", m_Matrix[i][j]);
 
-			fprintf(stderr, "   % .3f\n", b[i]);
+			fprintf(stderr, "   % .3f\n", (*m_Vector)[i]);
 		}
 	}
 
 	//Continuing Gauss...
 	float ann = m_Matrix[m_numRows-1][m_numCols-1];
 	if(isSmall(ann))
-	{b[m_numRows-1] = 0.0;}
+	{(*m_Vector)[m_numRows-1] = 0.0;}
 	else
-	{b[m_numRows-1] /= ann;}
+	{(*m_Vector)[m_numRows-1] /= ann;}
 
 	
 
@@ -325,15 +329,15 @@ int CGeneralMatrix::solveModified(CGeneralVector &b)
 			float sum = 0.0;
 			for(unsigned int j=i+1; j < m_numCols; j++)
 			{
-				sum += m_Matrix[i][j] * b[j];
+				sum += m_Matrix[i][j] * (*m_Vector)[j];
 			}
 
 			float aii = m_Matrix[i][i];
 
 			if(isSmall(aii))
-				{b[i] = 0.0;}
+				{(*m_Vector)[i] = 0.0;}
 			else
-				{b[i] = (b[i] - sum) / aii;}
+				{(*m_Vector)[i] = ((*m_Vector)[i] - sum) / aii;}
 
 			if(i == 0) break; //bugfix for unsigned int behaviour
 		}
@@ -348,14 +352,105 @@ int CGeneralMatrix::solveModified(CGeneralVector &b)
 			for(unsigned int j=0; j < m_numCols; j++)
 				fprintf(stderr, "% .3f  ", m_Matrix[i][j]);
 
-			fprintf(stderr, "   % .3f\n", b[i]);
+			fprintf(stderr, "   % .3f\n", (*m_Vector)[i]);
 		}
 	}
 
 	return -1; //succes
 }
 
-void CGeneralMatrix::swaprow(unsigned int i, unsigned int j, CGeneralVector &b)
+int CGeneralMatrix::solveInequal()
+{
+	if(m_debug)
+	{
+		fprintf(stderr, "Inequality solving of:\n");
+		fprintf(stderr, "Size: %dx%d\n", m_numRows, m_numCols);
+		for(unsigned int i=0; i < m_numRows; i++)
+		{
+			for(unsigned int j=0; j < m_numCols; j++)
+				fprintf(stderr, "% .3f  ", m_Matrix[i][j]);
+
+			fprintf(stderr, "   % .3f\n", (*m_Vector)[i]);
+		}
+	}
+
+	//Find a minumum that satisfies all inequalities
+	//order=0: search the minima of individual equations
+	//order=1: search the minima of pairs of equations
+	//order=m_numRows: find the solution of the matrix equation
+	for(unsigned int order=0; order < m_numRows; order++)
+	{
+		bool found = false;
+		float minval = 0.0;
+		unsigned int mini = 0;
+		for(unsigned int i=0; i < m_numRows; i++)
+		{
+			if( satisfiesInequalities(m_Matrix[i], (*m_Vector)[i]) )
+			{
+				if(m_debug)
+					fprintf(stderr, "Minimum of %d satisfies all inequalities\n", i);
+				
+				float val = m_Matrix[i].abs2() * (*m_Vector)[i] * (*m_Vector)[i];
+				if(!found || val < minval)
+				{
+					found = true;
+					minval = val;
+					mini = i;
+				}
+			}
+		}
+
+		if(found)
+		{
+			float t = (*m_Vector)[mini] / m_Matrix[mini].abs2();
+			if(m_debug)
+			{
+				fprintf(stderr, "Using minimum of %d\n", mini);
+				fprintf(stderr, "b[mini] = %.3f\n", (*m_Vector)[mini]);
+				fprintf(stderr, "abs2(m[mini]) = %.3f\n", m_Matrix[mini].abs2());
+				fprintf(stderr, "t = b[mini] / abs2(m[mini]) = %.3f\n", t);
+			}
+		
+			for(unsigned int j=0; j < m_numRows; j++)
+			{
+				(*m_Vector)[j] = t * m_Matrix[mini][j];
+			}
+		
+			if(m_debug)
+			{
+				fprintf(stderr, "After calculating this minimum:\n");
+				fprintf(stderr, "Size: %dx%d\n", m_numRows, m_numCols);
+				for(unsigned int i=0; i < m_numRows; i++)
+				{
+					for(unsigned int j=0; j < m_numCols; j++)
+						fprintf(stderr, "% .3f  ", m_Matrix[i][j]);
+
+					fprintf(stderr, "   % .3f\n", (*m_Vector)[i]);
+				}
+			}
+
+		} //for(order)
+
+		return -1;
+	}
+		
+	return solveModified();
+}
+
+bool CGeneralMatrix::satisfiesInequalities(const CGeneralVector &m, float b) const
+{
+	bool isvalid = true;
+	for(unsigned int i=0; i < m_numRows; i++)
+	{
+		float dotpr = m.dotProduct(m_Matrix[i]);
+		if(dotpr < ((*m_Vector)[i] / b))
+			{isvalid = false; break;}
+	}
+
+	return isvalid;
+}
+
+void CGeneralMatrix::swaprow(unsigned int i, unsigned int j)
 {
 	for(unsigned int k=0; k < m_numCols; k++)
 	{
@@ -364,17 +459,17 @@ void CGeneralMatrix::swaprow(unsigned int i, unsigned int j, CGeneralVector &b)
 		m_Matrix[j][k] = t;
 	}
 
-	float t = b[i];
-	b[i] = b[j];
-	b[j] = t;
+	float t = (*m_Vector)[i];
+	(*m_Vector)[i] = (*m_Vector)[j];
+	(*m_Vector)[j] = t;
 }
 
-void CGeneralMatrix::addrow(unsigned int i, float mul, unsigned int j, CGeneralVector &b)
+void CGeneralMatrix::addrow(unsigned int i, float mul, unsigned int j)
 {
 	for(unsigned int k=0; k < m_numCols; k++)
 		m_Matrix[i][k] += mul * m_Matrix[j][k];
 
-	b[i] += mul * b[j];
+	(*m_Vector)[i] += mul * (*m_Vector)[j];
 }
 
 void CGeneralMatrix::setElement(unsigned int i, unsigned int j, float value)
@@ -423,16 +518,4 @@ float CGeneralMatrix::norm()
 bool CGeneralMatrix::isSmall(float val)
 {
 	return (val > -0.001 && val < 0.001);
-}
-
-float CGeneralVector::norm()
-{
-	float norm = 0.0;
-	for(unsigned int i=0; i < size(); i++)
-	{
-		float n = fabs((*this)[i]);
-		if(n > norm) norm = n;
-	}
-	return norm;
-	
 }

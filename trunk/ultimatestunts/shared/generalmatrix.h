@@ -1,5 +1,5 @@
 /***************************************************************************
-                          generalmatrix.h  -  description
+                          generalmatrix.h  -  A matrix class to solve matrix equations
                              -------------------
     begin                : do feb 5 2004
     copyright            : (C) 2004 by CJP
@@ -23,31 +23,25 @@
   *@author CJP
   */
 
-#include <vector>
-namespace std {}
-using namespace std;
+#include "generalvector.h"
 
-#define GM_GAUSS	1
-#define GM_PIVOT	2
-#define GM_SCALED	4
-#define GM_MODIFIED	8
+#define GM_GAUSS		1
+#define GM_PIVOT		2
+#define GM_SCALED		4
+#define GM_MODIFIED		8
 
-#define GM_LU		16
-#define GM_CHOLESKI	32
-#define GM_CROUT	64
+#define GM_INEQUAL		16
 
-class CGeneralVector : public vector<float>
-{
-public:
-	float norm();
-};
+#define GM_LU			32
+#define GM_CHOLESKI		64
+#define GM_CROUT		128
 
 class CGeneralMatrix {
 public:
 	CGeneralMatrix(unsigned int size);
 	~CGeneralMatrix();
 
-	int solve(CGeneralVector &b, unsigned int solvemethod=GM_GAUSS);
+	int solve(CGeneralVector *b, unsigned int solvemethod=GM_GAUSS);
 	void setElement(unsigned int i, unsigned int j, float value);
 	float getElement(unsigned int i, unsigned int j);
 	void removeRowCol(unsigned int n);
@@ -57,13 +51,18 @@ public:
 	bool m_debug;
 protected:
 	vector<CGeneralVector> m_Matrix;
+	CGeneralVector *m_Vector;
+
 	unsigned int m_numRows, m_numCols;
 
-	int solveGauss(CGeneralVector &b);
-	int solveModified(CGeneralVector &b);
+	int solveGauss();
+	int solveModified();
 
-	void swaprow(unsigned int i, unsigned int j, CGeneralVector &b);
-	void addrow(unsigned int i, float mul, unsigned int j, CGeneralVector &b);
+	int solveInequal();
+	bool satisfiesInequalities(const CGeneralVector &m, float b) const;
+
+	void swaprow(unsigned int i, unsigned int j);
+	void addrow(unsigned int i, float mul, unsigned int j);
 
 	bool isSmall(float val);
 };

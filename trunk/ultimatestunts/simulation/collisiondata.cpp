@@ -462,22 +462,14 @@ void CCollisionData::ObjTileTest(int nobj, int xtile, int ztile, int htile)
 				//determine momentum transfer
 				//TODO: move to physics.cpp
 				{
-					/*
-					CVector v = obj->getVelocity()
-						+ c.pos.crossProduct(obj->getAngularVelocity()); //vlocal = v + r x w
-					CVector vvert = v.component(c.nor);
-					//CVector vhor = v - vvert;
-					float minv = obj->m_InvMass;
-					float mrotinv = (c.pos * obj->m_InvMomentInertia).dotProduct(c.pos); //just a guess
-					float meff = 1.0 / (minv + mrotinv);
-					c.dp = -responsefactor*meff*vvert;
-					//- dynfriction*vhor; //dummy dynamic friction
-					*/
 					CMatrix R1; R1.setCrossProduct(c.pos);
+					CMatrix &Iinv = obj->m_InvMomentInertia;
 					float minv = obj->m_InvMass;
-					float minv_eff = minv + c.nor.dotProduct((R1*obj->m_InvMomentInertia*R1) * c.nor);
+					float minv_eff = minv + c.nor.dotProduct((R1*Iinv*R1) * c.nor);
 					float v_eff = c.nor.dotProduct(-(obj->getVelocity()) + R1 * obj->getAngularVelocity());
 					c.p = responsefactor * v_eff / minv_eff;
+
+					c.p *= (1.0 + (R1*(Iinv*(R1*(c.nor*(1.0/minv))))).dotProduct(c.nor));
 				}
 
 				m_Events[nobj].push_back(c);
