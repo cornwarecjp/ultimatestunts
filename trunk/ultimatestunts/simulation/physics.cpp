@@ -14,8 +14,8 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#include <stdio.h>
-#include <math.h>
+#include <cstdio>
+#include <cmath>
 
 #include "physics.h"
 #include "car.h"
@@ -114,16 +114,39 @@ bool CPhysics::update()
 
 				}
 
+				//get a copy
+				CGeneralVector a_copy;
+				for(unsigned int j=0; j<a.size(); j++)
+					a_copy.push_back(a[j]);
+				
 				//Solve it
-				if(M.solve(a) == -2)
+				if(m_World->printDebug)
+				{
+					CVector p = mo->getVelocity() / mo->m_InvMass;
+					fprintf(stderr, "Current momentum: %.3f, %.3f, %.3f\n", p.x, p.y, p.z);
+				}
+					
+				M.m_debug = m_World->printDebug;
+				int solve_ret = M.solve(a, GM_GAUSS | GM_MODIFIED);
+				if(solve_ret == -2)
 					{printf("physics.cpp: Matrix size error\n");}
-				else
+				else if(solve_ret == -1)
 				{
 					for(unsigned int j=0; j<e.size(); j++)
 					{
-						dp += a[j] * e[j].nor;
-						dL -= a[j] * e[j].pos.crossProduct(e[j].nor);
+						//Get the smallest:
+						float p;
+						if(a[j] < a_copy[j] && a[j] > 0.0)
+							{p = a[j];}
+						else
+							{p = a_copy[j];}
+						dp += p * e[j].nor;
+						dL -= p * e[j].pos.crossProduct(e[j].nor);
 					}
+				}
+				else
+				{
+					printf("Solving unsuccesful @ row %d\n", solve_ret);
 				}
 
 				Ftot += dp/dt; //collision force

@@ -17,7 +17,7 @@
 
 #include "music.h"
 
-#include <stdio.h>
+#include <cstdio>
 #ifdef HAVE_LIBFMOD
 
 #ifdef FMOD_HEADER
@@ -57,6 +57,8 @@ int CMusic::loadFromFile(CString filename)
 		printf("   FMOD error: %s\n", FMOD_ErrorString(FSOUND_GetError()));
 		return 1;
 	}
+
+	return 0;
 }
 
 int CMusic::attachToChannel(int c)

@@ -14,8 +14,8 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#include <stdio.h>
-#include <math.h>
+#include <cstdio>
+#include <cmath>
 #include <GL/gl.h>
 
 #include "renderer.h"

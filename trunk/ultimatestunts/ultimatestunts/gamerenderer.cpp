@@ -15,7 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 #include <GL/gl.h>
-#include <stdio.h>
+#include <cstdio>
 #include "gamerenderer.h"
 
 CGameRenderer::CGameRenderer(const CLConfig &conf, const CWorld *world) : CRenderer(conf)

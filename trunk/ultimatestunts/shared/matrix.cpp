@@ -15,56 +15,15 @@
  *                                                                         *
  ***************************************************************************/
 #include "matrix.h"
-#include <math.h>
+#include <cmath>
 
-//#include <stdio.h>
+//#include <cstdio>
 //#include "cstring.h" //debugging
 
 CMatrix::CMatrix()
 {
     m_M = new float[16];
     reset();
-}
-
-CMatrix::CMatrix(CVector v)
-{
-	m_M = new float[16];
-	reset();
-
-
-	//the idea is to rotate forward using a matrix A
-	//so that v points into the z direction.
-	//then rotate around the z axis by the angle |v|
-	//then rotate backward using Ainv
-	CMatrix A, rot;
-
-	//the collumn vectors of A are v1, v2 and v3
-	CVector v1, v2, v3;
-	v3 = v.normal();
-
-	if(v3.z < 0.75 && v3.z > -0.75) //not parallel to 0,0,1
-		{v2 = CVector(v3.y,-v3.x,0);} //cross product with 0,0,1
-	else
-		{v2 = CVector(0,v3.z,-v3.y);} //cross product with 1,0,0
-
-	v2.normalise();
-	v1 = v3.crossProduct(v2);
-	A.setElement(0,0,v1.x);
-	A.setElement(1,0,v1.y);
-	A.setElement(2,0,v1.z);
-	A.setElement(0,1,v2.x);
-	A.setElement(1,1,v2.y);
-	A.setElement(2,1,v2.z);
-	A.setElement(0,2,v3.x);
-	A.setElement(1,2,v3.y);
-	A.setElement(2,2,v3.z);
-
-
-	rot.rotZ(v.abs());
-
-	this->operator*=(A);
-	this->operator*=(rot);
-	this->operator/=(A);
 }
 
 CMatrix::CMatrix(CMatrix const &val)
@@ -252,6 +211,43 @@ void CMatrix::setCrossProduct(CVector v)
 	setElement(0,0,0.0); setElement(0,1,-v.z); setElement(0,2,v.y);
 	setElement(1,0,v.z); setElement(1,1,0.0); setElement(1,2,-v.x);
 	setElement(2,0,-v.y); setElement(2,1,v.x); setElement(2,2,0.0);
+}
+
+void CMatrix::setRotation(CVector v)
+{
+	//the idea is to rotate forward using a matrix A
+	//so that v points into the z direction.
+	//then rotate around the z axis by the angle |v|
+	//then rotate backward using Ainv
+	CMatrix A, rot;
+
+	//the collumn vectors of A are v1, v2 and v3
+	CVector v1, v2, v3;
+	v3 = v.normal();
+
+	if(v3.z < 0.75 && v3.z > -0.75) //not parallel to 0,0,1
+		{v2 = CVector(v3.y,-v3.x,0);} //cross product with 0,0,1
+	else
+		{v2 = CVector(0,v3.z,-v3.y);} //cross product with 1,0,0
+
+	v2.normalise();
+	v1 = v3.crossProduct(v2);
+	A.setElement(0,0,v1.x);
+	A.setElement(1,0,v1.y);
+	A.setElement(2,0,v1.z);
+	A.setElement(0,1,v2.x);
+	A.setElement(1,1,v2.y);
+	A.setElement(2,1,v2.z);
+	A.setElement(0,2,v3.x);
+	A.setElement(1,2,v3.y);
+	A.setElement(2,2,v3.z);
+
+
+	rot.rotZ(v.abs());
+
+	this->operator=(A);
+	this->operator*=(rot);
+	this->operator/=(A);
 }
 
 CMatrix CMatrix::inverse() const

@@ -47,7 +47,7 @@ void CMovingObject::setOrientationVector(CVector v)
 		m_OrientationVector = v * (vabsmod / vabs);
 	}
 
-	m_Orientation = CMatrix(m_OrientationVector);
+	m_Orientation.setRotation(m_OrientationVector);
 }
 
 void CMovingObject::setOrientation(const CMatrix &M)

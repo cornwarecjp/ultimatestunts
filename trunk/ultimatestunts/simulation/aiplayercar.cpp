@@ -15,7 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <stdio.h>
+#include <cstdio>
 
 #include "aiplayercar.h"
 #include "carinput.h"

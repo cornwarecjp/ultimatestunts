@@ -17,7 +17,7 @@
 
 #include "sndsample.h"
 
-#include <stdio.h>
+#include <cstdio>
 #ifdef HAVE_LIBFMOD
 
 #ifdef FMOD_HEADER

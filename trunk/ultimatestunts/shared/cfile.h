@@ -18,7 +18,7 @@
 #ifndef CFILE_H
 #define CFILE_H
 
-#include <stdio.h> //voor FILE type
+#include <cstdio> //voor FILE type
 #include "cstring.h"
 
 class CFile

@@ -18,7 +18,7 @@
 #ifndef USSERVER_H
 #define USSERVER_H
 
-#include <stdio.h> //for FILE
+#include <cstdio> //for FILE
 #include "cstring.h"
 
 /**

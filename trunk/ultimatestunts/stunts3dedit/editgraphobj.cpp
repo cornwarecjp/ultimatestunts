@@ -16,7 +16,7 @@
  ***************************************************************************/
 
 #include <GL/gl.h>
-#include <stdio.h> //for sscanf
+#include <cstdio> //for sscanf
 #include "editgraphobj.h"
 #include "cfile.h"
 

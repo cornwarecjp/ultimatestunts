@@ -15,7 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <stdio.h> //debugging
+#include <cstdio> //debugging
 
 #include "rulecontrol.h"
 #include "usmacros.h"

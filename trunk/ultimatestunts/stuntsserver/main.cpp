@@ -19,8 +19,8 @@
 #include <config.h>
 #endif
 
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
 
 #include "playercontrol.h"
 #include "clientplayercontrol.h"

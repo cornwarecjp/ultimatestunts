@@ -18,7 +18,7 @@
 #include "soundworld.h"
 #include "datafile.h"
 
-#include <stdio.h>
+#include <cstdio>
 
 CSoundWorld::CSoundWorld(const CWorld *world, const CLConfig &conf)
 {

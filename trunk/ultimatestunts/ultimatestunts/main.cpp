@@ -20,8 +20,8 @@
 #endif
 
 //Standard includes
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
 #include <vector>
 namespace std {}
 using namespace std;

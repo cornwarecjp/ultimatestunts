@@ -17,9 +17,9 @@
 
 #include <GL/gl.h>
 
-#include <math.h>
+#include <cmath>
 
-/* Some <math.h> files do not define M_PI... */
+/* Some <cmath> files do not define M_PI... */
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif

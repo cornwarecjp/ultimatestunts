@@ -15,8 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <stdio.h>
-#include <math.h>
+#include <cstdio>
+#include <cmath>
 #include "collisionmodel.h"
 
 CCollisionModel::CCollisionModel(){

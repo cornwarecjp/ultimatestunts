@@ -14,7 +14,7 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#include <math.h>
+#include <cmath>
 #ifndef M_PI
 #define M_PI 3.141592653
 #endif

@@ -9,7 +9,7 @@
 namespace std {}
 using namespace std;
 
-#include <stdio.h>
+#include <cstdio>
 #include "cstring.h"
 
 

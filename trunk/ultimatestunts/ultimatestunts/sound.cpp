@@ -14,9 +14,9 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#include <stdlib.h>
-#include <math.h>
-#include <stdio.h> //debugging
+#include <cstdlib>
+#include <cmath>
+#include <cstdio> //debugging
 
 #include "sound.h"
 

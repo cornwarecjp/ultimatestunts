@@ -57,4 +57,6 @@ bool CBound::loadFromFile(CFile *f, CString subset, CMaterial **matarray)
 				}
 			}
 		}
+
+	return true;
 }

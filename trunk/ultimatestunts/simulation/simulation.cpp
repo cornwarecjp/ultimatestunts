@@ -15,7 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <stdio.h>
+#include <cstdio>
 #include "simulation.h"
 
 CSimulation::CSimulation(CWorld *w)

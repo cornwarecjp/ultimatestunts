@@ -9,8 +9,8 @@ Syntax:
 BEGIN
 4
 textures/gras2.rgb
-textures/weg2.rgb
 textures/baksteen1.rgb
+textures/weg2.rgb
 textures/metal1.rgb
 END
 

@@ -15,8 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <stdio.h>
-#include <math.h>
+#include <cstdio>
+#include <cmath>
 #include "collisiondata.h"
 #include "world.h"
 #include "usmacros.h"
@@ -25,13 +25,10 @@ CCollisionData::CCollisionData(const CWorld *w)
 {
 	m_World = w;
 	m_FirstUpdate = true;
-
-	m_DebugFile = new CFile("collisiondata.txt", true);
 }
 
 CCollisionData::~CCollisionData()
 {
-	delete m_DebugFile;
 }
 
 void CCollisionData::calculateCollisions()
@@ -67,10 +64,6 @@ void CCollisionData::calculateCollisions()
 	for(unsigned int i=0; i < m_World->m_MovObjs.size(); i++)
 	{
 		CVector pos = m_World->m_MovObjs[i]->getPosition();
-
-		if(m_World->printDebug)
-			m_DebugFile->writel(CString("Next frame y = ") + pos.y);
-
 
 		int x = (int)(0.5 + (pos.x)/TILESIZE);
 		int z = (int)(0.5 + (pos.z)/TILESIZE);
@@ -330,13 +323,6 @@ void CCollisionData::ObjTileTest(int nobj, int xtile, int ztile, int htile)
 		//Test bounding spheres
 		if(!sphereTest(p, b, tilepos, tilemodel)) continue;
 
-		if(m_World->printDebug && tmodel > 0)
-		{
-			m_DebugFile->writel(CString("  Testing new tile type = ") + tmodel);
-			m_DebugFile->writel(CString("    r + dr = ") + rplusdr);
-			m_DebugFile->writel(CString("    dr = ") + dr);
-		}
-
 		//Per tile-face
 		for(unsigned int tf=0; tf<tilemodel->m_Faces.size(); tf++)
 		{
@@ -354,8 +340,6 @@ void CCollisionData::ObjTileTest(int nobj, int xtile, int ztile, int htile)
 
 			if(theFace.nor.dotProduct(dr) > 0.0)
 			{
-				if(m_World->printDebug)
-					m_DebugFile->writel(CString("  ") + (int)tf + ": Not in direction of movement");
 				//continue; //this contains a bug. But what??
 			}
 
@@ -366,14 +350,10 @@ void CCollisionData::ObjTileTest(int nobj, int xtile, int ztile, int htile)
 
 			if(ddiff > sph_r)
 			{
-				if(m_World->printDebug)
-					m_DebugFile->writel(CString("  ") + (int)tf + ": Sphere is above plane");
 				continue;
 			}
 			if(ddiff < 0.0 && prevddiff < 0.0)
 			{
-				if(m_World->printDebug)
-					m_DebugFile->writel(CString("  ") + (int)tf + ": Sphere is below plane");
 				continue;
 			}
 
@@ -431,21 +411,12 @@ void CCollisionData::ObjTileTest(int nobj, int xtile, int ztile, int htile)
 					theFace.cull(b->m_Faces[of], -dr);
 				}
 
-				if(m_World->printDebug)
-				{
-					m_DebugFile->writel(CString("    Culled by ") + (int)of + ": " + b->m_Faces[of].nor + " d =" + b->m_Faces[of].d);
-					for(unsigned int j=0; j<theFace.size(); j++)
-						m_DebugFile->writel(CString("      ") + theFace[j]);
-				}
-
 				if(theFace.size() < 3) break;
 			}
 
 			//2.4: skip if no piece left
 			if(theFace.size() < 3)
 			{
-				if(m_World->printDebug)
-					m_DebugFile->writel(CString("  ") + (int)tf + ": Cut everything out");
 				continue;
 			}
 
@@ -469,9 +440,6 @@ void CCollisionData::ObjTileTest(int nobj, int xtile, int ztile, int htile)
 			//	coll_pos += theFace[j];
 
 			//coll_pos *= (1.0 / (num_collpoints + theFace.size()));
-
-			if(m_World->printDebug)
-				m_DebugFile->writel(CString("  ") + (int)tf + ": Collision!!");
 
 			//3: Generate collision info
 			for(unsigned int j=0; j < theFace.size(); j++)

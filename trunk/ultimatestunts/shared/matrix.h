@@ -23,11 +23,12 @@ class CMatrix
 {
 	public:
 		CMatrix();
-		CMatrix(CVector v);
+		//CMatrix(CVector v); //use setRotation instead
 		CMatrix(CMatrix const &val);
 		~CMatrix();
 		void reset();
 		void setCrossProduct(CVector v);
+		void setRotation(CVector v);
 
 		//Matrix-operations:
 		CMatrix const &operator=(CMatrix const &val);

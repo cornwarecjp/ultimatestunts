@@ -15,8 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 #include "cfile.h"
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 
 CFile::CFile(CString filename, bool write)
 {
