@@ -1,5 +1,5 @@
 /***************************************************************************
-                          serversim.h  -  description
+                          serversim.h  -  Server-side networked simulation
                              -------------------
     begin                : wo jan 15 2003
     copyright            : (C) 2003 by CJP

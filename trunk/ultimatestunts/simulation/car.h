@@ -1,5 +1,5 @@
 /***************************************************************************
-                          car.h  -  description
+                          car.h  -  A car, being a moving object
                              -------------------
     begin                : Wed Dec 4 2002
     copyright            : (C) 2002 by CJP

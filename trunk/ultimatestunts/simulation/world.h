@@ -1,5 +1,5 @@
 /***************************************************************************
-                          world.h  -  description
+                          world.h  -  The world: tiles and cars and other objects
                              -------------------
     begin                : Wed Dec 4 2002
     copyright            : (C) 2002 by CJP
@@ -33,12 +33,21 @@ public:
 	CWorld();
 	virtual ~CWorld();
 
-  CTile *m_Track;
-  int l, w, h;
-  //bool loadFromFile(..);
+	vector<CTile *> m_Track; //elements from m_Tiles?
+	vector<int> m_Rotation; //Rotation of tiles
+	vector<int> m_Height; //Height of tiles
+	int l, w, h;
+	virtual bool loadFromFile(CString filename);
 
-  vector<CMovingObject *> m_MovObjs;
-  virtual int addMovingObject(CObjectChoice c);
+	vector<CMovingObject *> m_MovObjs; //elements from m_Objects?
+	virtual int addMovingObject(CObjectChoice c);
+
+protected:
+	//Track + tiles:
+	//vector<CTile *> m_Tiles;
+
+	//Cars + other objects:
+	//vector<CMovingObject *> m_Objects;
 };
 
 #endif

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          binbuffer.cpp  -  description
+                          binbuffer.cpp  -  binary buffer class
                              -------------------
     begin                : di dec 17 2002
     copyright            : (C) 2002 by CJP

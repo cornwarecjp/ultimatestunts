@@ -1,5 +1,5 @@
 /***************************************************************************
-                          dynamicobject.h  -  description
+                          dynamicobject.h  -  A dynamic object
                              -------------------
     begin                : Thu Dec 5 2002
     copyright            : (C) 2002 by CJP

@@ -1,8 +1,8 @@
 /***************************************************************************
-                          objectchoice.cpp  -  Describes which moving object is chosen
+                          graphicobject.h  -  CGraphObj wrapper
                              -------------------
-    begin                : Thu Dec 5 2002
-    copyright            : (C) 2002 by CJP
+    begin                : do jan 16 2003
+    copyright            : (C) 2003 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
 
@@ -14,31 +14,24 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
+#ifndef GRAPHICOBJECT_H
+#define GRAPHICOBJECT_H
 
+#include "graphobj.h"
 
-#include "binbuffer.h"
-#include "objectchoice.h"
+/**
+  *@author CJP
+  */
 
-CObjectChoice::CObjectChoice()
+class CGraphicObject
 {
-  m_CarNumber = 0;
-  this->setType(CMessageBuffer::objectChoice);
-}
+public:
+	void setBody(CGraphObj *o){m_Body = o;}
 
-CObjectChoice::~CObjectChoice()
-{}
+	virtual void draw(){m_Body->draw();}
+protected:
 
+	CGraphObj *m_Body;
+};
 
-CBinBuffer & CObjectChoice::getData() const {
-  CBinBuffer *res = new CBinBuffer();
-  (*res)+=m_CarNumber;
-  return (*res);
-}
-
-bool CObjectChoice::setData(const CBinBuffer & b) {
-  CBinBuffer bb = b;                           // const!
-  m_CarNumber = bb.getUint16(0);
-  return (true);
-}
-
-
+#endif

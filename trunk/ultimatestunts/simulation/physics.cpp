@@ -1,5 +1,5 @@
 /***************************************************************************
-                          physics.cpp  -  dummy file
+                          physics.cpp  -  The physics of the game :-)
                              -------------------
     begin                : Wed Nov 20 2002
     copyright            : (C) 2002 by CJP

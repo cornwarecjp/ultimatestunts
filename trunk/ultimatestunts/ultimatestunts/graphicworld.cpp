@@ -1,8 +1,8 @@
 /***************************************************************************
-                          message.cpp  -  Base-class for messages being sent over the network
+                          graphicworld.cpp  -  A graphical version of a world object
                              -------------------
-    begin                : Thu Dec 5 2002
-    copyright            : (C) 2002 by CJP
+    begin                : do jan 16 2003
+    copyright            : (C) 2003 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
 
@@ -14,45 +14,33 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
+#include <stdio.h>
 
-#include "message.h"
+#include "graphiccar.h"
+#include "graphicworld.h"
 
-CMessageBuffer & CMessage::getBuffer() {
-  //CMessageBuffer *res = new CMessageBuffer();
-
-  //this->m_Data.setData(this->getData());
-  //*res = m_Data  ;
-  //return (*res);
-	return m_Data;
+CGraphicWorld::CGraphicWorld(){
 }
- 	
-bool CMessage::setBuffer(const CMessageBuffer & b) {
- m_Data = b;
- //this->setData(m_Data.getData());
- return (true);
+CGraphicWorld::~CGraphicWorld(){
 }
 
-void CMessage::setType(const CMessageBuffer::eMessageType & t) {
-	m_Data.setType(t);
-}
-
-void CMessage::setCounter(const Uint16 & counter) {
-	m_Data.setCounter(counter);
-}
-
-void CMessage::setAC(const bool & ac) {
-	if (ac) m_Data.setAC(1); else m_Data.setAC(0);
-}
-
-
-CMessage::CMessage(){
-}
-
-CMessage::CMessage(const CMessageBuffer & mb)
+int CGraphicWorld::addMovingObject(CObjectChoice c)
 {
- this->setBuffer(mb);
+	//future: selecting, using c
+
+	CMovingObject *m = new CGraphicCar; //That's the difference with CWorld
+
+	m_MovObjs.push_back(m);
+
+	int s = m_MovObjs.size();
+	printf("Added (graphic) car: total %d moving objects\n", s);
+
+	return s - 1;
 }
 
-CMessage::~CMessage(){
-}
+bool CGraphicWorld::loadFromFile(CString filename)
+{
+	printf("The world graphics are being loaded from %s\n", filename.c_str());
 
+	return true;
+}

@@ -1,8 +1,8 @@
 /***************************************************************************
-                          objectchoice.cpp  -  Describes which moving object is chosen
+                          graphiccar.h  -  A graphical version of a car object
                              -------------------
-    begin                : Thu Dec 5 2002
-    copyright            : (C) 2002 by CJP
+    begin                : do jan 16 2003
+    copyright            : (C) 2003 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
 
@@ -15,30 +15,35 @@
  *                                                                         *
  ***************************************************************************/
 
+#ifndef GRAPHICCAR_H
+#define GRAPHICCAR_H
 
-#include "binbuffer.h"
-#include "objectchoice.h"
+#include "graphobj.h"
+#include "car.h"
+#include "graphicobject.h"
 
-CObjectChoice::CObjectChoice()
+/**
+  *@author CJP
+  */
+
+class CGraphicCar : public CCar, public CGraphicObject
 {
-  m_CarNumber = 0;
-  this->setType(CMessageBuffer::objectChoice);
-}
+public: 
+	CGraphicCar();
+	virtual ~CGraphicCar();
 
-CObjectChoice::~CObjectChoice()
-{}
+	//No getType overload: in its messaging behaviour
+	//CGraphicCar is just a normal CCar
 
+	//Other parts of the car:
+	void setFrontWheel(CGraphObj *o){m_FrontWheel = o;}
+	void setBackWheel(CGraphObj *o){m_BackWheel = o;}
 
-CBinBuffer & CObjectChoice::getData() const {
-  CBinBuffer *res = new CBinBuffer();
-  (*res)+=m_CarNumber;
-  return (*res);
-}
+	virtual void draw();
+protected:
 
-bool CObjectChoice::setData(const CBinBuffer & b) {
-  CBinBuffer bb = b;                           // const!
-  m_CarNumber = bb.getUint16(0);
-  return (true);
-}
+	CGraphObj *m_FrontWheel;
+	CGraphObj *m_BackWheel;
+};
 
-
+#endif

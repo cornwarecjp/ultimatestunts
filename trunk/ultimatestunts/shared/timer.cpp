@@ -1,5 +1,5 @@
 /***************************************************************************
-                          timer.cpp  -  description
+                          timer.cpp  -  A timer class
                              -------------------
     begin                : do dec 19 2002
     copyright            : (C) 2002 by CJP

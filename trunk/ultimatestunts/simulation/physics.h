@@ -1,5 +1,5 @@
 /***************************************************************************
-                          physics.h  -  dummy file
+                          physics.h  -  The physics of the game :-)
                              -------------------
     begin                : Wed Nov 20 2002
     copyright            : (C) 2002 by CJP

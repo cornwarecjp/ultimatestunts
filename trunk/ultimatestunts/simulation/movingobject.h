@@ -1,5 +1,5 @@
 /***************************************************************************
-                          movingobject.h  -  description
+                          movingobject.h  -  Moving object class
                              -------------------
     begin                : Wed Dec 4 2002
     copyright            : (C) 2002 by CJP

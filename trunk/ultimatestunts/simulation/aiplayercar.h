@@ -1,5 +1,5 @@
 /***************************************************************************
-                          aiplayercar.h  -  description
+                          aiplayercar.h  -  An AI player for controlling cars
                              -------------------
     begin                : wo dec 18 2002
     copyright            : (C) 2002 by CJP

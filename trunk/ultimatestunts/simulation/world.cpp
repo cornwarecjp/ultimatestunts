@@ -1,5 +1,5 @@
 /***************************************************************************
-                          world.cpp  -  description
+                          world.cpp  -  The world: tiles and cars and other objects
                              -------------------
     begin                : Wed Dec 4 2002
     copyright            : (C) 2002 by CJP
@@ -31,11 +31,20 @@ int CWorld::addMovingObject(CObjectChoice c)
 	//future: selecting, using c
 
 	CMovingObject *m = new CCar;
-
 	m_MovObjs.push_back(m);
 
 	int s = m_MovObjs.size();
 	printf("Added car: total %d moving objects\n", s);
 
 	return s - 1;
+}
+
+bool CWorld::loadFromFile(CString filename)
+{
+	printf("The world is being loaded from %s\n", filename.c_str());
+
+	l=10; w=10; h=2;
+	
+
+	return true;
 }

@@ -1,8 +1,8 @@
 /***************************************************************************
-                          message.cpp  -  Base-class for messages being sent over the network
+                          graphiccar.cpp  -  A graphical version of a car object
                              -------------------
-    begin                : Thu Dec 5 2002
-    copyright            : (C) 2002 by CJP
+    begin                : do jan 16 2003
+    copyright            : (C) 2003 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
 
@@ -15,44 +15,18 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "message.h"
+#include "graphiccar.h"
 
-CMessageBuffer & CMessage::getBuffer() {
-  //CMessageBuffer *res = new CMessageBuffer();
-
-  //this->m_Data.setData(this->getData());
-  //*res = m_Data  ;
-  //return (*res);
-	return m_Data;
-}
- 	
-bool CMessage::setBuffer(const CMessageBuffer & b) {
- m_Data = b;
- //this->setData(m_Data.getData());
- return (true);
-}
-
-void CMessage::setType(const CMessageBuffer::eMessageType & t) {
-	m_Data.setType(t);
-}
-
-void CMessage::setCounter(const Uint16 & counter) {
-	m_Data.setCounter(counter);
-}
-
-void CMessage::setAC(const bool & ac) {
-	if (ac) m_Data.setAC(1); else m_Data.setAC(0);
-}
-
-
-CMessage::CMessage(){
-}
-
-CMessage::CMessage(const CMessageBuffer & mb)
+CGraphicCar::CGraphicCar()
 {
- this->setBuffer(mb);
 }
 
-CMessage::~CMessage(){
+CGraphicCar::~CGraphicCar()
+{
 }
 
+void CGraphicCar::draw()
+{
+	m_Body->draw();
+	//TODO: draw other parts on the right position
+}

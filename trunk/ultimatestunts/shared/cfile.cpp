@@ -1,5 +1,5 @@
 /***************************************************************************
-                          cfile.cpp  -  description
+                          cfile.cpp  -  CJP's file class
                              -------------------
     begin                : Thu May 23 2002
     copyright            : (C) 2002 by CJP

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tile.cpp  -  description
+                          tile.cpp  -  A Tile (square part of the track)
                              -------------------
     begin                : Wed Dec 4 2002
     copyright            : (C) 2002 by CJP

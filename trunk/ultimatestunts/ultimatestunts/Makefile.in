@@ -75,10 +75,10 @@ netlibs = @netlibs@
 soundlibs = @soundlibs@
 
 bin_PROGRAMS = ultimatestunts
-ultimatestunts_SOURCES = main.cpp humanplayer.cpp
+ultimatestunts_SOURCES = main.cpp graphiccar.cpp graphictile.cpp graphicworld.cpp humanplayer.cpp
 ultimatestunts_LDADD = ../graphics/libgraphics.a ../filetransfer/libfiletransfer.a ../simulation/libsimulation.a ../shared/libshared.a @graphlibs@ @soundlibs@ @netlibs@
 
-EXTRA_DIST = main.cpp humanplayer.cpp humanplayer.h
+EXTRA_DIST = main.cpp graphiccar.cpp graphiccar.h graphictile.cpp graphictile.h graphicworld.cpp graphicworld.h humanplayer.cpp humanplayer.h
 
 # set the include path found by configure
 INCLUDES = $(all_includes) -I../shared -I../simulation -I../filetransfer -I../graphics
@@ -99,7 +99,8 @@ X_CFLAGS = @X_CFLAGS@
 X_LIBS = @X_LIBS@
 X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_PRE_LIBS = @X_PRE_LIBS@
-ultimatestunts_OBJECTS =  main.$(OBJEXT) humanplayer.$(OBJEXT)
+ultimatestunts_OBJECTS =  main.$(OBJEXT) graphiccar.$(OBJEXT) \
+graphictile.$(OBJEXT) graphicworld.$(OBJEXT) humanplayer.$(OBJEXT)
 ultimatestunts_DEPENDENCIES =  ../graphics/libgraphics.a \
 ../filetransfer/libfiletransfer.a ../simulation/libsimulation.a \
 ../shared/libshared.a
@@ -114,7 +115,8 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
 TAR = tar
 GZIP_ENV = --best
-DEP_FILES =  .deps/humanplayer.P .deps/main.P
+DEP_FILES =  .deps/graphiccar.P .deps/graphictile.P .deps/graphicworld.P \
+.deps/humanplayer.P .deps/main.P
 SOURCES = $(ultimatestunts_SOURCES)
 OBJECTS = $(ultimatestunts_OBJECTS)
 

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          message.h  -  description
+                          message.h  -  Base-class for messages being sent over the network
                              -------------------
     begin                : Thu Dec 5 2002
     copyright            : (C) 2002 by CJP

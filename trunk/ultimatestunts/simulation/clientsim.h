@@ -1,5 +1,5 @@
 /***************************************************************************
-                          clientsim.h  -  description
+                          clientsim.h  -  Client-side networked simulation
                              -------------------
     begin                : di jan 14 2003
     copyright            : (C) 2003 by CJP

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          carinput.h  -  description
+                          carinput.h  -  Input for car objects
                              -------------------
     begin                : ma dec 16 2002
     copyright            : (C) 2002 by CJP

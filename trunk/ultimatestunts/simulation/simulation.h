@@ -1,5 +1,5 @@
 /***************************************************************************
-                          simulation.h  -  description
+                          simulation.h  -  Base-class for simulations
                              -------------------
     begin                : Wed Dec 4 2002
     copyright            : (C) 2002 by CJP

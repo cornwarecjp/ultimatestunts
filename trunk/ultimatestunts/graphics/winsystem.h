@@ -1,5 +1,5 @@
 /***************************************************************************
-                          winsystem.h  -  description
+                          winsystem.h  -  A window managing class
                              -------------------
     begin                : wo jan 15 2003
     copyright            : (C) 2003 by CJP

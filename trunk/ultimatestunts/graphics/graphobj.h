@@ -1,7 +1,7 @@
 /***************************************************************************
-                          message.cpp  -  Base-class for messages being sent over the network
+                          graphobj.h  -  Graphics geometry object
                              -------------------
-    begin                : Thu Dec 5 2002
+    begin                : Tue Apr 23 2002
     copyright            : (C) 2002 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
@@ -14,45 +14,25 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
+#ifndef GRAPHOBJ_H
+#define GRAPHOBJ_H
 
-#include "message.h"
+#include "texture.h"
+#include "cstring.h"
 
-CMessageBuffer & CMessage::getBuffer() {
-  //CMessageBuffer *res = new CMessageBuffer();
-
-  //this->m_Data.setData(this->getData());
-  //*res = m_Data  ;
-  //return (*res);
-	return m_Data;
-}
- 	
-bool CMessage::setBuffer(const CMessageBuffer & b) {
- m_Data = b;
- //this->setData(m_Data.getData());
- return (true);
-}
-
-void CMessage::setType(const CMessageBuffer::eMessageType & t) {
-	m_Data.setType(t);
-}
-
-void CMessage::setCounter(const Uint16 & counter) {
-	m_Data.setCounter(counter);
-}
-
-void CMessage::setAC(const bool & ac) {
-	if (ac) m_Data.setAC(1); else m_Data.setAC(0);
-}
-
-
-CMessage::CMessage(){
-}
-
-CMessage::CMessage(const CMessageBuffer & mb)
+class CGraphObj
 {
- this->setBuffer(mb);
-}
+  public:
+		CGraphObj();
+	int loadFromFile(CString filename, CTexObj *texarray, int lod);
 
-CMessage::~CMessage(){
-}
+    void draw();
+
+  protected:
+    unsigned int m_ObjList;
+
+    void setMaterialColor(CVector c);
+};
+
+#endif
 

@@ -24,7 +24,7 @@
 
 #include "cstring.h"
 
-#include "world.h"
+#include "graphicworld.h"
 #include "simulation.h"
 #include "clientsim.h"
 #include "physics.h"
@@ -79,8 +79,9 @@ int main(int argc, char *argv[])
 
 	winsys = new CWinSystem;
 
-	printf("\nCreating world object\n");
-	world = new CWorld;
+	printf("\nCreating (graphic) world object\n");
+	world = new CGraphicWorld;
+	world->loadFromFile("not_yet.track");
 
 	printf("\nDo you want to start a network game session? (y/n)");
 	scanf("%s", inpbuffer);

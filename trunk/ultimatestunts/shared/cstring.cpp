@@ -1,5 +1,5 @@
 /***************************************************************************
-                          cstring.cpp  -  description
+                          cstring.cpp  -  bones very own easy string class ;-)
                              -------------------
     begin                : wo jan 15 2003
     copyright            : (C) 2003 by CJP

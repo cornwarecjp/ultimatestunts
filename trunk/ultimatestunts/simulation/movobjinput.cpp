@@ -1,5 +1,5 @@
 /***************************************************************************
-                          movobjinput.cpp  -  description
+                          movobjinput.cpp  -  Input for moving objects
                              -------------------
     begin                : ma dec 16 2002
     copyright            : (C) 2002 by CJP

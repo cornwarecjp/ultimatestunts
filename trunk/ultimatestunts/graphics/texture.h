@@ -1,7 +1,7 @@
 /***************************************************************************
-                          message.cpp  -  Base-class for messages being sent over the network
+                          texture.h  -  A texture class
                              -------------------
-    begin                : Thu Dec 5 2002
+    begin                : Tue Jun 18 2002
     copyright            : (C) 2002 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
@@ -14,45 +14,39 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
+#ifndef TEXTURE_H
+#define TEXTURE_H
+#include "image.h"
+#include "vector.h"
 
-#include "message.h"
-
-CMessageBuffer & CMessage::getBuffer() {
-  //CMessageBuffer *res = new CMessageBuffer();
-
-  //this->m_Data.setData(this->getData());
-  //*res = m_Data  ;
-  //return (*res);
-	return m_Data;
-}
- 	
-bool CMessage::setBuffer(const CMessageBuffer & b) {
- m_Data = b;
- //this->setData(m_Data.getData());
- return (true);
-}
-
-void CMessage::setType(const CMessageBuffer::eMessageType & t) {
-	m_Data.setType(t);
-}
-
-void CMessage::setCounter(const Uint16 & counter) {
-	m_Data.setCounter(counter);
-}
-
-void CMessage::setAC(const bool & ac) {
-	if (ac) m_Data.setAC(1); else m_Data.setAC(0);
-}
-
-
-CMessage::CMessage(){
-}
-
-CMessage::CMessage(const CMessageBuffer & mb)
+class CTexObj
 {
- this->setBuffer(mb);
-}
+public:
+	CTexObj(bool texture_smooth);
 
-CMessage::~CMessage(){
-}
+	int loadFromFile(char *filename, int xs, int ys);
 
+	int getSizeX(int i);
+	int getSizeY(int i);
+	CVector getColor();
+
+  void draw(int lod);
+
+protected:
+  RGBImageRec *scaleImage(RGBImageRec *in, int xs, int ys);
+
+	bool m_GrsetTextureSmooth;
+
+	unsigned int m_Texture;
+	unsigned int m_Texture2;
+	unsigned int m_Texture3;
+	unsigned int m_Texture4;
+
+	int sizex,sizey,
+			sizex2,sizey2,
+			sizex3,sizey3,
+			sizex4,sizey4;
+
+	CVector m_Color;
+};
+#endif

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          timer.h  -  description
+                          timer.h  -  A timer class
                              -------------------
     begin                : do dec 19 2002
     copyright            : (C) 2002 by CJP

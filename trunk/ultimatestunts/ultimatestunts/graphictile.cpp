@@ -1,8 +1,8 @@
 /***************************************************************************
-                          objectchoice.cpp  -  Describes which moving object is chosen
+                          graphictile.cpp  -  A graphic CTile class
                              -------------------
-    begin                : Thu Dec 5 2002
-    copyright            : (C) 2002 by CJP
+    begin                : do jan 16 2003
+    copyright            : (C) 2003 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
 
@@ -15,30 +15,9 @@
  *                                                                         *
  ***************************************************************************/
 
+#include "graphictile.h"
 
-#include "binbuffer.h"
-#include "objectchoice.h"
-
-CObjectChoice::CObjectChoice()
-{
-  m_CarNumber = 0;
-  this->setType(CMessageBuffer::objectChoice);
+CGraphicTile::CGraphicTile(){
 }
-
-CObjectChoice::~CObjectChoice()
-{}
-
-
-CBinBuffer & CObjectChoice::getData() const {
-  CBinBuffer *res = new CBinBuffer();
-  (*res)+=m_CarNumber;
-  return (*res);
+CGraphicTile::~CGraphicTile(){
 }
-
-bool CObjectChoice::setData(const CBinBuffer & b) {
-  CBinBuffer bb = b;                           // const!
-  m_CarNumber = bb.getUint16(0);
-  return (true);
-}
-
-

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          vector.h  -  description
+                          vector.h  -  A 3D vector class
                              -------------------
     begin                : Tue Apr 23 2002
     copyright            : (C) 2002 by CJP

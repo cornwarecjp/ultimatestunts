@@ -1,5 +1,5 @@
 /***************************************************************************
-                          humanplayer.cpp  -  description
+                          humanplayer.cpp  -  A player-class getting input data from the real world ;-)
                              -------------------
     begin                : Thu Dec 5 2002
     copyright            : (C) 2002 by CJP

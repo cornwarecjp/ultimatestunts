@@ -1,5 +1,5 @@
 /***************************************************************************
-                          matrix.h  -  description
+                          matrix.h  -  A 3D rotation matrix class
                              -------------------
     begin                : Fri Jul 6 2001
     copyright            : (C) 2001 by CJP

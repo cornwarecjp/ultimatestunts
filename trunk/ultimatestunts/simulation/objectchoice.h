@@ -1,5 +1,5 @@
 /***************************************************************************
-                          objectchoice.h  -  description
+                          objectchoice.h  -  Describes which moving object is chosen
                              -------------------
     begin                : Thu Dec 5 2002
     copyright            : (C) 2002 by CJP

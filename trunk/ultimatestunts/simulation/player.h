@@ -1,5 +1,5 @@
 /***************************************************************************
-                          player.h  -  description
+                          player.h  -  Base-class for players
                              -------------------
     begin                : Wed Dec 4 2002
     copyright            : (C) 2002 by CJP
