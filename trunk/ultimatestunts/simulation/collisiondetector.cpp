@@ -19,10 +19,11 @@
 #include <cmath>
 #include "usmacros.h"
 #include "collisiondetector.h"
+#include "collision.h"
+#include "world.h"
 
-CCollisionDetector::CCollisionDetector(const CWorld *w)
+CCollisionDetector::CCollisionDetector()
 {
-	m_World = w;
 	m_FirstUpdate = true;
 }
 
@@ -30,7 +31,7 @@ CCollisionDetector::~CCollisionDetector()
 {
 }
 
-void CCollisionDetector::calculateCollisions(bool resting)
+void CCollisionDetector::calculateCollisions()
 {
 	if(m_FirstUpdate)
 	{
@@ -38,29 +39,25 @@ void CCollisionDetector::calculateCollisions(bool resting)
 		calculateTrackBounds();
 	}
 
-	m_Collisions.clear();
+	//Collision with track bounds
+	for(unsigned int i=0; i < theWorld->m_MovObjs.size(); i++)
+		for(unsigned int j=0; j < theWorld->m_MovObjs[i]->m_Bodies.size(); j++)
+			ObjTrackBoundTest(theWorld->m_MovObjs[i]->m_Bodies[j]);
 
-	if(!resting)
-	{
-		//Collision with track bounds
-		for(unsigned int i=0; i<m_World->m_MovObjs.size(); i++)
-			ObjTrackBoundTest(i);
-
-		/*
-		//Moving object to moving object collisions
-		for(unsigned int i=0; i < m_World->m_MovObjs.size()-1; i++)
-			for(unsigned int j=i+1; j < m_World->m_MovObjs.size(); j++)
-				ObjObjTest(i,j);
-		*/
-	}
+	//Moving object to moving object collisions
+	for(unsigned int i1=0; i1 < theWorld->m_MovObjs.size()-1; i1++)
+		for(unsigned int i2=i1+1; i2 < theWorld->m_MovObjs.size(); i2++)
+			for(unsigned int j1=0; j1 < theWorld->m_MovObjs[i1]->m_Bodies.size(); j1++)
+				for(unsigned int j2=0; j2 < theWorld->m_MovObjs[i2]->m_Bodies.size(); j2++)
+					ObjObjTest(theWorld->m_MovObjs[i1]->m_Bodies[j1], theWorld->m_MovObjs[i2]->m_Bodies[j2]);
 
 	//Moving object to tile collisions
-	int lengte = m_World->m_L;
-	int breedte = m_World->m_W;
-	int hoogte = m_World->m_H;
-	for(unsigned int i=0; i < m_World->m_MovObjs.size(); i++)
+	int lengte = theWorld->m_L;
+	int breedte = theWorld->m_W;
+	int hoogte = theWorld->m_H;
+	for(unsigned int i=0; i < theWorld->m_MovObjs.size(); i++)
 	{
-		CVector pos; // = m_World->m_MovObjs[i]->getPosition();
+		CVector pos = theWorld->m_MovObjs[i]->m_Bodies[0].getPosition();
 
 		int x = (int)(0.5 + (pos.x)/TILESIZE);
 		int z = (int)(0.5 + (pos.z)/TILESIZE);
@@ -73,10 +70,7 @@ void CCollisionDetector::calculateCollisions(bool resting)
 		for(x=xmin; x<=xmax; x++)
 			for(z=zmin; z<=zmax; z++)
 				for(int h=0; h<hoogte; h++)
-					if(resting)
-						{ObjTileTest_resting(i, x, z, h);}
-					else
-						{ObjTileTest_collision(i, x, z, h);}
+					ObjTileTest(i, x, z, h);
 	}
 }
 
@@ -85,14 +79,14 @@ void CCollisionDetector::calculateTrackBounds()
 	int minz = 0;
 	int maxz = 0;
 
-	int lth = m_World->m_L;
-	int wth = m_World->m_W;
-	int hth = m_World->m_H;
+	int lth = theWorld->m_L;
+	int wth = theWorld->m_W;
+	int hth = theWorld->m_H;
 	for(int x = 0; x < lth; x++)
 		for(int y = 0; y < wth; y++)
 			for(int h = 0; h < hth; h++)
 			{
-				int z = m_World->m_Track[h + hth*(y + wth*x)].m_Z;
+				int z = theWorld->m_Track[h + hth*(y + wth*x)].m_Z;
 				if(z < minz) minz = z;
 				if(z > maxz) maxz = z;
 			}
@@ -107,159 +101,127 @@ void CCollisionDetector::calculateTrackBounds()
 		((float)wth-0.5)*TILESIZE);
 }
 
-void CCollisionDetector::ObjTrackBoundTest(int n)
+void CCollisionDetector::ObjTrackBoundTest(const CBody &body)
 {
-	const CMovingObject *o = m_World->m_MovObjs[n];
-	CVector pos0; // = o->getPreviousPosition();
-	CVector pos1; // = o->getPosition();
-	CVector mom; // = o->getMomentum(); //an approximation for the momentum at collision time
+	CVector p = body.getPosition();
+	CVector v = body.getVelocity();
 
-	for(unsigned int i=0; i<o->m_Bodies.size(); i++)
+	const CBound *b = theWorld->m_MovObjBounds[body.m_Body];
+	float r = b->m_BSphere_r;
+
+	if(p.x - r < m_TrackMin.x)
 	{
-		//TODO: time-dependent body position
-		CVector p0 = pos0 + o->m_Bodies[i].getPosition();
-		CVector p1 = pos1 + o->m_Bodies[i].getPosition();
-		const CBound *b = m_World->m_MovObjBounds[o->m_Bodies[i].m_Body];
-		float r = b->m_BSphere_r;
-
-		if(p1.x - r < m_TrackMin.x)
-		{
-			CCollision c;
-
-			c.object1 = -1;
-			c.object2 = n;
-			c.body1 = -1;
-			c.body2 = i;
-			c.mat1 = c.mat2 = 0;
-
-			c.p = -1.1*mom.x;
-
-			float d1 = p1.x - r - m_TrackMin.x;
-			float d0 = p0.x - r - m_TrackMin.x;
-			c.t = d0 / (d1 - d0);
-			c.isResting = false;
-
-			CVector pc = c.t * p0 + (1-c.t) * p1;
-			c.nor = CVector(1,0,0);
-			c.pos = CVector(m_TrackMin.x, pc.y, pc.z);
-
-			m_Collisions.push_back(c);
-		}
-		if(p1.y - r < m_TrackMin.y) //fallen through the track
-		{
-			CCollision c;
-
-			c.object1 = -1;
-			c.object2 = n;
-			c.body1 = -1;
-			c.body2 = i;
-			c.mat1 = c.mat2 = 0;
-
-			c.p = -1.1*mom.y;
-
-			float d1 = p1.y - r - m_TrackMin.y;
-			float d0 = p0.y - r - m_TrackMin.y;
-			c.t = d0 / (d1 - d0);
-			c.isResting = false;
-
-			CVector pc = c.t * p0 + (1-c.t) * p1;
-			c.nor = CVector(0,1,0);
-			c.pos = CVector(pc.x, m_TrackMin.y, pc.z);
-
-			m_Collisions.push_back(c);
-		}
-		if(p1.z - r < m_TrackMin.z)
-		{
-			CCollision c;
-
-			c.object1 = -1;
-			c.object2 = n;
-			c.body1 = -1;
-			c.body2 = i;
-			c.mat1 = c.mat2 = 0;
-
-			c.p = -1.1*mom.z;
-
-			float d1 = p1.z - r - m_TrackMin.z;
-			float d0 = p0.z - r - m_TrackMin.z;
-			c.t = d0 / (d1 - d0);
-			c.isResting = false;
-
-			CVector pc = c.t * p0 + (1-c.t) * p1;
-			c.nor = CVector(0,0,1);
-			c.pos = CVector(pc.x, pc.y, m_TrackMin.z);
-
-			m_Collisions.push_back(c);
-		}
-		if(p1.x + r > m_TrackMax.x)
-		{
-			CCollision c;
-
-			c.object1 = -1;
-			c.object2 = n;
-			c.body1 = -1;
-			c.body2 = i;
-			c.mat1 = c.mat2 = 0;
-
-			c.p = -1.1*mom.x;
-
-			float d1 = p1.x + r - m_TrackMax.x;
-			float d0 = p0.x + r - m_TrackMax.x;
-			c.t = d0 / (d1 - d0);
-			c.isResting = false;
-
-			CVector pc = c.t * p0 + (1-c.t) * p1;
-			c.nor = CVector(-1,0,0);
-			c.pos = CVector(m_TrackMax.x, pc.y, pc.z);
-
-			m_Collisions.push_back(c);
-		}
-		if(p1.y + r > m_TrackMax.y)
-		{
-			CCollision c;
-
-			c.object1 = -1;
-			c.object2 = n;
-			c.body1 = -1;
-			c.body2 = i;
-			c.mat1 = c.mat2 = 0;
-
-			c.p = -1.1*mom.y;
-
-			float d1 = p1.y + r - m_TrackMax.y;
-			float d0 = p0.y + r - m_TrackMax.y;
-			c.t = d0 / (d1 - d0);
-			c.isResting = false;
-
-			CVector pc = c.t * p0 + (1-c.t) * p1;
-			c.nor = CVector(0,-1,0);
-			c.pos = CVector(pc.x, m_TrackMax.y, pc.z);
-
-			m_Collisions.push_back(c);
-		}
-		if(p1.z + r > m_TrackMax.z)
-		{
-			CCollision c;
-
-			c.object1 = -1;
-			c.object2 = n;
-			c.body1 = -1;
-			c.body2 = i;
-			c.mat1 = c.mat2 = 0;
-
-			c.p = -1.1*mom.z;
-
-			float d1 = p1.z + r - m_TrackMax.z;
-			float d0 = p0.z + r - m_TrackMax.z;
-			c.t = d0 / (d1 - d0);
-			c.isResting = false;
-
-			CVector pc = c.t * p0 + (1-c.t) * p1;
-			c.nor = CVector(0,0,-1);
-			c.pos = CVector(pc.x, pc.y, m_TrackMax.z);
-
-			m_Collisions.push_back(c);
-		}
+		dContact c;
+		c.geom.pos[0] = m_TrackMin.x;
+		c.geom.pos[1] = p.y;
+		c.geom.pos[2] = p.z;
+		c.geom.normal[0] = 1;
+		c.geom.normal[1] = 0;
+		c.geom.normal[2] = 0;
+		c.geom.depth = m_TrackMin.x + r - p.x;
+		c.geom.g1 = 0; //I don't use geoms here
+		c.geom.g2 = 0;
+		c.surface.mode = dContactSlip1 | dContactSlip2 | dContactApprox1;
+		c.surface.mu = 0;
+		c.surface.slip1 = 0.00001;
+		c.surface.slip2 = 0.00001;
+		dJointID cid = dJointCreateContact(theWorld->m_ODEWorld, theWorld->m_ContactGroup, &c);
+		dJointAttach(cid, body.m_ODEBody, 0);
+	}
+	if(p.y - r < m_TrackMin.y) //the bottom of the track
+	{
+		dContact c;
+		c.geom.pos[0] = p.x;
+		c.geom.pos[1] = m_TrackMin.y;
+		c.geom.pos[2] = p.z;
+		c.geom.normal[0] = 0;
+		c.geom.normal[1] = 1;
+		c.geom.normal[2] = 0;
+		c.geom.depth = m_TrackMin.y + r - p.y + 1.0; //give it some vertical speed
+		c.geom.g1 = 0; //I don't use geoms here
+		c.geom.g2 = 0;
+		c.surface.mode = dContactSlip1 | dContactSlip2 | dContactApprox1;
+		c.surface.mu = 0;
+		c.surface.slip1 = 0.00001;
+		c.surface.slip2 = 0.00001;
+		dJointID cid = dJointCreateContact(theWorld->m_ODEWorld, theWorld->m_ContactGroup, &c);
+		dJointAttach(cid, body.m_ODEBody, 0);
+	}
+	if(p.z - r < m_TrackMin.z)
+	{
+		dContact c;
+		c.geom.pos[0] = p.x;
+		c.geom.pos[1] = p.y;
+		c.geom.pos[2] = m_TrackMin.z;
+		c.geom.normal[0] = 0;
+		c.geom.normal[1] = 0;
+		c.geom.normal[2] = 1;
+		c.geom.depth = m_TrackMin.z + r - p.z;
+		c.geom.g1 = 0; //I don't use geoms here
+		c.geom.g2 = 0;
+		c.surface.mode = dContactSlip1 | dContactSlip2 | dContactApprox1;
+		c.surface.mu = 0;
+		c.surface.slip1 = 0.00001;
+		c.surface.slip2 = 0.00001;
+		dJointID cid = dJointCreateContact(theWorld->m_ODEWorld, theWorld->m_ContactGroup, &c);
+		dJointAttach(cid, body.m_ODEBody, 0);
+	}
+	if(p.x + r > m_TrackMax.x)
+	{
+		dContact c;
+		c.geom.pos[0] = m_TrackMax.x;
+		c.geom.pos[1] = p.y;
+		c.geom.pos[2] = p.z;
+		c.geom.normal[0] = -1;
+		c.geom.normal[1] = 0;
+		c.geom.normal[2] = 0;
+		c.geom.depth = p.x - r - m_TrackMax.x;
+		c.geom.g1 = 0; //I don't use geoms here
+		c.geom.g2 = 0;
+		c.surface.mode = dContactSlip1 | dContactSlip2 | dContactApprox1;
+		c.surface.mu = 0;
+		c.surface.slip1 = 0.00001;
+		c.surface.slip2 = 0.00001;
+		dJointID cid = dJointCreateContact(theWorld->m_ODEWorld, theWorld->m_ContactGroup, &c);
+		dJointAttach(cid, body.m_ODEBody, 0);
+	}
+	if(p.y + r > m_TrackMax.y)
+	{
+		dContact c;
+		c.geom.pos[0] = p.x;
+		c.geom.pos[1] = m_TrackMax.y;
+		c.geom.pos[2] = p.z;
+		c.geom.normal[0] = 0;
+		c.geom.normal[1] = -1;
+		c.geom.normal[2] = 0;
+		c.geom.depth = p.y - r - m_TrackMax.y;
+		c.geom.g1 = 0; //I don't use geoms here
+		c.geom.g2 = 0;
+		c.surface.mode = dContactSlip1 | dContactSlip2 | dContactApprox1;
+		c.surface.mu = 0;
+		c.surface.slip1 = 0.00001;
+		c.surface.slip2 = 0.00001;
+		dJointID cid = dJointCreateContact(theWorld->m_ODEWorld, theWorld->m_ContactGroup, &c);
+		dJointAttach(cid, body.m_ODEBody, 0);
+	}
+	if(p.z + r > m_TrackMax.z)
+	{
+		dContact c;
+		c.geom.pos[0] = p.x;
+		c.geom.pos[1] = p.y;
+		c.geom.pos[2] = m_TrackMax.z;
+		c.geom.normal[0] = 0;
+		c.geom.normal[1] = 0;
+		c.geom.normal[2] = -1;
+		c.geom.depth = p.z - r - m_TrackMax.z;
+		c.geom.g1 = 0; //I don't use geoms here
+		c.geom.g2 = 0;
+		c.surface.mode = dContactSlip1 | dContactSlip2 | dContactApprox1;
+		c.surface.mu = 0;
+		c.surface.slip1 = 0.00001;
+		c.surface.slip2 = 0.00001;
+		dJointID cid = dJointCreateContact(theWorld->m_ODEWorld, theWorld->m_ContactGroup, &c);
+		dJointAttach(cid, body.m_ODEBody, 0);
 	}
 }
 
@@ -267,88 +229,80 @@ void CCollisionDetector::ObjTrackBoundTest(int n)
 #define responsefactor (1.0 + elasticity)
 #define dynfriction 100
 
-void CCollisionDetector::ObjObjTest(int n1, int n2)
+void CCollisionDetector::ObjObjTest(const CBody &body1, const CBody &body2)
 {
-	CMovingObject *o1 = m_World->m_MovObjs[n1];
-	CMovingObject *o2 = m_World->m_MovObjs[n2];
+	CVector p1 = body1.getPosition();
+	CVector p2 = body2.getPosition();
+	const CBound *b1 = theWorld->m_MovObjBounds[body1.m_Body];
+	const CBound *b2 = theWorld->m_MovObjBounds[body2.m_Body];
 
-	//TODO: per body collision
-	for(unsigned int i=0; i<o1->m_Bodies.size(); i++)
-		for(unsigned int j=0; j<o2->m_Bodies.size(); j++)
-		{
-			CVector p1 = o1->m_Bodies[i].getPosition();
-			CVector p2 = o2->m_Bodies[j].getPosition();
-			const CBound *b1 = m_World->m_MovObjBounds[o1->m_Bodies[i].m_Body];
-			const CBound *b2 = m_World->m_MovObjBounds[o2->m_Bodies[i].m_Body];
-			if(sphereTest(p1, b1, p2, b2))
-			{
-				//printf("Collision between %d and %d\n", n1, n2);
-				CCollision c;
-
-				c.nor = p2 - p1;
-				c.nor.normalise();
-
-				c.pos = p1 + b1->m_BSphere_r * c.nor;
-
-				c.mat1 = c.mat2 = 0;
-
-				c.object1 = n1;
-				c.object2 = n2;
-				c.body1 = i; c.body2 = j;
-
-				//position correction
-				//float dr = -0.5 * (b1->m_BSphere_r + b2->m_BSphere_r - (p2-p1).abs());
-
-				//determine momentum transfer
-				{
-					/*
-					float p1 = o1->getMomentum().dotProduct(c.nor);
-					float p2 = o2->getMomentum().dotProduct(c.nor);
-					float m1 = 1.0 / o1->getInvMass();
-					float m2 = 1.0 / o2->getInvMass();
-					float vcg = (p1 + p2)/(m1 + m2);
-					c.p = responsefactor*m1*(vcg - p1);
-					*/
-				}
-
-				m_Collisions.push_back(c);
-			}
-		}
+	if(sphereTest(p1, b1, p2, b2))
+	{
+		//printf("Collision between %d and %d\n", n1, n2);
+		CVector nor = p2 - p1;
+		nor.normalise();
+		CVector pos = p1 + b1->m_BSphere_r * nor;
+		
+		dContact c;
+		c.geom.pos[0] = pos.x;
+		c.geom.pos[1] = pos.y;
+		c.geom.pos[2] = pos.z;
+		c.geom.normal[0] = nor.x;
+		c.geom.normal[1] = nor.y;
+		c.geom.normal[2] = nor.z;
+		c.geom.depth = -0.5 * (b1->m_BSphere_r + b2->m_BSphere_r - (p2-p1).abs());
+		c.geom.g1 = 0; //I don't use geoms here
+		c.geom.g2 = 0;
+		c.surface.mode = dContactSlip1 | dContactSlip2 | dContactApprox1;
+		c.surface.mu = 1.0;
+		c.surface.slip1 = 0.00001;
+		c.surface.slip2 = 0.00001;
+		dJointID cid = dJointCreateContact(theWorld->m_ODEWorld, theWorld->m_ContactGroup, &c);
+		dJointAttach(cid, body2.m_ODEBody, body1.m_ODEBody);
+	}
 }
 
-void CCollisionDetector::ObjTileTest_collision(int nobj, int xtile, int ztile, int htile)
+void CCollisionDetector::ObjTileTest(int nobj, int xtile, int ztile, int htile)
 {
 	//Tile data
-	const CTile &theTile = m_World->m_Track[htile + m_World->m_H*(ztile + m_World->m_W*xtile)];
+	const CTile &theTile = theWorld->m_Track[htile + theWorld->m_H*(ztile + theWorld->m_W*xtile)];
 	CVector tilepos = CVector(xtile*TILESIZE, theTile.m_Z*VERTSIZE, ztile*TILESIZE);
-	CTileModel *tilemodel = m_World->m_TileModels[theTile.m_Model];
+	CTileModel *tilemodel = theWorld->m_TileModels[theTile.m_Model];
 
 	//Object data
-	CMovingObject *theObj = m_World->m_MovObjs[nobj];
+	CMovingObject *theObj = theWorld->m_MovObjs[nobj];
 
+	//fprintf(stderr, "New tile\n");
 	for(unsigned int i=0; i<theObj->m_Bodies.size(); i++)
 	{
-		//body position
-		CVector pos0 = theObj->m_Bodies[i].getPosition(); //m_PreviousPosition;
-		CVector pos1 = theObj->m_Bodies[i].getPosition();
+		//body position & velocity
+		CVector pos = theObj->m_Bodies[i].getPosition();
+		CMatrix ori = theObj->m_Bodies[i].getOrientationMatrix();
+		CVector vel = theObj->m_Bodies[i].getVelocity();
 
 		//relative to the tile
-		CVector r0 = pos0 - tilepos;
-		CVector r1 = pos1 - tilepos;
+		CVector r = pos - tilepos;
 
 		//position change
-		CVector dr = r1 - r0;
+		//CVector dr = r1 - r0;
 
 		//the collision model of the body
-		const CBound *theBound = m_World->m_MovObjBounds[theObj->m_Bodies[i].m_Body];
+		const CBound *theBound = theWorld->m_MovObjBounds[theObj->m_Bodies[i].m_Body];
+
+		//fprintf(stderr, "Body %d: r = %s\n", i, CString(r).c_str());
 
 		//Test bounding spheres
-		if(!sphereTest(pos1, theBound, tilepos, tilemodel)) continue;
+		if(!sphereTest(pos, theBound, tilepos, tilemodel)) continue;
+
+		//fprintf(stderr, "Test 2: succesful sphere test\n");
 
 		//Per tile-face
 		for(unsigned int tf=0; tf<tilemodel->m_Faces.size(); tf++)
 		{
+			//fprintf(stderr, "Tileface # %d\n", tf);
+
 			if(tilemodel->m_Faces[tf].nor.abs2() < 0.5) continue; //invalid plane
+			//fprintf(stderr, "Test 4: it's a valid plane\n");
 
 			//1: face-sphere collision test
 
@@ -359,258 +313,172 @@ void CCollisionDetector::ObjTileTest_collision(int nobj, int xtile, int ztile, i
 
 			tileRotate(theFace.nor, theTile.m_R);
 
-			if(theFace.nor.dotProduct(dr) > 0.0)
+			if(theFace.nor.dotProduct(vel) > 0.0)
 			{
 				//continue; //this contains a bug. But what??
 			}
 
 			//1.2: Calculate distance to plane
-			float ddiff0 = r0.dotProduct(theFace.nor) - theFace.d;
-			float ddiff1 = r1.dotProduct(theFace.nor) - theFace.d;
+			float ddiff = r.dotProduct(theFace.nor) - theFace.d;
 			float sph_r = theBound->m_BSphere_r;
+			//fprintf(stderr, "ddiff = %.3f sph_r = %.3f\n", ddiff, sph_r);
 
-			if(ddiff1 > sph_r)
+			if(ddiff > sph_r)
 			{
 				continue;
 			}
-			if(ddiff1 < 0.0 && ddiff0 < 0.0)
+			//fprintf(stderr, "Test 5: not too far above plane\n");
+			if(ddiff < 0.0)
 			{
 				continue;
 			}
+			//fprintf(stderr, "Test 6: not below plane\n");
 
-			//1.3: check if collision  circle is inside the face
-			//This code contains a bug:
-			//  currently only the midpoint of the circle is checked
-			//  with the polygon, while this should actually
-			//  be a full circle/polygon test.
-			/*
-			CVector curcoll_pos = rplusdr - ddiff * theFace.nor;
-			CVector prevcoll_pos = sph_r - prevddiff * theFace.nor;
-			CVector coll_pos = ((prevddiff-sph_r)*curcoll_pos + (sph_r-ddiff)*prevcoll_pos) / (prevddiff-ddiff);
-			float angle = 0.0;
-			for(unsigned int j=1; j<theFace.size(); j++)
+			CVector cpos, cnor;
+			float penetr_depth;
+			
+			if(theBound->m_isCylinder)
 			{
-				CVector p1 = theFace[j]-coll_pos;
-				CVector p2 = theFace[j-1]-coll_pos;
-				float inpr = p1.dotProduct(p2);
-				inpr /= (p1.abs() * p2.abs());
-				angle += acos(inpr);
-			}
-			{
-				CVector p1 = theFace[0]-coll_pos;
-				CVector p2 = theFace.back()-coll_pos;
-				float inpr = p1.dotProduct(p2);
-				inpr /= (p1.abs() * p2.abs());
-				angle += acos(inpr);
-			}
-			if(angle < 6.0 || angle > 6.5) //!= 2*pi: outside face
-			{
-				//continue;
-			}
-			*/
+				CVector posleft(-0.5*theBound->m_CyliderWidth,0,0);
+				CVector posright(0.5*theBound->m_CyliderWidth,0,0);
+				posleft *= ori;
+				posright *= ori;
+				posleft += r; //to tile coordinates
+				posright += r;
+				float hleft = posleft.dotProduct(theFace.nor) - theFace.d;
+				float hright = posright.dotProduct(theFace.nor) - theFace.d;
+				float radius = theBound->m_CylinderRadius;
+				bool inleft =  hleft >= -radius && hleft <= radius;
+				bool inright =  hleft >= -radius && hleft <= radius;
 
-			//2: Polygon/bounding faces test:
+				CVector posmid;
+				float h;
+				if(!inleft)
+				{
+					if(!inright) continue;
 
-			//2.1: Rotate + translate the face
-			theFace += -r1;
-			//theFace /= objori;
-
-			//2.2: Rotate the dr vector
-			//dr /= objori;
-
-			//2.3: Cut pieces away per plane
-			for(unsigned int of=0; of < theBound->m_Faces.size(); of++)
-			{
-				if(dr.dotProduct(theBound->m_Faces[of].nor) > 0.0)
-				{ //front side -> cull on position r+dr
-					theFace.cull(theBound->m_Faces[of], CVector(0,0,0));
+					//else:
+					posmid = posright; h = hright;
 				}
 				else
-				{ //back side -> cull on position r
-					theFace.cull(theBound->m_Faces[of], -dr);
-				}
-
-				if(theFace.size() < 3) break;
-			}
-
-			//2.4: skip if no piece left
-			if(theFace.size() < 3)
-				continue;
-
-			//2.5: calculate penetration depth
-			float penetr_depth = 0.0;
-			unsigned int colpt = 0;
-			for(unsigned int pt=0; pt < theBound->m_Points.size(); pt++)
-			{
-				float depth = theFace.d - theBound->m_Points[pt].dotProduct(theFace.nor);
-				if(depth > penetr_depth)
 				{
-					penetr_depth = depth;
-					colpt = pt;
+					if(!inright)
+						{posmid = posleft; h = hleft;}
+					else
+						{posmid = 0.5*(posleft+posright); h = 0.5*(hleft+hright);}
 				}
-			}
-			float max_dist = -(dr.dotProduct(theFace.nor));
 
-			//3: Generate collision info
-			CCollision c;
+				cpos = posmid - h * theFace.nor;
+				cnor = theFace.nor;
+				penetr_depth = radius - h;
 
-			c.t = 1.0 - penetr_depth / max_dist;
-			c.isResting = false;
-
-			//normal+position
-			//c.nor = objori * theFace.nor; //rotate back
-			c.pos = (1-c.t)*pos0 + c.t*pos1 + theBound->m_Points[colpt];
-
-			//Objects+materials
-			c.mat1 = c.mat2 = 0;
-			c.object1 = -1;
-			c.object2 = nobj;
-			c.body1 = -1;
-			c.body2 = i;
-
-			//determine momentum transfer
-			{
-				/*
-				CMatrix R1; R1.setCrossProduct(theBound->m_Points[colpt]);
-				float v_eff = c.nor.dotProduct(-(theObj->getVelocity()) + R1 * theObj->getAngularVelocity());
-
-				if(v_eff < 0.0)
-					continue; //already moving away from each other
-
-				const CMatrix &Iinv = theObj->getActualInvMomentInertia();
-				float minv = theObj->getInvMass();
-				float minv_eff = minv + c.nor.dotProduct((R1*Iinv*R1) * c.nor);
-				c.p = responsefactor * v_eff / minv_eff;
-
-				c.p *= (1.0 + (R1*(Iinv*(R1*(c.nor*(1.0/minv))))).dotProduct(c.nor));
-
-				if(m_World->printDebug)
+				//check if collision  circle is inside the face
+				float angle = 0.0;
+				for(unsigned int j=1; j<theFace.size(); j++)
 				{
-					fprintf(stderr, "Added collision: pos = %.3f,%.3f,%.3f; nor = %.3f,%.3f,%.3f; v_eff = %.3f\n",
-						c.pos.x, c.pos.y, c.pos.z, c.nor.x, c.nor.y, c.nor.z, v_eff);
+					CVector p1 = theFace[j] - cpos;
+					CVector p2 = theFace[j-1] - cpos;
+					float inpr = p1.dotProduct(p2);
+					inpr /= (p1.abs() * p2.abs());
+					angle += acos(inpr);
 				}
-				*/
+				{
+					CVector p1 = theFace[0] - cpos;
+					CVector p2 = theFace.back() - cpos;
+					float inpr = p1.dotProduct(p2);
+					inpr /= (p1.abs() * p2.abs());
+					angle += acos(inpr);
+				}
+				if(angle < 6.0 || angle > 6.5) //!= 2*pi: outside face
+				{
+					continue;
+				}
+
+				cpos += tilepos; //to world coordinates
 			}
-
-			m_Collisions.push_back(c);
-
-		} //for tf
-	} //for i
-}
-
-void CCollisionDetector::ObjTileTest_resting(int nobj, int xtile, int ztile, int htile)
-{
-	//Tile data
-	const CTile &theTile = m_World->m_Track[htile + m_World->m_H*(ztile + m_World->m_W*xtile)];
-	CVector tilepos = CVector(xtile*TILESIZE, theTile.m_Z*VERTSIZE, ztile*TILESIZE);
-	CTileModel *tilemodel = m_World->m_TileModels[theTile.m_Model];
-
-	//Object data
-	CMovingObject *theObj = m_World->m_MovObjs[nobj];
-	//CVector objpos1 = theObj->getPosition();
-	//const CMatrix &objori = theObj->getOrientationMatrix();
-	CVector p; // = theObj->getMomentum();
-
-	for(unsigned int i=0; i<theObj->m_Bodies.size(); i++)
-	{
-		//body position
-		CVector pos1 = theObj->m_Bodies[i].getPosition();
-
-		//relative to the tile
-		CVector r1 = pos1 - tilepos;
-
-		//the collision model of the body
-		const CBound *theBound = m_World->m_MovObjBounds[theObj->m_Bodies[i].m_Body];
-
-		//Test bounding spheres
-		if(!sphereTest(pos1, theBound, tilepos, tilemodel)) continue;
-
-		//Per tile-face
-		for(unsigned int tf=0; tf<tilemodel->m_Faces.size(); tf++)
-		{
-			if(tilemodel->m_Faces[tf].nor.abs2() < 0.5) continue; //invalid plane
-
-			//1: face-sphere collision test
-
-			//1.1: Make a rotated copy
-			CCollisionFace theFace = tilemodel->m_Faces[tf];
-			for(unsigned int j=0; j<theFace.size(); j++)
-				tileRotate(theFace[j], theTile.m_R);
-
-			tileRotate(theFace.nor, theTile.m_R);
-
-			if(theFace.nor.dotProduct(p) > 0.0)
+			else //no cylinder, but a convex volume
 			{
-				//continue; //this contains a bug. But what??
-			}
+				//2: Polygon/bounding faces test:
 
-			//1.2: Calculate distance to plane
-			//float ddiff0 = r0.dotProduct(theFace.nor) - theFace.d;
-			float ddiff1 = r1.dotProduct(theFace.nor) - theFace.d;
-			float sph_r = theBound->m_BSphere_r;
+				//2.1: Rotate + translate the face
+				theFace += -r;
+				theFace /= ori;
 
-			if(ddiff1 > sph_r || ddiff1 < 0.0)
-			{
-				continue;
-			}
+				//2.2: Rotate the vel vector
+				vel /= ori;
 
-			//2: Polygon/bounding faces test:
+				//2.3: Cut pieces away per plane
+				for(unsigned int of=0; of < theBound->m_Faces.size(); of++)
+				{
+					//fprintf(stderr, "  %d -> Culling with face %d ->", theFace.size(), of);
+					theFace.cull(theBound->m_Faces[of], CVector(0,0,0));
+					//fprintf(stderr, "%d\n", theFace.size());
 
-			//2.1: Rotate + translate the face
-			theFace += -r1;
-			//theFace /= objori;
+					/*
+					if(vel.dotProduct(theBound->m_Faces[of].nor) > 0.0)
+					{ //front side -> cull on position r+dr
+						theFace.cull(theBound->m_Faces[of], CVector(0,0,0));
+					}
+					else
+					{ //back side -> cull on position r
+						theFace.cull(theBound->m_Faces[of], -vel);
+					}
+					*/
 
-			//2.2: Rotate the p vector
-			//p /= objori;
+					if(theFace.size() < 3) break;
+				}
 
-			//2.3: Cut pieces away per plane
-			for(unsigned int of=0; of < theBound->m_Faces.size(); of++)
-			{
-				theFace.cull(theBound->m_Faces[of], CVector(0,0,0));
-				if(theFace.size() < 3) break;
-			}
+				//2.4: skip if no piece left
+				if(theFace.size() < 3)
+					continue;
+				//fprintf(stderr, "Test 7: face not clipped away\n");
 
-			//2.4: skip if no piece left
-			if(theFace.size() < 3)
-				continue;
-
-			//2.5: calculate penetration depth
-			float penetr_depth = 0.0;
-			for(unsigned int pt=0; pt < theBound->m_Points.size(); pt++)
-			{
-				float depth = theFace.d - theBound->m_Points[pt].dotProduct(theFace.nor);
-				if(depth > penetr_depth)
-					penetr_depth = depth;
-			}
-
-			//3: Generate collision info
-			for(unsigned int j=0; j < theFace.size(); j++)
-			{
-				/*
-				CCollision c;
-
-				c.isResting = true;
-
-				//normal+position
-				CVector relpos = objori * theFace[j]; //rotate back
-				c.nor = objori * theFace.nor; //rotate back
-				c.pos = pos1 + relpos;
-
-				//Objects+materials
-				c.mat1 = c.mat2 = 0;
-				c.object1 = -1;
-				c.object2 = nobj;
-				c.body1 = -1;
-				c.body2 = i;
-
+				//2.5: calculate penetration depth
+				penetr_depth = 0.0;
+				unsigned int colpt = 0;
+				for(unsigned int pt=0; pt < theBound->m_Points.size(); pt++)
+				{
+					float depth = theFace.d - theBound->m_Points[pt].dotProduct(theFace.nor);
+					if(depth > penetr_depth)
+					{
+						penetr_depth = depth;
+						colpt = pt;
+					}
+				}
+				//float max_dist = -(dr.dotProduct(theFace.nor));
 				
-				float v_eff = c.nor.dotProduct(-(theObj->getVelocity()) + relpos.crossProduct(theObj->getAngularVelocity()));
-				if(v_eff < 0.0) continue;
-
-				m_Collisions.push_back(c);
+				cnor = ori * theFace.nor; //rotate back
+				cpos = theBound->m_Points[colpt] + penetr_depth * cnor;
+				/*
+				if(theBound->m_isCylinder) //e.g. a wheel: correct for edges in the collision model
+				{
+					cpos = -cnor * cpos.abs();
+				}
 				*/
+				cpos += pos; //to absolute coordinates
 			}
 
+
+			//3: Generate collision info
+
+			//fprintf(stderr, "COLLISION body %d @ %s, nor = %s, depth = %.3f\n",
+			//	i, CString(cpos - pos).c_str(), CString(cnor).c_str(), penetr_depth);
+			dContact c;
+			c.geom.pos[0] = cpos.x;
+			c.geom.pos[1] = cpos.y;
+			c.geom.pos[2] = cpos.z;
+			c.geom.normal[0] = cnor.x;
+			c.geom.normal[1] = cnor.y;
+			c.geom.normal[2] = cnor.z;
+			c.geom.depth = penetr_depth;
+			c.geom.g1 = 0; //I don't use geoms here
+			c.geom.g2 = 0;
+			c.surface.mode = dContactSlip1 | dContactSlip2 | dContactApprox1;
+			c.surface.mu = 10.0;
+			c.surface.slip1 = 0.0000001;
+			c.surface.slip2 = 0.0000001;
+			dJointID cid = dJointCreateContact(theWorld->m_ODEWorld, theWorld->m_ContactGroup, &c);
+			dJointAttach(cid, theObj->m_Bodies[i].m_ODEBody, 0);
 		} //for tf
 	} //for i
 }

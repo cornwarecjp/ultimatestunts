@@ -28,8 +28,6 @@
   *@author CJP
   */
 
-class CWorld;
-
 class CBody
 {
 public:

@@ -37,18 +37,31 @@ public:
 
 	virtual void update(CPhysics *simulator, float dt);
 
-	//The collision info for ODE
-	dGeomID m_body, m_wheel1, m_wheel2, m_wheel3, m_wheel4;
-	dGeomID m_geomgroup;
+	float getGearRatio();
 
 	//Contact info
 	dJointID m_joint1, m_joint2, m_joint3, m_joint4;
+
+	//State variables:
+	unsigned int m_Gear;
+	float m_MainAxisVelocity;
+	float m_MainAxisTorque;
+	float m_gas;
 	
-	//constant
+	//constants:
 	CVector m_FrontWheelNeutral;
 	CVector m_BackWheelNeutral;
 	float m_WheelRadius;
-	float m_cwA;
+protected:
+	//car specific physics
+	void updateAxisData();
+	void updateMainAxisVelocity();  //from the wheel velocities
+	void updateMainAxisTorque(); //engine + gearbox simulation
+	void applyWheelTorques();    //engine + brakes
+	void doSteering();
+
+	//Cached data about the wheels' axes
+	CVector m_a1, m_a2, m_a3, m_a4;
 };
 
 #endif

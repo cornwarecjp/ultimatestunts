@@ -36,9 +36,7 @@ CWorld::CWorld()
 	Bugs Bunny
 	*/
 	dWorldSetGravity(m_ODEWorld, 0.0, -9.81, 0.0);
-	m_Space = dHashSpaceCreate(0);
 	m_ContactGroup = dJointGroupCreate(0);
-	m_Ground = dCreatePlane(m_Space, 0,1,0,0);
 
 	theWorld = this;
 }
@@ -48,7 +46,6 @@ CWorld::~CWorld(){
 	unloadMovObjs();
 
 	dJointGroupDestroy(m_ContactGroup);
-	dSpaceDestroy(m_Space);
 	dWorldDestroy(m_ODEWorld);
 
 	theWorld = NULL;
@@ -225,6 +222,12 @@ bool CWorld::loadMovObjs(CString filename)
 		CDataFile bodyf("cars/body.gl"), wheelf("cars/wheel.gl");
 		body->loadFromFile(&bodyf, "", NULL);
 		wheel->loadFromFile(&wheelf, "", NULL);
+
+		//TODO: load this info from the file
+		wheel->m_isCylinder = true;
+		wheel->m_CyliderWidth = 0.2; //20 cm
+		wheel->m_CylinderRadius = 0.35; //35 cm
+		
 		m_MovObjBounds.push_back(body);
 		m_MovObjBounds.push_back(wheel);
 	}

@@ -83,9 +83,7 @@ public:
 
 	//ODE data
 	dWorldID m_ODEWorld;
-	dSpaceID m_Space;
 	dJointGroupID m_ContactGroup;
-	dGeomID m_Ground;
 
 protected:
 	CMaterial **getMaterialSubset(CString indices);

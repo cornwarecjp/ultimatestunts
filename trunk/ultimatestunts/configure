@@ -1567,7 +1567,7 @@ fi
 
 # Define the identity of the package.
  PACKAGE=ultimatestunts
- VERSION=0.4.3
+ VERSION=0.4.4
 
 
 cat >>confdefs.h <<_ACEOF
@@ -3783,8 +3783,6 @@ ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ex
 ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 
 
-
-
 graphlibs=""
 netlibs=""
 soundlibs=""
@@ -5777,6 +5775,13 @@ fi
 
 fi
 
+
+ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
 # Make sure we can run config.sub.
 $ac_config_sub sun4 >/dev/null 2>&1 ||
   { { echo "$as_me:$LINENO: error: cannot run $ac_config_sub" >&5
@@ -5859,6 +5864,7 @@ test -n "$target_alias" &&
   test "$program_prefix$program_suffix$program_transform_name" = \
     NONENONEs,x,x, &&
   program_prefix=${target_alias}-
+
 
 # Check whether --with-sdl-prefix or --without-sdl-prefix was given.
 if test "${with_sdl_prefix+set}" = set; then
@@ -5958,7 +5964,6 @@ echo $ECHO_N "checking for SDL - version >= $min_sdl_version... $ECHO_C" >&6
       ac_save_CFLAGS="$CFLAGS"
       ac_save_LIBS="$LIBS"
       CFLAGS="$CFLAGS $SDL_CFLAGS"
-      CXXFLAGS="$CXXFLAGS $SDL_CFLAGS"
       LIBS="$LIBS $SDL_LIBS"
       rm -f conf.sdltest
       if test "$cross_compiling" = yes; then
@@ -6059,7 +6064,7 @@ fi
   if test "x$no_sdl" = x ; then
      echo "$as_me:$LINENO: result: yes" >&5
 echo "${ECHO_T}yes" >&6
-     cat >>confdefs.h <<\_ACEOF
+     sdllibs="$SDL_LIBS $sdllibs";cat >>confdefs.h <<\_ACEOF
 #define HAVE_SDL 1
 _ACEOF
 
@@ -6145,9 +6150,15 @@ rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
 
   rm -f conf.sdltest
 
+ac_ext=cc
+ac_cpp='$CXXCPP $CPPFLAGS'
+ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
+
 CFLAGS="$CFLAGS $SDL_CFLAGS"
 CXXFLAGS="$CXXFLAGS $SDL_CFLAGS"
-sdllibs="$SDL_LIBS $sdllibs"
+
 
 echo "$as_me:$LINENO: checking for socket in -lsocket" >&5
 echo $ECHO_N "checking for socket in -lsocket... $ECHO_C" >&6
@@ -6323,66 +6334,6 @@ if test $ac_cv_lib_resolv_inet_aton = yes; then
   netlibs="-lresolv $netlibs"
 fi
 
-
-echo "$as_me:$LINENO: checking for dCloseODE in -lode" >&5
-echo $ECHO_N "checking for dCloseODE in -lode... $ECHO_C" >&6
-if test "${ac_cv_lib_ode_dCloseODE+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lode  $LIBS"
-cat >conftest.$ac_ext <<_ACEOF
-#line $LINENO "configure"
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-
-/* Override any gcc2 internal prototype to avoid an error.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-/* We use char because int might match the return type of a gcc2
-   builtin and then its argument prototype would still apply.  */
-char dCloseODE ();
-int
-main ()
-{
-dCloseODE ();
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext conftest$ac_exeext
-if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
-  (eval $ac_link) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } &&
-         { ac_try='test -s conftest$ac_exeext'
-  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; }; then
-  ac_cv_lib_ode_dCloseODE=yes
-else
-  echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-ac_cv_lib_ode_dCloseODE=no
-fi
-rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-echo "$as_me:$LINENO: result: $ac_cv_lib_ode_dCloseODE" >&5
-echo "${ECHO_T}$ac_cv_lib_ode_dCloseODE" >&6
-if test $ac_cv_lib_ode_dCloseODE = yes; then
-  odelibs="-lode $odelibs"
-else
-  odelibs=
-fi
 
 
 echo "$as_me:$LINENO: checking for ANSI C header files" >&5
@@ -6679,66 +6630,6 @@ fi
 
 
 
-echo "$as_me:$LINENO: checking for FSOUND_Close in -lfmod" >&5
-echo $ECHO_N "checking for FSOUND_Close in -lfmod... $ECHO_C" >&6
-if test "${ac_cv_lib_fmod_FSOUND_Close+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lfmod  $LIBS"
-cat >conftest.$ac_ext <<_ACEOF
-#line $LINENO "configure"
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-
-/* Override any gcc2 internal prototype to avoid an error.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-/* We use char because int might match the return type of a gcc2
-   builtin and then its argument prototype would still apply.  */
-char FSOUND_Close ();
-int
-main ()
-{
-FSOUND_Close ();
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext conftest$ac_exeext
-if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
-  (eval $ac_link) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } &&
-         { ac_try='test -s conftest$ac_exeext'
-  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; }; then
-  ac_cv_lib_fmod_FSOUND_Close=yes
-else
-  echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-ac_cv_lib_fmod_FSOUND_Close=no
-fi
-rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-echo "$as_me:$LINENO: result: $ac_cv_lib_fmod_FSOUND_Close" >&5
-echo "${ECHO_T}$ac_cv_lib_fmod_FSOUND_Close" >&6
-if test $ac_cv_lib_fmod_FSOUND_Close = yes; then
-  soundlibs="-lfmod $soundlibs";cat >>confdefs.h <<\_ACEOF
-#define HAVE_LIBFMOD 1
-_ACEOF
-
-fi
 
 if test "${ac_cv_header_fmod_fmod_h+set}" = set; then
   echo "$as_me:$LINENO: checking for fmod/fmod.h" >&5
@@ -6878,6 +6769,52 @@ fi
 
 
 
+
+echo "$as_me:$LINENO: checking for FSOUND_Close in -lfmod" >&5
+echo $ECHO_N "checking for FSOUND_Close in -lfmod... $ECHO_C" >&6
+OLDLIBS=$LIBS
+LIBS="$LIBS -lfmod"
+cat >conftest.$ac_ext <<_ACEOF
+
+#include <fmod/fmod.h>
+
+int main(int argc, char **argv)
+{
+    FSOUND_Close();
+    return 0;
+}
+
+
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+         { ac_try='test -s conftest$ac_exeext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  soundlibs="-lfmod $soundlibs";result="yes";cat >>confdefs.h <<\_ACEOF
+#define HAVE_LIBFMOD 1
+_ACEOF
+
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+result="no"
+fi
+rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
+LIBS=$OLDLIBS
+echo "$as_me:$LINENO: result: $result" >&5
+echo "${ECHO_T}$result" >&6
+
+
+
 if test "${ac_cv_header_ode_ode_h+set}" = set; then
   echo "$as_me:$LINENO: checking for ode/ode.h" >&5
 echo $ECHO_N "checking for ode/ode.h... $ECHO_C" >&6
@@ -7009,6 +6946,64 @@ echo "${ECHO_T}$ac_cv_header_ode_ode_h" >&6
 fi
 
 
+echo "$as_me:$LINENO: checking for dCloseODE in -lode" >&5
+echo $ECHO_N "checking for dCloseODE in -lode... $ECHO_C" >&6
+if test "${ac_cv_lib_ode_dCloseODE+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lode  $LIBS"
+cat >conftest.$ac_ext <<_ACEOF
+#line $LINENO "configure"
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+/* Override any gcc2 internal prototype to avoid an error.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+/* We use char because int might match the return type of a gcc2
+   builtin and then its argument prototype would still apply.  */
+char dCloseODE ();
+int
+main ()
+{
+dCloseODE ();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+         { ac_try='test -s conftest$ac_exeext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_lib_ode_dCloseODE=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+ac_cv_lib_ode_dCloseODE=no
+fi
+rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+echo "$as_me:$LINENO: result: $ac_cv_lib_ode_dCloseODE" >&5
+echo "${ECHO_T}$ac_cv_lib_ode_dCloseODE" >&6
+if test $ac_cv_lib_ode_dCloseODE = yes; then
+  odelibs="-lode $odelibs"
+fi
+
 
 
 if test "x$ac_cv_header_windows_h" != "xyes" ; then
@@ -7024,11 +7019,40 @@ CFLAGS="-Wall $CFLAGS"
 CXXFLAGS="-Wall $CXXFLAGS"
 
 
-echo "Network libraries: $netlibs"
-echo "Sound libraries: $soundlibs"
-echo "Graphics libraries: $graphlibs"
-echo "SDL libraries: $sdllibs"
-echo "ODE libraries: $odelibs"
+echo ""
+echo "Some important results:"
+echo "Network libraries: \"$netlibs\""
+echo "Sound libraries: \"$soundlibs\""
+echo "Graphics libraries: \"$graphlibs\""
+echo "SDL libraries: \"$sdllibs\""
+echo "ODE libraries: \"$odelibs\""
+
+if test "x$soundlibs" = "x"; then
+  echo ""
+  echo "WARNING: No appropriate sound libraries found."
+  echo "You can still compile Ultimate Stunts, but"
+  echo "sound will not be available"
+fi
+if test "x$graphlibs" = "x"; then
+  echo ""
+  echo "WARNING: No appropriate graphics libraries found"
+  echo "You can still compile the non-graphical programs"
+fi
+if test "x$sdllibs" = "x"; then
+  echo ""
+  echo "WARNING: SDL library not found"
+  echo "You may still be able to compile the non-graphical programs,"
+  echo "but that is not guaranteed"
+fi
+if test "x$odelibs" = "x"; then
+  echo ""
+  echo "WARNING: ODE library not found"
+  echo "Ultimate Stunts really depends on ODE, so you will"
+  echo "probably only be able to compile the tile editor"
+  echo "and the track editor"
+fi
+
+echo ""
 
 
 

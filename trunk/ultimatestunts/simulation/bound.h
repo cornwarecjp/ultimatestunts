@@ -32,6 +32,10 @@ public:
 	virtual bool loadFromFile(CFile *f, CString subset, CMaterial **matarray);
 
 	vector<CVector> m_Points;
+
+	//More detailed description for wheels
+	bool m_isCylinder;
+	float m_CyliderWidth, m_CylinderRadius;
 };
 
 #endif

@@ -23,6 +23,7 @@
 #include "vector.h"
 #include "usmacros.h"
 #include "datafile.h"
+#include "car.h"
 
 CSound *_theSoundObject;
 bool _song_has_ended;
@@ -213,15 +214,19 @@ void CSound::update()
 	unsigned int s = m_SoundWorld->m_Channels.size();
 	for(unsigned int i=0; i<s; i++)
 	{
-		CSoundObj *chn = m_SoundWorld->m_Channels[i];
 		CMovingObject *o = m_World->m_MovObjs[m_SoundWorld->m_ObjIDs[i]];
-		CVector v = o->m_Bodies[0].getVelocity();
-		chn->setPosVel(o->m_Bodies[0].getPosition(), v);
-		int vol = 20 + (int)(4*v.abs());
-		float freq = 0.05 + 0.05 * v.abs();
-		//printf("Setting vol,freq of %d to %d,%3.3f\n", i, vol, freq);
-		chn->setFrequency(freq);
-		chn->setVolume((vol * m_SoundVolume) >> 8);
+		if(o->getType() == CMessageBuffer::car)
+		{
+			CCar *theCar = (CCar *)o;
+			CSoundObj *chn = m_SoundWorld->m_Channels[i];
+			CVector v = theCar->m_Bodies[0].getVelocity();
+			chn->setPosVel(theCar->m_Bodies[0].getPosition(), v);
+			float engineRPM = theCar->m_MainAxisVelocity / theCar->getGearRatio();
+			int vol = 127 + (int)(128 * theCar->m_gas);
+			//fprintf(stderr, "Setting vol,freq of %d to %d,%3.3f\n", i, vol, freq);
+			chn->setFrequency(0.005 * engineRPM); //correct for sound sample frequency
+			chn->setVolume((vol * m_SoundVolume) >> 8);
+		}
 	}
 
 	//Update:

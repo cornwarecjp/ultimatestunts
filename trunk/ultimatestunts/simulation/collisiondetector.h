@@ -25,38 +25,32 @@ using namespace std;
 #include "material.h"
 #include "vector.h"
 #include "collisionmodel.h"
-#include "collision.h"
-#include "world.h"
-
+#include "body.h"
 /**
   *@author CJP
   */
 
 class CCollisionDetector {
 public: 
-	CCollisionDetector(const CWorld *w);
+	CCollisionDetector();
 	~CCollisionDetector();
 
-	void calculateCollisions(bool resting=false);
-	vector<CCollision> m_Collisions; //the result of calculate...
+	void calculateCollisions();
 
 protected:
-	const CWorld *m_World;
-
 	CVector m_TrackMin, m_TrackMax;
 	bool m_FirstUpdate;
 
 	//Object <-> object collisions
-	void ObjObjTest(int n1, int n2);
+	void ObjObjTest(const CBody &body1, const CBody &body2);
 
 	//Object <-> tile collisions
-	void ObjTileTest_collision(int nobj, int xtile, int ztile, int htile);
-	void ObjTileTest_resting(int nobj, int xtile, int ztile, int htile);
+	void ObjTileTest(int nobj, int xtile, int ztile, int htile);
 	void tileRotate(CVector &v, int rot);
 
 	//Object <-> track bound collisions
 	void calculateTrackBounds();
-	void ObjTrackBoundTest(int n);
+	void ObjTrackBoundTest(const CBody &body);
 
 	//Generic
 	bool sphereTest(const CVector &p1, const CCollisionModel *b1, const CVector &p2, const CCollisionModel *b2);

@@ -18,6 +18,7 @@
 #include "bound.h"
 
 CBound::CBound(){
+	m_isCylinder = false;
 }
 CBound::~CBound(){
 }

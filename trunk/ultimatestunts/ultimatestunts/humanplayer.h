@@ -28,12 +28,12 @@
 
 class CHumanPlayer : public CPlayer  {
 public: 
-	CHumanPlayer(const CWorld *w, const CWinSystem *ws);
+	CHumanPlayer(const CWorld *w, CWinSystem *ws);
 	~CHumanPlayer();
 
 	virtual bool update();
 protected:
-	const CWinSystem *m_WinSys;
+	CWinSystem *m_WinSys;
 };
 
 #endif
