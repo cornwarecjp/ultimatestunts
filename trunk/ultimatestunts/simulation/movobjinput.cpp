@@ -16,6 +16,11 @@
  ***************************************************************************/
 #include "movobjinput.h"
 
+CMovObjInput::CMovObjInput()
+{
+	m_Forward = m_Backward = m_Up = m_Right = 0.0;
+}
+
 CBinBuffer & CMovObjInput::getData() const
 {
 	CBinBuffer *res = new CBinBuffer();

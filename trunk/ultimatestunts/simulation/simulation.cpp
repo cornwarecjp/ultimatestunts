@@ -27,29 +27,20 @@ CSimulation::CSimulation(CWorld *w, bool leading)
 CSimulation::~CSimulation(){
 }
 
-bool CSimulation::addPlayer(CPlayer *p, CObjectChoice choice)
+int CSimulation::addPlayer(CObjectChoice choice)
 {
-  int s = m_LocalPlayers.size();
-  m_LocalPlayers.resize(s+1);
-  m_LocalPlayers[s] = p;
-
-  printf("Added player: total %d players\n", m_LocalPlayers.size());
-
-  if(m_Leading)
-  {
-    printf("Giving the player a car\n");
-    p->m_MovingObjectId = m_World->addMovingObject(choice);
-    printf("Car ID: %d\n", p->m_MovingObjectId);
-
-    p->m_PlayerId = s;
-    printf("Player ID: %d\n", p->m_PlayerId);
-  }
-
-  return true;
+	//Default behaviour: always accept a player
+	return m_World->addMovingObject(choice);
 }
 
-bool CSimulation::removePlayer(CPlayer *p)
+bool CSimulation::removePlayer(int id)
 {
+	//Should remove car from the world
+
+	return true; //succes
+
+	//Old code:
+	/*
   bool ret = false;
   for(unsigned int i=0; i<m_LocalPlayers.size(); i++)
   {
@@ -66,6 +57,8 @@ bool CSimulation::removePlayer(CPlayer *p)
     printf("Removed player: %d players left\n", m_LocalPlayers.size());
 
   return ret;
+	*/
+
 }
 
 void CSimulation::Update()

@@ -30,6 +30,7 @@
 class CCarInput : public CMovObjInput  {
 public: 
 	//Which methods should be re-implemented?
+	CCarInput(); //Give reasonable start values
 
 	Uint8 m_Gear;
 	bool m_CarHorn;

@@ -17,3 +17,8 @@
 
 #include "carinput.h"
 
+CCarInput::CCarInput()
+{
+	m_Gear = 1;
+	m_CarHorn = false;
+}

@@ -14,13 +14,11 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef _IPNUMBER_H
-#define _IPNUMBER_H
-
+#ifndef IPNUMBER_H
+#define IPNUMBER_H
 
 #include <SDL/SDL.h>
 #include <vector>
-#include <arpa/inet.h>
 #include "cstring.h"
 
 class CIPNumber

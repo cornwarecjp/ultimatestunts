@@ -30,7 +30,7 @@ CAIPlayerCar::~CAIPlayerCar(){
 
 bool CAIPlayerCar::Update()
 {
-	if(m_PlayerId < 0 || m_MovingObjectId < 0) return false; //player not registered
+	if(m_MovingObjectId < 0) return false; //player not registered
 
 	CMessage *input = m_World->m_MovObjs[m_MovingObjectId]->m_InputData;
 

@@ -51,7 +51,7 @@ bool mainloop()
 		CVector r = mo->getPosition();
 		CVector v = mo->getVelocity();
 		printf("Object %d: position (%.2f,%.2f,%.2f), velocity (%.2f,%.2f,%.2f)\n",
-		               i,            r.x, r.y, r.z,       v.z, v.y, v.z);
+		               i,            r.x, r.y, r.z,       v.x, v.y, v.z);
 	}
     	printf("**********\n");
 
@@ -90,14 +90,31 @@ int main(int argc, char *argv[])
 	CObjectChoice choice;
 
 	printf("\nRegistering players to server\n");
-	if(!sim->addPlayer(player1, choice))
+	int id = -1;
+
+	id = sim->addPlayer(choice);
+	if(id < 0)
 		{printf("Sim doesn't accept player1\n");}
-	if(!sim->addPlayer(player2, choice))
+	player1->m_MovingObjectId = id;
+	player1->m_PlayerId = 0;
+
+	id = sim->addPlayer(choice);
+	if(id < 0)
 		{printf("Sim doesn't accept player2\n");}
-	if(!sim->addPlayer(player3, choice))
+	player2->m_MovingObjectId = id;
+	player2->m_PlayerId = 1;
+
+	id = sim->addPlayer(choice);
+	if(id < 0)
 		{printf("Sim doesn't accept player3\n");}
-	if(!sim->addPlayer(player4, choice))
+	player3->m_MovingObjectId = id;
+	player3->m_PlayerId = 2;
+
+	id = sim->addPlayer(choice);
+	if(id < 0)
 		{printf("Sim doesn't accept player4\n");}
+	player4->m_MovingObjectId = id;
+	player4->m_PlayerId = 3;
 
 	printf("\nEntering mainloop\n");
 
@@ -111,10 +128,10 @@ int main(int argc, char *argv[])
 
 
 	printf("\nRemoving player 2\n");
-	if(!sim->removePlayer(player2))
+	if(!sim->removePlayer(player2->m_MovingObjectId))
 		printf("Removing 2 failed\n");
 	printf("\nRemoving player 4\n");
-	if(!sim->removePlayer(player4))
+	if(!sim->removePlayer(player4->m_MovingObjectId))
 		printf("Removing 4 failed\n");
 
 	printf("\nDeleting simulation\n");

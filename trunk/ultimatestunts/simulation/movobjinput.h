@@ -27,6 +27,7 @@
 class CMovObjInput : public CMessage  {
 public:
 	//Which CMessage-methods should be re-implemented?
+	CMovObjInput(); //Give reasonable start values
 
   float m_Up, m_Forward, m_Backward, m_Right;
 

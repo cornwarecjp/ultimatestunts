@@ -35,8 +35,8 @@ public:
 	CSimulation(CWorld *w, bool leading=true);
 	virtual ~CSimulation();
 
-  virtual bool addPlayer(CPlayer *p, CObjectChoice choice);
-  virtual bool removePlayer(CPlayer *p);
+  virtual int addPlayer(CObjectChoice choice);
+  virtual bool removePlayer(int id);
 
   virtual void Update();
 
