@@ -36,7 +36,7 @@ CPhysics::~CPhysics(){
 
 bool CPhysics::update()
 {
-	float dt = m_Timer.getdt();
+	float dt = m_Timer.getdt(0.01); //max. 100 fps
 
 #ifdef DEBUGMSG
 	if(dt > 1.0)

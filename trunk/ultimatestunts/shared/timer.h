@@ -29,6 +29,8 @@ public:
 	~CTimer();
 
 	float getdt();
+	float getdt(float min);
+	float getdt(float min, float max);
 	float getF();
 
 	float getTime();
