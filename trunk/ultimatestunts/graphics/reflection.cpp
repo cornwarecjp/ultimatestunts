@@ -497,9 +497,32 @@ void CReflection::update(CRenderer *renderer, CCamera *cam, int side)
 	//fprintf(stderr, "Rendering spheremap: %.5f\n\n", _DebugTimer_refl.getTime() - tstart);
 }
 
-void CReflection::draw() const
+void CReflection::enable(const SGraphicSettings *settings)
 {
+	m_CurrentSettings = settings;
+	
+	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_POLYGON_OFFSET_FILL);
+	glEnable(GL_TEXTURE_GEN_S);
+	glEnable(GL_TEXTURE_GEN_T);
+	glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+	glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+	GLfloat newambient[] = {1.0,1.0,1.0,1.0};
+	glGetFloatv(GL_LIGHT_MODEL_AMBIENT, oldambient);
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, newambient);
+
+	glPolygonOffset(0.0, -1.0);
+
+
 	glBindTexture(GL_TEXTURE_2D, m_Texture );
+}
+
+void CReflection::disable()
+{
+	glDisable(GL_POLYGON_OFFSET_FILL);
+	glDisable(GL_TEXTURE_GEN_S);
+	glDisable(GL_TEXTURE_GEN_T);
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, oldambient);
 }
 
 void CReflection::initialiseReflections()

@@ -24,6 +24,8 @@ using namespace std;
 #include "cstring.h"
 #include "vector.h"
 #include "dataobject.h"
+#include "graphicsettings.h"
+#include "reflection.h"
 
 class CGraphObj : public CDataObject
 {
@@ -34,9 +36,12 @@ class CGraphObj : public CDataObject
 		virtual bool load(const CString &filename, const CParamList &list);
 		virtual void unload();
 
-		void draw(int lod) const;
+		void draw(const SGraphicSettings *settings, CReflection *reflection, unsigned int lod);
 
 	protected:
+		const SGraphicSettings *m_CurrentSettings;
+		CReflection *m_CurrentReflection;
+		unsigned int m_CurrentLOD;
 
 		struct SPrimitive
 		{
@@ -57,7 +62,10 @@ class CGraphObj : public CDataObject
 		void unloadPrimitive(SPrimitive &pr);
 
 		//Draw one primitive:
-		void drawArray(void *vertex, void *index, unsigned int numV, unsigned int numI) const;
+		void drawPrimitive(const SPrimitive &pr);
+
+		//returns false for fully transparent materials
+		bool setMaterial(const SPrimitive &pr, bool forReflection=false);
 };
 
 #endif

@@ -140,16 +140,19 @@ void CGraphObj::unloadPrimitive(SPrimitive &pr)
 	delete [] (GLuint *)pr.index;
 }
 
+//some flags for optimalisation:
 bool tex_enabled;
+bool use_blending;
 
-void CGraphObj::draw(int lod) const
+void CGraphObj::draw(const SGraphicSettings *settings, CReflection *reflection, unsigned int lod)
 {
+	m_CurrentSettings = settings;
+	m_CurrentReflection = reflection;
+	m_CurrentLOD = lod;
+	
 	//TODO: make this code very fast (it's the main drawing routine)
 
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_NORMAL_ARRAY);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
+	use_blending = (m_CurrentSettings->m_Transparency == SGraphicSettings::blend);
 	tex_enabled = true;
 
 	for(unsigned int p=0; p < m_Primitives.size(); p++)
@@ -161,141 +164,105 @@ void CGraphObj::draw(int lod) const
 		if(lod == 3 && (pr.LODs & 4) == 0) continue;
 		if(lod == 2 && (pr.LODs & 2) == 0) continue;
 		if(lod == 1 && (pr.LODs & 1) == 0) continue;
-		if(lod == 0 && (pr.LODs & 1) == 0) continue;
 
-		if(lod == 0) //reflection
-		{
-			float kleur[] = {1, 1, 1, pr.reflectance};
-			glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, kleur);
-		}
-		else
-		{
-			float kleur[] = {pr.color[lod-1].x, pr.color[lod-1].y, pr.color[lod-1].z, pr.opacity};
-			glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, kleur);
-
-			if(pr.texture[lod-1] == 0)
-			{
-				if(tex_enabled)
-				{
-					glDisable(GL_TEXTURE_2D);
-					tex_enabled = false;
-				}
-			}
-			else
-			{
-				if(!tex_enabled)
-				{
-					glEnable(GL_TEXTURE_2D);
-					tex_enabled = true;
-				}
-				glBindTexture(GL_TEXTURE_2D, pr.texture[lod-1]);
-			}
-		}
-
-		drawArray(pr.vertex, pr.index, pr.numVertices, pr.numIndices);
+		drawPrimitive(pr);
 	}
 
 	if(!tex_enabled)
 		glEnable(GL_TEXTURE_2D);
 
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	glEnableClientState(GL_NORMAL_ARRAY);
-	glEnableClientState(GL_VERTEX_ARRAY);
+	if(!use_blending && m_CurrentSettings->m_Transparency == SGraphicSettings::blend)
+		glEnable(GL_BLEND);
 }
 
-/*
-void CGraphObj::drawTriangles(void *vertex, void *index, unsigned int numV, unsigned int numI) const
-{
-	GLfloat *vertexptr = (GLfloat *)vertex;
-	GLuint *indexptr = (GLuint *)index;
 
-	glBegin(GL_TRIANGLES);
-
-	for(unsigned int i=0; i < numI; i++)
-	{
-		GLuint index = *(indexptr + i);
-
-		GLfloat *offset = vertexptr + 8*index;
-
-		//GL_T2F_N3F_V3F array format:
-
-		if(tex_enabled)
-			glTexCoord2fv(offset);
-
-		glNormal3fv(offset + 2);
-		glVertex3fv(offset + 5);
-	}
-
-	glEnd();
-}
-*/
-
-void CGraphObj::drawArray(void *vertex, void *index, unsigned int numV, unsigned int numI) const
+void CGraphObj::drawPrimitive(const SPrimitive &pr)
 {
 	CGLExtensions ext;
-	if(ext.hasCompiledVertexArray) // && numV < numI) //it was just a try
+
+	glInterleavedArrays(GL_T2F_N3F_V3F, 0, pr.vertex);
+
+	if(ext.hasCompiledVertexArray) //TODO: check if locking is a good idea
+		ext.glLockArrays(0, pr.numVertices);
+
+	//normal model
+	if(setMaterial(pr, false))
+		glDrawElements(GL_TRIANGLES, pr.numIndices, GL_UNSIGNED_INT, pr.index);
+
+	//reflection
+	if(m_CurrentReflection != NULL && setMaterial(pr, true))
 	{
-		glInterleavedArrays(GL_T2F_N3F_V3F, 0, vertex);
-		ext.glLockArrays(0, numV); //is the num argument correct??
-		glDrawElements(GL_TRIANGLES, numI, GL_UNSIGNED_INT, index);
+		m_CurrentReflection->enable(m_CurrentSettings);
+		glDrawElements(GL_TRIANGLES, pr.numIndices, GL_UNSIGNED_INT, pr.index);
+		m_CurrentReflection->disable();
+		tex_enabled = true;
+	}
+
+	if(ext.hasCompiledVertexArray) //TODO: check if locking is a good idea
 		ext.glUnlockArrays();
+}
+
+bool CGraphObj::setMaterial(const SPrimitive &pr, bool forReflection)
+{
+	//color and alpha
+	float kleur[] = {1,1,1,0};
+
+	if(forReflection)
+	{
+		kleur[3] = pr.reflectance;
 	}
 	else
 	{
-		glInterleavedArrays(GL_T2F_N3F_V3F, 0, vertex);
-		glDrawElements(GL_TRIANGLES, numI, GL_UNSIGNED_INT, index);
-	}
-}
+		kleur[0] = pr.color[m_CurrentLOD-1].x;
+		kleur[1] = pr.color[m_CurrentLOD-1].y;
+		kleur[2] = pr.color[m_CurrentLOD-1].z;
+		kleur[3] = pr.opacity;
 
-/*
-void CGraphObj::drawDispList(int lod) const
-{
-	switch(lod)
-	{
-		case 0: glCallList(m_ObjListRef); break;
-		case 1: glCallList(m_ObjList1); break;
-		case 2: glCallList(m_ObjList2); break;
-		case 3: glCallList(m_ObjList3); break;
-		case 4: glCallList(m_ObjList4); break;
-	}
-}
-
-void CGraphObj::generateDispLists(int lod_offset)
-{
-	int startlod = lod_offset + 1;
-	int stoplod = lod_offset + 4;
-	if(startlod < 1) startlod = 1;
-	if(startlod > 4) startlod = 4;
-	if(stoplod < 1) stoplod = 1;
-	if(stoplod > 4) stoplod = 4;
-
-	for(int lod=0; lod<5; lod++)
-	{
-		//printf("Loading graphobj lod=%d\n", lod);
-
-		unsigned int objlist = glGenLists(1);
-		glNewList(objlist, GL_COMPILE);
-		//fprintf(stderr, "Loaded object @ %d\n", objlist);
-
-		switch(lod)
+		//texture
+		if(pr.texture[m_CurrentLOD-1] == 0)
 		{
-			case 0: m_ObjListRef = objlist; break;
-			case 1: m_ObjList1 = objlist; break;
-			case 2: m_ObjList2 = objlist; break;
-			case 3: m_ObjList3 = objlist; break;
-			case 4: m_ObjList4 = objlist; break;
+			if(tex_enabled)
+			{
+				glDisable(GL_TEXTURE_2D);
+				tex_enabled = false;
+			}
 		}
-
-		if( (lod > 0 && lod < startlod) || lod > stoplod)
+		else
 		{
-			glEndList();
-			continue;
+			if(!tex_enabled)
+			{
+				glEnable(GL_TEXTURE_2D);
+				tex_enabled = true;
+			}
+			glBindTexture(GL_TEXTURE_2D, pr.texture[m_CurrentLOD-1]);
 		}
-
-		drawLod(lod);
-
-		glEndList();
 	}
+
+	//blending:
+	if(kleur[3] < 0.1) return false; //don't draw this primitive
+	if(m_CurrentSettings->m_Transparency == SGraphicSettings::blend)
+	{
+		if(use_blending)
+		{
+			if(pr.reflectance > 0.9)
+			{
+				use_blending = false;
+				glDisable(GL_BLEND);
+			}
+		}
+		else
+		{
+			if(pr.reflectance <= 0.9)
+			{
+				use_blending = true;
+				glEnable(GL_BLEND);
+			}
+		}
+	}
+
+	//setting the material
+	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, kleur);
+
+	return true;
 }
-*/
 

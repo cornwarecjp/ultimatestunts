@@ -19,6 +19,7 @@
 #define REFLECTION_H
 
 #include "renderer.h"
+#include "graphicsettings.h"
 
 /**
   *@author CJP
@@ -30,12 +31,18 @@ public:
 	~CReflection();
 
 	void update(CRenderer *renderer, CCamera *cam, int side = -1);
-	void draw() const;
+
+	void enable(const SGraphicSettings *settings);
+	void disable();
 
 protected:
+	const SGraphicSettings *m_CurrentSettings;
+
 	unsigned int m_Texture; //spheremap texture
 	unsigned int m_ReflectionTexture[6]; //side textures
 	float m_CentralPixel[4]; //the front color = clear color for the spheremap
+
+	float oldambient[4]; //temporary place to put the ambient color
 
 
 	void initialiseReflections();

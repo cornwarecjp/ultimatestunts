@@ -18,8 +18,35 @@
 #ifndef GLEXTENSIONS_H
 #define GLEXTENSIONS_H
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#include "usmacros.h"
+
+
 #include <GL/gl.h>
+
+#ifdef HAVE_GLEXT_H
+
 #include <GL/glext.h>
+
+#else
+
+//dirty hack on systems that don't have glext.h:
+
+#ifdef __CYGWIN__
+#define APIENTRY __attribute__ ((__stdcall__))
+#else
+#define APIENTRY
+#endif
+
+typedef void (APIENTRY * PFNGLLOCKARRAYSEXTPROC) (GLint, GLsizei);
+typedef void (APIENTRY * PFNGLUNLOCKARRAYSEXTPROC) (void);
+
+#undef APIENTRY
+
+#endif
 
 /**
   *@author CJP

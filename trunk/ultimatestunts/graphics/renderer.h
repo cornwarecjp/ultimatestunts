@@ -21,6 +21,7 @@
 #include "lconfig.h"
 #include "camera.h"
 #include "winsystem.h"
+#include "graphicsettings.h"
 
 /**
   *@author CJP
@@ -42,20 +43,7 @@ protected:
 
 	float *m_FogColor;
 
-	bool m_UseBackground;
-	bool m_ZBuffer;
-	int m_VisibleTiles;
-	int m_FogMode;
-	int m_MovingObjectLOD;
-	enum {off, blend} m_Transparency;
-	bool m_TexSmooth;
-	bool m_ShadowSmooth;
-	float m_ReflectionDist;
-	bool m_UpdRef, m_UpdRefAllSides, m_UpdRefAllObjs;
-	int m_ReflectionSize;
-	bool m_ReflectionDrawMovingObjects;
-
-	bool m_TrackDisplayList;
+	SGraphicSettings m_Settings;
 };
 
 #endif

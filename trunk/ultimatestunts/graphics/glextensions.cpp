@@ -20,6 +20,7 @@
 
 #include "SDL.h"
 
+#include "lconfig.h"
 #include "glextensions.h"
 
 bool _GLExtensionsScanned = false;
@@ -46,12 +47,22 @@ CGLExtensions::CGLExtensions()
 	if(glLockArrays == NULL || glUnlockArrays == NULL)
 	{
 		hasCompiledVertexArray = false;
-		printf("Compiled vertex array functions NOT found in GL library\n");
+		printf("Compiled vertex array functions NOT found in openGL driver\n");
 	}
 	else
 	{
-		hasCompiledVertexArray = true;
-		printf("Compiled vertex array functions found in GL library\n");
+		printf("Compiled vertex array functions found in openGL driver\n");
+
+		if(theMainConfig->getValue("graphics", "compiledvertexarray") == "false")
+		{
+			printf("...NOT using it because this option is disabled\n");
+			hasCompiledVertexArray = false;
+		}
+		else
+		{
+			printf("..and we'll be using it!\n");
+			hasCompiledVertexArray = true;
+		}
 	}
 
 	_GLExtensionsScanned = true;

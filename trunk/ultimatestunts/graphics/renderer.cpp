@@ -28,84 +28,84 @@ CRenderer::CRenderer(const CWinSystem *winsys)
 	m_FogColor = new float[4];
 
 	//Default values:
-	m_UseBackground = true;
-	m_ZBuffer = true;
-	m_VisibleTiles = 10;
-	m_FogMode = GL_EXP;
-	m_Transparency = blend;
-	m_TexSmooth = true;
-	m_ShadowSmooth = true;
+	m_Settings.m_UseBackground = true;
+	m_Settings.m_ZBuffer = true;
+	m_Settings.m_VisibleTiles = 10;
+	m_Settings.m_FogMode = GL_EXP;
+	m_Settings.m_Transparency = SGraphicSettings::blend;
+	m_Settings.m_TexSmooth = true;
+	m_Settings.m_ShadowSmooth = true;
 
 	//Load the setings
 	CString cnf = theMainConfig->getValue("graphics", "background_size");
 	//printf("Background size: %s\n", cnf.c_str());
 	if(cnf != "" && cnf.toInt() <= 4)
-		m_UseBackground = false;
+		m_Settings.m_UseBackground = false;
 
 	cnf = theMainConfig->getValue("graphics", "visible_tiles");
 	//printf("Visible tiles: %s\n", cnf.c_str());
 	if(cnf != "")
-		m_VisibleTiles = cnf.toInt();
+		m_Settings.m_VisibleTiles = cnf.toInt();
 
 	cnf = theMainConfig->getValue("graphics", "zbuffer");
 	//printf("Z buffer: %s\n", cnf.c_str());
-	m_ZBuffer = (cnf != "false");
+	m_Settings.m_ZBuffer = (cnf != "false");
 
 	cnf = theMainConfig->getValue("graphics", "texture_smooth");
 	//printf("Smooth textures: %s\n", cnf.c_str());
-	m_TexSmooth = (cnf != "false");
+	m_Settings.m_TexSmooth = (cnf != "false");
 
 	cnf = theMainConfig->getValue("graphics", "shadows_smooth");
 	//printf("Smooth shadows: %s\n", cnf.c_str());
-	m_ShadowSmooth = (cnf != "false");
+	m_Settings.m_ShadowSmooth = (cnf != "false");
 
 	cnf = theMainConfig->getValue("graphics", "fogmode");
 	//printf("Fog mode: %s\n", cnf.c_str());
 	if(cnf != "")
 	{
-		if(cnf == "off")	m_FogMode = -1;
-		if(cnf == "linear")	m_FogMode = GL_LINEAR;
-		if(cnf == "exp")	m_FogMode = GL_EXP;
-		if(cnf == "exp2")	m_FogMode = GL_EXP2;
+		if(cnf == "off")	m_Settings.m_FogMode = -1;
+		if(cnf == "linear")	m_Settings.m_FogMode = GL_LINEAR;
+		if(cnf == "exp")	m_Settings.m_FogMode = GL_EXP;
+		if(cnf == "exp2")	m_Settings.m_FogMode = GL_EXP2;
 	}
 
 	cnf = theMainConfig->getValue("graphics", "transparency");
 	//printf("Transparency: %s\n", cnf.c_str());
 	if(cnf != "")
 	{
-		if(cnf == "off")	m_Transparency = off;
-		if(cnf == "blend")	m_Transparency = blend;
+		if(cnf == "off")	m_Settings.m_Transparency = SGraphicSettings::off;
+		if(cnf == "blend")	m_Settings.m_Transparency = SGraphicSettings::blend;
 	}
 
-	m_ReflectionSize = theMainConfig->getValue("graphics", "reflection_size").toInt();
-	m_ReflectionDist = theMainConfig->getValue("graphics", "reflectiondist").toFloat();
-	m_UpdRef = theMainConfig->getValue("graphics", "updatereflection") == "true";
-	m_UpdRefAllSides = theMainConfig->getValue("graphics", "updatereflectionallsides") == "true";
-	m_UpdRefAllObjs = theMainConfig->getValue("graphics", "updatereflectionallobjects") == "true";
-	m_ReflectionDrawMovingObjects = theMainConfig->getValue("graphics", "reflectiondrawmovingobjects") == "true";
+	m_Settings.m_ReflectionSize = theMainConfig->getValue("graphics", "reflection_size").toInt();
+	m_Settings.m_ReflectionDist = theMainConfig->getValue("graphics", "reflectiondist").toFloat();
+	m_Settings.m_UpdRef = theMainConfig->getValue("graphics", "updatereflection") == "true";
+	m_Settings.m_UpdRefAllSides = theMainConfig->getValue("graphics", "updatereflectionallsides") == "true";
+	m_Settings.m_UpdRefAllObjs = theMainConfig->getValue("graphics", "updatereflectionallobjects") == "true";
+	m_Settings.m_ReflectionDrawMovingObjects = theMainConfig->getValue("graphics", "reflectiondrawmovingobjects") == "true";
 
-	m_MovingObjectLOD = theMainConfig->getValue("graphics", "movingobjectlod").toInt();
+	m_Settings.m_MovingObjectLOD = theMainConfig->getValue("graphics", "movingobjectlod").toInt();
 
-	m_TrackDisplayList = theMainConfig->getValue("graphics", "trackdisplaylist") == "true";
+	m_Settings.m_TrackDisplayList = theMainConfig->getValue("graphics", "trackdisplaylist") == "true";
 
 	//Next: use these settings
-	if(m_ZBuffer)
+	if(m_Settings.m_ZBuffer)
 		{glEnable(GL_DEPTH_TEST);}
 	else
 		{glDisable(GL_DEPTH_TEST);}
 
-	if(m_FogMode  < 0)
+	if(m_Settings.m_FogMode  < 0)
 		{glDisable(GL_FOG);}
 	else
 	{
 		glEnable(GL_FOG);
-		glFogi(GL_FOG_MODE, m_FogMode);
-		glFogf(GL_FOG_DENSITY, 2.0/(float)(TILESIZE*m_VisibleTiles));
+		glFogi(GL_FOG_MODE, m_Settings.m_FogMode);
+		glFogf(GL_FOG_DENSITY, 2.0/(float)(TILESIZE*m_Settings.m_VisibleTiles));
 		glFogi(GL_FOG_START, 0);
-		glFogi(GL_FOG_END, TILESIZE*m_VisibleTiles);
+		glFogi(GL_FOG_END, TILESIZE*m_Settings.m_VisibleTiles);
 	}
 
-	if(m_Transparency == blend)
+	if(m_Settings.m_Transparency == SGraphicSettings::blend)
 	{
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -116,7 +116,7 @@ CRenderer::CRenderer(const CWinSystem *winsys)
 	}
 
 	/*
-	if(m_TexSmooth)
+	if(m_Settings.m_TexSmooth)
 	{
 		glHint( GL_POINT_SMOOTH_HINT, GL_NICEST );
 		glHint( GL_POLYGON_SMOOTH_HINT, GL_NICEST );
@@ -128,7 +128,7 @@ CRenderer::CRenderer(const CWinSystem *winsys)
 	}
 	*/
 
-	if(m_ShadowSmooth)
+	if(m_Settings.m_ShadowSmooth)
 		glShadeModel( GL_SMOOTH );
 	else
 		glShadeModel( GL_FLAT );
@@ -155,7 +155,7 @@ void CRenderer::update()
 
 	float ratio = (float) w / (float) h;
 	GLfloat near = 1.0;
-	GLfloat far = TILESIZE * m_VisibleTiles;
+	GLfloat far = TILESIZE * m_Settings.m_VisibleTiles;
 	float hor_mul = near / 5.0;
 	GLfloat xs = ratio*hor_mul;
 	GLfloat ys = 1.0*hor_mul;
