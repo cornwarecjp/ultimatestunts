@@ -28,7 +28,7 @@ bool dummy_loopfunc()
 CWinSystem::CWinSystem(const CLConfig &conf)
 {
 	//Default values:
-	m_Flags = SDL_OPENGL|SDL_RESIZABLE;
+	m_Flags = SDL_OPENGL |SDL_RESIZABLE|SDL_ANYFORMAT;
 	m_W = 640;
 	m_H = 480;
 	m_BPP = 24;
@@ -53,7 +53,7 @@ CWinSystem::CWinSystem(const CLConfig &conf)
 	}
 
 	if(cnf == "fullscreen")
-		m_Flags = SDL_OPENGL|SDL_FULLSCREEN;
+		m_Flags = SDL_OPENGL|SDL_FULLSCREEN|SDL_ANYFORMAT;
 
 
 	//visible_tiles variable
@@ -62,14 +62,15 @@ CWinSystem::CWinSystem(const CLConfig &conf)
 		m_VisibleTiles = cnf.toInt();
 
 	//Some code coming from SDL gears
-	SDL_Init(SDL_INIT_VIDEO);
+	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK);
 
 	//SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 8 );
 	//SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, 8 );
 	//SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, 8 );
-	//SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 16 );
+	SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 16 );
 	SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
 
+	printf("Setting resolution to %dx%d:%d...\n", m_W, m_H, m_BPP);
 	m_Screen = SDL_SetVideoMode(m_W, m_H, m_BPP, m_Flags);
 	if ( ! m_Screen ) {
 		fprintf(stderr, "Couldn't set %dx%d GL video mode: %s\n",
@@ -77,7 +78,32 @@ CWinSystem::CWinSystem(const CLConfig &conf)
 		SDL_Quit();
 		exit(2);
 	}
+	m_W = m_Screen->w;
+	m_H = m_Screen->h;
+	m_BPP = m_Screen->format->BitsPerPixel;
+	printf("...Now working at %dx%d:%d\n", m_W, m_H, m_BPP);
+
 	SDL_WM_SetCaption("UltimateStunts", "ultimatestunts");
+
+	m_NumJoysticks = SDL_NumJoysticks();
+	printf("Found %d joysticks\n", m_NumJoysticks);
+	if(m_NumJoysticks > 0)
+	{
+		SDL_JoystickEventState(SDL_ENABLE);
+		m_Joystick = SDL_JoystickOpen(0);
+
+		if(m_Joystick)
+		{
+			printf("Opened Joystick 0\n");
+			printf("Name: %s\n", SDL_JoystickName(0));
+			printf("Number of Axes: %d\n", SDL_JoystickNumAxes(m_Joystick));
+			printf("Number of Buttons: %d\n", SDL_JoystickNumButtons(m_Joystick));
+			printf("Number of Balls: %d\n", SDL_JoystickNumBalls(m_Joystick));
+		}
+		else
+			printf("Couldn't open Joystick 0\n");
+
+	}
 
 	//To set up openGL correctly, call reshape
 	reshape(m_W, m_H);
@@ -89,11 +115,18 @@ CWinSystem::CWinSystem(const CLConfig &conf)
 	for(int i=0; i<m_NumKeys; i++)
 		m_WasPressed[i] = false;
 
+	m_JoyState.x = m_JoyState.y = 0;
 }
 
 CWinSystem::~CWinSystem()
 {
 	delete [] m_WasPressed;
+
+	if(m_NumJoysticks > 0)
+	{
+		SDL_JoystickClose(m_Joystick);
+	}
+
 	SDL_Quit();
 }
 
@@ -110,6 +143,7 @@ int CWinSystem::runLoop( bool (CALLBACKFUN *loopfunc)(), bool swp)
 		{
 			switch(event.type)
 			{
+				//Resizing
 				case SDL_VIDEORESIZE:
 					m_Screen = SDL_SetVideoMode(event.resize.w, event.resize.h, m_BPP,
 						SDL_OPENGL|SDL_RESIZABLE);
@@ -126,15 +160,24 @@ int CWinSystem::runLoop( bool (CALLBACKFUN *loopfunc)(), bool swp)
 						exit(2);
 					}
 					break;
+
+				//Quitting
 				case SDL_QUIT:
 					quit = true;
 					break;
 
+				//Keyboard
 				case SDL_KEYDOWN:
 					m_WasPressed[event.key.keysym.sym] = true;
 				case SDL_KEYUP:
 					printf("Something has changed in the keystate\n");
 					m_KeyState = SDL_GetKeyState(&m_NumKeys);
+					break;
+
+				//Joystick
+				case SDL_JOYAXISMOTION:
+					m_JoyState.x = SDL_JoystickGetAxis(m_Joystick, 0);
+					m_JoyState.y = SDL_JoystickGetAxis(m_Joystick, 1);
 					break;
 			}
 		}

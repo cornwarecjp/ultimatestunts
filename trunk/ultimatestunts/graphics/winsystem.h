@@ -26,6 +26,11 @@
 /**
   *@author CJP
   */
+class CJoyState
+{
+public:
+	int x, y;
+};
 
 class CWinSystem {
 public: 
@@ -36,6 +41,8 @@ public:
 
 	const Uint8 *getKeyState() const {return m_KeyState;}
 	bool wasPressed(int c);
+
+	CJoyState getJoyState(int n) const {return m_JoyState;}
 
 	SDL_Surface *getScreen(){return m_Screen;}
 protected:
@@ -50,6 +57,10 @@ protected:
 	Uint8 *m_KeyState;
 	bool *m_WasPressed;
 	int m_NumKeys;
+
+	int m_NumJoysticks;
+	SDL_Joystick *m_Joystick;
+	CJoyState m_JoyState;
 };
 
 #endif

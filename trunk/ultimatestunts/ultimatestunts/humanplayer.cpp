@@ -34,6 +34,7 @@ bool CHumanPlayer::update()
 	if(m_MovingObjectId >= 0)
 	{
 		const Uint8 *keystate = m_WinSys->getKeyState();
+		CJoyState joy = m_WinSys->getJoyState(0);
 
 		//This is called 'input', as it is the input of the moving object.
 		//But it is the output of the player.
@@ -47,6 +48,16 @@ bool CHumanPlayer::update()
 		carin->m_Forward = 1.0 * keystate[SDLK_UP];
 		carin->m_Backward = 1.0 * keystate[SDLK_DOWN];
 		carin->m_Right = 1.0 * keystate[SDLK_RIGHT] - 1.0 * keystate[SDLK_LEFT];
+
+		//Override with joystick:
+#define THR 1000
+		if(joy.x < -THR || joy.x > THR)
+			carin->m_Right = (float)joy.x / 32767;
+		if(joy.y > THR)
+			carin->m_Backward = (float)joy.y / 32767;
+		if(joy.y < -THR)
+			carin->m_Forward = (float)-joy.y / 32767;
+
 		carin->m_Gear = 1;
 		carin->m_CarHorn = true;
 
