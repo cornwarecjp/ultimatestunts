@@ -19,6 +19,7 @@
 #include <cmath>
 #include "collisionmodel.h"
 #include "datafile.h"
+#include "glbfile.h"
 
 CCollisionModel::CCollisionModel(CDataManager *manager) : CDataObject(manager, CDataObject::eCollisionModel)
 {}
@@ -34,6 +35,10 @@ CString CCollisionModel::getSubset() const
 bool CCollisionModel::load(const CString &filename, const CParamList &list)
 {
 	CDataObject::load(filename, list);
+
+	CString ext = ".glb";
+	if(filename.inStr(ext) >= 0 && filename.inStr(ext) == (int)(filename.length() - ext.length()))
+		return loadGLB(filename, list);
 
 	m_Subset = m_ParamList.getValue("subset", "");
 
@@ -227,6 +232,65 @@ bool CCollisionModel::load(const CString &filename, const CParamList &list)
 
 	//printf("Loaded %d faces from %s\n", m_Faces.size(), f->getName().c_str());
 
+	determineOBVs();
+	determinePlaneEquations();
+
+	return true;
+}
+
+bool CCollisionModel::loadGLB(const CString &filename, const CParamList &list)
+{
+	CGLBFile f;
+	if(!f.load(filename)) return false;
+
+	m_Subset = m_ParamList.getValue("subset", "");
+	vector<CDataObject *> matarray = m_DataManager->getSubset(CDataObject::eMaterial, m_Subset);
+
+	//Initial bounding volume state
+	m_BSphere_r = 0.0;
+	m_OBB_min = CVector(0,0,0);
+	m_OBB_max = CVector(0,0,0);
+
+	//initial state
+	CMaterial *mat = NULL;
+
+	for(unsigned int p=0; p < f.m_Primitives.size(); p++)
+	{
+		CGLBFile::SPrimitive &pr = f.m_Primitives[p];
+
+		if((pr.LODs & 16) == 0) continue; //only collision primitives
+
+		//printf("    Processing primitive %s\n", pr.Name.c_str());
+
+		if(pr.Texture < 0)
+		{
+			mat = NULL;
+		} //TODO: assign a number for non-texturised materials
+		else
+		{
+			mat = (CMaterial *)(matarray[pr.Texture]);
+		}
+
+		for(unsigned int t=0; t < pr.index.size()/3; t++)
+		{
+			CVector v1 = pr.vertex[pr.index[3*t]].pos;
+			CVector v2 = pr.vertex[pr.index[3*t+1]].pos;
+			CVector v3 = pr.vertex[pr.index[3*t+2]].pos;
+
+			m_Faces.push_back(CCollisionFace());
+			CCollisionFace &theFace = m_Faces.back();
+
+			theFace.push_back(v1);
+			theFace.push_back(v2);
+			theFace.push_back(v3);
+
+			theFace.material = mat;
+			theFace.reverse = false;
+
+			//printf("      Face %d: %d points\n", t, theFace.size());
+		}
+	}
+	
 	determineOBVs();
 	determinePlaneEquations();
 

@@ -14,6 +14,9 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
+
+#include <cstdio>
+
 #include "movobjinput.h"
 
 CMovObjInput::CMovObjInput()
@@ -34,11 +37,16 @@ CBinBuffer &CMovObjInput::getData(CBinBuffer & b) const
 bool CMovObjInput::setData(const CBinBuffer & b, unsigned int &pos)
 {
 	Uint8 ID = b.getUint8(pos);
-	if(m_MovObjID != ID) return false;
+	if(m_MovObjID != ID)
+	{
+		printf("Error: object ID = %d, message ID = %d\n", m_MovObjID, ID);
+		return false;
+	}
 
 	m_Up = b.getFloat8(pos, 0.008);
 	m_Forward = b.getFloat8(pos, 0.008);
 	m_Backward = b.getFloat8(pos, 0.008);
 	m_Right = b.getFloat8(pos, 0.008);
+
 	return true;
 }

@@ -100,3 +100,25 @@ void CFile::writel(CString l)
   fputs(c, fp);
   fputc('\n', fp);
 }
+
+CBinBuffer CFile::readBytes(unsigned int maxlen)
+{
+	Uint8 buffer[maxlen];
+
+	unsigned int size = fread(buffer, 1, maxlen, fp);
+	
+	CBinBuffer ret;
+	for(unsigned int i=0; i < size; i++)
+		ret += buffer[i];
+
+	return ret;
+}
+
+void CFile::writeBytes(const CBinBuffer &b)
+{
+	Uint8 buffer[b.size()];
+	for(unsigned int i=0; i < b.size(); i++)
+		buffer[i] = b[i];
+
+	fwrite(buffer, 1, b.size(), fp);
+}

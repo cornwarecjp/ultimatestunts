@@ -101,6 +101,7 @@ bool CCar::load(const CString &filename, const CParamList &list)
 	//The input object: CCarInput instead of CMovObjInput
 	delete m_InputData;
 	m_InputData = new CCarInput;
+	m_InputData->m_MovObjID = m_MovObjID;
 
 	//initial state
 	m_Gear = 1;

@@ -70,9 +70,7 @@ public:
 	CMatrix getMatrix16(int unsigned &pos, float unit = 1.0) const; //only for rotation matrices
 
 	CString dump() const;
-	CBinBuffer & substr(const int unsigned pos=0, const int n=-1) const ;
-
-	char * raw_str() const;
+	CBinBuffer substr(const int unsigned pos=0, const int n=-1) const;
 };
 
 #endif	//_CBinBuffer_H_

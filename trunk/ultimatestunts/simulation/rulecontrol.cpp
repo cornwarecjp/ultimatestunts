@@ -39,9 +39,10 @@ bool CRuleControl::update()
 			return false; //stop
 
 		placeStart();
+		theWorld->m_Paused = true;
 	}
 
-	if(m_Timer.getTime() > theWorld->m_GameStartTime)
+	if(theWorld->m_Paused && m_Timer.getTime() > theWorld->m_GameStartTime)
 		theWorld->m_Paused = false;
 
 	return !checkFinished();

@@ -24,7 +24,7 @@ CMessage::CMessage()
 
 CMessage::CMessage(const CMessageBuffer & mb)
 {
-	this->setBuffer(mb);
+	setBuffer(mb);
 }
 
 CMessage::~CMessage()
@@ -37,7 +37,7 @@ CMessageBuffer CMessage::getBuffer()
 	ret.setType(getType());
 	//ret.setAC(getAC());
 	//ret.setCounter(getCounter());
-	ret.setData(this->getData(b));
+	ret.setData(getData(b));
 	return ret;
 }
  	
@@ -45,7 +45,7 @@ bool CMessage::setBuffer(const CMessageBuffer & b)
 {
 	//TODO: check buffer type ID
 	unsigned int pos = b.getHeaderLength();
-	return this->setData(b, pos);
+	return setData(b, pos);
 }
 
 /*

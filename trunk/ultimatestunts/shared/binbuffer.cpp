@@ -257,20 +257,22 @@ CString CBinBuffer::dump() const {
 	return res;
 }
 
-CBinBuffer & CBinBuffer::substr(const int unsigned pos, const int n) const {
-	CBinBuffer *res = new CBinBuffer();
-	if (pos <= this->size()) {
+CBinBuffer CBinBuffer::substr(const int unsigned pos, const int n) const {
+	CBinBuffer res;
+	if (pos <= size())
+	{
 		int len = n;
-		if (len == -1) { len = this->size() -pos; }
-		for (int unsigned i = pos;i<len+pos;i++) {
-			res->push_back((*this)[i]);
-		}
+		if (len == -1) len = size() - pos;
+		for (int unsigned i = pos;i<len+pos;i++)
+			res.push_back((*this)[i]);
 	}
-	return (*res);
+	return res;
 }
 
+/*
 char * CBinBuffer::raw_str() const {        // NOT zero terminated (use .dump().c_str() to print it)
 	char * res = new char[this->size()+1];
 	for (int unsigned i=0;i<this->size();i++) { res[i]= (char) (*this)[i]; }
 	return (res);
 }
+*/

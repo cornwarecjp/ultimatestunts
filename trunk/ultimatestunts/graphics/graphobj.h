@@ -30,12 +30,15 @@ class CGraphObj : public CDataObject
 		virtual void unload();
 
 		void draw(int lod) const;
+
 	protected:
 		unsigned int m_ObjListRef, m_ObjList1, m_ObjList2, m_ObjList3, m_ObjList4;
 
 		float m_OpacityState;
 		CVector m_ColorState;
 		void setMaterialColor();
+
+		bool loadGLB(const CString &filename, const CParamList &list);
 };
 
 #endif

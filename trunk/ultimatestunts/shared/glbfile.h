@@ -1,8 +1,9 @@
 /***************************************************************************
-                          ipnumber.h  -  ip number storage+converting class
+                          glbfile.h  -  Interface for the GLB file format
                              -------------------
-    copyright            : (C) 2002 by bones
-    email                : boesemar@users.sourceforge.net
+    begin                : di feb 1 2005
+    copyright            : (C) 2005 by CJP
+    email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
 
 /***************************************************************************
@@ -14,39 +15,46 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef IPNUMBER_H
-#define IPNUMBER_H
+#ifndef GLBFILE_H
+#define GLBFILE_H
 
-#include <sys/types.h>
-
-#include "SDL.h"
 #include <vector>
 namespace std {}
 using namespace std;
 
+#include "vector.h"
 #include "cstring.h"
+/**
+  *@author CJP
+  */
 
-class CIPNumber
-{
-public:
-	CIPNumber();
-	CIPNumber(const CIPNumber & c);
-	virtual ~CIPNumber();
+class CGLBFile {
+public: 
+	CGLBFile();
+	~CGLBFile();
 
-	Uint8 operator[] (const Uint8 ix) const;
-	CIPNumber & operator = (const CString & s);
-	CIPNumber & operator = (u_int32_t s_addr);
-	bool operator==(const CIPNumber & two) const;
+	//loading and saving
+	bool load(const CString &filename);
+	void save(const CString &filename);
 
-	CString & toString () const;
+	//the data:
+	struct SVertex
+	{
+		CVector pos, nor, tex;
+	};
+	struct SPrimitive
+	{
+		vector<SVertex> vertex;
+		vector<unsigned int> index;
 
-private:
-	Uint8 m_IP[4];
-
+		int Texture;
+		CString Name;
+		unsigned int LODs;
+		CVector ModulationColor, ReplacementColor;
+		float Opacity, Reflectance, Emissivity;
+		float StaticFriction, DynamicFriction;
+	};
+	vector<SPrimitive> m_Primitives;
 };
 
-
 #endif
-
-
-

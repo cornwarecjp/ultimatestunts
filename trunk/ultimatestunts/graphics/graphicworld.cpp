@@ -168,6 +168,7 @@ bool CGraphicWorld::loadObjects()
 		p.name = "lodoffset";
 		p.value = molod;
 		plist.push_back(p);
+
 		loadObject(bounds[i]->getFilename(), plist, CDataObject::eBound);
 	}
 

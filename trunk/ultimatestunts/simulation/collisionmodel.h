@@ -58,6 +58,8 @@ protected:
 
 	void determineOBVs();
 	void determinePlaneEquations();
+
+	bool loadGLB(const CString &filename, const CParamList &list);
 };
 
 #endif

@@ -22,69 +22,63 @@ void changePrimitiveFunc()
 	printf("Type: ");
 	switch(p.m_Type)
 	{
-	case GL_TRIANGLES: printf("Triangles\n"); break;
-	case GL_QUADS: printf("Quads\n"); break;
-	case GL_TRIANGLE_STRIP: printf("Trianglestrip\n"); break;
-	case GL_QUAD_STRIP: printf("Quadstrip\n"); break;
-	case GL_POLYGON: printf("Polygon\n"); break;
+	case CPrimitive::Triangles: printf("Triangles\n"); break;
+	case CPrimitive::Quads: printf("Quads\n"); break;
+	case CPrimitive::TriangleStrip: printf("Trianglestrip\n"); break;
+	case CPrimitive::QuadStrip: printf("Quadstrip\n"); break;
+	case CPrimitive::Polygon: printf("Polygon\n"); break;
+	case CPrimitive::VertexArray: printf("Vertex array\n"); break;
 	}
 	printf("Texture: %d\n", p.m_Texture);
 	printf("LODs: %s\n", p.m_LODs.c_str());
+	printf("Modulation color: %s\n", CString(p.m_ModulationColor).c_str());
+	printf("Texture replacement color: %s\n", CString(p.m_ReplacementColor).c_str());
+	printf("Opacity: %.3f\n", p.m_Opacity);
+	printf("Reflectance: %.3f\n", p.m_Reflectance);
+	printf("Emissivity: %.3f\n", p.m_Emissivity);
+	printf("Static friction coefficient: %.3f\n", p.m_StaticFriction);
+	printf("Dynamic friction coefficient: %.3f\n", p.m_DynamicFriction);
 	printf("Entering \"-\" will leave a property unchanged\n");
 
 	CString answ = getInput("Enter new name: ");
 	if(answ != "-")
 		p.m_Name = answ;
 
-	printf("Choose the type:\n"
-		"1: Triangles\n"
-		"2: Quads\n"
-		"3: Trianglestrip\n"
-		"4: Quadstrip\n"
-		"5: Polygon\n"
-	);
-	answ = getInput(": ");
-	if(answ != "-")
-		switch(answ.toInt())
-		{
-		case 1: p.m_Type = GL_TRIANGLES; break;
-		case 2: p.m_Type = GL_QUADS; break;
-		case 3: p.m_Type = GL_TRIANGLE_STRIP; break;
-		case 4: p.m_Type = GL_QUAD_STRIP; break;
-		case 5: p.m_Type = GL_POLYGON; break;
-		}
-
-	answ = getInput("Enter new color: ");
-	if(answ != "-")
-	{
-		CVector c = answ.toVector();
-		for(unsigned int i=0; i < p.m_Vertex.size(); i++)
-			p.m_Vertex[i].col = c;
-	}
-
-	answ = getInput("Enter new opacity: ");
-	if(answ != "-")
-	{
-		float o = answ.toFloat();
-		for(unsigned int i=0; i < p.m_Vertex.size(); i++)
-			p.m_Vertex[i].opacity = o;
-	}
-
-	answ = getInput("Enter new reflectance: ");
-	if(answ != "-")
-	{
-		float o = answ.toFloat();
-		for(unsigned int i=0; i < p.m_Vertex.size(); i++)
-			p.m_Vertex[i].reflectance = o;
-	}
-
-	answ = getInput("Enter new texture: ");
+	answ = getInput("Which texture should be attached? ");
 	if(answ != "-")
 		p.m_Texture = answ.toInt();
 
-	answ = getInput("Enter new LODs: ");
+	answ = getInput("In which LODs should it be visible? ");
 	if(answ != "-")
 		p.m_LODs = answ;
+
+	answ = getInput("Modulation color: ");
+	if(answ != "-")
+		p.m_ModulationColor = answ.toVector();
+
+	answ = getInput("Texture replacement color: ");
+	if(answ != "-")
+		p.m_ReplacementColor = answ.toVector();
+
+	answ = getInput("Opacity: ");
+	if(answ != "-")
+		p.m_Opacity = answ.toFloat();
+
+	answ = getInput("Reflectance: ");
+	if(answ != "-")
+		p.m_Reflectance = answ.toFloat();
+
+	answ = getInput("Emissivity: ");
+	if(answ != "-")
+		p.m_Emissivity = answ.toFloat();
+
+	answ = getInput("Static friction coefficient: ");
+	if(answ != "-")
+		p.m_StaticFriction = answ.toFloat();
+
+	answ = getInput("Dynamic friction coefficient: ");
+	if(answ != "-")
+		p.m_DynamicFriction = answ.toFloat();
 
 	graphobj->render(VisibleLODs);
 }

@@ -65,13 +65,13 @@ public:
 
 
 	bool setData(const CBinBuffer & b);
-	CBinBuffer & getData() const;
+	CBinBuffer getData() const;
 
 
 	int getHeaderLength() const;
 
 	bool setBuffer(const CBinBuffer & b);               // restore messagebuffer
-	CBinBuffer & getBuffer();
+	CBinBuffer getBuffer();
 
 	void setIP(const CIPNumber & ip) { m_netIP = ip; }
 	void setPort(const int port) { m_netPort = port; }
@@ -79,7 +79,7 @@ public:
 	int getPort() const { return m_netPort; }
 
 private:
-	s_msg_header * getHeader() const;
+	s_msg_header getHeader() const;
 	bool setHeader(s_msg_header &);
 
 	CIPNumber m_netIP;      // to be set to tranfer messages over network

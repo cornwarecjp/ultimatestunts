@@ -18,6 +18,8 @@
 #ifndef EDITGRAPHOBJ_H
 #define EDITGRAPHOBJ_H
 
+#include <GL/gl.h>
+
 #include <vector>
 namespace std {}
 using namespace std;
@@ -31,15 +33,34 @@ using namespace std;
 
 class CVertex {
 public:
-	CVector pos, nor, col, tex; //position, normal, color, texcoord
+	CVector pos, nor, tex; //position, normal, texcoord
+
+	//old properties (for backward compatibility)
+	CVector col;
 	float opacity, reflectance;
 };
 
 class CPrimitive {
 public:
-	int m_Type, m_Texture;
+	enum eType
+	{
+		Triangles = GL_TRIANGLES,
+		Quads = GL_QUADS,
+		TriangleStrip = GL_TRIANGLE_STRIP,
+		QuadStrip = GL_QUAD_STRIP,
+		Polygon =GL_POLYGON,
+		VertexArray
+	} m_Type;
+	
+	int m_Texture;
 	CString m_Name, m_LODs;
 	vector<CVertex> m_Vertex;
+
+	//For vertex array objects:
+	vector<unsigned int> m_Index;
+	CVector m_ModulationColor, m_ReplacementColor;
+	float m_Opacity, m_Reflectance, m_Emissivity;
+	float m_StaticFriction, m_DynamicFriction;
 };
 
 class CEditGraphObj : public CGraphObj  {
@@ -49,24 +70,31 @@ public:
 
 	/*
 	DON't use load(..) at the moment: use loadFromFile instead.
-	TODO: remove loadFromFile with a load-derived function
+	TODO: remove load*File with a load-derived function
 	*/
-	virtual bool loadFromFile(CString filename, CLODTexture **matarray);
-	bool import_raw(CString filename, CLODTexture **matarray);
-	bool import_3ds(CString filename, CLODTexture **matarray);
+	virtual bool loadGLTFile(CString filename);
+	virtual bool loadGLBFile(CString filename);
+	bool loadRAWFile(CString filename);
+	bool load3DSFile(CString filename);
 
 	void merge(const CEditGraphObj &obj, const CString &lods);
 
 	void render(const CString &visibleLODs); //updates openGL data when primitives are changed
 
+	void convertToVertexArrays();
+
 	void clear();
-	void saveToFile(CString filename);
+	void saveGLTFile(const CString &filename);
+	void saveGLBFile(const CString &filename);
 
 	vector<CPrimitive> m_Primitives;
 
+	CLODTexture **m_MatArray;
 protected:
 	bool isRendered;
-	CLODTexture **m_MatArray;
+
+	unsigned int findOrAdd(CPrimitive &pr, const CVertex &v, unsigned int &writeIndex);
+	bool isEqual(const CVertex &v1, const CVertex &v2);
 };
 
 #endif

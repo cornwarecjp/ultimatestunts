@@ -23,50 +23,44 @@ void loadFunc()
 
 		CEditGraphObj obj2;
 		printf("Opening file. Choose from:\n"
-			"1: *.gl file\n"
-			"2: 3dto3d smooth *.raw file\n"
-			"3: 3D Studio *.3ds file\n");
+			"1: *.glt / *.gl file\n"
+			"2: *.glb file\n"
+			"3: 3dto3d smooth *.raw file\n"
+			"4: 3D Studio *.3ds file\n");
 		switch(getInput("Your choice: ").toInt())
 		{
 			case 1:
-				obj2.loadFromFile(
-					topdir + getInput("Enter filename: "),
-					texloader->m_TexArray); break;
+				obj2.loadGLTFile(getInput("Enter filename: ")); break;
 			case 2:
-				obj2.import_raw(
-					topdir + getInput("Enter filename: "),
-					texloader->m_TexArray); break;
+				obj2.loadGLBFile(getInput("Enter filename: ")); break;
 			case 3:
-				obj2.import_3ds(
-					topdir + getInput("Enter filename: "),
-					texloader->m_TexArray); break;
+				obj2.loadRAWFile(getInput("Enter filename: ")); break;
+			case 4:
+				obj2.load3DSFile(getInput("Enter filename: ")); break;
 			default:
-				printf("Please choose between 1, 2 and 3\n");
+				printf("Please choose between 1, 2, 3 and 4\n");
 		}
 		graphobj->merge(obj2, lods);
 	}
 	else
 	{
 		printf("Opening file. Choose from:\n"
-			"1: *.gl file\n"
-			"2: 3dto3d smooth *.raw file\n"
-			"3: 3D Studio *.3ds file\n");
+			"1: *.glt / *.gl file\n"
+			"2: *.glb file\n"
+			"3: 3dto3d smooth *.raw file\n"
+			"4: 3D Studio *.3ds file\n");
 		switch(getInput("Your choice: ").toInt())
 		{
 			case 1:
-				graphobj->loadFromFile(
-					topdir + getInput("Enter filename: "),
-					texloader->m_TexArray); break;
+				graphobj->loadGLTFile(getInput("Enter filename: ")); break;
 			case 2:
-				graphobj->import_raw(
-					topdir + getInput("Enter filename: "),
-					texloader->m_TexArray); break;
+				graphobj->loadGLBFile(getInput("Enter filename: ")); break;
 			case 3:
-				graphobj->import_3ds(
-					topdir + getInput("Enter filename: "),
-					texloader->m_TexArray); break;
+				graphobj->loadRAWFile(getInput("Enter filename: ")); break;
+			case 4:
+				graphobj->load3DSFile(getInput("Enter filename: ")); break;
 			default:
-				printf("Please choose between 1, 2 and 3\n");
+				printf("Please choose between 1, 2, 3 and 4\n");
 		}
 	}
 	graphobj->render(VisibleLODs);
@@ -74,7 +68,20 @@ void loadFunc()
 
 void saveFunc()
 {
-	graphobj->saveToFile(topdir + getInput("Saving *.gl file.\nEnter filename: "));
+	printf("Saving file. Choose from:\n"
+		"1: *.glb file\n"
+		"2: *.glt file\n");
+	switch(getInput("Your choice: ").toInt())
+	{
+	case 1:
+		graphobj->saveGLBFile(getInput("Saving *.glb file.\nEnter filename: "));
+		break;
+	case 2:
+		graphobj->saveGLTFile(getInput("Saving *.glt file.\nEnter filename: "));
+		break;
+	}
+
+	return;
 }
 
 void settingsFunc()

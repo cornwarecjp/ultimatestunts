@@ -21,7 +21,6 @@
 
 #include <cstdio>
 #include <cstdlib>
-#include <GL/gl.h>
 
 //Common files
 #include "lconfig.h"
@@ -49,6 +48,7 @@ enum eKeyconf {
 	eNew = 'n',
 	eChange = 'c',
 	eChangePrimitive = 'C',
+	eConvertToArray = 'a',
 	eDuplicatePrimitive = 'd',
 	eSetCollision = 'l',
 
@@ -186,6 +186,7 @@ int main(int argc, char *argv[])
 	texloader = new CTextureLoader(*theMainConfig, "textures.dat");
 
 	graphobj = new CEditGraphObj;
+	graphobj->m_MatArray = texloader->m_TexArray;
 	graphobj->render(VisibleLODs);
 
 	printf("\nInitialising the rendering engine\n");

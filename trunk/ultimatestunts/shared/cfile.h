@@ -19,7 +19,9 @@
 #define CFILE_H
 
 #include <cstdio> //voor FILE type
+
 #include "cstring.h"
+#include "binbuffer.h"
 
 class CFile
 {
@@ -34,6 +36,9 @@ class CFile
 
 		virtual CString readl();
 		virtual void writel(CString l);
+
+		virtual CBinBuffer readBytes(unsigned int maxlen);
+		virtual void writeBytes(const CBinBuffer &b);
 
 		virtual CString getName()
 			{return m_Filename;}

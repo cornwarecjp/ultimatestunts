@@ -43,33 +43,38 @@ void newFunc()
 		CVertex vt;
 		vt.pos = getInput("Give position: ").toVector();
 		vt.nor = getInput("Give normal: ").toVector();
-		vt.col = getInput("Give color: ").toVector();
-		vt.opacity = getInput("Give opacity: ").toFloat();
-		vt.reflectance = getInput("Give reflectance: ").toFloat();
 		vt.tex = getInput("Give texcoord: ").toVector();
 		graphobj->m_Primitives[curr_primitive].m_Vertex.push_back(vt);
+	}
+	else if(graphobj->m_Primitives[curr_primitive].m_Type == CPrimitive::VertexArray &&
+		getInput("Do you want to add a new triangle (y/n)? ") == "y")
+	{
+		CPrimitive &pr = graphobj->m_Primitives[curr_primitive];
+		for(unsigned int i=0; i<pr.m_Vertex.size(); i++)
+			printf("\t%d: %f,%f,%f\n", i,
+				pr.m_Vertex[i].pos.x,
+				pr.m_Vertex[i].pos.y,
+				pr.m_Vertex[i].pos.z);
+		
+		CVector indices = getInput("Enter the vertex indices: ").toVector();
+		pr.m_Index.push_back((unsigned int)indices.x);
+		pr.m_Index.push_back((unsigned int)indices.y);
+		pr.m_Index.push_back((unsigned int)indices.z);
 	}
 	else if(getInput("Do you want to add a new primitive (y/n)? ") == "y")
 	{
 		CPrimitive p;
+		p.m_Type = CPrimitive::VertexArray;
 		p.m_Name = getInput("Enter the name: ");
-		printf("Choose the type:\n"
-			"1: Triangles\n"
-			"2: Quads\n"
-			"3: Trianglestrip\n"
-			"4: Quadstrip\n"
-			"5: Polygon\n"
-		);
-		switch(getInput(": ").toInt())
-		{
-		case 1: p.m_Type = GL_TRIANGLES; break;
-		case 2: p.m_Type = GL_QUADS; break;
-		case 3: p.m_Type = GL_TRIANGLE_STRIP; break;
-		case 4: p.m_Type = GL_QUAD_STRIP; break;
-		case 5: p.m_Type = GL_POLYGON; break;
-		}
 		p.m_Texture = getInput("Which texture should be attached? ").toInt();
 		p.m_LODs = getInput("In which LODs should it be visible? ");
+		p.m_ModulationColor = getInput("Modulation color: ").toVector();
+		p.m_ReplacementColor = getInput("Texture replacement color: ").toVector();
+		p.m_Opacity = getInput("Opacity: ").toFloat();
+		p.m_Reflectance = getInput("Reflectance: ").toFloat();
+		p.m_Emissivity = getInput("Emissivity: ").toFloat();
+		p.m_StaticFriction = getInput("Static friction coefficient: ").toFloat();
+		p.m_DynamicFriction = getInput("Dynamic friction coefficient: ").toFloat();
 		graphobj->m_Primitives.push_back(p);
 		curr_primitive = graphobj->m_Primitives.size()-1;
 	}
@@ -82,9 +87,6 @@ void changeFunc()
 	CVertex &vt = graphobj->m_Primitives[curr_primitive].m_Vertex[curr_vertex];
 	printf("Pos: %f,%f,%f\n", vt.pos.x, vt.pos.y, vt.pos.z);
 	printf("Nor: %f,%f,%f\n", vt.nor.x, vt.nor.y, vt.nor.z);
-	printf("Col: %f,%f,%f\n", vt.col.x, vt.col.y, vt.col.z);
-	printf("Opacity: %f\n", vt.opacity);
-	printf("Reflectance: %f\n", vt.reflectance);
 	printf("Tex: %f,%f\n", vt.tex.x, vt.tex.y);
 
 	CString answ = getInput("Give new position: ");
@@ -94,18 +96,6 @@ void changeFunc()
 	answ = getInput("Give new normal: ");
 	if(answ != "-")
 		vt.nor = answ.toVector();
-
-	answ = getInput("Give new color: ");
-	if(answ != "-")
-		vt.col = answ.toVector();
-
-	answ = getInput("Give new opacity: ");
-	if(answ != "-")
-		vt.opacity = answ.toFloat();
-
-	answ = getInput("Give new reflectance: ");
-	if(answ != "-")
-		vt.reflectance = answ.toFloat();
 
 	answ = getInput("Give new texcoord: ");
 	if(answ != "-")
@@ -119,5 +109,6 @@ void duplicatePrimitiveFunc()
 	CPrimitive p = graphobj->m_Primitives[curr_primitive];
 	graphobj->m_Primitives.push_back(p);
 	curr_primitive =graphobj->m_Primitives.size()-1;
+	printf("Primitive is duplicated\n");
 	graphobj->render(VisibleLODs);
 }
