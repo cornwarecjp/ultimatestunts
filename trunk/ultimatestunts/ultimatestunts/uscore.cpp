@@ -66,14 +66,22 @@ void CUSCore::readyAndLoad()
 	printf("Setting cameras\n");
 	m_Renderer->setCameras(m_Cameras, m_NumCameras);
 	m_SoundSystem->setCamera(m_Cameras[0]); //first camera
+
+	m_FPS = 0.0; //to begin with
 }
 
 bool CUSCore::update()
 {
+	//FPS:
+	float dt = m_Timer.getdt(0.00001);
+	float fpsnu = 1.0 / dt;
+	m_FPS = 0.9 * m_FPS + 0.1 * fpsnu;
+	
 	//Debugging 'display'
 	m_Console->clear();
 	static float topspeed = 0.0;
 
+	m_Console->print(CString("Frame rate: ") + int(m_FPS) + " FPS");
 	m_Console->print(CString("Top speed in this session: ") + (float)(topspeed*3.6) + " km/h");
 	for(unsigned int i=0; i<m_World->getNumObjects(CDataObject::eMovingObject); i++)
 	{

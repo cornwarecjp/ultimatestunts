@@ -19,14 +19,20 @@
 #include <config.h>
 #endif
 
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 
 #include "hello.h"
+#include "usmisc.h"
 
 int main(int argc, char *argv[])
 {
-  hello h;
-  h.writeHello();
+	printf("Welcome to " PACKAGE " version " VERSION "\n");
 
-  return EXIT_SUCCESS;
+	shared_main(argc, argv);
+
+	hello h;
+	h.writeHello();
+
+	return EXIT_SUCCESS;
 }

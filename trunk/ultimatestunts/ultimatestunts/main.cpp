@@ -19,6 +19,11 @@
 #include <config.h>
 #endif
 
+//internationalisation:
+#include <locale.h>
+#include <libintl.h>
+#define _(String) gettext (String)
+
 //Standard includes
 #include <cstdlib>
 #include <cstdio>
@@ -27,40 +32,15 @@ namespace std {}
 using namespace std;
 
 #include "cstring.h"
+#include "usmisc.h"
 #include "lconfig.h"
-#include "filecontrol.h"
 #include "gamegui.h"
 
 int main(int argc, char *argv[])
 {
 	printf("Welcome to " PACKAGE " version " VERSION "\n");
 
-	theMainConfig = new CLConfig(argc, argv);
-	if(!theMainConfig->setFilename("ultimatestunts.conf"))
-	{
-		printf("Error: could not read ultimatestunts.conf\n");
-		//TODO: create a default one
-	}
-	else
-	{
-		printf("Using ultimatestunts.conf\n");
-	}
-
-	CFileControl *fctl = new CFileControl;
-	{
-		//Default:
-		CString DataDir = ""; //try in default directories, like "./"
-
-		CString cnf = theMainConfig->getValue("files", "datadir");
-		if(cnf != "")
-		{
-			if(cnf[cnf.length()-1] != '/') cnf += '/';
-			DataDir = cnf;
-		}
-		fctl->setDataDir(DataDir);
-	}
-
-	printf("Initialising Ultimate Stunts:\n");
+	shared_main(argc, argv);
 
 	printf("---Window system\n");
 	CGameWinSystem *winsys = new CGameWinSystem("Ultimate Stunts", *theMainConfig);

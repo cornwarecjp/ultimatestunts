@@ -8,4 +8,4 @@ CFLAGS=-Wall
 
 AUTOMAKE_OPTIONS = foreign 1.4
 
-SUBDIRS = data shared simulation graphics stuntsserver stuntsai stunts3dedit trackedit ultimatestunts
+SUBDIRS = intl po data shared simulation graphics stuntsserver stuntsai stunts3dedit trackedit ultimatestunts

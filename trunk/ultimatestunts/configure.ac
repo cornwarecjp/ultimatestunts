@@ -2,7 +2,9 @@ dnl Process this file with autoconf to produce a configure script.
 
 AC_INIT([Ultimate Stunts], [0.5.3], [cornware-cjp@users.sourceforge.net], [ultimatestunts])
 AC_CONFIG_SRCDIR([ultimatestunts/main.cpp])
+AC_CONFIG_HEADER(config.h)
 AC_CANONICAL_TARGET
+
 AM_INIT_AUTOMAKE
 
 dnl Checks for programs.
@@ -171,11 +173,16 @@ fi
 CFLAGS="-Wall $CFLAGS"
 CXXFLAGS="-Wall $CXXFLAGS"
 
+dnl -------------------
+dnl i18n
+dnl -------------------
+AM_GNU_GETTEXT
+
 dnl ------------------
 dnl The directory locations
 dnl ------------------
 dnl TODO: set this with some intelligent script
-datadir="./data/"
+usdatadir="./data/"
 stuntsdir='${prefix}/games/ultimatestunts'
 
 dnl ------
@@ -188,7 +195,7 @@ echo "Sound libraries: \"$soundlibs\""
 echo "Graphics libraries: \"$graphlibs\""
 echo "SDL libraries: \"$sdllibs\""
 echo "ODE libraries: \"$odelibs\""
-echo "datadir: \"$datadir\""
+echo "usdatadir: \"$usdatadir\""
 echo "stuntsdir: \"$stuntsdir\""
 
 dnl -------------
@@ -228,7 +235,8 @@ AC_SUBST(sdllibs)
 AC_SUBST(odelibs)
 
 AC_SUBST(PACKAGE_VERSION)
-AC_SUBST(datadir)
+AC_SUBST(usdatadir)
 AC_SUBST(stuntsdir)
 
-AC_OUTPUT(ultimatestunts.conf ultimatestunts.sh Makefile data/Makefile shared/Makefile simulation/Makefile graphics/Makefile stuntsserver/Makefile stuntsai/Makefile stunts3dedit/Makefile trackedit/Makefile ultimatestunts/Makefile)
+AC_CONFIG_FILES([ultimatestunts.conf ultimatestunts.sh Makefile intl/Makefile po/Makefile.in data/Makefile shared/Makefile simulation/Makefile graphics/Makefile stuntsserver/Makefile stuntsai/Makefile stunts3dedit/Makefile trackedit/Makefile ultimatestunts/Makefile])
+AC_OUTPUT

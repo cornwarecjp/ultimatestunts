@@ -36,7 +36,7 @@ using namespace std;
 #endif
 
 #include "lconfig.h"
-#include "filecontrol.h"
+#include "usmisc.h"
 
 #include "main.h"
 
@@ -59,27 +59,11 @@ int main(int argc, char *argv[])
 {
 	printf("Welcome to the " PACKAGE " server version " VERSION "\n");
 
+	shared_main(argc, argv);
+
 #ifdef USE_SDL
 	SDL_Init(SDL_INIT_TIMER);
 #endif
-
-	printf("Loading configuration file\n");
-	theMainConfig = new CLConfig(argc, argv);
-	theMainConfig->setFilename("ultimatestunts.conf");
-
-	CFileControl *fctl = new CFileControl;
-	{
-		//Default:
-		CString DataDir = ""; //try in default directories, like "./"
-
-		CString cnf = theMainConfig->getValue("files", "datadir");
-		if(cnf != "")
-		{
-			if(cnf[cnf.length()-1] != '/') cnf += '/';
-			DataDir = cnf;
-		}
-		fctl->setDataDir(DataDir);
-	}
 
 	printf("Parsing input arguments\n");
 	for(int i=0; i<argc; i++)

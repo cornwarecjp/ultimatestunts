@@ -22,6 +22,10 @@
   *@author CJP
   */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #ifdef HAVE_LIBFMOD
 #ifdef FMOD_HEADER
 #include <fmod/fmod.h>

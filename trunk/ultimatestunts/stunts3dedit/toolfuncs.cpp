@@ -213,68 +213,32 @@ void setCollisionFunc()
 
 	CPrimitive &pr = graphobj->m_Primitives[curr_primitive];
 
-	if(pr.m_Type != GL_QUADS)
-	{
-		printf("This function only works with quads!\n");
-		return;
-	}
-
 	if(pr.m_LODs != "c")
 	{
 		printf("This primitive is not collision-LOD only (LOD must be \"c\")\n");
 		return;
 	}
 
-	unsigned int numPlanes = pr.m_Vertex.size() / 4; //rounded to lower value if necessary
+	unsigned int numPlanes = pr.m_Index.size() / 3; //rounded to lower value if necessary
 	for(unsigned int plane=0; plane < numPlanes; plane++)
 	{
 		//determine the plane normal and d
 
 		//the first point
-		CVector p1 = pr.m_Vertex[4*plane].pos;
+		CVector &p1 = pr.m_Vertex[pr.m_Index[3*plane]].pos;
+		CVector &p2 = pr.m_Vertex[pr.m_Index[3*plane+1]].pos;
+		CVector &p3 = pr.m_Vertex[pr.m_Index[3*plane+2]].pos;
 
-		//the second point: as far away from 1 as possible
-		unsigned int index_2nd = 1;
-		CVector p2 = pr.m_Vertex[4*plane + index_2nd].pos;
-		float dist2 = (p2-p1).abs2();
-		for(unsigned int j=2; j<4; j++)
+		//the cross product
+		CVector crosspr = (p3-p1).crossProduct(p1 - p2);
+
+		if(crosspr.abs2() < 0.00001) //too small
 		{
-			float d2 = (pr.m_Vertex[4*plane + j].pos - p1).abs2();
-			if(d2 > dist2)
-				{p2 = pr.m_Vertex[4*plane + j].pos; dist2 = d2; index_2nd = j;}
-		}
-
-		//the third point: try to maximise cross product
-		CVector crosspr;
-		float crosspr_abs2 = 0.0;
-		bool reverse = false; //2 and 3 in reverse order
-		CVector p1p2 = p2 - p1;
-		for(unsigned int j=1; j<4; j++)
-		{
-			const CVector &p3 = pr.m_Vertex[4*plane + j].pos;
-			CVector cp = (p3-p1).crossProduct(p1p2);
-			float abs2 = cp.abs2();
-
-			if(abs2 > crosspr_abs2)
-			{
-				crosspr = cp;
-				crosspr_abs2 = abs2;
-				reverse = (j<index_2nd);
-			}
-		}
-
-		if(crosspr_abs2 < 0.00001) //too small
-		{
-			printf("There is a quad in the primitive which is more line- or point-like\n");
+			printf("There is a triangle in the primitive which is more line- or point-like\n");
 			return;
 		}
 
-		CVector nor;
-		if(reverse) //2 and 3 in reverse order
-			nor = crosspr.normal();
-		else
-			nor = -crosspr.normal();
-
+		CVector nor = crosspr.normal();
 		float dplane = p1.dotProduct(nor);
 
 		//determine the max object d
@@ -292,8 +256,9 @@ void setCollisionFunc()
 
 		//translate plane vertices
 		CVector dpos = (dobj - dplane) * nor;
-		for(unsigned int i=0; i < 4; i++)
-			pr.m_Vertex[4*plane + i].pos += dpos;
+		p1 += dpos;
+		p2 += dpos;
+		p3 += dpos;
 	}
 
 	graphobj->render(VisibleLODs);

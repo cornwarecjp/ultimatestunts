@@ -23,6 +23,10 @@
   *@author CJP
   */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "cstring.h"
 #include "vector.h"
 #include "sndsample.h"

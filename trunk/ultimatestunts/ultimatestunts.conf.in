@@ -86,7 +86,7 @@ fogmode = linear
 
 #Files section
 [files]
-datadir = @datadir@
+datadir = @usdatadir@
 
 #Sound section
 [sound]

@@ -19,6 +19,7 @@
 #define USCORE_H
 
 #include "gamecore.h"
+#include "timer.h"
 
 //Graphics stuff
 #include "gamewinsystem.h"
@@ -53,6 +54,9 @@ protected:
 	unsigned int m_NumCameras;
 
 	CSound *m_SoundSystem;
+
+	CTimer m_Timer; //for the FPS counter
+	float m_FPS;
 
 	virtual void loadTrackData();
 	virtual void loadMovObjData();

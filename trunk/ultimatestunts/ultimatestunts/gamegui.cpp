@@ -19,6 +19,10 @@
 #include <cstdlib>
 #include <unistd.h>
 
+#include <libintl.h>
+#define _(String) gettext (String)
+#define N_(String1, String2, n) ngettext ((String1), (String2), (n))
+
 #include "gamegui.h"
 #include "menu.h"
 
@@ -58,7 +62,7 @@ CGameGUI::CGameGUI(const CLConfig &conf, CGameWinSystem *winsys) : CGUI(conf, wi
 
 	//setting up the menus:
 	//MAIN MENU
-	m_MainPage.m_Title = "Main menu";
+	m_MainPage.m_Title = _("Main menu");
 	CMenu *menu = new CMenu;
 	menu->m_Xrel = 0.1;
 	menu->m_Yrel = 0.2;
@@ -69,7 +73,7 @@ CGameGUI::CGameGUI(const CLConfig &conf, CGameWinSystem *winsys) : CGUI(conf, wi
 	menu->m_AlignLeft = true;
 
 	//GAMETYPE MENU
-	m_GameTypePage.m_Title = "Select the game type:";
+	m_GameTypePage.m_Title = _("Select the game type:");
 	menu = new CMenu;
 	menu->m_Xrel = 0.1;
 	menu->m_Yrel = 0.2;
@@ -80,7 +84,7 @@ CGameGUI::CGameGUI(const CLConfig &conf, CGameWinSystem *winsys) : CGUI(conf, wi
 	menu->m_AlignLeft = true;
 
 	//TRACK MENU
-	m_TrackPage.m_Title = "Select a track:";
+	m_TrackPage.m_Title = _("Select a track:");
 	menu = new CMenu;
 	menu->m_Xrel = 0.1;
 	menu->m_Yrel = 0.2;
@@ -91,7 +95,7 @@ CGameGUI::CGameGUI(const CLConfig &conf, CGameWinSystem *winsys) : CGUI(conf, wi
 	menu->m_AlignLeft = false;
 
 	//PLAYER MENU
-	m_PlayerPage.m_Title = "Select a car:";
+	m_PlayerPage.m_Title = _("Select a car:");
 	menu = new CMenu;
 	menu->m_Xrel = 0.1;
 	menu->m_Yrel = 0.2;
@@ -102,7 +106,7 @@ CGameGUI::CGameGUI(const CLConfig &conf, CGameWinSystem *winsys) : CGUI(conf, wi
 	menu->m_AlignLeft = false;
 
 	//LOADING MENU
-	m_LoadingPage.m_Title = "Loading";
+	m_LoadingPage.m_Title = _("Loading");
 	menu = new CMenu;
 	menu->m_Xrel = 0.1;
 	menu->m_Yrel = 0.2;
@@ -111,10 +115,10 @@ CGameGUI::CGameGUI(const CLConfig &conf, CGameWinSystem *winsys) : CGUI(conf, wi
 	m_LoadingPage.m_Widgets.push_back(menu);
 	menu->m_Selected = 0;
 	menu->m_AlignLeft = false;
-	menu->m_Lines.push_back("please wait...");
+	menu->m_Lines.push_back(_("please wait..."));
 
 	//HISCORE MENU
-	m_HiscorePage.m_Title = "Hiscore (in future versions)";
+	m_HiscorePage.m_Title = _("Hiscore (in future versions)");
 	menu = new CMenu;
 	menu->m_Xrel = 0.1;
 	menu->m_Yrel = 0.2;
@@ -145,37 +149,41 @@ void CGameGUI::updateMenuTexts()
 	//MAIN MENU
 	CMenu *menu = (CMenu *)(m_MainPage.m_Widgets[0]);
 	menu->m_Lines.clear();
-	menu->m_Lines.push_back("Start playing");
-	menu->m_Lines.push_back("Set the game type");
-	menu->m_Lines.push_back("Select the track");
-	menu->m_Lines.push_back("Select the players");
-	menu->m_Lines.push_back("Options");
-	menu->m_Lines.push_back("Exit");
+	menu->m_Lines.push_back(_("Start playing"));
+	menu->m_Lines.push_back(_("Set the game type"));
+	menu->m_Lines.push_back(_("Select the track"));
+	menu->m_Lines.push_back(_("Select the players"));
+	menu->m_Lines.push_back(_("Options"));
+	menu->m_Lines.push_back(_("Exit"));
 	//add some information
 	if(m_GameType == LocalGame)
 	{
-		menu->m_Lines[1] += CString(" [Local Game]");
+		menu->m_Lines[1] += CString(_(" [Local Game]"));
 		menu->m_Lines[2] += CString(" [" + m_TrackFile + "]");
 	}
 	else if(m_GameType == NewNetwork)
 	{
-		menu->m_Lines[1] += CString(" [Server started on port ") + m_HostPort + "]";
+		menu->m_Lines[1] += CString().format(_(" [Server started on port %d]"), 80, m_HostPort);
 		menu->m_Lines[2] += CString(" [") + m_TrackFile + "]";
 	}
 	else //JoinNetwork
 	{
-		menu->m_Lines[1] += CString(" [Joining game at ") + m_HostName + ":" + m_HostPort + "]";
-		menu->m_Lines[2] += CString(" [server will choose one]");
+		menu->m_Lines[1] += CString().format(_(" [Joining game at %s:%d]"), 80, m_HostName.c_str(), m_HostPort);
+		menu->m_Lines[2] += CString(_(" [server will choose one]"));
 	}
-	menu->m_Lines[3] += CString(" [") + int(m_PlayerDescr.size()) + " players selected]";
+
+	int nump = int(m_PlayerDescr.size());
+	menu->m_Lines[3] += CString().format(
+		N_(" [%d player selected]", " [%d players selected]", nump),
+		80, nump);
 
 
 	//GAMETYPE MENU
 	menu = (CMenu *)(m_GameTypePage.m_Widgets[0]);
 	menu->m_Lines.clear();
-	menu->m_Lines.push_back("Local game");
-	menu->m_Lines.push_back("Join an existing network game");
-	menu->m_Lines.push_back("Start a new network game");
+	menu->m_Lines.push_back(_("Local game"));
+	menu->m_Lines.push_back(_("Join an existing network game"));
+	menu->m_Lines.push_back(_("Start a new network game"));
 
 	//TRACK MENU
 	menu = (CMenu *)(m_TrackPage.m_Widgets[0]);
@@ -188,8 +196,8 @@ void CGameGUI::updateMenuTexts()
 	//HISCORE MENU
 	menu = (CMenu *)(m_HiscorePage.m_Widgets[0]);
 	menu->m_Lines.clear();
-	menu->m_Lines.push_back("Play again");
-	menu->m_Lines.push_back("Return to main menu");
+	menu->m_Lines.push_back(_("Play again"));
+	menu->m_Lines.push_back(_("Return to main menu"));
 }
 
 void CGameGUI::start()
@@ -235,14 +243,14 @@ CString CGameGUI::viewMainMenu()
 		case 2:
 			if(m_GameType == JoinNetwork)
 			{
-				showMessageBox("The track must be selected on the server");
+				showMessageBox(_("The track must be selected on the server"));
 				return "mainmenu";
 			}
 			return "trackmenu";
 		case 3:
 			return "playermenu";
 		case 4:
-			showMessageBox("Please edit ultimatestunts.conf manually");
+			showMessageBox(_("Please edit ultimatestunts.conf manually"));
 			return "mainmenu";
 		case 5:
 			return "exit";
@@ -265,14 +273,14 @@ CString CGameGUI::viewGameTypeMenu()
 			break;
 		case 1:
 			m_GameType = JoinNetwork;
-			m_HostName = showInputBox("Enter the host name:", m_HostName);
-			m_HostPort = showInputBox("Enter the port number:", m_HostPort).toInt();
+			m_HostName = showInputBox(_("Enter the host name:"), m_HostName);
+			m_HostPort = showInputBox(_("Enter the port number:"), m_HostPort).toInt();
 			break;
 		case 2:
 			m_GameType = NewNetwork;
 			m_HostName = "localhost";
-			m_HostPort = showInputBox("Enter the port number:", m_HostPort).toInt();
-			m_MaxNumPlayers = showInputBox("Maximum number of players:", m_MaxNumPlayers).toInt();
+			m_HostPort = showInputBox(_("Enter the port number:"), m_HostPort).toInt();
+			m_MaxNumPlayers = showInputBox(_("Maximum number of players:"), m_MaxNumPlayers).toInt();
 			break;
 	}
 
@@ -331,29 +339,29 @@ CString CGameGUI::viewTrackMenu()
 
 CString CGameGUI::viewPlayerMenu()
 {
-	m_PlayerPage.m_Title = "Player setup";
+	m_PlayerPage.m_Title = _("Player setup");
 	m_ChildWidget = &m_PlayerPage;
 	CMenu *menu = (CMenu *)(m_PlayerPage.m_Widgets[0]);
 
 	m_PlayerDescr.clear();
-	CString name = showInputBox("Enter your name:");
+	CString name = showInputBox(_("Enter your name:"));
 
-	m_PlayerPage.m_Title = CString("Select a car for ") + name;
+	m_PlayerPage.m_Title = CString().format(_("Select a car for %s"), 80, name.c_str());
 	m_WinSys->runLoop(this);
 	CString carfile = CString("cars/") + menu->m_Lines[menu->m_Selected];
 	addPlayer(name, true, carfile);
 
 	while(true)
 	{
-		if(!showYNMessageBox("Do you want to add another player?")) break;
+		if(!showYNMessageBox(_("Do you want to add another player?"))) break;
 
-		name = showInputBox("Enter the name:");
+		name = showInputBox(_("Enter the name:"));
 
-		m_PlayerPage.m_Title = CString("Select a car for ") + name;
+		m_PlayerPage.m_Title = CString().format(_("Select a car for %s"), 80, name.c_str());
 		m_WinSys->runLoop(this);
 		carfile = CString("cars/") + menu->m_Lines[menu->m_Selected];
 
-		bool isHuman = !showYNMessageBox("Is it an AI player?"); 
+		bool isHuman = !showYNMessageBox(_("Is it an AI player?")); 
 		addPlayer(name, isHuman, carfile);
 	}
 
@@ -408,7 +416,10 @@ void CGameGUI::load()
 
 		if(!m_GameCore->addPlayer(p, m_PlayerDescr[i].name, choice))
 		{
-			showMessageBox(CString("Player ") + m_PlayerDescr[i].name + " was refused");
+			showMessageBox(
+				CString().format(_("Player %s was refused"), 80,
+				m_PlayerDescr[i].name.c_str())
+				);
 			onRedraw();
 			m_WinSys->swapBuffers();
 

@@ -25,7 +25,7 @@
 //Common files
 #include "lconfig.h"
 #include "cstring.h"
-#include "filecontrol.h"
+#include "usmisc.h"
 
 //Graphics stuff
 #include "winsystem.h"
@@ -71,8 +71,6 @@ CEditGraphObj *graphobj;
 CTextureLoader *texloader;
 CString VisibleLODs;
 
-CString topdir;
-
 //State variables:
 int curr_primitive = 0, curr_vertex = 0;
 
@@ -117,6 +115,8 @@ bool mainloop()
 		vertexFunc();
 	if(winsys->wasPressed(eNew))
 		newFunc();
+	if(winsys->wasPressed(SDLK_DELETE))
+		deleteFunc();
 	if(winsys->wasPressed(eChange))
 		changeFunc();
 	if(winsys->wasPressed(eChangePrimitive))
@@ -162,25 +162,15 @@ bool mainloop()
 
 int main(int argc, char *argv[])
 {
-	theMainConfig = new CLConfig(argc, argv);
-	if(!theMainConfig->setFilename("ultimatestunts.conf"))
-	{
-		printf("Error: could not read ultimatestunts.conf\n"); return 1;
-		//TODO: create a default one
-	} else {printf("Using ultimatestunts.conf\n");}
+	printf("Welcome to the " PACKAGE " 3D editor version " VERSION "\n");
 
+	shared_main(argc, argv);
+	
 	VisibleLODs = "1234c";
 
 	printf("\nCreating a window\n");
 	winsys = new CWinSystem("Stunts 3D Edit", *theMainConfig);
 
-	topdir = theMainConfig->getValue("files", "datadir");
-	if(topdir != "" && topdir[topdir.length()-1] != '/')
-		topdir += '/';
-	CFileControl fcont;
-	fcont.setDataDir(topdir);
-
-	printf("Filenames are relative to \"%s\"\n", topdir.c_str());
 
 	printf("\nLoading textures from textures.dat\n");
 	texloader = new CTextureLoader(*theMainConfig, "textures.dat");
