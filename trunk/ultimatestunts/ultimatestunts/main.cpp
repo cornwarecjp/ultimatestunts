@@ -31,6 +31,8 @@
 #include "aiplayercar.h"
 #include "humanplayer.h"
 
+#include "timer.h"
+
 CWorld *world;
 CPlayer *player1, *player2, *player3, *player4;
 CSimulation *sim;

@@ -1,7 +1,7 @@
 /***************************************************************************
-                          physics.h  -  dummy file
+                          timer.cpp  -  description
                              -------------------
-    begin                : Wed Nov 20 2002
+    begin                : do dec 19 2002
     copyright            : (C) 2002 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
@@ -15,28 +15,38 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef PHYSICS_H
-#define PHYSICS_H
+//Currently implemented on gettimeofday
+//Future versions possibly work with SDL
+#include <sys/time.h>
 
-
-/**
-  *@author CJP
-  */
-#include "simulation.h"
 #include "timer.h"
 
-class CPhysics : public CSimulation {
-public: 
-	CPhysics(CWorld *w, bool leading=true);
-	virtual ~CPhysics();
+CTimer::CTimer()
+{
+	m_PreviousTime = getTime();
+}
+CTimer::~CTimer(){
+}
 
-  //virtual bool addPlayer(CPlayer *p, CObjectChoice choice); //Using the default ones
-  //virtual bool removePlayer(CPlayer *p);
+float CTimer::getdt()
+{
+	float t = getTime();
+	float dt = t - m_PreviousTime;
+	m_PreviousTime = t;
+	return dt;
+}
 
-  virtual void Update();
+float CTimer::getF()
+{
+	return (1.0 / getdt());
+}
 
-protected:
-	CTimer m_Timer;
-};
-
-#endif
+float CTimer::getTime()
+{
+	//Tijd:
+	struct timeval tv;
+	struct timezone tz;
+	gettimeofday(&tv, &tz);
+	//printf("%d;%d\n", tv.tv_sec, tv.tv_usec);
+	return (tv.tv_sec & 65535) + tv.tv_usec/1000000.0;
+}

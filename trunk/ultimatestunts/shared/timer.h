@@ -1,7 +1,7 @@
 /***************************************************************************
-                          physics.h  -  dummy file
+                          timer.h  -  description
                              -------------------
-    begin                : Wed Nov 20 2002
+    begin                : do dec 19 2002
     copyright            : (C) 2002 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
@@ -15,28 +15,25 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef PHYSICS_H
-#define PHYSICS_H
+#ifndef TIMER_H
+#define TIMER_H
 
 
 /**
   *@author CJP
   */
-#include "simulation.h"
-#include "timer.h"
 
-class CPhysics : public CSimulation {
+class CTimer {
 public: 
-	CPhysics(CWorld *w, bool leading=true);
-	virtual ~CPhysics();
+	CTimer();
+	~CTimer();
 
-  //virtual bool addPlayer(CPlayer *p, CObjectChoice choice); //Using the default ones
-  //virtual bool removePlayer(CPlayer *p);
+	float getdt();
+	float getF();
 
-  virtual void Update();
-
+	float getTime();
 protected:
-	CTimer m_Timer;
+	float m_PreviousTime;
 };
 
 #endif

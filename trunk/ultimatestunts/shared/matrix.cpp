@@ -29,6 +29,8 @@ CMatrix::CMatrix(CVector v)
 {
 	m_M = new float[9];
 
+	//This function is NOT finished.
+	//It currently only handles rotations around the y-axis.
 	rotY(v.y);
 }
 

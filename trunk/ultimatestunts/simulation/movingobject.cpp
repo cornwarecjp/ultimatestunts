@@ -26,9 +26,23 @@ CMovingObject::CMovingObject()
 	//Just for not letting them uninitialised
 	//The simulation should re-initialise them.
 	m_Position = m_Velocity = m_Orientation = m_AngularVelocity = CVector(0,0,0);
+
+	m_RotationMatrix = CMatrix(m_Orientation);
 }
 
 CMovingObject::~CMovingObject()
 {
 	delete m_InputData; //I guess this will happen for all CMovingObject-derived classes
+}
+
+void CMovingObject::setOrientation(CVector v)
+{
+	m_Orientation = v;
+	m_RotationMatrix = CMatrix(m_Orientation);
+}
+
+void CMovingObject::setRotationMatrix(CMatrix &M)
+{
+	m_RotationMatrix = M;
+	//and something to set m_Orientation
 }
