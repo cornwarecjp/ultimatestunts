@@ -141,10 +141,10 @@ target_os = @target_os@
 target_vendor = @target_vendor@
 noinst_LIBRARIES = libgraphics.a
 
-libgraphics_a_SOURCES = console.cpp background.cpp font.cpp graphobj.cpp graphicworld.cpp gui.cpp guipage.cpp image.c lodtexture.cpp reflection.cpp renderer.cpp texture.cpp winsystem.cpp
+libgraphics_a_SOURCES = console.cpp background.cpp font.cpp graphobj.cpp graphicworld.cpp gui.cpp guipage.cpp image.c lodtexture.cpp menu.cpp reflection.cpp renderer.cpp texture.cpp winsystem.cpp
 INCLUDES = $(all_includes) -I../shared -I../simulation
 
-EXTRA_DIST = console.cpp console.h background.cpp background.h camera.h font.cpp font.h graphicworld.cpp graphicworld.h graphobj.cpp graphobj.h gui.cpp gui.h guipage.cpp guipage.h image.c image.h lodtexture.cpp  lodtexture.h reflection.cpp reflection.h renderer.cpp renderer.h texture.cpp texture.h winsystem.cpp winsystem.h
+EXTRA_DIST = console.cpp console.h background.cpp background.h camera.h font.cpp font.h graphicworld.cpp graphicworld.h graphobj.cpp graphobj.h gui.cpp gui.h guipage.cpp guipage.h image.c image.h lodtexture.cpp  lodtexture.h menu.cpp menu.h reflection.cpp reflection.h renderer.cpp renderer.h texture.cpp texture.h winsystem.cpp winsystem.h
 subdir = graphics
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -156,8 +156,8 @@ libgraphics_a_LIBADD =
 am_libgraphics_a_OBJECTS = console.$(OBJEXT) background.$(OBJEXT) \
 	font.$(OBJEXT) graphobj.$(OBJEXT) graphicworld.$(OBJEXT) \
 	gui.$(OBJEXT) guipage.$(OBJEXT) image.$(OBJEXT) \
-	lodtexture.$(OBJEXT) reflection.$(OBJEXT) renderer.$(OBJEXT) \
-	texture.$(OBJEXT) winsystem.$(OBJEXT)
+	lodtexture.$(OBJEXT) menu.$(OBJEXT) reflection.$(OBJEXT) \
+	renderer.$(OBJEXT) texture.$(OBJEXT) winsystem.$(OBJEXT)
 libgraphics_a_OBJECTS = $(am_libgraphics_a_OBJECTS)
 
 DEFAULT_INCLUDES =  -I. -I$(srcdir)
@@ -167,9 +167,9 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/font.Po ./$(DEPDIR)/graphicworld.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/graphobj.Po ./$(DEPDIR)/gui.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/guipage.Po ./$(DEPDIR)/image.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/lodtexture.Po ./$(DEPDIR)/reflection.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/renderer.Po ./$(DEPDIR)/texture.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/winsystem.Po
+@AMDEP_TRUE@	./$(DEPDIR)/lodtexture.Po ./$(DEPDIR)/menu.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/reflection.Po ./$(DEPDIR)/renderer.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/texture.Po ./$(DEPDIR)/winsystem.Po
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
@@ -217,6 +217,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guipage.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/image.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lodtexture.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/menu.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/reflection.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/renderer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/texture.Po@am__quote@

@@ -1,7 +1,7 @@
 /***************************************************************************
-                          guipage.h  -  A page of a menu interface
+                          menu.h  -  A menu GUI element
                              -------------------
-    begin                : wo dec 15 2004
+    begin                : do dec 16 2004
     copyright            : (C) 2004 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
@@ -15,32 +15,30 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GUIPAGE_H
-#define GUIPAGE_H
+#ifndef MENU_H
+#define MENU_H
 
 #include <vector>
 namespace std {}
 using namespace std;
 
 #include "widget.h"
-#include "menu.h"
 #include "cstring.h"
 
 /**
   *@author CJP
   */
 
-class CGUIPage : public CWidget  {
+class CMenu : public CWidget  {
 public: 
-	CGUIPage();
-	~CGUIPage();
+	CMenu();
+	virtual ~CMenu();
 
 	virtual int onKeyPress(int key);
-	virtual int onResize(int w, int h);
 	virtual int onRedraw();
 
-	CMenu m_Menu;
-	CString m_Title;
+	unsigned int m_Selected;
+	vector<CString> m_Lines;
 };
 
 #endif

@@ -74,7 +74,6 @@ bool CGraphicWorld::loadWorld()
 	for(unsigned int i=0; i<m_World->getNumObjects(CDataObject::eMaterial); i++)
 	{
 		int mul = m_World->getMaterial(i)->m_Mul;
-		//printf("   Loading %s with mul=%d:\n", f.getName().c_str(), mul);
 		int xs = m_TexMaxSize / mul;
 		int ys = m_TexMaxSize / mul;
 		CParamList plist;
@@ -136,12 +135,35 @@ bool CGraphicWorld::loadObjects()
 {
 	int molod = theMainConfig->getValue("graphics", "movingobjectlod").toInt();
 
-	//Body graphics
 	printf("Loading moving object graphics:\n");
+
+	//Load the rest of the textures
+	for(unsigned int i=0; i<m_World->getNumObjects(CDataObject::eMaterial); i++)
+	{
+		int mul = m_World->getMaterial(i)->m_Mul;
+		int xs = m_TexMaxSize / mul;
+		int ys = m_TexMaxSize / mul;
+		CParamList plist;
+		SParameter p;
+		p.name = "sizex";
+		p.value = xs;
+		plist.push_back(p);
+		p.name = "sizey";
+		p.value = ys;
+		plist.push_back(p);
+		p.name = "smooth";
+		p.value = m_TexSmooth;
+		plist.push_back(p);
+
+		//TODO: check ID
+		loadObject(m_World->getMaterial(i)->getFilename(), plist, CDataObject::eMaterial);
+	}
+
+	//Body graphics
 	vector<const CDataObject *> bounds = m_World->getObjectArray(CDataObject::eBound);
 	for(unsigned int i=0; i<bounds.size(); i++)
 	{
-		CParamList plist;
+		CParamList plist = bounds[i]->getParamList(); //parameters like "subset"
 		SParameter p;
 		p.name = "lodoffset";
 		p.value = molod;
