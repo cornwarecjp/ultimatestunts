@@ -63,7 +63,7 @@ static void ConvertUint(GLuint *array, unsigned int length)
     }
 }
 
-static rawImageRec *RawImageOpen(char *fileName)
+static rawImageRec *RawImageOpen(const char *fileName)
 {
     union {
 	int testWord;
@@ -199,7 +199,7 @@ static void RawImageGetData(rawImageRec *raw, RGBImageRec *final)
     }
 }
 
-RGBImageRec *RGBImageLoad(char *fileName)
+RGBImageRec *RGBImageLoad(const char *fileName)
 {
     rawImageRec *raw;
     RGBImageRec *final;

@@ -16,7 +16,12 @@
  ***************************************************************************/
 #include <stdio.h>
 
-#include "graphiccar.h"
+#include "graphicshape.h"
+#include "graphicbound.h"
+#include "graphicmaterial.h"
+
+#include "car.h"
+
 #include "graphicworld.h"
 
 CGraphicWorld::CGraphicWorld(){
@@ -24,23 +29,11 @@ CGraphicWorld::CGraphicWorld(){
 CGraphicWorld::~CGraphicWorld(){
 }
 
-int CGraphicWorld::addMovingObject(CObjectChoice c)
-{
-	//future: selecting, using c
+CShape *CGraphicWorld::createShape()
+{return new CGraphicShape;}
 
-	CMovingObject *m = new CGraphicCar; //That's the difference with CWorld
+CBound *CGraphicWorld::createBound()
+{return new CGraphicBound;}
 
-	m_MovObjs.push_back(m);
-
-	int s = m_MovObjs.size();
-	printf("Added (graphic) car: total %d moving objects\n", s);
-
-	return s - 1;
-}
-
-bool CGraphicWorld::loadFromFile(CString filename)
-{
-	printf("The world graphics are being loaded from %s\n", filename.c_str());
-
-	return true;
-}
+CMaterial *CGraphicWorld::createMaterial()
+{return new CGraphicMaterial;}

@@ -38,31 +38,18 @@ int CClientSim::addPlayer(CObjectChoice choice)
 {
 	//TODO: Register player via network and check if the player is accepted
 
-	//if(accepted)
-	{
-		int id = CSimulation::addPlayer(choice);
-		if(id < 0) //loading failed
-			{;} //TODO: tell the server that loading failed
-
-		return id;
-	}
-
-	//and in all other cases:
-	return -1;
+	return CSimulation::addPlayer(choice);
 }
 
-bool CClientSim::removePlayer(int id)
+bool CClientSim::loadObjects()
 {
-	bool unload = CSimulation::removePlayer(id);
-	if(unload) //unloading was succesful
-		{;} //TODO: tell the server to remove the player
+	//TODO: Wait for server information and use this to load all objects
 
-	return unload;
+	return CSimulation::loadObjects();
 }
 
-void CClientSim::Update()
+bool CClientSim::Update()
 {
 	//TODO: check network for new data, and update the world
-
-	m_SubSim->Update();
+	return m_SubSim->Update();
 }

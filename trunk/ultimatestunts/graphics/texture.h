@@ -19,12 +19,16 @@
 #include "image.h"
 #include "vector.h"
 
-class CTexObj
+#include "cstring.h"
+
+class CTexture
 {
 public:
-	CTexObj(bool texture_smooth);
+	CTexture();
+	void setTextureSmooth(bool texture_smooth)
+		{m_GrsetTextureSmooth = texture_smooth;}
 
-	int loadFromFile(char *filename, int xs, int ys);
+	virtual bool loadFromFile(CString filename, int xs, int ys);
 
 	int getSizeX(int i);
 	int getSizeY(int i);

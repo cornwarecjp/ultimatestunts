@@ -267,7 +267,7 @@ s,@ECHO_C@,,;t t
 s,@ECHO_N@,-n,;t t
 s,@ECHO_T@,,;t t
 s,@PATH_SEPARATOR@,:,;t t
-s,@DEFS@,-DPACKAGE=\"ultimatestunts\" -DVERSION=\"0.3.0\" -DSTDC_HEADERS=1 -DHAVE_GL_GL_H=1 -DHAVE_GL_GLUT_H=1 -DLINUX_JOYSTICK_IS_PRESENT=1 ,;t t
+s,@DEFS@,-DPACKAGE=\"ultimatestunts\" -DVERSION=\"0.3.0\" -DSTDC_HEADERS=1 -DHAVE_GL_GL_H=1 -DHAVE_GL_GLUT_H=1 -DLINUX_JOYSTICK_IS_PRESENT=1 -DFMOD_HEADER=1 ,;t t
 s,@LIBS@,,;t t
 s,@INSTALL_PROGRAM@,${INSTALL},;t t
 s,@INSTALL_SCRIPT@,${INSTALL},;t t
@@ -316,7 +316,7 @@ s,@SDL_CONFIG@,/usr/bin/sdl-config,;t t
 s,@SDL_CFLAGS@,-I/usr/include/SDL -D_REENTRANT,;t t
 s,@SDL_LIBS@,-L/usr/lib -Wl,-rpath,/usr/lib -lSDL -lpthread,;t t
 s,@netlibs@,-lresolv -lnsl ,;t t
-s,@soundlibs@,,;t t
+s,@soundlibs@,-lfmod ,;t t
 s,@graphlibs@,-L/usr/lib -Wl,-rpath,/usr/lib -lSDL -lpthread -lGLU -lGL  -L/usr/X11R6/lib  -lSM -lICE -lX11 -lXi -lXext -lXmu  -lm,;t t
 CEOF
 

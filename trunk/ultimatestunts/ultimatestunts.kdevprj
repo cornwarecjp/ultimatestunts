@@ -332,7 +332,7 @@ install_location=
 type=HEADER
 
 [simulation/Makefile.am]
-files=simulation/physics.cpp,simulation/physics.h,simulation/simulation.cpp,simulation/simulation.h,simulation/player.cpp,simulation/player.h,simulation/world.cpp,simulation/world.h,simulation/tile.cpp,simulation/tile.h,simulation/movingobject.cpp,simulation/movingobject.h,simulation/car.cpp,simulation/car.h,simulation/message.cpp,simulation/message.h,simulation/messagebuffer.cpp,simulation/messagebuffer.h,simulation/dynamicobject.cpp,simulation/dynamicobject.h,simulation/objectchoice.cpp,simulation/objectchoice.h,simulation/netudp.h,simulation/netudp.cpp,simulation/netmessage.cpp,simulation/netmessage.h,simulation/carinput.cpp,simulation/carinput.h,simulation/movobjinput.cpp,simulation/movobjinput.h,simulation/aiplayercar.cpp,simulation/aiplayercar.h,simulation/clientsim.cpp,simulation/clientsim.h,simulation/serversim.cpp,simulation/serversim.h
+files=simulation/physics.cpp,simulation/physics.h,simulation/simulation.cpp,simulation/simulation.h,simulation/player.cpp,simulation/player.h,simulation/world.cpp,simulation/world.h,simulation/tile.cpp,simulation/tile.h,simulation/movingobject.cpp,simulation/movingobject.h,simulation/car.cpp,simulation/car.h,simulation/message.cpp,simulation/message.h,simulation/messagebuffer.cpp,simulation/messagebuffer.h,simulation/dynamicobject.cpp,simulation/dynamicobject.h,simulation/objectchoice.cpp,simulation/objectchoice.h,simulation/netudp.h,simulation/netudp.cpp,simulation/netmessage.cpp,simulation/netmessage.h,simulation/carinput.cpp,simulation/carinput.h,simulation/movobjinput.cpp,simulation/movobjinput.h,simulation/aiplayercar.cpp,simulation/aiplayercar.h,simulation/clientsim.cpp,simulation/clientsim.h,simulation/serversim.cpp,simulation/serversim.h,simulation/shape.cpp,simulation/shape.h,simulation/bound.cpp,simulation/bound.h,simulation/material.h
 sub_dirs=
 type=static_library
 
@@ -343,6 +343,18 @@ install_location=
 type=SOURCE
 
 [simulation/aiplayercar.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[simulation/bound.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[simulation/bound.h]
 dist=true
 install=false
 install_location=
@@ -391,6 +403,12 @@ install_location=
 type=SOURCE
 
 [simulation/dynamicobject.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[simulation/material.h]
 dist=true
 install=false
 install_location=
@@ -516,6 +534,18 @@ install=false
 install_location=
 type=HEADER
 
+[simulation/shape.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[simulation/shape.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
 [simulation/simulation.cpp]
 dist=true
 install=false
@@ -614,35 +644,23 @@ install_location=
 type=DATA
 
 [ultimatestunts/Makefile.am]
-files=ultimatestunts/main.cpp,ultimatestunts/humanplayer.cpp,ultimatestunts/humanplayer.h,ultimatestunts/graphiccar.cpp,ultimatestunts/graphiccar.h,ultimatestunts/graphicworld.cpp,ultimatestunts/graphicworld.h,ultimatestunts/graphicobject.h,ultimatestunts/graphictile.cpp,ultimatestunts/graphictile.h
+files=ultimatestunts/main.cpp,ultimatestunts/humanplayer.cpp,ultimatestunts/humanplayer.h,ultimatestunts/graphicworld.cpp,ultimatestunts/graphicworld.h,ultimatestunts/graphicshape.h,ultimatestunts/graphicbound.h,ultimatestunts/graphicmaterial.h
 sub_dirs=
 type=prog_main
 
-[ultimatestunts/graphiccar.cpp]
-dist=true
-install=false
-install_location=
-type=SOURCE
-
-[ultimatestunts/graphiccar.h]
+[ultimatestunts/graphicbound.h]
 dist=true
 install=false
 install_location=
 type=HEADER
 
-[ultimatestunts/graphicobject.h]
+[ultimatestunts/graphicmaterial.h]
 dist=true
 install=false
 install_location=
 type=HEADER
 
-[ultimatestunts/graphictile.cpp]
-dist=true
-install=false
-install_location=
-type=SOURCE
-
-[ultimatestunts/graphictile.h]
+[ultimatestunts/graphicshape.h]
 dist=true
 install=false
 install_location=

@@ -25,18 +25,11 @@ CServerSim::~CServerSim()
 {
 }
 
-int CServerSim::addPlayer(CObjectChoice choice)
+bool CServerSim::loadObjects()
 {
-	int id = CSimulation::addPlayer(choice);
+	//TODO: send clients the player-information
 
-	//TODO: send player info to clients
-
-	return id;
-}
-
-bool CServerSim::removePlayer(int id)
-{
-	return false;
+	return CSimulation::loadObjects();
 }
 
 void CServerSim::addSubSim(CSimulation *s)
@@ -44,12 +37,16 @@ void CServerSim::addSubSim(CSimulation *s)
 	m_SubSim.push_back(s);
 }
 
-void CServerSim::Update()
+bool CServerSim::Update()
 {
+	bool cont_game = true;
+
 	//TODO: check for incoming data
 
 	for(unsigned int i=0; i<m_SubSim.size(); i++)
-		{(m_SubSim[i])->Update();}
+		{cont_game = (m_SubSim[i])->Update() && cont_game;}
 
 	//TODO: send new data
+
+	return cont_game;
 }

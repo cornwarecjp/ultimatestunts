@@ -33,21 +33,25 @@ public:
 	CWorld();
 	virtual ~CWorld();
 
-	vector<CTile *> m_Track; //elements from m_Tiles?
-	vector<int> m_Rotation; //Rotation of tiles
-	vector<int> m_Height; //Height of tiles
+	vector<CTile> m_Track; //refer to elements from m_TileShapes
 	int l, w, h;
-	virtual bool loadFromFile(CString filename);
+	bool loadTrack(CString filename);
+	void unloadTrack();
 
-	vector<CMovingObject *> m_MovObjs; //elements from m_Objects?
-	virtual int addMovingObject(CObjectChoice c);
+	vector<CMovingObject *> m_MovObjs; //refer to elements from m_MovObjBounds
+	bool loadMovObjs(CString filename);
+	void unloadMovObjs();
 
 protected:
-	//Track + tiles:
-	//vector<CTile *> m_Tiles;
+	virtual CShape *createShape();
+	virtual CBound *createBound();
+	virtual CMaterial *createMaterial();
 
-	//Cars + other objects:
-	//vector<CMovingObject *> m_Objects;
+	vector<CShape *>m_TileShapes;
+	vector<CBound *>m_MovObjBounds;
+
+	vector<CMaterial *> m_TileMaterials;
+	vector<CMaterial *> m_MovObjMaterials;
 };
 
 #endif

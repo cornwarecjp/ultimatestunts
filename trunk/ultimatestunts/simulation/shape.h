@@ -1,7 +1,7 @@
 /***************************************************************************
-                          graphicobject.h  -  CGraphObj wrapper
+                          shape.h  -  Vertex-based collision model
                              -------------------
-    begin                : do jan 16 2003
+    begin                : vr jan 24 2003
     copyright            : (C) 2003 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
@@ -14,24 +14,23 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#ifndef GRAPHICOBJECT_H
-#define GRAPHICOBJECT_H
 
-#include "graphobj.h"
+#ifndef SHAPE_H
+#define SHAPE_H
+
+#include "material.h"
+#include "cstring.h"
 
 /**
   *@author CJP
   */
 
-class CGraphicObject
-{
-public:
-	void setBody(CGraphObj *o){m_Body = o;}
+class CShape {
+public: 
+	CShape();
+	virtual ~CShape();
 
-	virtual void draw(){m_Body->draw();}
-protected:
-
-	CGraphObj *m_Body;
+	virtual bool loadFromFile(CString filename, CMaterial *matarray);
 };
 
 #endif

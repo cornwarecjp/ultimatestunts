@@ -30,12 +30,11 @@ public:
 	CServerSim(CWorld *w, int UDPPort);
 	~CServerSim();
 
-	virtual int addPlayer(CObjectChoice choice);
-	virtual bool removePlayer(int id);
+	virtual bool loadObjects();
 
 	void addSubSim(CSimulation *s);
 
-  virtual void Update();
+  virtual bool Update();
 
 protected:
 	vector<CSimulation *> m_SubSim;

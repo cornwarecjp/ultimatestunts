@@ -26,7 +26,7 @@ CPhysics::CPhysics(CWorld *w) : CSimulation(w)
 CPhysics::~CPhysics(){
 }
 
-void CPhysics::Update()
+bool CPhysics::Update()
 {
 	float dt = m_Timer.getdt();
 	printf("Now doing physics calculations (dt = %f)\n", dt);
@@ -75,4 +75,5 @@ void CPhysics::Update()
 			{printf("Error: object %d is not a car\n", i);}
 	}
 
+	return true;
 }

@@ -1,3 +1,4 @@
+
 /***************************************************************************
                           tile.h  -  A Tile (square part of the track)
                              -------------------
@@ -18,6 +19,7 @@
 #ifndef TILE_H
 #define TILE_H
 
+#include "shape.h"
 
 /**
   *@author CJP
@@ -27,6 +29,9 @@ class CTile {
 public: 
 	CTile();
 	~CTile();
+
+	CShape *m_Shape;
+	int m_Z, m_R; //height, orientation. 0 <= m_R <= 3
 };
 
 #endif

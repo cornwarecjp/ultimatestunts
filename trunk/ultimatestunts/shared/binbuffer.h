@@ -33,9 +33,10 @@ class CBinBuffer : public vector<Uint8>
    };
 
 
-	CBinBuffer & operator += (const char unsigned & c);
+//	CBinBuffer & operator += (const char unsigned & c); //better use Uint8 ??
 	CBinBuffer & operator += (const char unsigned * c);
 	CBinBuffer & operator = (const char unsigned * c);
+	CBinBuffer & operator += (const Uint8 & i);
 	CBinBuffer & operator += (const Uint16 & i);
 	CBinBuffer & operator += (const CBinBuffer & bb);
 	CBinBuffer & operator += (const CString & bs);

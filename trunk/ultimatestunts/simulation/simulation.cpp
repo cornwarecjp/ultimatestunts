@@ -29,33 +29,12 @@ CSimulation::~CSimulation(){
 int CSimulation::addPlayer(CObjectChoice choice)
 {
 	//Default behaviour: always accept a player
-	return m_World->addMovingObject(choice);
+	m_LocalChoices.push_back(choice);
+	return m_LocalChoices.size()-1;
 }
 
-bool CSimulation::removePlayer(int id)
+bool CSimulation::loadObjects()
 {
-	//Should remove car from the world
-
-	return true; //succes
-
-	//Old code:
-	/*
-  bool ret = false;
-  for(unsigned int i=0; i<m_LocalPlayers.size(); i++)
-  {
-    if(m_LocalPlayers[i]==p)
-    {
-      ret = true;
-//      m_LocalPlayers.erase(&(m_LocalPlayers[i]));    
-      m_LocalPlayers.erase(m_LocalPlayers.begin() + i - 1);     // FIXME: TEST IT!
-      i--;
-    }
-  }
-
-  if(ret)
-    printf("Removed player: %d players left\n", m_LocalPlayers.size());
-
-  return ret;
-	*/
-
+	//Temporary solution: nr of objs put in string
+	return m_World->loadMovObjs((CString)( (int)m_LocalChoices.size() ));
 }

@@ -70,6 +70,8 @@ int main(int argc, char *argv[])
 	printf("\nCreating world object\n");
 	world = new CWorld;
 
+	world->loadTrack("not_yet.track");
+
 	printf("\nDo you want to use the server to act as a client? (y/n)");
 	scanf("%s", inpbuffer);
 	if(inpbuffer[0]=='y' || inpbuffer[0]=='Y')
@@ -118,6 +120,9 @@ int main(int argc, char *argv[])
 	player3->m_MovingObjectId = id;
 	player3->m_PlayerId = 2;
 
+	if(!sim->loadObjects())
+		printf("Error while loading moving objects\n");
+
 	printf("\nEntering mainloop\n");
 
 	//Creating some white space
@@ -127,11 +132,6 @@ int main(int argc, char *argv[])
 	while(mainloop());
 
 	printf("\nLeaving mainloop\n");
-
-
-	printf("\nRemoving player 2\n");
-	if(!sim->removePlayer(player2->m_MovingObjectId))
-		printf("Removing 2 failed\n");
 
 	printf("\nDeleting simulation\n");
 	delete sim;

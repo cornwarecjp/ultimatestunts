@@ -20,6 +20,7 @@
 
 #include <SDL/SDL.h>
 #include "message.h"
+#include "cstring.h"
 
 /**
   *@author bones
@@ -27,13 +28,16 @@
 
 class CObjectChoice : public CMessage  {
 public: 
-  CObjectChoice();
-  ~CObjectChoice();
+	CObjectChoice();
+	~CObjectChoice();
 
-  bool setData(const CBinBuffer &);
-  CBinBuffer & getData() const;
+	bool setData(const CBinBuffer &);
+	CBinBuffer & getData() const;
 
-  Uint16 m_CarNumber; //temporary; probably replaced by CString
+	CMessageBuffer::eMessageType m_ObjType;
+	CString m_Filename;
+	//Additional: (car) settings
+	//Additional: selected skin / color
 
 	virtual CMessageBuffer::eMessageType getType() const {return CMessageBuffer::objectChoice;}
 };

@@ -33,7 +33,7 @@ public:
   //virtual bool addPlayer(CPlayer *p, CObjectChoice choice); //Using the default ones
   //virtual bool removePlayer(CPlayer *p);
 
-  virtual void Update();
+  virtual bool Update();
 
 protected:
 	CTimer m_Timer;

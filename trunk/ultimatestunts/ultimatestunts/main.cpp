@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
 
 	printf("\nCreating (graphic) world object\n");
 	world = new CGraphicWorld;
-	world->loadFromFile("not_yet.track");
+	world->loadTrack("not_yet.track");
 
 	printf("\nDo you want to start a network game session? (y/n)");
 	scanf("%s", inpbuffer);
@@ -134,23 +134,15 @@ int main(int argc, char *argv[])
 	player4->m_MovingObjectId = id;
 	player4->m_PlayerId = 3;
 
-	printf("\nEntering mainloop\n");
+	if(!sim->loadObjects())
+		{printf("Error while loading moving objects\n");}
 
+	printf("\nEntering mainloop\n");
 	//Creating some white space
 	for(int i=1; i<40; i++)
 		printf("\n");
-
 	winsys->runLoop(mainloop);
-
 	printf("\nLeaving mainloop\n");
-
-
-	printf("\nRemoving player 2\n");
-	if(!sim->removePlayer(player2->m_MovingObjectId))
-		printf("Removing 2 failed\n");
-	printf("\nRemoving player 4\n");
-	if(!sim->removePlayer(player4->m_MovingObjectId))
-		printf("Removing 4 failed\n");
 
 	printf("\nDeleting simulation\n");
 	delete sim;
@@ -163,6 +155,8 @@ int main(int argc, char *argv[])
 
 	printf("\nDeleting world\n");
 	delete world;
+
+	printf("\nProgram finished succesfully\n");
 
 	return EXIT_SUCCESS;
 }

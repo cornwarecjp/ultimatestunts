@@ -1,8 +1,8 @@
 /***************************************************************************
-                          simulation.h  -  Base-class for simulations
+                          graphicmaterial.h  -  A material and a texture
                              -------------------
-    begin                : Wed Dec 4 2002
-    copyright            : (C) 2002 by CJP
+    begin                : ma jan 27 2003
+    copyright            : (C) 2003 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
 
@@ -14,37 +14,18 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
+#ifndef GRAPHICMATERIAL_H
+#define GRAPHICMATERIAL_H
 
-#ifndef SIMULATION_H
-#define SIMULATION_H
+#include "material.h"
+#include "texture.h"
 
-
-/**
-  *@author CJP
-  */
-
-#include <vector> //STL vector template
-#include "player.h"
-#include "world.h"
-#include "objectchoice.h"
-
-#include "movingobject.h"
-
-class CSimulation {
-public: 
-	CSimulation(CWorld *w);
-	virtual ~CSimulation();
-
-  virtual int addPlayer(CObjectChoice choice);
-  virtual bool loadObjects();
-
-  virtual bool Update() =0;
-
-protected:
-
-  //Services of the base-class; derived classes don't have to use these
-  vector<CObjectChoice> m_LocalChoices;
-  CWorld *m_World;
+class CGraphicMaterial : public CMaterial, public CTexture
+{
+public:
+	virtual bool loadFromFile(CString filename, int xs, int ys)
+		//{return CTexture::loadFromFile(filename, xs, ys);}
+		{return true;}
 };
 
 #endif

@@ -29,10 +29,10 @@ public:
 	CClientSim(CWorld *w, CString HostName, int UDPPort);
 	~CClientSim();
 
-  virtual int addPlayer(CObjectChoice choice);
-  virtual bool removePlayer(int id);
+	virtual int addPlayer(CObjectChoice choice);
+	virtual bool loadObjects();
 
-  virtual void Update();
+	virtual bool Update();
 
 protected:
 	CSimulation *m_SubSim;

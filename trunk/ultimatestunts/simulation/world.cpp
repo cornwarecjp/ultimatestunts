@@ -21,11 +21,78 @@
 
 CWorld::CWorld(){
 }
+
 CWorld::~CWorld(){
-  for(unsigned int i=0; i<m_MovObjs.size(); i++)
-    delete m_MovObjs[i];
+	unloadTrack();
+	unloadMovObjs();
 }
 
+bool CWorld::loadTrack(CString filename)
+{
+	printf("The world is being loaded from %s\n", filename.c_str());
+
+	//First: load materials/textures
+	//for example:
+	CMaterial *m = createMaterial();
+	m->loadFromFile("no_file.rgb", 256, 256); //Only useful for textures
+	//TODO: set friction coefficients
+	m_TileMaterials.push_back(m);
+	
+	//Second: loading collision (and graphics) data
+	//For example:
+	CShape *b = createShape();
+	m_TileShapes.push_back(b);
+	//TODO: use loadFromFile
+
+	//Third: initialising track array
+	l=10; w=10; h=2; //example
+	for(int x=0; x<l; x++)
+	for(int z=0; z<w; z++)
+	for(int y=0; y<h; y++)
+	{
+		CTile t;
+		t.m_Shape = m_TileShapes[0]; //for example
+		t.m_R = t.m_Z = 0; //TODO: load from file (of course)
+		m_Track.push_back(t);
+
+	}
+
+	int s = m_Track.size();
+	printf("Added tiles: total %d tiles\n", s);
+
+	return true;
+}
+
+void CWorld::unloadTrack()
+{
+	printf("Unloading track...\n");
+
+	//The array containing the track
+	m_Track.clear();
+
+
+	if(m_TileShapes.size() > 0)
+	{
+		//The CShape objects themselves
+		for(unsigned int i=0; i<m_TileShapes.size(); i++)
+			delete m_TileShapes[i];
+
+		//The array containing them
+		m_TileShapes.clear();
+	}
+
+	if(m_TileMaterials.size() > 0)
+	{
+		//The materials/textures themselves
+		for(unsigned int i=0; i<m_TileMaterials.size(); i++)
+			delete m_TileMaterials[i];
+
+		//The array containing them
+		m_TileMaterials.clear();
+	}
+}
+
+/*
 int CWorld::addMovingObject(CObjectChoice c)
 {
 	//future: selecting, using c
@@ -38,13 +105,82 @@ int CWorld::addMovingObject(CObjectChoice c)
 
 	return s - 1;
 }
-
-bool CWorld::loadFromFile(CString filename)
+*/
+bool CWorld::loadMovObjs(CString filename)
 {
-	printf("The world is being loaded from %s\n", filename.c_str());
+	printf("Loading moving objects...\n");
 
-	l=10; w=10; h=2;
-	
+	//Temporary solution: nr of objs put in string
+	int num = filename.toInt();
 
-	return true;
+	//First: load materials/textures
+	//for example:
+	CMaterial *m = createMaterial();
+	m->loadFromFile("no_file.rgb", 256, 256); //Only useful for textures
+	//TODO: set friction coefficients
+	m_MovObjMaterials.push_back(m);
+
+	//Second: loading collision (and graphics) data
+	//For example:
+	CBound *b = createBound();
+	m_MovObjBounds.push_back(b);
+	//TODO: use loadFromFile
+
+	//Third: initialising car array
+	for(int i=0; i<num; i++)
+	{
+		CMovingObject *m = new CCar; //future: selecting, using the file
+		m->m_Bound = m_MovObjBounds[0]; //for example
+		m_MovObjs.push_back(m);
+
+		int s = m_MovObjs.size();
+		printf("Added car: total %d moving objects\n", s);
+	}
+
+		return true;
 }
+
+void CWorld::unloadMovObjs()
+{
+	printf("Unloading moving objects...\n");
+
+	if(m_MovObjs.size() > 0)
+	{
+		//The objects themselves
+		for(unsigned int i=0; i<m_MovObjs.size(); i++)
+			delete m_MovObjs[i];
+
+		//The array containing them
+		m_MovObjs.clear();
+	}
+
+	if(m_MovObjBounds.size() > 0)
+	{
+		//The CBound objects themselves
+		for(unsigned int i=0; i<m_MovObjBounds.size(); i++)
+			delete m_MovObjBounds[i];
+
+		//The array containing them
+		m_MovObjBounds.clear();
+	}
+
+	if(m_MovObjMaterials.size() > 0)
+	{
+		//The materials/textures themselves
+		for(unsigned int i=0; i<m_MovObjMaterials.size(); i++)
+			delete m_MovObjMaterials[i];
+
+		//The array containing them
+		m_MovObjMaterials.clear();
+	}
+
+}
+
+CShape *CWorld::createShape()
+{return new CShape;}
+
+CBound *CWorld::createBound()
+{return new CBound;}
+
+CMaterial *CWorld::createMaterial()
+{return new CMaterial;}

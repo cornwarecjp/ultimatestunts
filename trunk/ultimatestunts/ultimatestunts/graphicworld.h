@@ -18,6 +18,7 @@
 #ifndef GRAPHICWORLD_H
 #define GRAPHICWORLD_H
 
+#include "texture.h"
 #include "world.h"
 
 /**
@@ -29,8 +30,10 @@ public:
 	CGraphicWorld();
 	~CGraphicWorld();
 
-	virtual int addMovingObject(CObjectChoice c);
-	virtual bool loadFromFile(CString filename);
+protected:
+	virtual CShape *createShape();
+	virtual CBound *createBound();
+	virtual CMaterial *createMaterial();
 };
 
 #endif

@@ -23,16 +23,18 @@
   *@author CJP
   */
 
+#include "bound.h"
 #include "message.h"
 
 class CDynamicObject : public CMessage {
 public: 
 	CDynamicObject();
 	virtual ~CDynamicObject();
+	virtual bool hasChanged();
 
 	CMessage *m_InputData;
 
-	virtual bool hasChanged();
+	CBound *m_Bound;
 };
 
 #endif

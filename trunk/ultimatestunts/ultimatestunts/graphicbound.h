@@ -1,7 +1,7 @@
 /***************************************************************************
-                          graphiccar.cpp  -  A graphical version of a car object
+                          graphicbound.h  -  a combination of CGraphObj and CBound
                              -------------------
-    begin                : do jan 16 2003
+    begin                : vr jan 24 2003
     copyright            : (C) 2003 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
@@ -15,18 +15,23 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "graphiccar.h"
+#ifndef GRAPHICBOUND_H
+#define GRAPHICBOUND_H
 
-CGraphicCar::CGraphicCar()
-{
-}
+#include "bound.h"
+#include "graphobj.h"
 
-CGraphicCar::~CGraphicCar()
-{
-}
+#include "graphicmaterial.h"
 
-void CGraphicCar::draw()
+/**
+  *@author CJP
+  */
+
+class CGraphicBound : public CBound, public CGraphObj
 {
-	m_Body->draw();
-	//TODO: draw other parts on the right position
-}
+public:
+	virtual bool loadFromFile(CString filename, CMaterial *matarray)
+		{return CBound::loadFromFile(filename, matarray);}
+};
+
+#endif

@@ -49,25 +49,14 @@
    CString & dump() const;
 
 	//CJP functions:
-	//char *Cast() const; //instead, use c_str method
-
-	//Operators are probably provided by std::string:
+	CString(int val);
+	CString(float val);
 	CString operator+(CString const &val); //std didn't do what I wanted
 	CString operator+(const char *val);
-	//CString const &operator=(CString const &val);
-	//CString const &operator+=(char const &val);
-	//bool operator==(CString const &val) const;
-	//bool operator!=(CString const &val) const;
-
-	//int len() const; //instead, use length()
 
 	//Don't know how to do these with std::string:
 	CString mid(int i, int l);
 	int instr(char c);
-
-	//char getChar(int i); //instead, use operator[]
-	//void putChar(int i, char c); //instead, use operator[]
-	//void addChar(char c); //operator+= (?)
 
 	//Don't know how to do this with std::string:
 	float toFloat();

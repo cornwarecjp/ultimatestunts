@@ -1,7 +1,7 @@
 /***************************************************************************
-                          graphictile.h  -  A graphic CTile class. Same purpose as the tile class in v.0.2.3
+                          bound.cpp  -  Plane-based collision model
                              -------------------
-    begin                : do jan 16 2003
+    begin                : vr jan 24 2003
     copyright            : (C) 2003 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
@@ -15,22 +15,14 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GRAPHICTILE_H
-#define GRAPHICTILE_H
+#include "bound.h"
 
-#include "tile.h"
-#include "graphicobject.h"
+CBound::CBound(){
+}
+CBound::~CBound(){
+}
 
-/**
-  *@author CJP
-  */
-
-class CGraphicTile : public CTile, public CGraphicObject
+bool CBound::loadFromFile(CString filename, CMaterial *matarray)
 {
-public: 
-	CGraphicTile();
-	virtual ~CGraphicTile();
-
-};
-
-#endif
+	return true; //TODO: really load it
+}

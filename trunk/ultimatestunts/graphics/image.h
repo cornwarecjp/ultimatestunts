@@ -16,7 +16,7 @@ typedef struct _RGBImageRec {
     unsigned char *data;
 } RGBImageRec;
 
-extern RGBImageRec *RGBImageLoad(char *);
+extern RGBImageRec *RGBImageLoad(const char *);
 
 #ifdef __cplusplus
 }

@@ -1,7 +1,7 @@
 /***************************************************************************
-                          graphictile.cpp  -  A graphic CTile class
+                          shape.cpp  -  Vertex-based collision model
                              -------------------
-    begin                : do jan 16 2003
+    begin                : vr jan 24 2003
     copyright            : (C) 2003 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
@@ -15,9 +15,14 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "graphictile.h"
+#include "shape.h"
 
-CGraphicTile::CGraphicTile(){
+CShape::CShape(){
 }
-CGraphicTile::~CGraphicTile(){
+CShape::~CShape(){
+}
+
+bool CShape::loadFromFile(CString filename, CMaterial *matarray)
+{
+	return true; //TODO: really load it
 }

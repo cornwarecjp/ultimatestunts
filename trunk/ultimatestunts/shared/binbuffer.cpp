@@ -19,10 +19,12 @@
 //Code coming from binbuffer.h
 //Originally written by bones
 
+/*
 CBinBuffer & CBinBuffer::operator += (const char unsigned & c) {
 	this->push_back((Uint8) c); 	
 	return (*this);
 }
+*/
 
 CBinBuffer & CBinBuffer::operator += (const char unsigned * c) {                // c-string
 	for (int i=0; c[i] != 0; i++) { this->push_back((Uint8) c[i]); } 	
@@ -35,6 +37,10 @@ CBinBuffer & CBinBuffer::operator = (const char unsigned * c) {
 	return (*this);
 }
 
+CBinBuffer & CBinBuffer::operator += (const Uint8 & i) {
+	this->push_back(i);
+	return (*this);
+}
 
 CBinBuffer & CBinBuffer::operator += (const Uint16 & i) {
 	this->push_back(HIBYTE(i));

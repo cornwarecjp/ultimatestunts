@@ -27,7 +27,7 @@ hostinfo               = unknown
 /usr/bin/oslevel       = unknown
 /bin/universe          = unknown
 
-PATH = /usr/local/bin:/usr/bin:/usr/X11R6/bin:/bin:/usr/games:/opt/gnome2/bin:/opt/gnome/bin:/opt/kde3/bin:/opt/kde2/bin:/usr/openwin/bin:/opt/gnome/bin
+PATH = /usr/local/bin:/usr/bin:/usr/X11R6/bin:/bin:/usr/games:/opt/gnome2/bin:/opt/gnome/bin:/opt/kde3/bin:/opt/kde2/bin:/usr/openwin/bin:/usr/lib/java/bin:/opt/gnome/bin
 
 ## ------------ ##
 ## Core tests.  ##
@@ -322,37 +322,14 @@ configure:4937: $? = 0
 configure:4956: result: yes
 configure:4965: checking for FSOUND_Close in -lfmod
 configure:4992: gcc -o conftest -g -O2 -I/usr/include/SDL -D_REENTRANT   conftest.c -lfmod   >&5
-/usr/i486-suse-linux/bin/ld: cannot find -lfmod
-collect2: ld returned 1 exit status
-configure:4995: $? = 1
-configure: failed program was:
-#line 4973 "configure"
-#include "confdefs.h"
-
-/* Override any gcc2 internal prototype to avoid an error.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-/* We use char because int might match the return type of a gcc2
-   builtin and then its argument prototype would still apply.  */
-char FSOUND_Close ();
-int
-main ()
-{
-FSOUND_Close ();
-  ;
-  return 0;
-}
-configure:5012: result: no
+configure:4995: $? = 0
+configure:4998: test -s conftest
+configure:5001: $? = 0
+configure:5012: result: yes
 configure:5018: checking for fmod/fmod.h
 configure:5028: gcc -E  conftest.c
-configure:5025: fmod/fmod.h: No such file or directory
-configure:5034: $? = 1
-configure: failed program was:
-#line 5024 "configure"
-#include "confdefs.h"
-#include <fmod/fmod.h>
-configure:5053: result: no
+configure:5034: $? = 0
+configure:5053: result: yes
 configure:5188: creating ./config.status
 
 ## ----------------------- ##
@@ -415,7 +392,7 @@ ac_cv_func_shmat=yes
 ac_cv_have_x=$'have_x=yes \t\tac_x_includes=/usr/X11R6/include ac_x_libraries=/usr/X11R6/lib'
 ac_cv_header_GL_gl_h=yes
 ac_cv_header_GL_glut_h=yes
-ac_cv_header_fmod_fmod_h=no
+ac_cv_header_fmod_fmod_h=yes
 ac_cv_header_joystick_h=no
 ac_cv_header_linux_joystick_h=yes
 ac_cv_header_stdc=yes
@@ -425,7 +402,7 @@ ac_cv_host_alias=i586-pc-linux-gnu
 ac_cv_lib_GLU_gluLookAt=yes
 ac_cv_lib_GL_glNewList=yes
 ac_cv_lib_ICE_IceConnectionNumber=yes
-ac_cv_lib_fmod_FSOUND_Close=no
+ac_cv_lib_fmod_FSOUND_Close=yes
 ac_cv_lib_nsl_gethostbyname=yes
 ac_cv_lib_resolv_inet_aton=yes
 ac_cv_lib_socket_socket=no
@@ -453,6 +430,7 @@ ac_cv_target_alias=i586-pc-linux-gnu
 #define HAVE_GL_GL_H 1
 #define HAVE_GL_GLUT_H 1
 #define LINUX_JOYSTICK_IS_PRESENT 1
+#define FMOD_HEADER 1
 
 
 configure: exit 0

@@ -43,7 +43,12 @@ CGraphObj::CGraphObj()
 	}
 }
 
-int CGraphObj::loadFromFile(CString filename, CTexObj *texarray, int lod)
+CGraphObj::~CGraphObj()
+{
+	//TODO: remove display list when needed
+}
+
+bool CGraphObj::loadFromFile(CString filename, CTexture *texarray, int lod)
 {
 	m_ObjList = glGenLists(1);
 	glNewList(m_ObjList, GL_COMPILE);
@@ -54,7 +59,7 @@ int CGraphObj::loadFromFile(CString filename, CTexObj *texarray, int lod)
 
 
 	if(filename.length()==0) //lege string
-		{glEndList(); return 0;}
+		{glEndList(); return true;}
 
 	bool eof = false;
 
@@ -181,7 +186,7 @@ int CGraphObj::loadFromFile(CString filename, CTexObj *texarray, int lod)
 	glEndList();
 
 	//printf ("Vorm-Object is geladen.\n");
-	return 0; //geslaagd
+	return true; //geslaagd
 }
 
 void CGraphObj::draw()

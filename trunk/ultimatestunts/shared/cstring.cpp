@@ -189,6 +189,21 @@ CString & CString::dump() const
   return (*res);
 }
 
+//CJP functions:
+CString::CString(int val)
+{
+	char c[80];
+	sprintf(c, "%d", val);
+	assign(c);
+}
+
+CString::CString(float val)
+{
+	char c[80];
+	sprintf(c, "%f", val);
+	assign(c);
+}
+
 CString CString::operator+(CString const &val)
 {
 	CString ret(*this);

@@ -22,17 +22,15 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-CTexObj::CTexObj(bool texture_smooth)
+CTexture::CTexture()
 {
-	m_GrsetTextureSmooth = texture_smooth;
-
 	m_Color = CVector(1,0,0);
 }
 
-int CTexObj::loadFromFile(char *filename, int xs, int ys)
+bool CTexture::loadFromFile(CString filename, int xs, int ys)
 {
 	//printf("Loading %s..\n", filename);
-	RGBImageRec *in_image = RGBImageLoad(filename);
+	RGBImageRec *in_image = RGBImageLoad(filename.c_str());
 
 	printf("  1: %d,%d\n", xs, ys);
 	RGBImageRec *image = scaleImage(in_image, xs, ys);
@@ -200,10 +198,10 @@ int CTexObj::loadFromFile(char *filename, int xs, int ys)
 	free(in_image->data);
 	free(in_image);
 
-	return 0;
+	return true;
 }
 
-void CTexObj::draw(int lod)
+void CTexture::draw(int lod)
 {
   if (getSizeX(lod) <= 4 || getSizeY(lod) <= 4)
     {printf("Error: trying to draw a too small texture\n"); return;}
@@ -224,7 +222,7 @@ void CTexObj::draw(int lod)
   }
 }
 
-int CTexObj::getSizeX(int i)
+int CTexture::getSizeX(int i)
 {
 	switch(i)
 	{
@@ -240,7 +238,7 @@ int CTexObj::getSizeX(int i)
   return 0;
 }
 
-int CTexObj::getSizeY(int i)
+int CTexture::getSizeY(int i)
 {
 	switch(i)
 	{
@@ -256,12 +254,12 @@ int CTexObj::getSizeY(int i)
   return 0;
 }
 
-CVector CTexObj::getColor()
+CVector CTexture::getColor()
 {
 	return m_Color;
 }
 
-RGBImageRec *CTexObj::scaleImage(RGBImageRec *in, int xs, int ys)
+RGBImageRec *CTexture::scaleImage(RGBImageRec *in, int xs, int ys)
 {
 	int sizex,sizey;
 	unsigned char *bitmapdata;

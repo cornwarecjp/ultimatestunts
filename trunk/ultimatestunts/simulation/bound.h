@@ -1,8 +1,8 @@
 /***************************************************************************
-                          simulation.h  -  Base-class for simulations
+                          bound.h  -  Plane-based collision model
                              -------------------
-    begin                : Wed Dec 4 2002
-    copyright            : (C) 2002 by CJP
+    begin                : vr jan 24 2003
+    copyright            : (C) 2003 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
 
@@ -15,36 +15,22 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef SIMULATION_H
-#define SIMULATION_H
+#ifndef BOUND_H
+#define BOUND_H
 
+#include "material.h"
+#include "cstring.h"
 
 /**
   *@author CJP
   */
 
-#include <vector> //STL vector template
-#include "player.h"
-#include "world.h"
-#include "objectchoice.h"
-
-#include "movingobject.h"
-
-class CSimulation {
+class CBound {
 public: 
-	CSimulation(CWorld *w);
-	virtual ~CSimulation();
+	CBound();
+	virtual ~CBound();
 
-  virtual int addPlayer(CObjectChoice choice);
-  virtual bool loadObjects();
-
-  virtual bool Update() =0;
-
-protected:
-
-  //Services of the base-class; derived classes don't have to use these
-  vector<CObjectChoice> m_LocalChoices;
-  CWorld *m_World;
+	virtual bool loadFromFile(CString filename, CMaterial *matarray);
 };
 
 #endif

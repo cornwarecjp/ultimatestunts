@@ -21,8 +21,9 @@
 
 CObjectChoice::CObjectChoice()
 {
-  m_CarNumber = 0;
-  this->setType(CMessageBuffer::objectChoice);
+	m_ObjType = CMessageBuffer::movingObject;
+	m_Filename = "not_a_file.cardef";
+	this->setType(CMessageBuffer::objectChoice);
 }
 
 CObjectChoice::~CObjectChoice()
@@ -31,13 +32,16 @@ CObjectChoice::~CObjectChoice()
 
 CBinBuffer & CObjectChoice::getData() const {
   CBinBuffer *res = new CBinBuffer();
-  (*res)+=m_CarNumber;
+  (*res)+= (Uint8)m_ObjType;
+  (*res)+= m_Filename;
   return (*res);
 }
 
 bool CObjectChoice::setData(const CBinBuffer & b) {
-  CBinBuffer bb = b;                           // const!
-  m_CarNumber = bb.getUint16(0);
+  //CBinBuffer bb = b;                           // const!
+	int pos = 0;
+  m_ObjType = (CMessageBuffer::eMessageType)b.getUint8(0, &pos);
+  m_Filename = b.getCString(pos);
   return (true);
 }
 

@@ -30,6 +30,10 @@ public:
 	~CCar();
 
 	virtual CMessageBuffer::eMessageType getType() const {return CMessageBuffer::car;}
+
+	//CRuleStatus m_RuleStatus;
+
+	CBound *m_Body, *m_FrontWheel, *m_BackWheel;
 };
 
 #endif

@@ -1,7 +1,7 @@
 /***************************************************************************
-                          graphiccar.h  -  A graphical version of a car object
+                          material.h  -  Friction coefficients etc.
                              -------------------
-    begin                : do jan 16 2003
+    begin                : ma jan 27 2003
     copyright            : (C) 2003 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
@@ -15,35 +15,20 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GRAPHICCAR_H
-#define GRAPHICCAR_H
+#ifndef MATERIAL_H
+#define MATERIAL_H
 
-#include "graphobj.h"
-#include "car.h"
-#include "graphicobject.h"
+#include "cstring.h"
 
 /**
   *@author CJP
   */
 
-class CGraphicCar : public CCar, public CGraphicObject
-{
+class CMaterial {
 public: 
-	CGraphicCar();
-	virtual ~CGraphicCar();
 
-	//No getType overload: in its messaging behaviour
-	//CGraphicCar is just a normal CCar
-
-	//Other parts of the car:
-	void setFrontWheel(CGraphObj *o){m_FrontWheel = o;}
-	void setBackWheel(CGraphObj *o){m_BackWheel = o;}
-
-	virtual void draw();
-protected:
-
-	CGraphObj *m_FrontWheel;
-	CGraphObj *m_BackWheel;
+	virtual bool loadFromFile(CString filename, int xs, int ys)
+		{return true;} //as if it were a texture
 };
 
 #endif
