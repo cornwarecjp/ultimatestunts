@@ -138,9 +138,9 @@ void CGameCamera::update()
 				int x = (int)tp.x;
 				int y = (int)tp.y;
 				int z = (int)tp.z;
-				x = x - x % (2*TILESIZE) + TILESIZE;
+				x = x - x % (2*TILESIZE) + (int)(1.25*TILESIZE);
 				y = y - y % (VERTSIZE) + VERTSIZE;
-				z = z - z % (2*TILESIZE) + TILESIZE;
+				z = z - z % (2*TILESIZE) + (int)(1.25*TILESIZE);
 				tp.x = (float)x;
 				tp.y = (float)y;
 				tp.z = (float)z;

@@ -46,7 +46,7 @@ CSound::CSound(const CLConfig &conf, const CWorld *world)
 
 	if (FSOUND_GetVersion() < FMOD_VERSION)
 	{
-		printf("Error : You are using the wrong DLL version!  You should be using FMOD %.02f\n", FMOD_VERSION);
+		printf("   Error : You are using the wrong DLL version!  You should be using FMOD %.02f\n", FMOD_VERSION);
 		return;
 	}
 
@@ -67,7 +67,7 @@ CSound::CSound(const CLConfig &conf, const CWorld *world)
 		FSOUND_SetOutput(FSOUND_OUTPUT_NOSOUND);
 	else
 	{
-		printf("Unknown driver name %s: using nosound driver\n", drivername.c_str());
+		printf("   Unknown driver name %s: using nosound driver\n", drivername.c_str());
 		FSOUND_SetOutput(FSOUND_OUTPUT_NOSOUND);
 	}
 
@@ -75,36 +75,39 @@ CSound::CSound(const CLConfig &conf, const CWorld *world)
 	if(FSOUND_GetNumDrivers() > 1)
 	{
 		CString subdriver = conf.getValue("sound", "subdriver");
-		printf("\nSelected driver: %s\n", subdriver.c_str());
-		printf("Available drivers:\n");
+		printf("   Selected driver: %s\n", subdriver.c_str());
+		printf("   Available drivers:\n");
 		for (int i=0; i < FSOUND_GetNumDrivers(); i++)
 		{
-			printf("%d: %s\n", i+1, FSOUND_GetDriverName(i));
+			printf("   %d: %s\n", i+1, FSOUND_GetDriverName(i));
 
 			if(subdriver == (char *)FSOUND_GetDriverName(i))
 				FSOUND_SetDriver(i);
 
+/*
 			{
 				unsigned int caps = 0;
 
 				FSOUND_GetDriverCaps(i, &caps);
 				if (caps & FSOUND_CAPS_HARDWARE)
-					printf("  * Driver supports hardware 3D sound!\n");
+					printf("     * Driver supports hardware 3D sound!\n");
 				if (caps & FSOUND_CAPS_EAX2)
-					printf("  * Driver supports EAX 2 reverb!\n");
+					printf("     * Driver supports EAX 2 reverb!\n");
 				if (caps & FSOUND_CAPS_EAX3)
-					printf("  * Driver supports EAX 3 reverb!\n");
+					printf("     * Driver supports EAX 3 reverb!\n");
 				if (caps & FSOUND_CAPS_GEOMETRY_OCCLUSIONS)
-					printf("  * Driver supports hardware 3d geometry processing with occlusions!\n");
+					printf("     * Driver supports hardware 3d geometry processing with occlusions!\n");
 				if (caps & FSOUND_CAPS_GEOMETRY_REFLECTIONS)
-					printf("  * Driver supports hardware 3d geometry processing with reflections!\n");
+					printf("     * Driver supports hardware 3d geometry processing with reflections!\n");
 			}
+*/
 
 		}
 	}
 
-	printf("Loaded driver: %s\n", FSOUND_GetDriverName(FSOUND_GetDriver()) );
+	printf("   Loaded driver: %s\n", FSOUND_GetDriverName(FSOUND_GetDriver()) );
 
+/*
   {
     unsigned int caps = 0;
 
@@ -126,14 +129,16 @@ CSound::CSound(const CLConfig &conf, const CWorld *world)
       printf("- Driver supports hardware 3d geometry processing with reflections!\n");
     printf("---------------------------------------------------------\n");
   }
+*/
 
   // INITIALIZE
   if (!FSOUND_Init(44100, 32, 0))
   {
-    printf("Init: %s\n", FMOD_ErrorString(FSOUND_GetError()));
+    printf("  Init: %s\n", FMOD_ErrorString(FSOUND_GetError()));
     return;
   }
 
+/*
   // DISPLAY HELP
   printf("FMOD Output Method : ");
   switch (FSOUND_GetOutput())
@@ -190,9 +195,10 @@ CSound::CSound(const CLConfig &conf, const CWorld *world)
   printf("Sub driver        : ");
   printf("%s\n", FSOUND_GetDriverName(FSOUND_GetDriver()));
   printf("Hardware 3D channels : %d\n", FSOUND_GetNumHardwareChannels());
+*/
 
 	CDataFile f("music/kssthbss.ogg");
-	printf("\nLoading music file %s\n", f.getName().c_str());
+	printf("   Loading music file %s\n", f.getName().c_str());
 	m_MusicSample = new CSndSample(SAMPLE_2D);
 	m_MusicObject = new CSoundObj;
 	m_MusicSample->loadFromFile(f.useExtern());
@@ -218,7 +224,7 @@ bool CSound::load()
 {
 	CSndSample *engine = new CSndSample(SAMPLE_3D);
 	CDataFile f("sounds/engine.wav");
-	printf("Loading enine sound from %s\n", f.getName().c_str());
+	printf("   Loading enine sound from %s\n", f.getName().c_str());
 	engine->loadFromFile(f.useExtern());
 
 	m_Samples.push_back(engine);
@@ -287,7 +293,7 @@ void CSound::update()
 
 CSound::CSound(const CLConfig &conf, const CWorld *world)
 {
-	printf("No sound: sound support not compiled in\n");
+	printf("   No sound: sound support not compiled in\n");
 }
 
 CSound::~CSound()

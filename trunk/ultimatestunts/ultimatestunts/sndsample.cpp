@@ -15,16 +15,14 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <stdio.h>
-
 #include "sndsample.h"
 
+#include <stdio.h>
 #ifdef HAVE_LIBFMOD
 
 #ifdef FMOD_HEADER
 #include <fmod/fmod.h>
 #include <fmod/fmod_errors.h>
-#include <fmod/wincompat.h> //debugging
 #endif
 
 CSndSample::CSndSample()
@@ -55,7 +53,6 @@ int CSndSample::loadFromFile(CString filename)
   {
     case SAMPLE_2D:
       m_Sample = (void *)FSOUND_Sample_Load(FSOUND_UNMANAGED, filename.c_str(), FSOUND_2D, 0);
-      printf("Loaded the sample\n");
       break;
     case SAMPLE_3D:
       m_Sample = (void *)FSOUND_Sample_Load(FSOUND_FREE, filename.c_str(), FSOUND_HW3D, 0);
@@ -64,7 +61,7 @@ int CSndSample::loadFromFile(CString filename)
 
   if (!m_Sample)
   {
-    printf("sample: %s\n", FMOD_ErrorString(FSOUND_GetError()));
+    printf("   sample: %s\n", FMOD_ErrorString(FSOUND_GetError()));
     return 1;
   }
   switch(m_Type)
@@ -82,8 +79,7 @@ int CSndSample::loadFromFile(CString filename)
 
 int CSndSample::attachToChannel(int c)
 {
-  printf("Attaching the sample to a channel\n");
-  return FSOUND_PlaySoundEx(c, (FSOUND_SAMPLE  *)m_Sample, NULL, TRUE);
+  return FSOUND_PlaySoundEx(c, (FSOUND_SAMPLE  *)m_Sample, NULL, true);
 }
 
 #else //libfmod
@@ -95,7 +91,6 @@ CSndSample::~CSndSample()
 
 int CSndSample::loadFromFile(CString filename)
 {
-  printf("Sound not loaded: client not compiled with sound support\n");
   return 1;
 }
 

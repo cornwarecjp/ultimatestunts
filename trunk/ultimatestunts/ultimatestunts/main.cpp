@@ -132,14 +132,14 @@ bool addPlayer(CString desc)
 	return true;
 }
 
-int main(int argc, char *argv[])
+void start(int argc, char *argv[]) //first things before becoming interactive
 {
 	printf("Welcome to " PACKAGE " version " VERSION "\n");
 
 	CLConfig conffile(argc, argv);
 	if(!conffile.setFilename("ultimatestunts.conf"))
 	{
-		printf("Error: could not read ultimatestunts.conf\n"); return 1;
+		printf("Error: could not read ultimatestunts.conf\n");
 		//TODO: create a default one
 	} else {printf("Using ultimatestunts.conf\n");}
 
@@ -157,16 +157,65 @@ int main(int argc, char *argv[])
 		fctl->setDataDir(DataDir);
 	}
 
-	printf("\nCreating a window\n");
+	printf("Initialising Ultimate Stunts:\n---Window system\n");
 	winsys = new CWinSystem(conffile);
 
 	world = new CWorld();
 
-	printf("\nSetting up the GUI:\n");
+	printf("---GUI\n");
 	gui = new CGUI(conffile, winsys);
 
-	printf("\nSetting up the sound\n");
+	printf("---Sound system\n");
 	soundsystem = new CSound(conffile, world);
+
+	printf("---Rendering engine\n");
+	renderer = new CGameRenderer(conffile, world);
+
+	printf("---Camera\n");
+	camera = new CGameCamera(world);
+	renderer->setCamera(camera);
+	soundsystem->setCamera(camera);
+}
+
+void end() //Last things before exiting
+{
+	printf("Unloading Ultimate Stunts:\n---Sound system\n");
+	if(soundsystem!=NULL)
+		delete soundsystem;
+	printf("---Rendering engine\n");
+	if(renderer!=NULL)
+		delete renderer;
+	printf("---Simulation\n");
+	if(sim!=NULL)
+		delete sim;
+
+	printf("---Players\n");
+	for(unsigned int i=0; i<players.size(); i++)
+		delete players[i];
+	players.clear();
+
+	printf("---World data\n");
+	if(world!=NULL)
+		delete world;
+
+	printf("---Server\n");
+	if(server!=NULL)
+		delete server; //also stops the server process (if existing)
+
+	printf("---GUI\n");
+	if(gui!=NULL)
+		delete gui;
+
+	printf("---Window system\n");
+	if(winsys!=NULL)
+		delete winsys; //Important; don't remove: this calls SDL_Quit!!!
+
+	printf("\nProgram finished succesfully\n");
+}
+
+int main(int argc, char *argv[])
+{
+	start(argc, argv);
 
 	//The track filename:
 	CString trackfile = "tracks/default.track";
@@ -213,17 +262,13 @@ int main(int argc, char *argv[])
 		}
 		default:
 		case CGUI::Exit:
-			return 0;
+			end();
+			return EXIT_SUCCESS;
 	}
 
 	printf("\nLoading the track\n");
 	world->loadTrack(trackfile);
-
-	printf("\nInitialising the rendering engine\n");
-	renderer = new CGameRenderer(conffile, world);
 	renderer->loadTrackData();
-	camera = new CGameCamera(world);
-	renderer->setCamera(camera);
 
 	while(!( gui->isPassed("playermenu") )); //waiting for input
 	int num_players = gui->getValue("playermenu", "number").toInt();
@@ -244,7 +289,6 @@ int main(int argc, char *argv[])
 
 	printf("\nLoading the sound samples\n");
 	soundsystem->load();
-	soundsystem->setCamera(camera);
 
 	printf("\nEntering mainloop\n");
 	//Creating some white space
@@ -253,34 +297,6 @@ int main(int argc, char *argv[])
 	winsys->runLoop(mainloop, true); //true: swap buffers
 	printf("\nLeaving mainloop\n");
 
-	printf("Unloading sound system\n");
-	if(soundsystem!=NULL)
-		delete soundsystem;
-	printf("Unloading renderer\n");
-	if(renderer!=NULL)
-		delete renderer;
-	printf("Unloading simulation\n");
-	if(sim!=NULL)
-		delete sim;
-
-	printf("Unloading players\n");
-	for(unsigned int i=0; i<players.size(); i++)
-		delete players[i];
-	players.clear();
-
-	printf("Unloading world data\n");
-	if(world!=NULL)
-		delete world;
-
-	printf("Unloading the server\n");
-	if(server!=NULL)
-		delete server; //also stops the server process (if existing)
-
-	printf("Unloading the window system\n");
-	if(winsys!=NULL)
-		delete winsys; //Important; don't remove: this calls SDL_Quit!!!
-
-	printf("\nProgram finished succesfully\n");
-
+	end();
 	return EXIT_SUCCESS;
 }

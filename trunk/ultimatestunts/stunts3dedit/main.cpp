@@ -38,8 +38,9 @@ enum eKeyconf {
 	eTranslate = 't',
 
 	eRotateTexture = 'R',
-	eTranslateTexture = 'T'
+	eTranslateTexture = 'T',
 
+	eHelp = 'h'
 };
 
 //Common files
@@ -315,6 +316,25 @@ bool mainloop()
 	{
 		//TODO: implement this
 	}
+
+	if(winsys->wasPressed(eHelp))
+		printf("Keys:\n"
+			"Esc: Exit\n"
+			"%c: Load\n"
+			"%c: Save\n"
+			"%c: Primitive\n"
+			"%c: Vertex\n"
+			"%c: Change\n"
+			"%c: Rotate\n"
+			"%c: Scale\n"
+			"%c: Mirror\n"
+			"%c: Translate\n"
+			"%c: Rotate Texture\n"
+			"%c: Translate Texture\n"
+			"%c: Help\n",
+			eLoad, eSave, ePrimitive, eVertex, eChange, eRotate, eScale,
+			eMirror, eTranslate, eRotateTexture, eTranslateTexture, eHelp
+		);
 
 	if(keystate[SDLK_PAGEUP])
 		camera->incrDist(-1.0);

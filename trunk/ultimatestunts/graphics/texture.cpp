@@ -30,10 +30,9 @@ CTexture::CTexture()
 
 bool CTexture::loadFromFile(CString filename, int xs, int ys)
 {
-	//printf("Loading %s..\n", filename);
 	RGBImageRec *in_image = RGBImageLoad(filename.c_str());
 
-	printf("  1: %d,%d\n", xs, ys);
+	//printf("  1: %d,%d\n", xs, ys);
 	RGBImageRec *image = scaleImage(in_image, xs, ys);
 	if(image==NULL)
 	{
@@ -70,7 +69,7 @@ bool CTexture::loadFromFile(CString filename, int xs, int ys)
 	}
 	in_image = image;
 
-	printf("  2: %d,%d\n", xs/2, ys/2);
+	//printf("  2: %d,%d\n", xs/2, ys/2);
 	image = scaleImage(in_image, xs/2, ys/2);
 	if(image==NULL)
 	{
@@ -106,7 +105,7 @@ bool CTexture::loadFromFile(CString filename, int xs, int ys)
 		in_image = image;
 	}
 
-	printf("  3: %d,%d\n", xs/4, ys/4);
+	//printf("  3: %d,%d\n", xs/4, ys/4);
 	image = scaleImage(in_image, xs/4,ys/4);
 	if(image==NULL)
 	{
@@ -142,7 +141,7 @@ bool CTexture::loadFromFile(CString filename, int xs, int ys)
 		in_image = image;
 	}
 
-	printf("  4: %d,%d\n", xs/8,ys/8);
+	//printf("  4: %d,%d\n", xs/8,ys/8);
 	image = scaleImage(in_image, xs/8,ys/8);
 	if(image==NULL)
 	{
@@ -178,7 +177,7 @@ bool CTexture::loadFromFile(CString filename, int xs, int ys)
 		in_image = image;
 	}
 
-	printf("  5: 1,1\n");
+	//printf("  5: 1,1\n");
 	image = scaleImage(in_image, 1,1);
 	if(image==NULL)
 	{
@@ -207,7 +206,8 @@ bool CTexture::loadFromFile(CString filename, int xs, int ys)
 void CTexture::draw(int lod)
 {
   if (getSizeX(lod) <= 4 || getSizeY(lod) <= 4)
-    {printf("Error: trying to draw a too small texture\n"); return;}
+    {printf("   Error: trying to draw a too small texture:\n"
+		"   lod=%d, x=%d, y=%d\n", lod, getSizeX(lod), getSizeY(lod)); return;}
 
   switch(lod)
   {
@@ -275,8 +275,8 @@ RGBImageRec *CTexture::scaleImage(RGBImageRec *in, int xs, int ys)
 	sizex = (in->sizeX>xs)? xs : in->sizeX;
 	sizey = (in->sizeY>ys)? ys : in->sizeY;
 
-  if(sizex==in->sizeX && sizey==in->sizeY)
-    return NULL; //don't scale; use the same texture
+	if(sizex==in->sizeX && sizey==in->sizeY)
+		return NULL; //don't scale; use the same texture
 
 
 	bitmapdata = (unsigned char *)malloc(3*sizex*sizey*sizeof(unsigned char));
@@ -300,40 +300,40 @@ RGBImageRec *CTexture::scaleImage(RGBImageRec *in, int xs, int ys)
   else //still need my own algoritm for very small sizes
   {
 #endif
-  	int bsx;
-	  int bsy;
-  	int opp=1;
-	  int i, j, x, y;
-  	int r, g, b;
+		int bsx;
+		int bsy;
+		int opp=1;
+		int i, j, x, y;
+		int r, g, b;
 
-	  bsx = in->sizeX / xs;
-  	bsy = in->sizeY / ys;
+		bsx = in->sizeX / xs;
+		bsy = in->sizeY / ys;
 
-	  if(bsx<1) {bsx=1;}
-  	if(bsy<1) {bsy=1;}
-	  opp = bsx*bsy;
+		if(bsx<1) {bsx=1;}
+		if(bsy<1) {bsy=1;}
+		opp = bsx*bsy;
 
-  	//printf("Oorspronkelijke resolutie: %dx%d\n",in->sizeX, in->sizeY);
-	  //printf("Resizing with blocksize %dx%d...\n",bsx,bsy);
+		//printf("Oorspronkelijke resolutie: %dx%d\n",in->sizeX, in->sizeY);
+		//printf("Resizing with blocksize %dx%d...\n",bsx,bsy);
 
-  	for(x=0; x<sizex; x++)
-	  	for(y=0; y<sizey; y++)
-		  {
-			  r = g = b = 0;
-  			for(i=0; i<bsx; i++)
-	  			for(j=0; j<bsy; j++)
-		  		{
-			  		r += *(in->data + 3*(bsx*x+i+in->sizeX*(bsy*y+j)) );
-				  	g += *(in->data + 3*(bsx*x+i+in->sizeX*(bsy*y+j)) +1);
-					  b += *(in->data + 3*(bsx*x+i+in->sizeX*(bsy*y+j)) +2);
-  				}
+		for(x=0; x<sizex; x++)
+			for(y=0; y<sizey; y++)
+			{
+				r = g = b = 0;
+				for(i=0; i<bsx; i++)
+					for(j=0; j<bsy; j++)
+					{
+						r += *(in->data + 3*(bsx*x+i+in->sizeX*(bsy*y+j)) );
+						g += *(in->data + 3*(bsx*x+i+in->sizeX*(bsy*y+j)) +1);
+						b += *(in->data + 3*(bsx*x+i+in->sizeX*(bsy*y+j)) +2);
+					}
 
-	  			*(bitmapdata + 3*(x+sizex*y) ) = r/opp;
-		  		*(bitmapdata + 3*(x+sizex*y) +1) = g/opp;
-			  	*(bitmapdata + 3*(x+sizex*y) +2) = b/opp;
-  		}
+					*(bitmapdata + 3*(x+sizex*y) ) = r/opp;
+					*(bitmapdata + 3*(x+sizex*y) +1) = g/opp;
+					*(bitmapdata + 3*(x+sizex*y) +2) = b/opp;
+			}
 #ifdef USE_GLUSCALE
-  }
+	}
 #endif
 
 	return out;

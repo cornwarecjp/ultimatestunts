@@ -33,11 +33,11 @@ bool CWorld::loadTrack(CString filename)
 {
 	//Open the track file
 	CDataFile tfile(filename);
-	printf("The world is being loaded from %s\n\n", tfile.getName().c_str());
+	printf("   The world is being loaded from %s\n\n", tfile.getName().c_str());
 
 	CString line = tfile.readl();
 	if(line != "TRACKFILE")
-		{printf("Track file does not contain a correct header\n");}
+		{printf("   Track file does not contain a correct header\n");}
 		//TODO: throw something
 
 	m_L = tfile.readl().toInt();
@@ -61,14 +61,12 @@ bool CWorld::loadTrack(CString filename)
 			line = line.mid(0, pos);
 		}
 
-		//line = m_DataDir + line;
-		//printf("Loading %s with mul=%d\n", line.c_str(), mul);
 		CMaterial *m = new CMaterial;
 		m->loadFromFile(line, mul);
 		//TODO: set friction coefficients etc.
 		m_TileMaterials.push_back(m);
 	}
-	printf("\nLoaded %d materials\n\n", m_TileMaterials.size());
+	printf("\n   Loaded %d materials\n\n", m_TileMaterials.size());
 
 	while(tfile.readl() != "BEGIN"); //Begin of background section
 	m_BackgroundFilename = tfile.readl();
@@ -88,7 +86,6 @@ bool CWorld::loadTrack(CString filename)
 			line = line.mid(0, pos);
 		}
 
-		//line = m_DataDir + line;
 		CShape *b = new CShape;
 
 		CMaterial **subset = getMaterialSubset(texture_indices);
@@ -98,7 +95,7 @@ bool CWorld::loadTrack(CString filename)
 
 		m_TileShapes.push_back(b);
 	}
-	printf("\nLoaded %d tile shapes\n\n", m_TileShapes.size());
+	printf("\n   Loaded %d tile shapes\n\n", m_TileShapes.size());
 
 
 	//Third: initialising track array
@@ -116,8 +113,8 @@ bool CWorld::loadTrack(CString filename)
 				int n = y + m_H * (z+m_W*x);
 				int tp = line.inStr('\t');
 				line = line.mid(tp+1, line.length());
+
 				CTile t;
-				//t.m_Shape = m_TileShapes[line.toInt()];
 				t.m_Shape = line.toInt();
 				line = line.mid(line.inStr('/')+1, line.length());
 				t.m_R = line.toInt();
@@ -128,21 +125,21 @@ bool CWorld::loadTrack(CString filename)
        }
 
 		if(tfile.readl()!="END") printf(
-			"Error while reading track data: END expected\n"
-			"after track layer %d\n"
+			"   Error while reading track data: END expected\n"
+			"   after track layer %d\n"
 			, y);
 
 	}
 
 	int s = m_Track.size();
-	printf("Loaded the track: total %d tiles\n", s);
+	printf("   Loaded the track: total %d tiles\n", s);
 
 	return true;
 }
 
 void CWorld::unloadTrack()
 {
-	printf("Unloading track...\n");
+	printf("   Unloading track...\n");
 
 	//The array containing the track
 	m_Track.clear();
@@ -195,13 +192,13 @@ bool CWorld::loadMovObjs(CString filename)
 		CMovingObject *m = new CCar; //future: selecting, using the file
 
 		if(m->getType() != CMessageBuffer::car)
-			printf("Error: created car is not a car!\n");
+			printf("   Error: created car is not a car!\n");
 
 		m->m_Bound = 0; //for example
 		m_MovObjs.push_back(m);
 
 		int s = m_MovObjs.size();
-		printf("Added car: total %d moving objects\n", s);
+		printf("   Added car: total %d moving objects\n", s);
 
 	}
 
@@ -210,7 +207,7 @@ bool CWorld::loadMovObjs(CString filename)
 
 void CWorld::unloadMovObjs()
 {
-	printf("Unloading moving objects...\n");
+	printf("   Unloading moving objects...\n");
 
 	if(m_MovObjs.size() > 0)
 	{

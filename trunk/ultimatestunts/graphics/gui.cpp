@@ -39,6 +39,9 @@ CGUI::~CGUI(){
 void CGUI::startFrom(CString section)
 {
 	printf(
+		"\n\n\n\n**********\n"
+		"*The \"GUI\"*\n"
+		"**********\n"
 		"This is a temporary implementation of the GUI,\n"
 		"based on stdio. It is not yet multithreaded.\n"
 		"So you'll first have to answer all questions before\n"
@@ -63,7 +66,11 @@ void CGUI::startFrom(CString section)
 		else
 			{printf("Error: unknown menu %s\n", section.c_str()); section = "";}
 	}
-	printf("\nEnd of the \"GUI\"\n");
+
+	printf(
+		"\n\n*****************\n"
+		"*End of the \"GUI\"*\n"
+		"*****************\n\n\n");
 }
 
 void CGUI::stop()

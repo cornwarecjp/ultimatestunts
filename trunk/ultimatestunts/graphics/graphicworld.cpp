@@ -48,13 +48,13 @@ bool CGraphicWorld::loadWorld()
 {
 	printf("Loading the graphic world\n");
 
-	printf("Loading tile textures:\n");
+	printf("  Loading tile textures:\n");
 	for(unsigned int i=0; i<m_World->m_TileMaterials.size(); i++)
 	{
 		CTexture t;
 		CDataFile f(m_World->m_TileMaterials[i]->getFilename());
 		int mul = m_World->m_TileMaterials[i]->getTextureMul();
-		printf("loading %s with mul=%d:\n", f.getName().c_str(), mul);
+		printf("   Loading %s with mul=%d:\n", f.getName().c_str(), mul);
 		t.setTextureSmooth(m_TexSmooth);
 		int xs = m_TexMaxSize / mul;
 		int ys = m_TexMaxSize / mul;
@@ -62,20 +62,20 @@ bool CGraphicWorld::loadWorld()
 		m_TileTextures.push_back(t);
 	}
 
-	printf("Loading tiles:\n");
+	printf("  Loading tiles:\n");
 	for(unsigned int i=0; i<m_World->m_TileShapes.size(); i++)
 	{
 		CGraphObj obj;
 		CDataFile f(m_World->m_TileShapes[i]->getFilename());
 		CTexture **subset = getTextureSubset(m_World->m_TileShapes[i]->getSubset());
-		printf("loading %s:\n", f.getName().c_str());
+		printf("   Loading %s:\n", f.getName().c_str());
 		obj.loadFromFile(&f, subset);
 		m_Tiles.push_back(obj);
 		delete [] subset;
 	}
 
 	CDataFile f(m_World->getBackgroundFilename());
-	printf("Loading background %s:\n", f.getName().c_str());
+	printf("  Loading background %s:\n", f.getName().c_str());
 	m_Background.setTextureSmooth(m_TexSmooth);
 	m_Background.loadFromFile(f.useExtern(), 4*m_BackgroundSize, m_BackgroundSize);
 
@@ -94,7 +94,7 @@ bool CGraphicWorld::loadObjects()
 	{
 		CGraphObj obj;
 		CDataFile f(m_World->m_MovObjBounds[i]->getFilename());
-		printf("Loading from %s\n", f.getName().c_str());
+		printf("   Loading from %s\n", f.getName().c_str());
 		obj.loadFromFile(&f, NULL);
 		m_MovingObjects.push_back(obj);
 	}

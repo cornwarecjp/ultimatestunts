@@ -14,7 +14,6 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#include <stdio.h> //debugging
 #include <stdlib.h>
 
 #include "soundobj.h"

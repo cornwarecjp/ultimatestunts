@@ -7,11 +7,10 @@ Syntax:
 
 
 BEGIN
-4
+3
 textures/gras2.rgb
 textures/weg1.rgb
 textures/baksteen1.rgb
-textures/metal1.rgb
 END
 
 

@@ -1,4 +1,3 @@
-
 /***************************************************************************
                           tile.h  -  A Tile (square part of the track)
                              -------------------
@@ -26,11 +25,8 @@
   */
 
 class CTile {
-public: 
-	//CShape *m_Shape;
-
+public:
 	int m_Shape;
-
 	int m_Z, m_R; //height, orientation. 0 <= m_R <= 3
 };
 

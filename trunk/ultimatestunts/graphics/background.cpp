@@ -38,10 +38,17 @@ bool CBackground::loadFromFile(CString filename, int xs, int ys)
 	m_ObjList = glGenLists(1);
 	glNewList(m_ObjList, GL_COMPILE);
 
-	GLfloat white[] = {1.0, 1.0, 1.0};
-	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, white);
+	GLfloat color[] = {1.0, 1.0, 1.0};
+	if(getSizeX(1) <=4 || getSizeY(1) <= 4)
+	{
+		color[0] = m_Color.x;
+		color[1] = m_Color.y;
+		color[2] = m_Color.z;
+	}
+	else
+		{CTexture::draw(1);}
 
-	CTexture::draw(1);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, color);
 
 	glDisable(GL_LIGHTING);
 	glDisable(GL_CULL_FACE);

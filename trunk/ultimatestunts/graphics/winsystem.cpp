@@ -37,7 +37,7 @@ CWinSystem::CWinSystem(const CLConfig &conf)
 
 	//Display variable:
 	CString cnf = conf.getValue("graphics","display");
-	printf("Display variable: \"%s\"\n", cnf.c_str());
+	printf("   Display variable: \"%s\"\n", cnf.c_str());
 	unsigned int pos = cnf.inStr(':');
 	if(pos > 0 && pos < cnf.length()-1) //There is a ':' in cnf_display
 	{
@@ -70,10 +70,10 @@ CWinSystem::CWinSystem(const CLConfig &conf)
 	SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 16 );
 	SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
 
-	printf("Setting resolution to %dx%d:%d...\n", m_W, m_H, m_BPP);
+	printf("   Setting resolution to %dx%d:%d...\n", m_W, m_H, m_BPP);
 	m_Screen = SDL_SetVideoMode(m_W, m_H, m_BPP, m_Flags);
 	if ( ! m_Screen ) {
-		fprintf(stderr, "Couldn't set %dx%d GL video mode: %s\n",
+		fprintf(stderr, "   Couldn't set %dx%d GL video mode: %s\n",
 			m_W, m_W, SDL_GetError());
 		SDL_Quit();
 		exit(2);
@@ -81,12 +81,12 @@ CWinSystem::CWinSystem(const CLConfig &conf)
 	m_W = m_Screen->w;
 	m_H = m_Screen->h;
 	m_BPP = m_Screen->format->BitsPerPixel;
-	printf("...Now working at %dx%d:%d\n", m_W, m_H, m_BPP);
+	printf("   ...Now working at %dx%d:%d\n", m_W, m_H, m_BPP);
 
 	SDL_WM_SetCaption("UltimateStunts", "ultimatestunts");
 
 	m_NumJoysticks = SDL_NumJoysticks();
-	printf("Found %d joysticks\n", m_NumJoysticks);
+	printf("   Found %d joysticks\n", m_NumJoysticks);
 	if(m_NumJoysticks > 0)
 	{
 		SDL_JoystickEventState(SDL_ENABLE);
@@ -94,14 +94,14 @@ CWinSystem::CWinSystem(const CLConfig &conf)
 
 		if(m_Joystick)
 		{
-			printf("Opened Joystick 0\n");
-			printf("Name: %s\n", SDL_JoystickName(0));
-			printf("Number of Axes: %d\n", SDL_JoystickNumAxes(m_Joystick));
-			printf("Number of Buttons: %d\n", SDL_JoystickNumButtons(m_Joystick));
-			printf("Number of Balls: %d\n", SDL_JoystickNumBalls(m_Joystick));
+			printf("   Opened Joystick 0\n");
+			printf("   Name: %s\n", SDL_JoystickName(0));
+			printf("   Number of Axes: %d\n", SDL_JoystickNumAxes(m_Joystick));
+			printf("   Number of Buttons: %d\n", SDL_JoystickNumButtons(m_Joystick));
+			printf("   Number of Balls: %d\n", SDL_JoystickNumBalls(m_Joystick));
 		}
 		else
-			printf("Couldn't open Joystick 0\n");
+			printf("   Couldn't open Joystick 0\n");
 
 	}
 
