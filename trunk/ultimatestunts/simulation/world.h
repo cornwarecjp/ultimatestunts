@@ -27,6 +27,7 @@ namespace std {}
 using namespace std;
 
 #include "tile.h"
+#include "bound.h"
 #include "movingobject.h"
 #include "objectchoice.h"
 

@@ -177,14 +177,23 @@ void CGameRenderer::viewCar(CCar *car)
 
 	CVector r = car->getPosition();
 	const CMatrix &m = car->getRotationMatrix();
-
 	//printf("Drawing a car at position %f,%f,%f\n", r.x,r.y,r.z);
 
 	glTranslatef (r.x, r.y, r.z);
 	glMultMatrixf(m.gl_mtr());
 
-	m_GraphicWorld->m_MovingObjects[car->m_Bound].draw(1); //TODO: LOD
-	//TODO: other CBound members
+	for(unsigned int i=car->m_Bodies.size(); i > 0; i--) //TODO: depth sorting?
+	{
+		glPushMatrix();
+
+		CBody &b = car->m_Bodies[i-1];
+		r = b.m_Position;
+		glTranslatef (r.x, r.y, r.z);
+		glMultMatrixf(b.m_Orientation.gl_mtr());
+		m_GraphicWorld->m_MovingObjects[b.m_Body].draw(1); //TODO: LOD
+
+		glPopMatrix();
+	}
 
 	glPopMatrix();
 }

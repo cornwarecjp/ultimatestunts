@@ -51,7 +51,7 @@ configure:1202: result: found
 configure:1210: checking for working autoheader
 configure:1217: result: found
 configure:1225: checking for working makeinfo
-configure:1236: result: missing
+configure:1232: result: found
 configure:1283: checking for gcc
 configure:1298: found /usr/bin/gcc
 configure:1306: result: gcc
@@ -382,7 +382,7 @@ ac_cv_target_alias=i586-pc-linux-gnu
 ## ------------ ##
 
 #define PACKAGE "ultimatestunts"
-#define VERSION "0.3.3"
+#define VERSION "0.3.4"
 #define HAVE_SDL 1
 #define STDC_HEADERS 1
 #define HAVE_LIBFMOD 1
@@ -410,84 +410,14 @@ config.status:5569: creating Makefile
 ## ----------------------- ##
 
 This file was extended by config.status 2.52, executed with
-  CONFIG_FILES    = shared/Makefile
+  CONFIG_FILES    = ultimatestunts/Makefile
   CONFIG_HEADERS  = 
   CONFIG_LINKS    = 
   CONFIG_COMMANDS = 
   > ./config.status 
 on pentagon
 
-config.status:5569: creating shared/Makefile
-
-## ----------------------- ##
-## Running config.status.  ##
-## ----------------------- ##
-
-This file was extended by config.status 2.52, executed with
-  CONFIG_FILES    = simulation/Makefile
-  CONFIG_HEADERS  = 
-  CONFIG_LINKS    = 
-  CONFIG_COMMANDS = 
-  > ./config.status 
-on pentagon
-
-config.status:5569: creating simulation/Makefile
-
-## ----------------------- ##
-## Running config.status.  ##
-## ----------------------- ##
-
-This file was extended by config.status 2.52, executed with
-  CONFIG_FILES    = graphics/Makefile
-  CONFIG_HEADERS  = 
-  CONFIG_LINKS    = 
-  CONFIG_COMMANDS = 
-  > ./config.status 
-on pentagon
-
-config.status:5569: creating graphics/Makefile
-
-## ----------------------- ##
-## Running config.status.  ##
-## ----------------------- ##
-
-This file was extended by config.status 2.52, executed with
-  CONFIG_FILES    = stuntsserver/Makefile
-  CONFIG_HEADERS  = 
-  CONFIG_LINKS    = 
-  CONFIG_COMMANDS = 
-  > ./config.status 
-on pentagon
-
-config.status:5569: creating stuntsserver/Makefile
-
-## ----------------------- ##
-## Running config.status.  ##
-## ----------------------- ##
-
-This file was extended by config.status 2.52, executed with
-  CONFIG_FILES    = stuntsai/Makefile
-  CONFIG_HEADERS  = 
-  CONFIG_LINKS    = 
-  CONFIG_COMMANDS = 
-  > ./config.status 
-on pentagon
-
-config.status:5569: creating stuntsai/Makefile
-
-## ----------------------- ##
-## Running config.status.  ##
-## ----------------------- ##
-
-This file was extended by config.status 2.52, executed with
-  CONFIG_FILES    = stunts3dedit/Makefile
-  CONFIG_HEADERS  = 
-  CONFIG_LINKS    = 
-  CONFIG_COMMANDS = 
-  > ./config.status 
-on pentagon
-
-config.status:5569: creating stunts3dedit/Makefile
+config.status:5569: creating ultimatestunts/Makefile
 
 ## ----------------------- ##
 ## Running config.status.  ##
@@ -508,11 +438,81 @@ config.status:5569: creating trackedit/Makefile
 ## ----------------------- ##
 
 This file was extended by config.status 2.52, executed with
-  CONFIG_FILES    = ultimatestunts/Makefile
+  CONFIG_FILES    = stunts3dedit/Makefile
   CONFIG_HEADERS  = 
   CONFIG_LINKS    = 
   CONFIG_COMMANDS = 
   > ./config.status 
 on pentagon
 
-config.status:5569: creating ultimatestunts/Makefile
+config.status:5569: creating stunts3dedit/Makefile
+
+## ----------------------- ##
+## Running config.status.  ##
+## ----------------------- ##
+
+This file was extended by config.status 2.52, executed with
+  CONFIG_FILES    = stuntsai/Makefile
+  CONFIG_HEADERS  = 
+  CONFIG_LINKS    = 
+  CONFIG_COMMANDS = 
+  > ./config.status 
+on pentagon
+
+config.status:5569: creating stuntsai/Makefile
+
+## ----------------------- ##
+## Running config.status.  ##
+## ----------------------- ##
+
+This file was extended by config.status 2.52, executed with
+  CONFIG_FILES    = stuntsserver/Makefile
+  CONFIG_HEADERS  = 
+  CONFIG_LINKS    = 
+  CONFIG_COMMANDS = 
+  > ./config.status 
+on pentagon
+
+config.status:5569: creating stuntsserver/Makefile
+
+## ----------------------- ##
+## Running config.status.  ##
+## ----------------------- ##
+
+This file was extended by config.status 2.52, executed with
+  CONFIG_FILES    = graphics/Makefile
+  CONFIG_HEADERS  = 
+  CONFIG_LINKS    = 
+  CONFIG_COMMANDS = 
+  > ./config.status 
+on pentagon
+
+config.status:5569: creating graphics/Makefile
+
+## ----------------------- ##
+## Running config.status.  ##
+## ----------------------- ##
+
+This file was extended by config.status 2.52, executed with
+  CONFIG_FILES    = simulation/Makefile
+  CONFIG_HEADERS  = 
+  CONFIG_LINKS    = 
+  CONFIG_COMMANDS = 
+  > ./config.status 
+on pentagon
+
+config.status:5569: creating simulation/Makefile
+
+## ----------------------- ##
+## Running config.status.  ##
+## ----------------------- ##
+
+This file was extended by config.status 2.52, executed with
+  CONFIG_FILES    = shared/Makefile
+  CONFIG_HEADERS  = 
+  CONFIG_LINKS    = 
+  CONFIG_COMMANDS = 
+  > ./config.status 
+on pentagon
+
+config.status:5569: creating shared/Makefile

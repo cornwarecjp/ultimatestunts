@@ -182,19 +182,29 @@ bool CWorld::loadMovObjs(CString filename)
 
 	//Second: loading collision (and graphics) data
 	//For example:
-	CBound *b = new CBound;
-	b->loadFromFile("cars/default.gl", NULL);
-	m_MovObjBounds.push_back(b);
+	{
+		CBound *body = new CBound, *wheel = new CBound;
+		body->loadFromFile("cars/body.gl", NULL);
+		wheel->loadFromFile("cars/wheel.gl", NULL);
+		m_MovObjBounds.push_back(body);
+		m_MovObjBounds.push_back(wheel);
+	}
 
 	//Third: initialising car array
 	for(int i=0; i<num; i++)
 	{
-		CMovingObject *m = new CCar; //future: selecting, using the file
+		CMovingObject *m = new CCar; //making a general car object
 
 		if(m->getType() != CMessageBuffer::car)
 			printf("   Error: created car is not a car!\n");
 
-		m->m_Bound = 0; //for example
+		//setting the car settings
+		m->m_Bodies[0].m_Body = 0; //The car's body
+		m->m_Bodies[1].m_Body = 1; //The car's wheels
+		m->m_Bodies[2].m_Body = 1;
+		m->m_Bodies[3].m_Body = 1;
+		m->m_Bodies[4].m_Body = 1;
+
 		m_MovObjs.push_back(m);
 
 		int s = m_MovObjs.size();

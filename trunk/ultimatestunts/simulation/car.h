@@ -33,7 +33,12 @@ public:
 
 	//CRuleStatus m_RuleStatus;
 
-	int m_Body, m_FrontWheel, m_BackWheel;
+	virtual void updateBodyData();
+
+	virtual void simulate(CPhysics &theSimulator);
+
+	float m_WheelRPM, m_rotationAngle;
+	float m_wheelHeight1, m_wheelHeight2, m_wheelHeight3, m_wheelHeight4;
 };
 
 #endif

@@ -22,6 +22,9 @@ CEditCamera::CEditCamera()
 {
 	m_XAngle = m_YAngle = 0.0;
 	m_Dist = 2 * TILESIZE;
+
+	m_TileCenter = false;
+
 	updatePosition();
 }
 
@@ -42,6 +45,9 @@ void CEditCamera::incrXAngle(float xangle)
 void CEditCamera::incrYAngle(float yangle)
 {m_YAngle += yangle; updatePosition();}
 
+void CEditCamera::flipCameraCenter()
+{m_TileCenter = !m_TileCenter; updatePosition();}
+
 void CEditCamera::updatePosition()
 {
 	//Distance
@@ -52,5 +58,7 @@ void CEditCamera::updatePosition()
 	m_Position *= m_Orientation;
 
 	//Origin
-	m_Position += CVector(0.0, VERTSIZE/2, 0.0);
+	if(m_TileCenter)
+		m_Position += CVector(0.0, VERTSIZE/2, 0.0);
+
 }

@@ -48,3 +48,9 @@ void CMovingObject::setRotationMatrix(CMatrix &M)
 	m_RotationMatrix = M;
 	//and something to set m_Orientation
 }
+
+void CMovingObject::simulate(CPhysics &theSimulator)
+{
+	; //dummy implementation
+	//TODO: something useful
+}

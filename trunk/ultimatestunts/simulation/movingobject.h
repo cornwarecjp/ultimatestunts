@@ -27,12 +27,18 @@
 #include "vector.h"
 #include "matrix.h"
 
+class CPhysics;
+
 class CMovingObject : public CDynamicObject
 {
 	public:
 		CMovingObject();
 		~CMovingObject();
 
+		//Simulation stuff:
+		virtual void simulate(CPhysics &theSimulator);
+
+		//Position+veloctiy gets+sets
 		virtual CVector getPosition(){return m_Position;}
 		virtual void setPosition(CVector v){m_Position = v;}
 		virtual CVector getVelocity(){return m_Velocity;}

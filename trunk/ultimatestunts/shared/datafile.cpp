@@ -47,10 +47,10 @@ CDataFile::~CDataFile()
 	//I gues it's already being closed by CFile
 }
 
-bool CDataFile::open(CString filename, bool write=false)
+bool CDataFile::open(CString filename, bool write)
 {
 	//Do something special
-	CFile::open(filecontroldatadir + filename, write);
+	return CFile::open(filecontroldatadir + filename, write);
 }
 
 CString CDataFile::useExtern()

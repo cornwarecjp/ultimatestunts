@@ -45,6 +45,8 @@ bool CPhysics::update()
 	{
 		CMovingObject *mo =m_World->m_MovObjs[i];
 
+		mo->updateBodyData();
+
 		if(mo->getType()==CMessageBuffer::car)
 		{
 			CCarInput *input = (CCarInput *)mo->m_InputData;

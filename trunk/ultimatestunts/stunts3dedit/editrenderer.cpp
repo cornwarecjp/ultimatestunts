@@ -17,6 +17,7 @@
 #include <GL/gl.h>
 
 #include "editrenderer.h"
+#include "usmacros.h"
 
 CEditRenderer::CEditRenderer(const CLConfig &conf) : CRenderer(conf)
 {
@@ -44,4 +45,16 @@ void CEditRenderer::update()
 
 	int lod = 1;
 	m_GraphObj->draw(lod);
+
+	glBegin(GL_LINES);
+	glVertex3f(-TILESIZE/2,0.0,0.0);
+	glVertex3f(TILESIZE/2,0.0,0.0);
+
+	glVertex3f(0.0,0.0,-TILESIZE/2);
+	glVertex3f(0.0,0.0,TILESIZE/2);
+
+	glVertex3f(0.0,0.0,0.0);
+	glVertex3f(0.0,VERTSIZE,0.0);
+
+	glEnd();
 }

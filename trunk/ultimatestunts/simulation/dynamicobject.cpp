@@ -19,39 +19,13 @@
 
 CDynamicObject::CDynamicObject()
 {
-//  m_Parameters = new CMessage;
 //  m_InputData = new CMessage;
 }
 
 CDynamicObject::~CDynamicObject()
 {
-//  delete m_Parameters;
 //  delete m_InputData;
 }
-/*
-
-const CMessage *CDynamicObject::getParameters()
-{
-  return m_Parameters;
-}
-
-
-void CDynamicObject::setParameters(const CMessage *m)
-{
-  *m_Parameters = *m;
-}
-
-const CMessage *CDynamicObject::getInputData()
-{
-  return m_InputData;
-}
-
-void CDynamicObject::setInputData(const CMessage *m)
-{
-  *m_InputData = *m;
-}
-
-*/
 
 bool CDynamicObject::hasChanged()
 {return true;}

@@ -336,6 +336,9 @@ bool mainloop()
 			eMirror, eTranslate, eRotateTexture, eTranslateTexture, eHelp
 		);
 
+	if(winsys->wasPressed(SDLK_END))
+		camera->flipCameraCenter();
+
 	if(keystate[SDLK_PAGEUP])
 		camera->incrDist(-1.0);
 	if(keystate[SDLK_PAGEDOWN])

@@ -37,10 +37,12 @@ public:
 	void incrXAngle(float xangle);
 	void incrYAngle(float yangle);
 
+	void flipCameraCenter();
 protected:
 	void updatePosition();
 
 	float m_Dist, m_XAngle, m_YAngle;
+	bool m_TileCenter;
 };
 
 #endif
