@@ -37,6 +37,7 @@
 
 #include "winsystem.h"
 #include "renderer.h"
+#include "gui.h"
 
 CGraphicWorld *world;
 CPlayer *player1, *player2, *player3, *player4;
@@ -44,6 +45,7 @@ CSimulation *sim;
 
 CWinSystem *winsys;
 CRenderer *renderer;
+CGUI *gui;
 
 bool mainloop()
 {
@@ -92,36 +94,36 @@ int main(int argc, char *argv[])
 	printf("\nCreating (graphic) world object\n");
 	world = new CGraphicWorld(conffile);
 
-	while(true) //while we're giving an incorrect answer
-	{
-		printf(
-			"\nThis is a dummy replacement for the GUI.\n"
-			"Choose from the following:\n"
-			"  1: Play a local game\n"
-			"  2: Log in on a remote game\n"
-			"  \n"
-			"  3: Exit\n"
-				);
+	printf("\nSetting up the GUI:\n");
+	gui = new CGUI(conffile, winsys);
 
-		int input = 0;
-		scanf("%d", &input);
-		switch(input)
+	gui->startFrom(CGUI::MainMenu);
+	const void *maininput;
+	while((maininput = gui->getData(CGUI::MainMenu, "")) == NULL); //waiting for input
+
+	switch(*((int *)maininput))
+	{
+		case 1:
+			printf("Creating physics simulation\n");
+			sim = new CPhysics(world);
+			break;
+		case 2:
 		{
-			case 2:
-				printf("Creating client-type simulation\n");
-				sim = new CClientSim(world, "localhost", 1500);
-				break;
-			case 1:
-				printf("Creating physics simulation\n");
-				sim = new CPhysics(world);
-				break;
-			case 3:
-				return 0;
-			default:
-				printf("That is not an option\n"); continue;
+			const void *hostinput;
+			CString name;
+			int port;
+			while((hostinput = gui->getData(CGUI::HostMenu, "hostname")) == NULL);
+			name = *((CString *)hostinput);
+			while((hostinput = gui->getData(CGUI::HostMenu, "portnumber")) == NULL);
+			port = *((int *)hostinput);
+			printf("Creating client-type simulation with %s:%d\n", name.c_str(), port);
+			sim = new CClientSim(world, name, port);
+			break;
 		}
-		break; //The answer was a correct one
+		case 3:
+			return 0;
 	}
+
 
 	printf("\nLoading the track\n");
 	world->loadTrack("tracks/default.track");

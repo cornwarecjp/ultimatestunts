@@ -16,13 +16,13 @@
  ***************************************************************************/
 
 #include <GL/gl.h>
-#include <SDL/SDL.h>
 
 #include <stdio.h>
 
-SDL_Surface *screen;
-
 #include "winsystem.h"
+
+bool dummy_loopfunc()
+{return false;} //exit immediately
 
 CWinSystem::CWinSystem(const CLConfig &conf)
 {
@@ -63,8 +63,8 @@ CWinSystem::CWinSystem(const CLConfig &conf)
 	//Some code coming from SDL gears
 	SDL_Init(SDL_INIT_VIDEO);
 
-	screen = SDL_SetVideoMode(m_W, m_H, m_BPP, m_Flags);
-	if ( ! screen ) {
+	m_Screen = SDL_SetVideoMode(m_W, m_H, m_BPP, m_Flags);
+	if ( ! m_Screen ) {
 		fprintf(stderr, "Couldn't set %dx%d GL video mode: %s\n",
 			m_W, m_W, SDL_GetError());
 		SDL_Quit();
@@ -74,6 +74,8 @@ CWinSystem::CWinSystem(const CLConfig &conf)
 
 	//To set up openGL correctly, call reshape
 	reshape(m_W, m_H);
+
+	runLoop(dummy_loopfunc, true); //catch startup-events
 }
 
 CWinSystem::~CWinSystem()
@@ -95,11 +97,11 @@ int CWinSystem::runLoop( bool (CALLBACKFUN *loopfunc)(), bool swp)
 			switch(event.type)
 			{
 				case SDL_VIDEORESIZE:
-					screen = SDL_SetVideoMode(event.resize.w, event.resize.h, m_BPP,
+					m_Screen = SDL_SetVideoMode(event.resize.w, event.resize.h, m_BPP,
 						SDL_OPENGL|SDL_RESIZABLE);
-					if ( screen )
+					if ( m_Screen )
 					{
-						reshape(screen->w, screen->h);
+						reshape(m_Screen->w, m_Screen->h);
 					} else {
 						/* Uh oh, we couldn't set the new video mode?? */;
 					}

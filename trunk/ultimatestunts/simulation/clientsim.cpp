@@ -21,6 +21,8 @@
 
 CClientSim::CClientSim(CWorld *w, CString HostName, int UDPPort) : CSimulation(w)
 {
+	m_Network = new CClientNet(HostName, UDPPort);
+
 	//TODO: check connection speed
 
 	//if(slownet)

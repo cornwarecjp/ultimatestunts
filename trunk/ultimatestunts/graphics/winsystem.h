@@ -18,6 +18,8 @@
 #ifndef WINSYSTEM_H
 #define WINSYSTEM_H
 
+#include <SDL/SDL.h>
+
 #include "usmacros.h"
 #include "lconfig.h"
 
@@ -32,12 +34,15 @@ public:
 
 	int runLoop( bool (CALLBACKFUN *loopfunc)(), bool swp = false);
 
+	SDL_Surface *getScreen(){return m_Screen;}
 protected:
 	int m_W, m_H, m_BPP;
 	Uint32 m_Flags;
 	void reshape(int w, int h);
 
 	int m_VisibleTiles;
+
+	SDL_Surface *m_Screen;
 };
 
 #endif

@@ -1,7 +1,7 @@
 /***************************************************************************
-                          clientsim.h  -  Client-side networked simulation
+                          gui.h  -  The graphical user interface: menu's etc.
                              -------------------
-    begin                : di jan 14 2003
+    begin                : vr jan 31 2003
     copyright            : (C) 2003 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
@@ -15,30 +15,54 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef CLIENTSIM_H
-#define CLIENTSIM_H
+#ifndef GUI_H
+#define GUI_H
 
-#include "simulation.h"
-#include "clientnet.h"
+#include "lconfig.h"
+#include "winsystem.h"
 
 /**
   *@author CJP
   */
 
-class CClientSim : public CSimulation  {
-public: 
-	CClientSim(CWorld *w, CString HostName, int UDPPort);
-	~CClientSim();
+class CGUI //derived from CBThread in the future
+{
+public:
 
-	virtual int addPlayer(CObjectChoice choice);
-	virtual bool loadObjects();
+	enum eMenu {
+		MainMenu=1,
+		HostMenu,
+		TrackMenu,
+		PlayerMenu,
+		Options,
+		CarMenu,
+		HighScore,
+		NoMenu
+	};
 
-	virtual bool Update();
+	CGUI(const CLConfig &conf, CWinSystem *winsys);
+	~CGUI();
+
+	void startFrom(eMenu menu);
+	void stop();
+
+	const void *getData(eMenu menu, CString item);
 
 protected:
-	CSimulation *m_SubSim;
+	CWinSystem *m_WinSys;
 
-	CClientNet *m_Network;
+	bool m_Stop;
+
+	bool m_PassedMainMenu, m_PassedHostMenu;
+
+	//all data of the last times the menus were passed
+	int m_MainMenuInput;
+	CString m_HostName;
+	int m_HostPort;
+
+	//The menu code
+	eMenu viewMainMenu();
+	eMenu viewHostMenu();
 };
 
 #endif

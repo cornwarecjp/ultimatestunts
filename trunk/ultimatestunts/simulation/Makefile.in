@@ -76,10 +76,10 @@ soundlibs = @soundlibs@
 
 noinst_LIBRARIES = libsimulation.a
 
-libsimulation_a_SOURCES = aiplayercar.cpp bound.cpp car.cpp carinput.cpp clientsim.cpp dynamicobject.cpp message.cpp messagebuffer.cpp movingobject.cpp movobjinput.cpp netmessage.cpp objectchoice.cpp physics.cpp player.cpp serversim.cpp shape.cpp simulation.cpp tile.cpp world.cpp netudp.cpp
+libsimulation_a_SOURCES = aiplayercar.cpp bound.cpp car.cpp carinput.cpp clientsim.cpp clientnet.cpp dynamicobject.cpp message.cpp messagebuffer.cpp movingobject.cpp movobjinput.cpp netmessage.cpp objectchoice.cpp physics.cpp player.cpp serversim.cpp shape.cpp simulation.cpp tile.cpp world.cpp netudp.cpp
 INCLUDES = $(all_includes) -I../shared
 
-EXTRA_DIST = aiplayercar.cpp aiplayercar.h bound.cpp bound.h car.cpp car.h carinput.cpp carinput.h clientsim.cpp clientsim.h dynamicobject.cpp dynamicobject.h material.h message.cpp message.h messagebuffer.cpp messagebuffer.h movingobject.cpp movingobject.h movobjinput.cpp movobjinput.h netmessage.cpp netmessage.h objectchoice.cpp objectchoice.h physics.cpp physics.h player.cpp player.h serversim.cpp serversim.h shape.cpp shape.h simulation.cpp simulation.h tile.cpp tile.h world.cpp world.h
+EXTRA_DIST = aiplayercar.cpp aiplayercar.h bound.cpp bound.h car.cpp car.h carinput.cpp carinput.h clientsim.cpp clientsim.h clientnet.cpp clientnet.h dynamicobject.cpp dynamicobject.h material.h message.cpp message.h messagebuffer.cpp messagebuffer.h movingobject.cpp movingobject.h movobjinput.cpp movobjinput.h netmessage.cpp netmessage.h objectchoice.cpp objectchoice.h physics.cpp physics.h player.cpp player.h serversim.cpp serversim.h shape.cpp shape.h simulation.cpp simulation.h tile.cpp tile.h world.cpp world.h
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_CLEAN_FILES = 
 LIBRARIES =  $(noinst_LIBRARIES)
@@ -96,11 +96,11 @@ X_PRE_LIBS = @X_PRE_LIBS@
 libsimulation_a_LIBADD = 
 libsimulation_a_OBJECTS =  aiplayercar.$(OBJEXT) bound.$(OBJEXT) \
 car.$(OBJEXT) carinput.$(OBJEXT) clientsim.$(OBJEXT) \
-dynamicobject.$(OBJEXT) message.$(OBJEXT) messagebuffer.$(OBJEXT) \
-movingobject.$(OBJEXT) movobjinput.$(OBJEXT) netmessage.$(OBJEXT) \
-objectchoice.$(OBJEXT) physics.$(OBJEXT) player.$(OBJEXT) \
-serversim.$(OBJEXT) shape.$(OBJEXT) simulation.$(OBJEXT) tile.$(OBJEXT) \
-world.$(OBJEXT) netudp.$(OBJEXT)
+clientnet.$(OBJEXT) dynamicobject.$(OBJEXT) message.$(OBJEXT) \
+messagebuffer.$(OBJEXT) movingobject.$(OBJEXT) movobjinput.$(OBJEXT) \
+netmessage.$(OBJEXT) objectchoice.$(OBJEXT) physics.$(OBJEXT) \
+player.$(OBJEXT) serversim.$(OBJEXT) shape.$(OBJEXT) \
+simulation.$(OBJEXT) tile.$(OBJEXT) world.$(OBJEXT) netudp.$(OBJEXT)
 AR = ar
 CXXFLAGS = @CXXFLAGS@
 CXXCOMPILE = $(CXX) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -114,11 +114,12 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 TAR = tar
 GZIP_ENV = --best
 DEP_FILES =  .deps/aiplayercar.P .deps/bound.P .deps/car.P \
-.deps/carinput.P .deps/clientsim.P .deps/dynamicobject.P \
-.deps/message.P .deps/messagebuffer.P .deps/movingobject.P \
-.deps/movobjinput.P .deps/netmessage.P .deps/netudp.P \
-.deps/objectchoice.P .deps/physics.P .deps/player.P .deps/serversim.P \
-.deps/shape.P .deps/simulation.P .deps/tile.P .deps/world.P
+.deps/carinput.P .deps/clientnet.P .deps/clientsim.P \
+.deps/dynamicobject.P .deps/message.P .deps/messagebuffer.P \
+.deps/movingobject.P .deps/movobjinput.P .deps/netmessage.P \
+.deps/netudp.P .deps/objectchoice.P .deps/physics.P .deps/player.P \
+.deps/serversim.P .deps/shape.P .deps/simulation.P .deps/tile.P \
+.deps/world.P
 SOURCES = $(libsimulation_a_SOURCES)
 OBJECTS = $(libsimulation_a_OBJECTS)
 

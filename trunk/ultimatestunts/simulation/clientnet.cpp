@@ -1,7 +1,7 @@
 /***************************************************************************
-                          clientsim.h  -  Client-side networked simulation
+                          clientnet.cpp  -  Client-side network class
                              -------------------
-    begin                : di jan 14 2003
+    begin                : vr jan 31 2003
     copyright            : (C) 2003 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
@@ -15,30 +15,11 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef CLIENTSIM_H
-#define CLIENTSIM_H
-
-#include "simulation.h"
 #include "clientnet.h"
 
-/**
-  *@author CJP
-  */
+CClientNet::CClientNet(CString host, int port)
+{
+}
 
-class CClientSim : public CSimulation  {
-public: 
-	CClientSim(CWorld *w, CString HostName, int UDPPort);
-	~CClientSim();
-
-	virtual int addPlayer(CObjectChoice choice);
-	virtual bool loadObjects();
-
-	virtual bool Update();
-
-protected:
-	CSimulation *m_SubSim;
-
-	CClientNet *m_Network;
-};
-
-#endif
+CClientNet::~CClientNet(){
+}
