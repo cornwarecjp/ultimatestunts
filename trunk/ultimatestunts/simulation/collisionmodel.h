@@ -38,6 +38,15 @@ public:
 	CVector nor;
 	float d;
 	bool reverse; //points are defined clockwise instead of ccw
+
+	CCollisionFace(){;}
+	CCollisionFace(const CCollisionFace &f);
+	const CCollisionFace &operator=(const CCollisionFace &f);
+
+	void cull(const CCollisionFace &plane, const CVector &dr);
+	const CCollisionFace &operator+=(const CVector &r);
+	const CCollisionFace &operator*=(const CMatrix &m);
+	const CCollisionFace &operator/=(const CMatrix &m);
 };
 
 class CCollisionModel {

@@ -31,6 +31,8 @@ using namespace std;
 #include "vector.h"
 #include "collisionmodel.h"
 
+#include "cfile.h"
+
 class CWorld;
 
 class CCollision {
@@ -63,6 +65,9 @@ public:
 	void calculateCollisions();
 
 protected:
+	//debug
+	CFile *m_DebugFile;
+
 	const CWorld *m_World;
 	CVector m_TrackMin, m_TrackMax;
 	bool m_FirstUpdate;
@@ -72,8 +77,7 @@ protected:
 
 	//Object <-> tile collisions
 	void ObjTileTest(int nobj, int xtile, int ztile, int htile);
-	CVector tileRotate(CVector v, int rot);
-	void cullFace(CCollisionFace &theFace, const CCollisionFace &plane);
+	void tileRotate(CVector &v, int rot);
 
 	//Object <-> track bound collisions
 	void calculateTrackBounds();

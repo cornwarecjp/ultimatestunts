@@ -28,16 +28,20 @@ CMovingObject::~CMovingObject()
 	delete m_InputData; //I guess this will happen for all CMovingObject-derived classes
 }
 
+void CMovingObject::rememberCurrentState()
+{
+	m_PreviousOrientation = m_Orientation;
+	m_PreviousPosition = m_Position;
+}
+
 void CMovingObject::setOrientationVector(CVector v)
 {
 	m_OrientationVector = v;
-	m_PreviousOrientation = m_Orientation;
 	m_Orientation = CMatrix(v);
 }
 
 void CMovingObject::setOrientation(const CMatrix &M)
 {
-	m_PreviousOrientation = m_Orientation;
 	m_Orientation = M;
 	//and something to set m_OrientationVector
 }

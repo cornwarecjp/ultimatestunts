@@ -25,10 +25,13 @@ CCollisionData::CCollisionData(const CWorld *w)
 {
 	m_World = w;
 	m_FirstUpdate = true;
+
+	m_DebugFile = new CFile("collisiondata.txt", true);
 }
 
 CCollisionData::~CCollisionData()
 {
+	delete m_DebugFile;
 }
 
 void CCollisionData::calculateCollisions()
@@ -64,6 +67,11 @@ void CCollisionData::calculateCollisions()
 	for(unsigned int i=0; i < m_World->m_MovObjs.size(); i++)
 	{
 		CVector pos = m_World->m_MovObjs[i]->getPosition();
+
+		if(m_World->printDebug)
+			m_DebugFile->writel(CString("Next frame y = ") + pos.y);
+
+
 		int x = (int)(0.5 + (pos.x)/TILESIZE);
 		int z = (int)(0.5 + (pos.z)/TILESIZE);
 
@@ -279,50 +287,67 @@ void CCollisionData::ObjTileTest(int nobj, int xtile, int ztile, int htile)
 	CVector pos = obj->getPosition();
 	CVector prevpos = obj->getPreviousPosition();
 	const CMatrix &ori = obj->getOrientation();
+
 	//for(unsigned int i=0; i<obj->m_Bodies.size(); i++)
 	for(unsigned int i=0; i<1; i++)
 	{
 		CVector p = pos + obj->m_Bodies[i].m_Position;
 		CVector pp = prevpos + obj->m_Bodies[i].m_PreviousPosition;
+
+		CVector r = pp - tilepos;
+		CVector rplusdr = p - tilepos;
+		CVector dr = rplusdr - r;
+
 		const CBound *b = m_World->m_MovObjBounds[obj->m_Bodies[i].m_Body];
 
 		//Test bounding spheres
 		if(!sphereTest(p, b, tilepos, tilemodel)) continue;
 
-		if(m_World->printDebug)
-			printf("Testing a tile...\n");
+		if(m_World->printDebug && tmodel > 0)
+		{
+			m_DebugFile->writel(CString("  Testing new tile type = ") + tmodel);
+			m_DebugFile->writel(CString("    r + dr = ") + rplusdr);
+			m_DebugFile->writel(CString("    dr = ") + dr);
+		}
 
 		//Per tile-face
 		for(unsigned int tf=0; tf<tilemodel->m_Faces.size(); tf++)
 		{
+			if(tilemodel->m_Faces[tf].nor.abs2() < 0.5) continue; //invalid plane
+
 			//1: face-sphere collision test
 
-			if(tilemodel->m_Faces[tf].nor.abs2() < 0.5) continue; //invalid plane
-			CCollisionFace theFace = tilemodel->m_Faces[tf]; //a copy
-
-			//1.1: Rotate the copy
+			//1.1: Make a rotated copy
+			CCollisionFace theFace = tilemodel->m_Faces[tf];
 			for(unsigned int j=0; j<theFace.size(); j++)
-				theFace[j] = tileRotate(theFace[j], trot);
-			theFace.nor = tileRotate(theFace.nor, trot);
+			{
+				tileRotate(theFace[j], trot);
+			}
+			tileRotate(theFace.nor, trot);
 
-			//1.2: Calculate distance to plane
-			CVector midpos = p - tilepos;
-			float ddiff = midpos.dotProduct(theFace.nor) - theFace.d;
-			CVector prevmidpos = pp - tilepos;
-			float prevddiff = prevmidpos.dotProduct(theFace.nor) - theFace.d;
-			float r = b->m_BSphere_r;
-
-			if(ddiff > r)
+			if(theFace.nor.dotProduct(dr) > 0.0)
 			{
 				if(m_World->printDebug)
-					printf("%d: Sphere is above plane\n", tf);
-				//continue;
+					m_DebugFile->writel(CString("  ") + (int)tf + ": Not in direction of movement");
+				continue;
+			}
+
+			//1.2: Calculate distance to plane
+			float ddiff = rplusdr.dotProduct(theFace.nor) - theFace.d;
+			float prevddiff = r.dotProduct(theFace.nor) - theFace.d;
+			float sph_r = b->m_BSphere_r;
+
+			if(ddiff > sph_r)
+			{
+				if(m_World->printDebug)
+					m_DebugFile->writel(CString("  ") + (int)tf + ": Sphere is above plane");
+				continue;
 			}
 			if(ddiff < 0.0 && prevddiff < 0.0)
 			{
 				if(m_World->printDebug)
-					printf("%d: Sphere is below plane\n", tf);
-				//continue;
+					m_DebugFile->writel(CString("  ") + (int)tf + ": Sphere is below plane");
+				continue;
 			}
 
 			//1.3: check if collision  circle is inside the face
@@ -330,9 +355,10 @@ void CCollisionData::ObjTileTest(int nobj, int xtile, int ztile, int htile)
 			//  currently only the midpoint of the circle is checked
 			//  with the polygon, while this should actually
 			//  be a full circle/polygon test.
-			CVector curcoll_pos = midpos - ddiff * theFace.nor;
-			CVector prevcoll_pos = prevmidpos - prevddiff * theFace.nor;
-			CVector coll_pos = ((prevddiff-r)*curcoll_pos + (r-ddiff)*prevcoll_pos) / (prevddiff-ddiff);
+			/*
+			CVector curcoll_pos = rplusdr - ddiff * theFace.nor;
+			CVector prevcoll_pos = sph_r - prevddiff * theFace.nor;
+			CVector coll_pos = ((prevddiff-sph_r)*curcoll_pos + (sph_r-ddiff)*prevcoll_pos) / (prevddiff-ddiff);
 			float angle = 0.0;
 			for(unsigned int j=1; j<theFace.size(); j++)
 			{
@@ -352,41 +378,45 @@ void CCollisionData::ObjTileTest(int nobj, int xtile, int ztile, int htile)
 			if(angle < 6.0 || angle > 6.5) //!= 2*pi: outside face
 			{
 				if(m_World->printDebug)
-					printf("%d: Plane & sphere don't collide\n", tf);
+					m_DebugFile->writel(CString("  ") + (int)tf + ": Plane & sphere don't collide");
 				//continue;
 			}
+			*/
 
 			//2: Polygon/bounding faces test:
 
-			//2.1: translate + rotate the face so that it is in the
-			//     moving object's coordinate system:
-			//midpos = ((prevddiff-r)*midpos + (r-ddiff)*prevmidpos) / (prevddiff-ddiff);
-			for(unsigned int j=0; j<theFace.size(); j++)
-			{
-				theFace[j] = (theFace[j] - midpos) * ori;
-			}
-			theFace.d -= midpos.dotProduct(theFace.nor);
-			theFace.nor *= ori;
+			//2.1: Rotate + translate the face
+			theFace += -rplusdr;
+			theFace /= ori;
 
-			//2.2: Cut pieces away per plane
+			//2.2: Rotate the dr vector
+			dr /= ori;
+
+			//2.3: Cut pieces away per plane
 			for(unsigned int of=0; of < b->m_Faces.size(); of++)
 			{
-				//if(theFace.nor.dotProduct(b->m_Faces[of].nor) < 0.0)
-					cullFace(theFace, b->m_Faces[of]);
+				if(dr.dotProduct(b->m_Faces[of].nor) > 0.0)
+				{ //front side -> cull on position r+dr
+					theFace.cull(b->m_Faces[of], CVector(0,0,0));
+				}
+				else
+				{ //back side -> cull on position r
+					theFace.cull(b->m_Faces[of], -100.0*dr);
+				}
 
 				if(theFace.size() < 3) break;
 			}
 
-			//2.3: skip if no piece left
+			//2.4: skip if no piece left
 			if(theFace.size() < 3)
 			{
 				if(m_World->printDebug)
-					printf("%d: Cut everything out\n", tf);
+					m_DebugFile->writel(CString("  ") + (int)tf + ": Cut everything out");
 				continue;
 			}
 
-			//2.4: calculate penetration depth and collision point
-			coll_pos = CVector(0,0,0);
+			//2.5: calculate penetration depth and collision point
+			CVector coll_pos;
 			float penetr_depth = 0.0;
 			for(unsigned int of=0; of < b->m_Faces.size(); of++)
 			{
@@ -403,13 +433,13 @@ void CCollisionData::ObjTileTest(int nobj, int xtile, int ztile, int htile)
 			}
 
 			if(m_World->printDebug)
-				printf("%d: Collision!!\n", tf);
+				m_DebugFile->writel(CString("  ") + (int)tf + ": Collision!!");
 
 			//3: Generate collision info
 			CCollision c;
 
-			c.nor = theFace.nor / ori; //rotate back
-			c.pos = coll_pos / ori; //rotate back
+			c.nor = theFace.nor * ori; //rotate back
+			c.pos = coll_pos * ori; //rotate back
 			c.mat1 = c.mat2 = NULL;
 			c.body = i;
 
@@ -431,77 +461,21 @@ void CCollisionData::ObjTileTest(int nobj, int xtile, int ztile, int htile)
 
 }
 
-void CCollisionData::cullFace(CCollisionFace &theFace, const CCollisionFace &plane)
-{
-	CCollisionFace theFace2;
-	theFace2.nor = theFace.nor;
-	theFace2.d = theFace.d;
-
-	//The first vertex
-	float dist_first = theFace[0].dotProduct(plane.nor);
-	bool inside_first = (dist_first < plane.d);
-	if(inside_first)
-	{
-		theFace2.push_back(theFace[0]);
-	}
-	float dist_prev = dist_first;
-	bool inside_prev = inside_first;
-
-	//The next vertices
-	for(unsigned int j=1; j < theFace.size(); j++)
-	{
-		float dist = theFace[j].dotProduct(plane.nor);
-		bool inside = (dist < plane.d);
-
-		if(inside)
-		{
-			if(!inside_prev) //going inward
-			{
-				CVector mid = ((dist_prev-plane.d)*theFace[j] + (plane.d-dist)*theFace[j-1]) / (dist_prev-dist);
-				theFace2.push_back(mid);
-			}
-
-			theFace2.push_back(theFace[j]);
-		}
-		else if(inside_prev) //going outward
-		{
-			CVector mid = ((dist_prev-plane.d)*theFace[j] + (plane.d-dist)*theFace[j-1]) / (dist_prev-dist);
-			theFace2.push_back(mid);
-		}
-
-		inside_prev = inside;
-		dist_prev = dist;
-	}
-
-	//The last vertex
-	if(inside_prev != inside_first) //first+last not the same
-	{
-		unsigned int j = theFace.size()-1;
-		CVector mid = ((dist_prev-plane.d)*theFace[j] + (plane.d-dist_first)*theFace[0]) / (dist_prev-dist_first);
-		theFace2.push_back(mid);
-	}
-
-	//theFace = theFace2;
-	theFace.clear();
-	for(unsigned int j=0; j<theFace2.size(); j++)
-		theFace.push_back(theFace2[j]);
-}
-
-CVector CCollisionData::tileRotate(CVector v, int rot)
+void CCollisionData::tileRotate(CVector &v, int rot)
 {
 	switch(rot % 4)
 	{
 	case 0:
-		return v;
+		return;
 	case 1:
-		return CVector(v.z, v.y, -v.x);
+		v = CVector(v.z, v.y, -v.x);
+		return;
 	case 2:
-		return CVector(-v.x, v.y, -v.z);
+		v = CVector(-v.x, v.y, -v.z);
+		return;
 	case 3:
-		return CVector(-v.z, v.y, v.x);
+		v = CVector(-v.z, v.y, v.x);
 	}
-
-	return v; //just to prevent warnings
 }
 
 bool CCollisionData::sphereTest(const CVector &p1, const CCollisionModel *b1, const CVector &p2, const CCollisionModel *b2)

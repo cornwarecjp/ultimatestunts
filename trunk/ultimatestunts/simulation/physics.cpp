@@ -26,7 +26,7 @@
 #define M_PI 3.1415926536
 #endif
 
-#define g 1.68 //9.81
+#define g 9.81
 
 CPhysics::CPhysics(CWorld *w) : CSimulation(w)
 {}
@@ -52,6 +52,14 @@ bool CPhysics::update()
 #define remmax 10000
 #define invstraal 0.05
 
+	//Standard movement
+	for(unsigned int i=0; i < (m_World->m_MovObjs.size()); i++)
+	{
+		CMovingObject *mo =m_World->m_MovObjs[i];
+		mo->rememberCurrentState();
+		mo->setPosition(mo->getPosition() + mo->getVelocity() * dt);
+	}
+
 	//Update body data
 	for(unsigned int i=0; i < (m_World->m_MovObjs.size()); i++)
 		m_World->m_MovObjs[i]->updateBodyData();
@@ -63,7 +71,6 @@ bool CPhysics::update()
 	for(unsigned int i=0; i < (m_World->m_MovObjs.size()); i++)
 	{
 		CMovingObject *mo =m_World->m_MovObjs[i];
-
 
 		if(mo->getType()==CMessageBuffer::car)
 		{
@@ -119,6 +126,7 @@ bool CPhysics::update()
 				dp.z = (dp_max.z > -dp_min.z)? dp_max.z : dp_min.z;
 
 				r += dr; //place back
+				mo->setPosition(r);
 				Ftot += dp/dt; //collision force
 			}
 
@@ -153,8 +161,6 @@ bool CPhysics::update()
 			//standard acceleration:
 			v += Ftot * dt/m;
 			mo->setVelocity(v);
-			r += v * dt;
-			mo->setPosition(r);
 		}
 		else
 			{printf("Error: object %d is not a car\n", i);}

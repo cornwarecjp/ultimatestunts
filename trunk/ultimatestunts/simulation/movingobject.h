@@ -41,8 +41,7 @@ class CMovingObject : public CDynamicObject
 
 		//Position+veloctiy gets+sets
 		virtual CVector getPosition(){return m_Position;}
-		virtual CVector getPreviousPosition(){return m_PreviousPosition;}
-		virtual void setPosition(CVector v){m_PreviousPosition = m_Position; m_Position = v;}
+		virtual void setPosition(CVector v){m_Position = v;}
 		virtual CVector getVelocity(){return m_Velocity;}
 		virtual void setVelocity(CVector v){m_Velocity = v;}
 		virtual CVector getOrientationVector(){return m_OrientationVector;}
@@ -51,8 +50,12 @@ class CMovingObject : public CDynamicObject
 		virtual void setAngularVelocity(CVector v){m_AngularVelocity = v;}
 
 		virtual const CMatrix &getOrientation(){return m_Orientation;}
-		virtual const CMatrix &getPreviousOrientation(){return m_PreviousOrientation;}
 		virtual void setOrientation(const CMatrix &M);
+
+		//Old position + orientation
+		void rememberCurrentState();
+		virtual CVector getPreviousPosition(){return m_PreviousPosition;}
+		virtual const CMatrix &getPreviousOrientation(){return m_PreviousOrientation;}
 
 		virtual CMessageBuffer::eMessageType getType() const {return CMessageBuffer::movingObject;}
 
