@@ -26,6 +26,8 @@ CUSCore::CUSCore(CGameWinSystem *winsys)
 
 	printf("---Renderer\n");
 	m_Renderer = new CGameRenderer(winsys);
+	m_Console = new CConsole(winsys);
+
 	printf("---Sound system\n");
 	m_SoundSystem = new CSound(*theMainConfig);
 
@@ -38,6 +40,7 @@ CUSCore::~CUSCore()
 	delete m_SoundSystem;
 	printf("---Renderer\n");
 	delete m_Renderer;
+	delete m_Console;
 }
 
 bool CUSCore::addCamera(unsigned int objid)
@@ -58,10 +61,40 @@ void CUSCore::startGame()
 	printf("Setting cameras\n");
 	m_Renderer->setCameras(m_Cameras, m_NumCameras);
 	m_SoundSystem->setCamera(m_Cameras[0]); //first camera
+
+	//Some white space for the debugging screen
+	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+
 }
 
 bool CUSCore::update()
 {
+	//Debugging 'display'
+	m_Console->clear();
+	static float topspeed = 0.0;
+
+	m_Console->print(CString("Top speed in this session: ") + (float)(topspeed*3.6) + " km/h");
+	for(unsigned int i=0; i<m_World->m_MovObjs.size(); i++)
+	{
+		CMovingObject *mo = m_World->m_MovObjs[i];
+		if(mo->getType() == CMessageBuffer::car)
+		{
+			CCar * theCar = (CCar *)mo;
+			float vel = theCar->m_Bodies[0].getVelocity().abs();
+			if(vel > topspeed) topspeed = vel;
+			float wEngine = theCar->getGearRatio() * theCar->m_MainAxisVelocity;
+				
+			m_Console->print(
+				CString("Car ") + (int)i +
+				" velocity " + (float)(vel * 3.6) + " km/h; "
+				"gear " + (int)(theCar->m_Gear) +
+				"; " + (float)(60.0 * wEngine / 6.28) + " RPM\n"
+				"wheel " + (float)(vel / 0.35) + " rad/s; "
+				"axis " + theCar->m_MainAxisVelocity + " rad/s; "
+				"engine " + wEngine + " rad/s");
+		}
+	}
+
 	bool retval = true;
 
 	//Escape:
@@ -87,6 +120,7 @@ bool CUSCore::update()
 		m_Cameras[i]->update();
 
 	m_Renderer->update();
+	m_Console->draw();
 	m_SoundSystem->update();
 
 	return retval;

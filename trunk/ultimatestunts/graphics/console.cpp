@@ -20,9 +20,13 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <unistd.h>
 
 #include "console.h"
 #include "datafile.h"
+#include "font.h"
+
+CFont *_ConsoleFont = NULL;
 
 CConsole::CConsole(CWinSystem *winsys)
 {
@@ -32,26 +36,25 @@ CConsole::CConsole(CWinSystem *winsys)
 	m_fontW = 12.0;
 	m_fontH = 24.0;
 
-	CDataFile df("misc/courier.rgba");
-	printf("Loading font from %s\n", df.useExtern().c_str());
-	if(!m_Font.loadFromFile(df.useExtern(), 512, m_fontW, m_fontH))
-		printf("Font loading failed!\n");
+	if(_ConsoleFont == NULL)
+	{
+		_ConsoleFont = new CFont;
+		CDataFile df("misc/courier.rgba");
+		printf("Loading font from %s\n", df.useExtern().c_str());
+		if(!_ConsoleFont->loadFromFile(df.useExtern(), 512, m_fontW, m_fontH))
+			printf("Font loading failed!\n");
+	}
 
 	m_WriteMode = false;
 }
 
 CConsole::~CConsole()
 {
-	m_Font.unload();
+	//TODO: find a way to unload the font
 }
 
 void CConsole::print(const CString &str)
 {
-	bool wasWriting = m_WriteMode;
-	if(!wasWriting) enterWriteMode();
-
-	printf(str.c_str());
-
 	CString s = str;
 	while(true)
 	{
@@ -68,11 +71,6 @@ void CConsole::print(const CString &str)
 
 	while(m_fontH * (1 + m_ScreenContent.size()) > m_WinSystem->getHeight())
 		m_ScreenContent.erase(m_ScreenContent.begin());
-
-	clearScreen();
-	draw();
-
-	if(!wasWriting) leaveWriteMode();
 }
 
 CString CConsole::getInput(const CString &question)
@@ -82,18 +80,95 @@ CString CConsole::getInput(const CString &question)
 
 	print(question);
 
-	m_WinSystem->swapBuffers();
+	CString lastline = m_ScreenContent.back();
+	CString ret;
 
+	clearScreen();
+	draw();
+	m_WinSystem->swapBuffers();
+	bool quit = false;
+	while(!quit)
+	{
+		SDL_Event event;
+
+		while ( SDL_PollEvent(&event) )
+		{
+			usleep(10); //just to save CPU time
+
+			switch(event.type)
+			{
+				//Resizing
+				/*
+				case SDL_VIDEORESIZE:
+					m_Screen = SDL_SetVideoMode(event.resize.w, event.resize.h, m_BPP,
+						SDL_OPENGL|SDL_RESIZABLE);
+					if ( m_Screen )
+					{
+						m_W = m_Screen->w;
+						m_H = m_Screen->h;
+					}
+					else
+					{
+						// Uh oh, we couldn't set the new video mode??
+						fprintf(stderr, "Couldn't set %dx%d GL video mode: %s\n",
+							event.resize.w, event.resize.h, SDL_GetError());
+						SDL_Quit();
+						exit(2);
+					}
+					break;
+				*/
+
+				//Quitting
+				case SDL_QUIT:
+					quit = true;
+					break;
+
+				//Keyboard
+				case SDL_KEYDOWN:
+					if(event.key.keysym.mod & KMOD_SHIFT) //shift key
+						{quit = quit || processKey(event.key.keysym.sym-32, ret);}
+					else
+						{quit = quit || processKey(event.key.keysym.sym, ret);}
+					m_ScreenContent.back() = lastline + ret;
+					clearScreen();
+					draw();
+					m_WinSystem->swapBuffers();
+			}
+		}
+	}
+
+	/*
 	char input[80];
 	fgets(input, 79, stdin);
 	CString ret(input);
 	ret = ret.mid(0, ret.length() - 1); //remove \n
+	*/
 
 	print(ret);
+	printf("Answer = \"%s\"\n", ret.c_str());
 
 	if(!wasWriting) leaveWriteMode();
 
 	return ret;
+}
+
+bool CConsole::processKey(int key, CString &string)
+{
+	if(key == SDLK_RETURN || key == SDLK_ESCAPE) return true; //quit
+
+	if(key > 255 || key < 0) return false; //ignore key
+
+	if(key == SDLK_BACKSPACE)
+	{
+		if(string.length() > 0)
+			string = string.mid(0, string.length()-1);
+
+		return false;
+	}
+	
+	string += (char)key;
+
+	return false;
 }
 
 void CConsole::clear()
@@ -120,11 +195,12 @@ void CConsole::draw()
 	bool wasWriting = m_WriteMode;
 	if(!wasWriting) enterWriteMode();
 
+	glLoadIdentity();
 	glTranslatef(0.0, m_WinSystem->getHeight() - m_fontH, 0); //set cursor
 	for(unsigned int i=0; i < m_ScreenContent.size(); i++)
 	{
 		glPushMatrix();
-		m_Font.drawString(m_ScreenContent[i]);
+		_ConsoleFont->drawString(m_ScreenContent[i]);
 		glPopMatrix();
 		glTranslatef(0,-m_fontH,0); //next line
 	}
@@ -158,7 +234,7 @@ void CConsole::enterWriteMode()
 	glDisable(GL_LIGHTING);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
 
-	m_Font.enable();
+	_ConsoleFont->enable();
 }
 
 void CConsole::leaveWriteMode()
@@ -170,6 +246,5 @@ void CConsole::leaveWriteMode()
 	if(zEnabled) glEnable(GL_DEPTH_TEST);
 	if(fEnabled) glEnable(GL_FOG);
 
-	m_Font.disable();
+	_ConsoleFont->disable();
 }
-

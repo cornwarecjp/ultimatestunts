@@ -24,6 +24,7 @@
 #include "gamewinsystem.h"
 #include "gamerenderer.h"
 #include "gamecamera.h"
+#include "console.h"
 
 //Sound stuff
 #include "sound.h"
@@ -46,6 +47,7 @@ public:
 protected:
 	CGameWinSystem *m_WinSys;
 	CGameRenderer *m_Renderer;
+	CConsole *m_Console;
 
 	CCamera *m_Cameras[4]; //max. 4 cameras should be enough
 	unsigned int m_NumCameras;

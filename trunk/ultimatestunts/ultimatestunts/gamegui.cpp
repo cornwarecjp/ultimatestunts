@@ -204,6 +204,11 @@ CString CGameGUI::playGame()
 
 void CGameGUI::load()
 {
+	m_Console->print("Loading, please wait......");
+	m_Console->clearScreen();
+	m_Console->draw();
+	m_WinSys->swapBuffers();
+
 	unload(); //just in case...
 
 	//init game

@@ -78,32 +78,6 @@ void CGameCore::startGame()
 
 bool CGameCore::update() //true = continue false = leave
 {
-#ifdef DEBUGMSG
-	//Debugging 'display'
-	static float topspeed = 0.0;
-
-	printf("\033[1H");
-	printf("\033[1G");
-	printf("**********\n");
-	for(unsigned int i=0; i<m_World->m_MovObjs.size(); i++)
-	{
-		CMovingObject *mo = m_World->m_MovObjs[i];
-		if(mo->getType() == CMessageBuffer::car)
-		{
-			CCar * theCar = (CCar *)mo;
-			float vel = theCar->m_Bodies[0].getVelocity().abs();
-			if(vel > topspeed) topspeed = vel;
-			float wEngine = theCar->getGearRatio() * theCar->m_MainAxisVelocity;
-			printf("Top speed in this session: %.2f km/h\n", topspeed * 3.6);
-			printf("Car %d: velocity %.2f km/h; gear %d; %.2f RPM\n"
-					"wheel %.2f rad/s; axis %.2f rad/s; engine %.2f rad/s\n",
-						i,          vel * 3.6, theCar->m_Gear, 60.0 * wEngine / 6.28,
-						vel / 0.35, theCar->m_MainAxisVelocity, wEngine);
-		}
-	}
-	printf("**********\n");
-#endif
-
 	for(unsigned int i=0; i<m_Players.size(); i++)
 		m_Players[i]->update(); //Makes moving decisions
 
