@@ -62,6 +62,9 @@ protected:
 	//Cached data about the wheels' axes
 	CVector m_a1, m_a2, m_a3, m_a4;
 
+	//desired steering angles of the wheels
+	float m_DesiredSt1, m_DesiredSt2, m_DesiredSt3, m_DesiredSt4;
+
 
 	//car specific settings:
 

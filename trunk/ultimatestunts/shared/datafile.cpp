@@ -87,7 +87,7 @@ vector<CString> getDirContents(const CString &dir, const CString &ext)
 
 		CString entname = entry->d_name;
 		//file extension check:
-		if(ext == "" || entname.inStr(ext) == (int)(entname.length() - ext.length()))
+		if(ext == "" || (entname.inStr(ext) >= 0 && entname.inStr(ext) == (int)(entname.length() - ext.length()) ))
 			ret.push_back(entname);
 	}
 

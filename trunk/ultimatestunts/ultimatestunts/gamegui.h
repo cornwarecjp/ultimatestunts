@@ -50,13 +50,12 @@ protected:
 	CConsole *m_Console;
 
 	//all data of the last times the menus were passed
-	enum eMainMenu
+	enum eGameType
 	{
 		LocalGame=1,
 		NewNetwork,
 		JoinNetwork,
-		Exit
-	} m_MainMenuInput;
+	} m_GameType;
 	CString m_HostName;
 	int m_HostPort;
 	int m_ServerPort;
@@ -73,18 +72,14 @@ protected:
 
 	//The menu's
 	CString viewMainMenu();
-	CString viewHostMenu();
-	CString viewServerMenu();
-	CString viewTrackMenu();
-
-	CString viewPlayerMenu();
-	void addPlayer(CString name, bool human, CString carfile);
-
-	CString playGame();
-	void load();
-	void unload();
-
-	CString viewHiscore();
+		CString playGame();
+			void load();
+			void unload();
+		CString viewGameTypeMenu();
+		CString viewTrackMenu();
+		CString viewPlayerMenu();
+			void addPlayer(CString name, bool human, CString carfile);
+		CString viewHiscore();
 };
 
 #endif

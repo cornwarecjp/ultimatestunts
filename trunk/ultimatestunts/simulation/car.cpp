@@ -295,7 +295,7 @@ void CCar::updateAxisData()
 	m_a3 = ori3 * a3;
 	m_a4 = ori4 * a4;
 
-	//This is what they *should* be (except for steering):
+	//This is what they *should* be (including desired steering):
 	a1 = a3 = CVector(1,0,0);
 	a2 = a4 = CVector(-1,0,0);
 	CMatrix ori0 = m_Bodies[0].getOrientationMatrix();
@@ -303,6 +303,17 @@ void CCar::updateAxisData()
 	a2 *= ori0;
 	a3 *= ori0;
 	a4 *= ori0;
+
+	CMatrix st1, st2, st3, st4;
+	st1.rotY(m_DesiredSt1);
+	st2.rotY(m_DesiredSt2);
+	st3.rotY(m_DesiredSt3);
+	st4.rotY(m_DesiredSt4);
+
+	a1 *= st1;
+	a2 *= st2;
+	a3 *= st3;
+	a4 *= st4;
 
 	//fprintf(stderr, "wheel 1: %.3f\n", a1.dotProduct(m_a1));
 	//fprintf(stderr, "wheel 2: %.3f\n", a2.dotProduct(m_a2));
@@ -440,7 +451,7 @@ void CCar::doSteering(float dt)
 	CCarInput *input = (CCarInput *)m_InputData;
 	dReal steer = input->m_Right;
 
-	float factor = exp(-2.0*dt);
+	float factor = exp(-1.0*dt);
 	if(fabsf(steer) < fabsf(m_DesiredSteering))
 		factor = exp(-25.0*dt);
 
@@ -458,7 +469,7 @@ void CCar::doSteering(float dt)
 
 	//desired angles
 	//important: default to zero
-	float a1 = 0.0, a2 = 0.0, a3 = 0.0, a4 = 0.0;
+	m_DesiredSt1 = 0.0, m_DesiredSt2 = 0.0, m_DesiredSt3 = 0.0, m_DesiredSt4 = 0.0;
 
 	if(fabs(desiredfront) > 0.0001 || fabs(desiredrear) > 0.0001)
 	{
@@ -477,34 +488,34 @@ void CCar::doSteering(float dt)
 		else
 			{x = yr / tanar;}
 
-		a1 = atanf(yf / (x + halfwthf));
-		a2 = atanf(yf / (x - halfwthf));
-		a3 = -atanf(yr / (x + halfwthr));
-		a4 = -atanf(yr / (x - halfwthr));
+		m_DesiredSt1 = atanf(yf / (x + halfwthf));
+		m_DesiredSt2 = atanf(yf / (x - halfwthf));
+		m_DesiredSt3 = -atanf(yr / (x + halfwthr));
+		m_DesiredSt4 = -atanf(yr / (x - halfwthr));
 	}
 	
 
 	//desired angles
-	//a1 = desiredfront;
-	//a2 = desiredfront;
-	//a3 = desiredrear;
-	//a4 = desiredrear;
+	//m_DesiredSt1 = desiredfront;
+	//m_DesiredSt2 = desiredfront;
+	//m_DesiredSt3 = desiredrear;
+	//m_DesiredSt4 = desiredrear;
 
-	float v1 = a1 - angle1;
-	float v2 = a2 - angle2;
-	float v3 = a3 - angle3;
-	float v4 = a4 - angle4;
+	float v1 = m_DesiredSt1 - angle1;
+	float v2 = m_DesiredSt2 - angle2;
+	float v3 = m_DesiredSt3 - angle3;
+	float v4 = m_DesiredSt4 - angle4;
 
 	dJointSetHinge2Param(m_joint1, dParamVel, 10.0*v1);
 	dJointSetHinge2Param(m_joint2, dParamVel, 10.0*v2);
 	dJointSetHinge2Param(m_joint3, dParamVel, 10.0*v3);
 	dJointSetHinge2Param(m_joint4, dParamVel, 10.0*v4);
-	dJointSetHinge2Param(m_joint1, dParamLoStop, a1-0.00001);
-	dJointSetHinge2Param(m_joint2, dParamLoStop, a2-0.00001);
-	dJointSetHinge2Param(m_joint3, dParamLoStop, a3-0.00001);
-	dJointSetHinge2Param(m_joint4, dParamLoStop, a4-0.00001);
-	dJointSetHinge2Param(m_joint1, dParamHiStop, a1+0.00001);
-	dJointSetHinge2Param(m_joint2, dParamHiStop, a2+0.00001);
-	dJointSetHinge2Param(m_joint3, dParamHiStop, a3+0.00001);
-	dJointSetHinge2Param(m_joint4, dParamHiStop, a4+0.00001);
+	dJointSetHinge2Param(m_joint1, dParamLoStop, m_DesiredSt1-0.00001);
+	dJointSetHinge2Param(m_joint2, dParamLoStop, m_DesiredSt2-0.00001);
+	dJointSetHinge2Param(m_joint3, dParamLoStop, m_DesiredSt3-0.00001);
+	dJointSetHinge2Param(m_joint4, dParamLoStop, m_DesiredSt4-0.00001);
+	dJointSetHinge2Param(m_joint1, dParamHiStop, m_DesiredSt1+0.00001);
+	dJointSetHinge2Param(m_joint2, dParamHiStop, m_DesiredSt2+0.00001);
+	dJointSetHinge2Param(m_joint3, dParamHiStop, m_DesiredSt3+0.00001);
+	dJointSetHinge2Param(m_joint4, dParamHiStop, m_DesiredSt4+0.00001);
 }

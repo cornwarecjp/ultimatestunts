@@ -41,7 +41,8 @@ CGameGUI::CGameGUI(const CLConfig &conf, CGameWinSystem *winsys) : CGUI(conf, wi
 
 	m_Console = new CConsole(winsys);
 
-	//default values: (currently unused)
+	//default values:
+	m_GameType = LocalGame;
 	m_TrackFile = "tracks/default.track";
 	addPlayer("CJP", true, "cars/diablo.conf");
 	addPlayer("AI", false, "cars/f1.conf");
@@ -66,10 +67,8 @@ void CGameGUI::start()
 	{
 		if(section=="mainmenu")
 			section = viewMainMenu();
-		else if(section=="hostmenu")
-			section = viewHostMenu();
-		else if(section=="servermenu")
-			section = viewServerMenu();
+		else if(section=="gametypemenu")
+			section = viewGameTypeMenu();
 		else if(section=="trackmenu")
 			section = viewTrackMenu();
 		else if(section=="playermenu")
@@ -90,31 +89,29 @@ CString CGameGUI::viewMainMenu()
 	{
 		int input = m_Console->getInput(
 			"Main menu:\n"
-			"  1: Play a local game\n"
-			"  2: Start a new network game\n"
-			"  3: Log in on a remote network game\n"
-			"  \n"
-			"  4: Exit\n: "
+			"  1: Start playing\n"
+			"  2: Set the game type\n"
+			"  3: Select the track\n"
+			"  4: Select the players\n"
+			"  5: Options\n"
+			"  6: Exit\n: "
 		).toInt();
 
 		switch(input)
 		{
 			case 1:
-				m_MainMenuInput = LocalGame;
-				ret = "trackmenu";
-				break;
+				return "playgame";
 			case 2:
-				m_MainMenuInput = NewNetwork;
-				ret = "servermenu";
-				break;
+				return "gametypemenu";
 			case 3:
-				m_MainMenuInput = JoinNetwork;
-				ret = "hostmenu";
-				break;
+				return "trackmenu";
 			case 4:
-				m_MainMenuInput = Exit;
-				ret = "exit";
-				break;
+				return "playermenu";
+			case 5:
+				m_Console->print("Please edit ultimatestunts.conf manually\n");
+				return "mainmenu";
+			case 6:
+				return "exit";
 			default:
 				m_Console->print("Incorrect answer\n");
 		}
@@ -124,21 +121,39 @@ CString CGameGUI::viewMainMenu()
 	return ret;
 }
 
-CString CGameGUI::viewServerMenu()
+CString CGameGUI::viewGameTypeMenu()
 {
-	m_Console->print("Server menu:\n");
-	m_ServerPort = m_Console->getInput("Enter the port number: ").toInt();
+	CString ret = "incorrect_answer";
+	while(ret == "incorrect_answer")
+	{
+		int input = m_Console->getInput(
+			"Game type menu: (network modes do not yet work)\n"
+			"  1: Local game\n"
+			"  2: Join an existing network game\n"
+			"  3: Start a new network game\n: "
+		).toInt();
 
-	return "trackmenu";
-}
+		switch(input)
+		{
+			case 1:
+				m_GameType = LocalGame;
+				return "mainmenu";
+			case 2:
+				m_GameType = JoinNetwork;
+				m_HostName = m_Console->getInput("Enter the host name: ");
+				m_HostPort = m_Console->getInput("Enter the port number: ").toInt();
+				return "mainmenu";
+			case 3:
+				m_GameType = NewNetwork;
+				m_ServerPort = m_Console->getInput("Enter the port number: ").toInt();
+				return "mainmenu";
+			default:
+				m_Console->print("Incorrect answer\n");
+		}
 
-CString CGameGUI::viewHostMenu()
-{
-	m_Console->print("Host menu:\n");
-	m_HostName = m_Console->getInput("Enter the server's host name: ");
-	m_HostPort = m_Console->getInput("Enter the server's UDP port number: ").toInt();
+	} //while
 
-	return "playermenu";
+	return "mainmenu";
 }
 
 CString CGameGUI::viewTrackMenu()
@@ -161,7 +176,7 @@ CString CGameGUI::viewTrackMenu()
 
 	}
 
-	return "playermenu";
+	return "mainmenu";
 }
 
 CString CGameGUI::viewPlayerMenu()
@@ -218,7 +233,7 @@ CString CGameGUI::viewPlayerMenu()
 		addPlayer(name, isHuman, carfile);
 	}
 
-	return "playgame";
+	return "mainmenu";
 }
 
 void CGameGUI::addPlayer(CString name, bool human, CString carfile)
@@ -252,11 +267,11 @@ void CGameGUI::load()
 	unload(); //just in case...
 
 	//init game
-	if(m_MainMenuInput == LocalGame)
+	if(m_GameType == LocalGame)
 	{
 		m_GameCore->initLocalGame(m_TrackFile);
 	}
-	else if(m_MainMenuInput == NewNetwork)
+	else if(m_GameType == NewNetwork)
 	{
 		if(m_Server != NULL)
 			{delete m_Server; m_Server = NULL;}
@@ -265,7 +280,7 @@ void CGameGUI::load()
 
 		m_GameCore->initClientGame("localhost", m_ServerPort);
 	}
-	else if(m_MainMenuInput == JoinNetwork)
+	else if(m_GameType == JoinNetwork)
 	{
 		m_GameCore->initClientGame(m_HostName, m_HostPort);
 	}

@@ -7,11 +7,10 @@ Syntax:
 
 
 BEGIN
-6
+5
 textures/gras2.rgb
-textures/hotel_concrete.rgb
-textures/hotel_door.rgb
-textures/hotel_whitetexture.rgb
-textures/hotel_window.rgb
-misc/courier.rgba
+textures/bricks1.rgb
+textures/door1.rgb
+textures/window1.rgb
+textures/wood.rgb
 END
