@@ -20,42 +20,39 @@
 
 #include "gui.h"
 
+#include "uscore.h"
+#include "player.h"
+#include "gamewinsystem.h"
+#include "lconfig.h"
+
+#include "usserver.h"
+
+
 /**
   *@author CJP
   */
 
 class CGameGUI : public CGUI  {
 public: 
-	CGameGUI(const CLConfig &conf, CWinSystem *winsys);
+	CGameGUI(const CLConfig &conf, CGameWinSystem *winsys);
 	~CGameGUI();
 
+	void start(); //returns when an exit command is given
+
+
+protected:
+	CUSCore *m_GameCore;
+	vector<CPlayer *> m_Players;
+	CUSServer *m_Server;
+
+	//all data of the last times the menus were passed
 	enum eMainMenu
 	{
 		LocalGame=1,
 		NewNetwork,
 		JoinNetwork,
 		Exit
-	};
-
-	void startFrom(CString section);
-	void stop();
-
-	//new interface:
-	CString getValue(CString section, CString field="");
-	void resetSection(CString section="");
-	bool isPassed(CString section);
-
-protected:
-	bool m_Stop;
-
-	bool	m_PassedMainMenu,
-				m_PassedHostMenu,
-				m_PassedServerMenu,
-				m_PassedTrackMenu,
-				m_PassedPlayerMenu;
-
-	//all data of the last times the menus were passed
-	eMainMenu m_MainMenuInput;
+	} m_MainMenuInput;
 	CString m_HostName;
 	int m_HostPort;
 	int m_ServerPort;
@@ -70,14 +67,20 @@ protected:
 	vector<SPlayerDescr> m_PlayerDescr;
 
 
-	//The menu code
+	//The menu's
 	CString viewMainMenu();
 	CString viewHostMenu();
 	CString viewServerMenu();
 	CString viewTrackMenu();
-	CString viewPlayerMenu();
 
+	CString viewPlayerMenu();
 	void addPlayer(CString name, bool human, CString carfile);
+
+	CString playGame();
+	void load();
+	void unload();
+
+	CString viewHiscore();
 };
 
 #endif

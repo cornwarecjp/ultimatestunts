@@ -26,6 +26,8 @@ CTexture::CTexture()
 {
 	m_Color = CVector(0,0,0);
 	m_TextureSmooth = true; //default
+
+	m_Texture = m_Texture2 = m_Texture3 = m_Texture4 = 0;
 }
 
 bool CTexture::loadFromFile(CString filename, int xs, int ys)
@@ -201,6 +203,14 @@ bool CTexture::loadFromFile(CString filename, int xs, int ys)
 	//printf("Texture color: %f,%f,%f\n", m_Color.x, m_Color.y, m_Color.z);
 
 	return true;
+}
+
+void CTexture::unload()
+{
+	glDeleteTextures(1, &m_Texture);
+	glDeleteTextures(1, &m_Texture2);
+	glDeleteTextures(1, &m_Texture3);
+	glDeleteTextures(1, &m_Texture4);
 }
 
 void CTexture::draw(int lod) const

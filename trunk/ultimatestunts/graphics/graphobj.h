@@ -27,6 +27,7 @@ class CGraphObj
 		CGraphObj();
 		virtual ~CGraphObj();
 		virtual bool loadFromFile(CFile *f, CTexture **matarray, int lod_offset = 0);
+		void unload();
 
 		void draw(int lod) const;
 	protected:

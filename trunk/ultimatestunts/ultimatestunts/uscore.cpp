@@ -38,11 +38,6 @@ CUSCore::~CUSCore()
 	delete m_SoundSystem;
 	printf("---Renderer\n");
 	delete m_Renderer;
-
-	printf("---Cameras\n");
-	for(unsigned int i=0; i < m_NumCameras; i++)
-		delete *(m_Cameras+i);
-	m_NumCameras = 0;
 }
 
 bool CUSCore::addCamera(unsigned int objid)
@@ -127,4 +122,9 @@ void CUSCore::unloadData()
 
 	printf("---Sound data\n");
 	m_SoundSystem->unload();
+
+	printf("---Cameras\n");
+	for(unsigned int i=0; i < m_NumCameras; i++)
+		delete *(m_Cameras+i);
+	m_NumCameras = 0;
 }

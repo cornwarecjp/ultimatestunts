@@ -18,8 +18,6 @@
 #include <cstdio>
 
 #include "gui.h"
-#include "usmacros.h"
-#include "cfile.h"
 
 CGUI::CGUI(const CLConfig &conf, CWinSystem *winsys)
 {

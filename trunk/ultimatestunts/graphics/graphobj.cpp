@@ -44,7 +44,15 @@ CGraphObj::CGraphObj()
 
 CGraphObj::~CGraphObj()
 {
-	//TODO: remove display list when needed
+}
+
+void CGraphObj::unload()
+{
+	glDeleteLists(m_ObjListRef, 1);
+	glDeleteLists(m_ObjList1, 1);
+	glDeleteLists(m_ObjList2, 1);
+	glDeleteLists(m_ObjList3, 1);
+	glDeleteLists(m_ObjList4, 1);
 }
 
 bool CGraphObj::loadFromFile(CFile *f, CTexture **matarray, int lod_offset)

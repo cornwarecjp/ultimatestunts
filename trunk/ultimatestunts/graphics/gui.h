@@ -29,7 +29,7 @@ using namespace std;
   *@author CJP
   */
 
-class CGUI //derived from CBThread in the future
+class CGUI
 {
 public:
 	CGUI(const CLConfig &conf, CWinSystem *winsys);

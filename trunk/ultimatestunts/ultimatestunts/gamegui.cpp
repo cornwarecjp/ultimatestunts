@@ -15,31 +15,46 @@
  *                                                                         *
  ***************************************************************************/
 
+#include <cstdio>
+
 #include "gamegui.h"
 
-CGameGUI::CGameGUI(const CLConfig &conf, CWinSystem *winsys) : CGUI(conf, winsys)
+#include "objectchoice.h"
+#include "aiplayercar.h"
+#include "humanplayer.h"
+
+CUSCore *_USGameCore;
+
+bool game_mainloop()
 {
-	//Default: not passed
-	resetSection();
+	return _USGameCore->update();
 }
 
-CGameGUI::~CGameGUI(){
+
+CGameGUI::CGameGUI(const CLConfig &conf, CGameWinSystem *winsys) : CGUI(conf, winsys)
+{
+	m_GameCore = new CUSCore(winsys);
+
+	m_Server = NULL;
+
+	//default values:
+	m_TrackFile = "tracks/default.track";
+	addPlayer("CJP", true, "cars/diablo.conf");
+	addPlayer("AI", false, "cars/f1.conf");
 }
 
-void CGameGUI::startFrom(CString section)
+CGameGUI::~CGameGUI()
 {
-	printf(
-		"\n\n\n\n**********\n"
-		"*The \"GUI\"*\n"
-		"**********\n"
-		"This is a temporary implementation of the GUI,\n"
-		"based on stdio. It is not yet multithreaded.\n"
-		"So you'll first have to answer all questions before\n"
-		"we can continue.\n"
-		);
+	delete m_GameCore;
 
-	m_Stop = false;
-	while(!m_Stop && section != "")
+	if(m_Server != NULL)
+		{delete m_Server; m_Server = NULL;}
+}
+
+void CGameGUI::start()
+{
+	CString section = "mainmenu";
+	while(section != "" && section != "exit")
 	{
 		printf("\n\n"); //create some space
 
@@ -53,100 +68,13 @@ void CGameGUI::startFrom(CString section)
 			section = viewTrackMenu();
 		else if(section=="playermenu")
 			section = viewPlayerMenu();
+		else if(section=="playgame")
+			section = playGame();
+		else if(section=="hiscore")
+			section = viewHiscore();
 		else
 			{printf("Error: unknown menu %s\n", section.c_str()); section = "";}
 	}
-
-	printf(
-		"\n\n*****************\n"
-		"*End of the \"GUI\"*\n"
-		"*****************\n\n\n");
-}
-
-void CGameGUI::stop()
-{
-	//Has no meaning when not using multithreading
-	m_Stop = true;
-}
-
-CString CGameGUI::getValue(CString section, CString field)
-{
-	if(section=="mainmenu")
-		if(field=="") return m_MainMenuInput;
-
-	if(section=="hostmenu")
-	{
-		if(field=="hostname") return m_HostName;
-		if(field=="portnumber") return m_HostPort;
-	}
-	if(section=="servermenu")
-	{
-		if(field=="portnumber") return m_ServerPort;
-	}
-	if(section=="trackmenu")
-		if(field=="") return m_TrackFile;
-
-	if(section=="playermenu")
-	{
-		if(field=="number") return (int)(m_PlayerDescr.size());
-		int sp = field.inStr(' ');
-		if(sp > 0)
-		{
-			CString lhs = field.mid(0, sp);
-			int rhs = field.mid(sp+1).toInt();
-			if(lhs == "name")
-				return m_PlayerDescr[rhs].name;
-			if(lhs == "ishuman")
-			{
-				if(m_PlayerDescr[rhs].isHuman)
-					{return "true";}
-				else
-					{return "false";}
-			}
-			if(lhs == "carfile")
-				return m_PlayerDescr[rhs].carFile;
-		}
-	}
-	return "";
-}
-
-void CGameGUI::resetSection(CString section)
-{
-	if(section=="") //reset all sections
-	{
-		m_PassedMainMenu = false;
-		m_PassedHostMenu = false;
-		m_PassedServerMenu = false;
-		m_PassedTrackMenu = false;
-		m_PassedPlayerMenu = false;
-	}
-
-	if(section=="mainmenu")
-		m_PassedMainMenu = false;
-	if(section=="hostmenu")
-		m_PassedHostMenu = false;
-	if(section=="servermenu")
-		m_PassedServerMenu = false;
-	if(section=="trackmenu")
-		m_PassedTrackMenu = false;
-	if(section=="player")
-		m_PassedPlayerMenu = false;
-}
-
-bool CGameGUI::isPassed(CString section)
-{
-	if(section=="mainmenu")
-		return m_PassedMainMenu;
-	if(section=="hostmenu")
-		return m_PassedHostMenu;
-	if(section=="servermenu")
-		return m_PassedServerMenu;
-	if(section=="trackmenu")
-		return m_PassedTrackMenu;
-	if(section=="playermenu")
-		return m_PassedPlayerMenu;
-
-	return false; //all unknown sections are not passed
 }
 
 CString CGameGUI::viewMainMenu()
@@ -168,7 +96,7 @@ CString CGameGUI::viewMainMenu()
 		{
 			case 1:
 				m_MainMenuInput = LocalGame;
-				ret = "trackmenu"; //TODO: track menu
+				ret = "trackmenu";
 				break;
 			case 2:
 				m_MainMenuInput = NewNetwork;
@@ -180,7 +108,7 @@ CString CGameGUI::viewMainMenu()
 				break;
 			case 4:
 				m_MainMenuInput = Exit;
-				ret = "";
+				ret = "exit";
 				break;
 			default:
 				printf("Incorrect answer\n");
@@ -188,7 +116,6 @@ CString CGameGUI::viewMainMenu()
 
 	} //while
 
-	m_PassedMainMenu = true;
 	return ret;
 }
 
@@ -198,7 +125,6 @@ CString CGameGUI::viewServerMenu()
 	printf("Enter the port number: ");
 	m_ServerPort = getInput().toInt();
 
-	m_PassedServerMenu = true;
 	return "trackmenu";
 }
 
@@ -212,7 +138,6 @@ CString CGameGUI::viewHostMenu()
 	printf("Enter the server's UDP port number: ");
 	m_HostPort = getInput().toInt();
 
-	m_PassedHostMenu = true;
 	return "playermenu";
 }
 
@@ -224,7 +149,6 @@ CString CGameGUI::viewTrackMenu()
 	m_TrackFile = getInput();
 	if(m_TrackFile == "") m_TrackFile = defaulttrack;
 
-	m_PassedTrackMenu = true;
 	return "playermenu";
 }
 
@@ -258,8 +182,7 @@ CString CGameGUI::viewPlayerMenu()
 		addPlayer(name, isHuman, carfile);
 	}
 
-	m_PassedPlayerMenu = true;
-	return ""; //TODO: loading
+	return "playgame";
 }
 
 void CGameGUI::addPlayer(CString name, bool human, CString carfile)
@@ -269,4 +192,118 @@ void CGameGUI::addPlayer(CString name, bool human, CString carfile)
 	pd.isHuman = human;
 	pd.carFile = carfile;
 	m_PlayerDescr.push_back(pd);
+}
+
+CString CGameGUI::playGame()
+{
+	load();
+
+	//white space between loading and game messages
+	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+
+	_USGameCore = m_GameCore;
+	m_WinSys->runLoop(game_mainloop, true); //true: swap buffers
+
+	printf("\n\n\n");
+
+	unload();
+
+	return "hiscore";
+}
+
+void CGameGUI::load()
+{
+	unload(); //just in case...
+
+	//init game
+	if(m_MainMenuInput == LocalGame)
+	{
+		m_GameCore->initLocalGame(m_TrackFile);
+	}
+	else if(m_MainMenuInput == NewNetwork)
+	{
+		if(m_Server != NULL)
+			{delete m_Server; m_Server = NULL;}
+
+		m_Server = new CUSServer(m_ServerPort, m_TrackFile);
+
+		m_GameCore->initClientGame("localhost", m_ServerPort);
+	}
+	else if(m_MainMenuInput == JoinNetwork)
+	{
+		m_GameCore->initClientGame(m_HostName, m_HostPort);
+	}
+
+	//add players
+	unsigned int numHumanPlayers = 0;
+	for(unsigned int i=0; i < m_PlayerDescr.size(); i++)
+	{
+		CPlayer *p;
+		CObjectChoice choice;
+		choice.m_Filename = m_PlayerDescr[i].carFile;
+
+		if(m_PlayerDescr[i].isHuman)
+			p = new CHumanPlayer((CGameWinSystem *)m_WinSys, numHumanPlayers);
+		else
+			p = new CAIPlayerCar();
+
+		if(!m_GameCore->addPlayer(p, m_PlayerDescr[i].name, choice))
+		{
+			printf("Sim doesn't accept player\n");
+			delete p;
+			continue;
+		}
+
+		if(m_PlayerDescr[i].isHuman) //set a camera to this player:
+		{
+			m_GameCore->addCamera(p->m_MovingObjectId);
+			numHumanPlayers++;
+		}
+
+		m_Players.push_back(p);
+	}
+
+	m_GameCore->startGame();
+}
+
+void CGameGUI::unload()
+{
+	m_GameCore->leaveGame();
+
+	m_Players.clear();
+	for(unsigned int i=0; i<m_Players.size(); i++)
+		delete m_Players[i];
+
+	//do not yet unload the server: we might want to play again
+}
+
+CString CGameGUI::viewHiscore()
+{
+	CString ret = "incorrect_answer";
+	while(ret == "incorrect_answer")
+	{
+		printf(
+			"In the future, here will be the high scores\n"
+			"  1: Play again\n"
+			"  2: Return to main menu\n"
+		);
+		int input = getInput().toInt();
+
+		switch(input)
+		{
+			case 1:
+				ret = "playgame";
+				break;
+			case 2:
+				if(m_Server != NULL)
+					{delete m_Server; m_Server = NULL;} //stop the server if it's running
+				ret = "mainmenu";
+				break;
+			default:
+				printf("Incorrect answer\n");
+		}
+
+	} //while
+
+	return ret;
 }

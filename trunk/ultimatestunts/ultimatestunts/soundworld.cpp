@@ -29,18 +29,6 @@ CSoundWorld::~CSoundWorld()
 {
 }
 
-/*
-bool CSoundWorld::loadWorld()
-{
-	return true;
-}
-
-void CSoundWorld::unloadWorld()
-{
-	;
-}
-*/
-
 bool CSoundWorld::loadObjects()
 {
 	for(unsigned int i=0; i<m_World->m_MovObjSounds.size(); i++)

@@ -89,7 +89,23 @@ bool CGraphicWorld::loadWorld()
 
 void CGraphicWorld::unloadWorld()
 {
-	; //TODO
+	printf("Unloading the graphic world\n");
+
+	printf("  Unloading background\n");
+	m_Background.unload();
+
+	printf("  Unloading environment map\n");
+	m_EnvMap.unload();
+
+	printf("  Unloading tiles:\n");
+	for(unsigned int i=0; i<m_Tiles.size(); i++)
+		m_Tiles[i].unload();
+	m_Tiles.clear();
+
+	printf("  Unloading tile textures:\n");
+	for(unsigned int i=0; i<m_TileTextures.size(); i++)
+		m_TileTextures[i].unload();
+	m_TileTextures.clear();
 }
 
 bool CGraphicWorld::loadObjects()
@@ -113,7 +129,10 @@ bool CGraphicWorld::loadObjects()
 
 void CGraphicWorld::unloadObjects()
 {
-	//TODO
+	printf("Unloading moving object graphics:\n");
+	for(unsigned int i=0; i<m_MovingObjects.size(); i++)
+		m_MovingObjects[i].unload();
+	m_MovingObjects.clear();
 }
 
 CTexture **CGraphicWorld::getTextureSubset(CString indices)
