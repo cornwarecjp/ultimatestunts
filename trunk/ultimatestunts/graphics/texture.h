@@ -29,7 +29,7 @@ public:
 		{m_TextureSmooth = texture_smooth;}
 
 	virtual bool loadFromFile(CString filename, int xs, int ys);
-	void unload();
+	virtual void unload();
 
 	int getSizeX(int i) const;
 	int getSizeY(int i) const;

@@ -196,10 +196,15 @@ int CWinSystem::runLoop( bool (CALLBACKFUN *loopfunc)(), bool swp)
 		quit = quit || !loopfunc();
 
 		if(swp)
-			SDL_GL_SwapBuffers();
+			swapBuffers();
 	}
 
 	return 0;
+}
+
+void CWinSystem::swapBuffers()
+{
+	SDL_GL_SwapBuffers();
 }
 
 bool CWinSystem::getKeyState(int c) const

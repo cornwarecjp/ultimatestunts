@@ -2,6 +2,8 @@
 
 /* This code lets your read in SGI .rgb files. */
 
+/* Modifications were made by CJP to add RGBA support */
+
 #include <stdio.h>
 #include <stdlib.h> 
 #include <string.h>
@@ -27,7 +29,7 @@ typedef struct _rawImageRec {
     char name[80];
     unsigned long colorMap;
     FILE *file;
-    unsigned char *tmp, *tmpR, *tmpG, *tmpB;
+    unsigned char *tmp, *tmpR, *tmpG, *tmpB, *tmpA;
     unsigned long rleEnd;
     GLuint *rowStart;
     GLint *rowSize;
@@ -100,8 +102,9 @@ static rawImageRec *RawImageOpen(const char *fileName)
     raw->tmpR = (unsigned char *)malloc(raw->sizeX*256);
     raw->tmpG = (unsigned char *)malloc(raw->sizeX*256);
     raw->tmpB = (unsigned char *)malloc(raw->sizeX*256);
+    raw->tmpA = (unsigned char *)malloc(raw->sizeX*256);
     if (raw->tmp == NULL || raw->tmpR == NULL || raw->tmpG == NULL ||
-	raw->tmpB == NULL) {
+	raw->tmpB == NULL || raw->tmpA == NULL) {
 	fprintf(stderr, "Out of memory!\n");
 	exit(1);
     }
@@ -136,6 +139,7 @@ static void RawImageClose(rawImageRec *raw)
     free(raw->tmpR);
     free(raw->tmpG);
     free(raw->tmpB);
+    free(raw->tmpA);
     free(raw);
 }
 
@@ -180,7 +184,7 @@ static void RawImageGetData(rawImageRec *raw, RGBImageRec *final)
     unsigned char *ptr;
     int i, j;
 
-    final->data = (unsigned char *)malloc((raw->sizeX+1)*(raw->sizeY+1)*4);
+    final->data = (unsigned char *)malloc((raw->sizeX+1)*(raw->sizeY+1)*4); /* 4??? */
     if (final->data == NULL) {
 	fprintf(stderr, "Out of memory!\n");
 	exit(1);
@@ -199,6 +203,33 @@ static void RawImageGetData(rawImageRec *raw, RGBImageRec *final)
     }
 }
 
+/* RGBA support, by CJP */
+static void RawImageGetData_RGBA(rawImageRec *raw, RGBImageRec *final)
+{
+    unsigned char *ptr;
+    int i, j;
+
+    final->data = (unsigned char *)malloc((raw->sizeX+1)*(raw->sizeY+1)*4);
+    if (final->data == NULL) {
+	fprintf(stderr, "Out of memory!\n");
+	exit(1);
+    }
+
+    ptr = final->data;
+    for (i = 0; i < (int)(raw->sizeY); i++) {
+	RawImageGetRow(raw, raw->tmpR, i, 0);
+	RawImageGetRow(raw, raw->tmpG, i, 1);
+	RawImageGetRow(raw, raw->tmpB, i, 2);
+	RawImageGetRow(raw, raw->tmpA, i, 3);
+	for (j = 0; j < (int)(raw->sizeX); j++) {
+	    *ptr++ = *(raw->tmpR + j);
+	    *ptr++ = *(raw->tmpG + j);
+	    *ptr++ = *(raw->tmpB + j);
+	    *ptr++ = *(raw->tmpA + j);
+	}
+    }
+}
+
 RGBImageRec *RGBImageLoad(const char *fileName)
 {
     rawImageRec *raw;
@@ -212,7 +243,16 @@ RGBImageRec *RGBImageLoad(const char *fileName)
     }
     final->sizeX = raw->sizeX;
     final->sizeY = raw->sizeY;
-    RawImageGetData(raw, final);
+    if(raw->sizeZ == 4) //with alpha layer
+    {
+		RawImageGetData_RGBA(raw, final);
+		final->format = 1;
+	}
+    else
+    {
+		RawImageGetData(raw, final);
+		final->format = 0;
+	}
     RawImageClose(raw);
     return final;
 }

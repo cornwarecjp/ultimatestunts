@@ -18,11 +18,12 @@
 #ifndef GAMEGUI_H
 #define GAMEGUI_H
 
+#include "gamewinsystem.h"
 #include "gui.h"
+#include "console.h"
 
 #include "uscore.h"
 #include "player.h"
-#include "gamewinsystem.h"
 #include "lconfig.h"
 
 #include "usserver.h"
@@ -41,9 +42,12 @@ public:
 
 
 protected:
+	//Core things that are to be managed
 	CUSCore *m_GameCore;
 	vector<CPlayer *> m_Players;
 	CUSServer *m_Server;
+
+	CConsole *m_Console;
 
 	//all data of the last times the menus were passed
 	enum eMainMenu

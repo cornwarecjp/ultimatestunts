@@ -35,6 +35,8 @@ public:
 
 	int runLoop( bool (CALLBACKFUN *loopfunc)(), bool swp = false);
 
+	void swapBuffers();
+
 	bool getKeyState(int c) const;
 	bool wasPressed(int c);
 	bool joyBtnWasPressed(int c);

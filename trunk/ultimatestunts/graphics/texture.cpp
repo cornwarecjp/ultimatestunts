@@ -34,18 +34,20 @@ bool CTexture::loadFromFile(CString filename, int xs, int ys)
 {
 	RGBImageRec *in_image = RGBImageLoad(filename.c_str());
 
-	//printf("  1: %d,%d\n", xs, ys);
 	RGBImageRec *image = scaleImage(in_image, xs, ys);
 	if(image==NULL)
 	{
-		//printf("Using maximum texture size\n");
 		image = in_image;
 		in_image = NULL;
 	}
 
 	glGenTextures(1, &m_Texture);
 	glBindTexture(GL_TEXTURE_2D, m_Texture);
-	glTexImage2D( GL_TEXTURE_2D, 0, 3, image->sizeX, image->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, image->data);
+
+	if(image->format == 1) //RGBA
+		{glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA8, image->sizeX, image->sizeY, 0, GL_RGBA, GL_UNSIGNED_BYTE, image->data);}
+	else //Assume RGB
+		{glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB8,  image->sizeX, image->sizeY, 0, GL_RGB,  GL_UNSIGNED_BYTE, image->data);}
 
 	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
 	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
@@ -71,7 +73,6 @@ bool CTexture::loadFromFile(CString filename, int xs, int ys)
 	}
 	in_image = image;
 
-	//printf("  2: %d,%d\n", xs/2, ys/2);
 	image = scaleImage(in_image, xs/2, ys/2);
 	if(image==NULL)
 	{
@@ -83,7 +84,11 @@ bool CTexture::loadFromFile(CString filename, int xs, int ys)
 	{
 		glGenTextures(1, &m_Texture2);
 		glBindTexture(GL_TEXTURE_2D, m_Texture2);
-		glTexImage2D( GL_TEXTURE_2D, 0, 3, image->sizeX, image->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, image->data);
+
+		if(image->format == 1) //RGBA
+			{glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA8, image->sizeX, image->sizeY, 0, GL_RGBA, GL_UNSIGNED_BYTE, image->data);}
+		else //Assume RGB
+			{glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB8,  image->sizeX, image->sizeY, 0, GL_RGB,  GL_UNSIGNED_BYTE, image->data);}
 
 		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
 		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
@@ -107,7 +112,6 @@ bool CTexture::loadFromFile(CString filename, int xs, int ys)
 		in_image = image;
 	}
 
-	//printf("  3: %d,%d\n", xs/4, ys/4);
 	image = scaleImage(in_image, xs/4,ys/4);
 	if(image==NULL)
 	{
@@ -119,7 +123,11 @@ bool CTexture::loadFromFile(CString filename, int xs, int ys)
 	{
 		glGenTextures(1, &m_Texture3);
 		glBindTexture(GL_TEXTURE_2D, m_Texture3);
-		glTexImage2D( GL_TEXTURE_2D, 0, 3, image->sizeX, image->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, image->data);
+
+		if(image->format == 1) //RGBA
+			{glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA8, image->sizeX, image->sizeY, 0, GL_RGBA, GL_UNSIGNED_BYTE, image->data);}
+		else //Assume RGB
+			{glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB8,  image->sizeX, image->sizeY, 0, GL_RGB,  GL_UNSIGNED_BYTE, image->data);}
 
 		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
 		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
@@ -143,7 +151,6 @@ bool CTexture::loadFromFile(CString filename, int xs, int ys)
 		in_image = image;
 	}
 
-	//printf("  4: %d,%d\n", xs/8,ys/8);
 	image = scaleImage(in_image, xs/8,ys/8);
 	if(image==NULL)
 	{
@@ -155,7 +162,11 @@ bool CTexture::loadFromFile(CString filename, int xs, int ys)
 	{
 		glGenTextures(1, &m_Texture4);
 		glBindTexture(GL_TEXTURE_2D, m_Texture4);
-		glTexImage2D( GL_TEXTURE_2D, 0, 3, image->sizeX, image->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, image->data);
+
+		if(image->format == 1) //RGBA
+			{glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA8, image->sizeX, image->sizeY, 0, GL_RGBA, GL_UNSIGNED_BYTE, image->data);}
+		else //Assume RGB
+			{glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB8,  image->sizeX, image->sizeY, 0, GL_RGB,  GL_UNSIGNED_BYTE, image->data);}
 
 		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
 		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
@@ -179,7 +190,6 @@ bool CTexture::loadFromFile(CString filename, int xs, int ys)
 		in_image = image;
 	}
 
-	//printf("  5: 1,1\n");
 	image = scaleImage(in_image, 1,1);
 	if(image==NULL)
 	{
@@ -199,8 +209,6 @@ bool CTexture::loadFromFile(CString filename, int xs, int ys)
 
 	free(in_image->data);
 	free(in_image);
-
-	//printf("Texture color: %f,%f,%f\n", m_Color.x, m_Color.y, m_Color.z);
 
 	return true;
 }
@@ -289,23 +297,33 @@ RGBImageRec *CTexture::scaleImage(RGBImageRec *in, int xs, int ys)
 		return NULL; //don't scale; use the same texture
 
 
-	bitmapdata = (unsigned char *)malloc(3*sizex*sizey*sizeof(unsigned char));
+	bitmapdata = (unsigned char *)malloc(4*sizex*sizey*sizeof(unsigned char));
 	out = (RGBImageRec *)malloc(sizeof(RGBImageRec));
 
 	out->data = bitmapdata;
 	out->sizeX = sizex;
 	out->sizeY = sizey;
+	out->format = in->format;
 
 #undef USE_GLUSCALE
 //I guess gluscaleImage is faster than my own algoritm,
 //But it gives poor textures at low-res.
 
 #ifdef USE_GLUSCALE
-  if(sizex >= 4 && sizey >= 4)
-  {
-    gluScaleImage(GL_RGB,
-      in->sizeX,  in->sizeY,  GL_UNSIGNED_BYTE, in->data,
-      out->sizeX, out->sizeY, GL_UNSIGNED_BYTE, out->data );
+	if(sizex >= 4 && sizey >= 4)
+	{
+		if(in->format == 1) //RGBA
+		{
+			gluScaleImage(GL_RGBA,
+				in->sizeX,  in->sizeY,  GL_UNSIGNED_BYTE, in->data,
+				out->sizeX, out->sizeY, GL_UNSIGNED_BYTE, out->data );
+		}
+		else //assume RGB
+		{
+			gluScaleImage(GL_RGB,
+				in->sizeX,  in->sizeY,  GL_UNSIGNED_BYTE, in->data,
+				out->sizeX, out->sizeY, GL_UNSIGNED_BYTE, out->data );
+		}
   }
   else //still need my own algoritm for very small sizes
   {
@@ -314,7 +332,10 @@ RGBImageRec *CTexture::scaleImage(RGBImageRec *in, int xs, int ys)
 		int bsy;
 		int opp=1;
 		int i, j, x, y;
-		int r, g, b;
+		int r, g, b, a;
+
+		int pixsize = 3; //RGB
+		if(in->format == 1) pixsize = 4; //RGBA
 
 		bsx = in->sizeX / xs;
 		bsy = in->sizeY / ys;
@@ -329,18 +350,22 @@ RGBImageRec *CTexture::scaleImage(RGBImageRec *in, int xs, int ys)
 		for(x=0; x<sizex; x++)
 			for(y=0; y<sizey; y++)
 			{
-				r = g = b = 0;
+				r = g = b = a = 0;
 				for(i=0; i<bsx; i++)
 					for(j=0; j<bsy; j++)
 					{
-						r += *(in->data + 3*(bsx*x+i+in->sizeX*(bsy*y+j)) );
-						g += *(in->data + 3*(bsx*x+i+in->sizeX*(bsy*y+j)) +1);
-						b += *(in->data + 3*(bsx*x+i+in->sizeX*(bsy*y+j)) +2);
+						r += *(in->data + pixsize*(bsx*x+i+in->sizeX*(bsy*y+j)) );
+						g += *(in->data + pixsize*(bsx*x+i+in->sizeX*(bsy*y+j)) +1);
+						b += *(in->data + pixsize*(bsx*x+i+in->sizeX*(bsy*y+j)) +2);
+						if(in->format == 1)
+							a += *(in->data + pixsize*(bsx*x+i+in->sizeX*(bsy*y+j)) +3);
 					}
 
-					*(bitmapdata + 3*(x+sizex*y) ) = r/opp;
-					*(bitmapdata + 3*(x+sizex*y) +1) = g/opp;
-					*(bitmapdata + 3*(x+sizex*y) +2) = b/opp;
+					*(bitmapdata + pixsize*(x+sizex*y) ) = r/opp;
+					*(bitmapdata + pixsize*(x+sizex*y) +1) = g/opp;
+					*(bitmapdata + pixsize*(x+sizex*y) +2) = b/opp;
+					if(in->format == 1)
+						*(bitmapdata + pixsize*(x+sizex*y) +3) = a/opp;
 			}
 #ifdef USE_GLUSCALE
 	}

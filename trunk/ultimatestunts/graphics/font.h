@@ -1,8 +1,8 @@
 /***************************************************************************
-                          gui.h  -  The graphical user interface: menu's etc.
+                          font.h  -  A bitmap-based font class
                              -------------------
-    begin                : vr jan 31 2003
-    copyright            : (C) 2003 by CJP
+    begin                : ma okt 25 2004
+    copyright            : (C) 2004 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
 
@@ -15,28 +15,32 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GUI_H
-#define GUI_H
+#ifndef FONT_H
+#define FONT_H
 
-#include <vector>
-namespace std {}
-using namespace std;
-
-#include "lconfig.h"
-#include "winsystem.h"
+#include "texture.h"
 
 /**
   *@author CJP
   */
 
-class CGUI
+class CFont : protected CTexture
 {
-public:
-	CGUI(const CLConfig &conf, CWinSystem *winsys);
-	~CGUI();
+public: 
+	CFont();
+	virtual ~CFont();
+
+	bool loadFromFile(const CString &file, unsigned int texsize, float wth, float hth);
+	void unload();
+
+	//ALWAYS enable before drawing, and disable after (read the source)
+	void enable();
+	void disable();
+	void drawString(const CString &str);
 
 protected:
-	CWinSystem *m_WinSys;
+	unsigned int m_Texture;
+	unsigned int m_BaseDispList;
 };
 
 #endif

@@ -27,12 +27,3 @@ CGUI::CGUI(const CLConfig &conf, CWinSystem *winsys)
 
 CGUI::~CGUI(){
 }
-
-CString CGUI::getInput()
-{
-	char input[80];
-	fgets(input, 79, stdin);
-	CString ret(input);
-	ret = ret.mid(0, ret.length() - 1); //remove \n
-	return ret;
-}

@@ -37,6 +37,8 @@ CGameGUI::CGameGUI(const CLConfig &conf, CGameWinSystem *winsys) : CGUI(conf, wi
 
 	m_Server = NULL;
 
+	m_Console = new CConsole(winsys);
+
 	//default values:
 	m_TrackFile = "tracks/default.track";
 	addPlayer("CJP", true, "cars/diablo.conf");
@@ -49,15 +51,17 @@ CGameGUI::~CGameGUI()
 
 	if(m_Server != NULL)
 		{delete m_Server; m_Server = NULL;}
+
+	delete m_Console;
 }
 
 void CGameGUI::start()
 {
+	m_Console->clearScreen();
+
 	CString section = "mainmenu";
 	while(section != "" && section != "exit")
 	{
-		printf("\n\n"); //create some space
-
 		if(section=="mainmenu")
 			section = viewMainMenu();
 		else if(section=="hostmenu")
@@ -73,7 +77,7 @@ void CGameGUI::start()
 		else if(section=="hiscore")
 			section = viewHiscore();
 		else
-			{printf("Error: unknown menu %s\n", section.c_str()); section = "";}
+			{m_Console->print(CString("Error: unknown menu ") + section.c_str() + "\n"); section = "";}
 	}
 }
 
@@ -82,15 +86,14 @@ CString CGameGUI::viewMainMenu()
 	CString ret = "incorrect_answer";
 	while(ret == "incorrect_answer")
 	{
-		printf(
+		int input = m_Console->getInput(
 			"Main menu:\n"
 			"  1: Play a local game\n"
 			"  2: Start a new network game\n"
 			"  3: Log in on a remote network game\n"
 			"  \n"
-			"  4: Exit\n"
-		);
-		int input = getInput().toInt();
+			"  4: Exit\n: "
+		).toInt();
 
 		switch(input)
 		{
@@ -111,7 +114,7 @@ CString CGameGUI::viewMainMenu()
 				ret = "exit";
 				break;
 			default:
-				printf("Incorrect answer\n");
+				m_Console->print("Incorrect answer\n");
 		}
 
 	} //while
@@ -121,22 +124,17 @@ CString CGameGUI::viewMainMenu()
 
 CString CGameGUI::viewServerMenu()
 {
-	printf("Server menu:\n");
-	printf("Enter the port number: ");
-	m_ServerPort = getInput().toInt();
+	m_Console->print("Server menu:\n");
+	m_ServerPort = m_Console->getInput("Enter the port number: ").toInt();
 
 	return "trackmenu";
 }
 
 CString CGameGUI::viewHostMenu()
 {
-	printf(
-		"Host menu:\n"
-		"Enter the server's host name: "
-	);
-	m_HostName = getInput();
-	printf("Enter the server's UDP port number: ");
-	m_HostPort = getInput().toInt();
+	m_Console->print("Host menu:\n");
+	m_HostName = m_Console->getInput("Enter the server's host name: ");
+	m_HostPort = m_Console->getInput("Enter the server's UDP port number: ").toInt();
 
 	return "playermenu";
 }
@@ -144,9 +142,8 @@ CString CGameGUI::viewHostMenu()
 CString CGameGUI::viewTrackMenu()
 {
 	CString defaulttrack = "tracks/default.track";
-	printf("Track menu:\n");
-	printf("Enter the track filename (default is %s): ", defaulttrack.c_str());
-	m_TrackFile = getInput();
+	m_Console->print("Track menu:\n");
+	m_TrackFile = m_Console->getInput(CString("Enter the track filename (default is ") + defaulttrack.c_str() + "): ");
 	if(m_TrackFile == "") m_TrackFile = defaulttrack;
 
 	return "playermenu";
@@ -157,27 +154,21 @@ CString CGameGUI::viewPlayerMenu()
 	CString defaultcar = "cars/diablo.conf";
 	m_PlayerDescr.clear();
 
-	printf("Player menu:\n");
-	printf("Enter your name: ");
-	CString name = getInput();
-	printf("Enter your car file (default is %s):", defaultcar.c_str());
-	CString carfile = getInput();
+	m_Console->print("Player menu:\n");
+	CString name = m_Console->getInput("Enter your name: ");
+	CString carfile = m_Console->getInput(CString("Enter your car file (default is ") + defaultcar.c_str() + "): ");
 	if(carfile == "") carfile = defaultcar;
 	addPlayer(name, true, carfile);
 
 	while(true)
 	{
-		printf("\nDo you want to add a player(y/n)? ");
-		CString answ = getInput();
+		CString answ = m_Console->getInput("\nDo you want to add a player(y/n)? ");
 		if(!(answ == "y" || answ == "Y")) break;
 
-		printf("Enter the name: ");
-		name = getInput();
-		printf("Enter the car file (default is %s):", defaultcar.c_str());
-		carfile = getInput();
+		name = m_Console->getInput("Enter the name: ");
+		carfile = m_Console->getInput(CString("Enter the car file (default is ") + defaultcar + "): ");
 		if(carfile == "") carfile = defaultcar;
-		printf("Is it an AI player(y/n)? ");
-		answ = getInput();
+		answ = m_Console->getInput("Is it an AI player(y/n)? ");
 		bool isHuman = !(answ == "y" || answ == "Y");
 		addPlayer(name, isHuman, carfile);
 	}
@@ -199,12 +190,12 @@ CString CGameGUI::playGame()
 	load();
 
 	//white space between loading and game messages
-	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+	m_Console->print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 
 	_USGameCore = m_GameCore;
 	m_WinSys->runLoop(game_mainloop, true); //true: swap buffers
 
-	printf("\n\n\n");
+	m_Console->print("\n\n\n");
 
 	unload();
 
@@ -249,7 +240,7 @@ void CGameGUI::load()
 
 		if(!m_GameCore->addPlayer(p, m_PlayerDescr[i].name, choice))
 		{
-			printf("Sim doesn't accept player\n");
+			m_Console->print("Sim doesn't accept player\n");
 			delete p;
 			continue;
 		}
@@ -282,12 +273,11 @@ CString CGameGUI::viewHiscore()
 	CString ret = "incorrect_answer";
 	while(ret == "incorrect_answer")
 	{
-		printf(
+		int input = m_Console->getInput(
 			"In the future, here will be the high scores\n"
 			"  1: Play again\n"
 			"  2: Return to main menu\n"
-		);
-		int input = getInput().toInt();
+		).toInt();
 
 		switch(input)
 		{
@@ -300,7 +290,7 @@ CString CGameGUI::viewHiscore()
 				ret = "mainmenu";
 				break;
 			default:
-				printf("Incorrect answer\n");
+				m_Console->print("Incorrect answer\n");
 		}
 
 	} //while

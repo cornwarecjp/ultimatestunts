@@ -14,6 +14,7 @@ extern "C" {
 typedef struct _RGBImageRec {
     int sizeX, sizeY;
     unsigned char *data;
+    unsigned int format; /* 0 = RGB, 1 = RGBA */
 } RGBImageRec;
 
 extern RGBImageRec *RGBImageLoad(const char *);
