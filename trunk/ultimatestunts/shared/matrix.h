@@ -28,7 +28,9 @@ class CMatrix
 		~CMatrix();
 		void reset();
 		void setCrossProduct(CVector v);
+		
 		void setRotation(CVector v);
+		CVector getRotation();
 
 		//Matrix-operations:
 		CMatrix const &operator=(CMatrix const &val);

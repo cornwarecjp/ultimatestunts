@@ -1,8 +1,8 @@
 /***************************************************************************
-                          carinput.h  -  Input for car objects
+                          criticalvector.h  -  A CriticalSection vector class
                              -------------------
-    begin                : ma dec 16 2002
-    copyright            : (C) 2002 by CJP
+    begin                : ma jan 17 2005
+    copyright            : (C) 2005 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
 
@@ -14,25 +14,17 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
+#ifndef CRITICALVECTOR_H
+#define CRITICALVECTOR_H
 
-#ifndef CARINPUT_H
-#define CARINPUT_H
+#include <vector>
 
-#include "usmacros.h"
+#include "bthread.h"
 
-#include "movobjinput.h"
-
-/**
-  *@author CJP
-  */
-
-class CCarInput : public CMovObjInput  {
-public: 
-	//Which methods should be re-implemented?
-	CCarInput(); //Give reasonable start values
-
-	Uint8 m_Gear;
-	bool m_CarHorn;
+template<typename T>
+class CCriticalVector : public std::vector<T>, public CBCriticalSection
+{
 };
 
 #endif
+

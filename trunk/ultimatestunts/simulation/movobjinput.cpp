@@ -23,19 +23,23 @@ CMovObjInput::CMovObjInput()
 
 CBinBuffer &CMovObjInput::getData(CBinBuffer & b) const
 {
-	b.addFloat8(m_Up, 1.0);
-	b.addFloat8(m_Forward, 1.0);
-	b.addFloat8(m_Backward, 1.0);
-	b.addFloat8(m_Right, 1.0);
+	b += m_MovObjID;
+	b.addFloat8(m_Up, 0.008);
+	b.addFloat8(m_Forward, 0.008);
+	b.addFloat8(m_Backward, 0.008);
+	b.addFloat8(m_Right, 0.008);
 	return b;
 }
 
 bool CMovObjInput::setData(const CBinBuffer & b)
 {
 	unsigned int pos = 0;
-	m_Up = b.getFloat8(pos, 1.0);
-	m_Forward = b.getFloat8(pos, 1.0);
-	m_Backward = b.getFloat8(pos, 1.0);
-	m_Right = b.getFloat8(pos, 1.0);
+	Uint8 ID = b.getUint8(pos);
+	if(m_MovObjID != ID) return false;
+
+	m_Up = b.getFloat8(pos, 0.008);
+	m_Forward = b.getFloat8(pos, 0.008);
+	m_Backward = b.getFloat8(pos, 0.008);
+	m_Right = b.getFloat8(pos, 0.008);
 	return true;
 }

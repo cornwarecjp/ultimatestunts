@@ -48,6 +48,7 @@ CGameGUI::CGameGUI(const CLConfig &conf, CGameWinSystem *winsys) : CGUI(conf, wi
 	m_TrackFile = "tracks/default.track";
 	m_HostName = "localhost";
 	m_HostPort = 1500;
+	m_MaxNumPlayers = 2;
 	addPlayer("CJP", true, "cars/diablo.conf");
 	addPlayer("AI", false, "cars/f1.conf");
 
@@ -270,8 +271,8 @@ CString CGameGUI::viewGameTypeMenu()
 			m_GameType = NewNetwork;
 			m_HostName = "localhost";
 			m_HostPort = showInputBox("Enter the port number:", m_HostPort).toInt();
+			m_MaxNumPlayers = showInputBox("Maximum number of players:", m_MaxNumPlayers).toInt();
 			break;
-			return "mainmenu";
 	}
 
 	if(m_GameType == NewNetwork)
@@ -279,13 +280,16 @@ CString CGameGUI::viewGameTypeMenu()
 		if(m_Server == NULL)
 		{
 			//start server if needed
-			m_Server = new CUSServer(m_HostPort, 2);
+			m_Server = new CUSServer(m_HostPort, m_MaxNumPlayers);
+			m_Server->set("track", m_TrackFile);
 			sleep(1); //give the server some time to start
 		}
 		else
 		{
-			//set the new port
+			//update server settings
 			m_Server->set("port", m_HostPort);
+			m_Server->set("maxRequests", m_MaxNumPlayers);
+			m_Server->set("track", m_TrackFile);
 		}
 	}
 	else
@@ -403,7 +407,10 @@ void CGameGUI::load()
 
 		if(!m_GameCore->addPlayer(p, m_PlayerDescr[i].name, choice))
 		{
-			showMessageBox("Sim doesn't accept player");
+			showMessageBox(CString("Player ") + m_PlayerDescr[i].name + " was refused");
+			onRedraw();
+			m_WinSys->swapBuffers();
+
 			delete p;
 			continue;
 		}

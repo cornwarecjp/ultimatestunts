@@ -142,10 +142,10 @@ target_os = @target_os@
 target_vendor = @target_vendor@
 noinst_LIBRARIES = libsimulation.a
 
-libsimulation_a_SOURCES = aiplayercar.cpp body.cpp bound.cpp car.cpp carinput.cpp chatmessage.cpp clientnet.cpp clientplayercontrol.cpp clientsim.cpp collisiondata.cpp collisiondetector.cpp collisionface.cpp collisionmodel.cpp gamecore.cpp material.cpp message.cpp messagebuffer.cpp movingobject.cpp movobjinput.cpp netmessage.cpp objectchoice.cpp physics.cpp player.cpp playercontrol.cpp rulecontrol.cpp simulation.cpp stuntsnet.cpp textmessage.cpp tilemodel.cpp track.cpp world.cpp netudp.cpp
+libsimulation_a_SOURCES = aiplayercar.cpp body.cpp bound.cpp car.cpp carinput.cpp chatmessage.cpp clientnet.cpp clientplayercontrol.cpp clientsim.cpp collisiondata.cpp collisiondetector.cpp collisionface.cpp collisionmodel.cpp gamecore.cpp material.cpp message.cpp messagebuffer.cpp movingobject.cpp movobjinput.cpp objectchoice.cpp physics.cpp player.cpp playercontrol.cpp rulecontrol.cpp simulation.cpp stuntsnet.cpp textmessage.cpp tilemodel.cpp track.cpp udpnet.cpp world.cpp
 INCLUDES = $(all_includes) -I../shared
 
-EXTRA_DIST = aiplayercar.cpp aiplayercar.h body.cpp body.h bound.cpp bound.h car.cpp car.h carinput.cpp carinput.h chatmessage.cpp chatmessage.h clientnet.cpp clientnet.h clientplayercontrol.cpp clientplayercontrol.h clientsim.cpp clientsim.h collisiondata.cpp collisiondata.h collisiondetector.cpp collisiondetector.h collisionface.cpp collisionface.h collisionmodel.cpp collisionmodel.h dynamicobject.cpp gamecore.cpp gamecore.h material.cpp material.h message.cpp message.h messagebuffer.cpp messagebuffer.h movingobject.cpp movingobject.h movobjinput.cpp movobjinput.h netmessage.cpp netmessage.h objectchoice.cpp objectchoice.h physics.cpp physics.h player.cpp player.h playercontrol.cpp playercontrol.h rulecontrol.cpp rulecontrol.h simulation.cpp simulation.h stuntsnet.cpp stuntsnet.h textmessage.cpp textmessage.h tilemodel.cpp tilemodel.h track.cpp track.h world.cpp world.h
+EXTRA_DIST = aiplayercar.cpp aiplayercar.h body.cpp body.h bound.cpp bound.h car.cpp car.h carinput.cpp carinput.h chatmessage.cpp chatmessage.h clientnet.cpp clientnet.h clientplayercontrol.cpp clientplayercontrol.h clientsim.cpp clientsim.h collisiondata.cpp collisiondata.h collisiondetector.cpp collisiondetector.h collisionface.cpp collisionface.h collisionmodel.cpp collisionmodel.h dynamicobject.cpp gamecore.cpp gamecore.h material.cpp material.h message.cpp message.h messagebuffer.cpp messagebuffer.h movingobject.cpp movingobject.h movobjinput.cpp movobjinput.h objectchoice.cpp objectchoice.h physics.cpp physics.h player.cpp player.h playercontrol.cpp playercontrol.h rulecontrol.cpp rulecontrol.h simulation.cpp simulation.h stuntsnet.cpp stuntsnet.h textmessage.cpp textmessage.h tilemodel.cpp tilemodel.h track.cpp track.h udpnet.cpp udpnet.h world.cpp world.h
 subdir = simulation
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -162,12 +162,11 @@ am_libsimulation_a_OBJECTS = aiplayercar.$(OBJEXT) body.$(OBJEXT) \
 	collisionface.$(OBJEXT) collisionmodel.$(OBJEXT) \
 	gamecore.$(OBJEXT) material.$(OBJEXT) message.$(OBJEXT) \
 	messagebuffer.$(OBJEXT) movingobject.$(OBJEXT) \
-	movobjinput.$(OBJEXT) netmessage.$(OBJEXT) \
-	objectchoice.$(OBJEXT) physics.$(OBJEXT) player.$(OBJEXT) \
-	playercontrol.$(OBJEXT) rulecontrol.$(OBJEXT) \
+	movobjinput.$(OBJEXT) objectchoice.$(OBJEXT) physics.$(OBJEXT) \
+	player.$(OBJEXT) playercontrol.$(OBJEXT) rulecontrol.$(OBJEXT) \
 	simulation.$(OBJEXT) stuntsnet.$(OBJEXT) textmessage.$(OBJEXT) \
-	tilemodel.$(OBJEXT) track.$(OBJEXT) world.$(OBJEXT) \
-	netudp.$(OBJEXT)
+	tilemodel.$(OBJEXT) track.$(OBJEXT) udpnet.$(OBJEXT) \
+	world.$(OBJEXT)
 libsimulation_a_OBJECTS = $(am_libsimulation_a_OBJECTS)
 
 DEFAULT_INCLUDES =  -I. -I$(srcdir)
@@ -187,13 +186,13 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/message.Po ./$(DEPDIR)/messagebuffer.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/movingobject.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/movobjinput.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/netmessage.Po ./$(DEPDIR)/netudp.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/objectchoice.Po ./$(DEPDIR)/physics.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/player.Po ./$(DEPDIR)/playercontrol.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/rulecontrol.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/simulation.Po ./$(DEPDIR)/stuntsnet.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/textmessage.Po ./$(DEPDIR)/tilemodel.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/track.Po ./$(DEPDIR)/world.Po
+@AMDEP_TRUE@	./$(DEPDIR)/track.Po ./$(DEPDIR)/udpnet.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/world.Po
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 CXXLD = $(CXX)
@@ -247,8 +246,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/messagebuffer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/movingobject.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/movobjinput.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/netmessage.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/netudp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/objectchoice.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/physics.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/player.Po@am__quote@
@@ -259,6 +256,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/textmessage.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tilemodel.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/track.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/udpnet.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/world.Po@am__quote@
 
 distclean-depend:

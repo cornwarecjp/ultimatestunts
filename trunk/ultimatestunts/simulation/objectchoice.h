@@ -22,6 +22,8 @@
 #include "message.h"
 #include "cstring.h"
 
+#define OBJECTCHOICE_REFUSED 255 //network return value for refusing a new object
+
 /**
   *@author bones
   */

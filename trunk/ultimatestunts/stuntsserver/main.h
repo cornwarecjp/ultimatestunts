@@ -1,8 +1,8 @@
 /***************************************************************************
-                          carinput.h  -  Input for car objects
+                          main.h  -  Main objects
                              -------------------
-    begin                : ma dec 16 2002
-    copyright            : (C) 2002 by CJP
+    begin                : ma jan 17 2005
+    copyright            : (C) 2005 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
 
@@ -14,25 +14,27 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
+#ifndef MAIN_H
+#define MAIN_H
 
-#ifndef CARINPUT_H
-#define CARINPUT_H
+#include <vector>
+namespace std {}
+using namespace std;
 
-#include "usmacros.h"
+#include "criticalvector.h"
 
-#include "movobjinput.h"
+#include "aiplayercar.h"
+#include "remoteplayer.h"
 
-/**
-  *@author CJP
-  */
+#include "objectchoice.h"
 
-class CCarInput : public CMovObjInput  {
-public: 
-	//Which methods should be re-implemented?
-	CCarInput(); //Give reasonable start values
+#include "client.h"
+#include "gamecorethread.h"
+#include "networkthread.h"
 
-	Uint8 m_Gear;
-	bool m_CarHorn;
-};
+extern CCriticalVector<CObjectChoice> ObjectChoices;
+extern CGamecoreThread gamecorethread;
+extern CNetworkThread networkthread;
+extern CClientList Clients;
 
 #endif

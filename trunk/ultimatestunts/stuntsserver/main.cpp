@@ -26,28 +26,32 @@
 namespace std {}
 using namespace std;
 
-#include "gamecorethread.h"
-#include "networkthread.h"
-
-#include "objectchoice.h"
-#include "aiplayercar.h"
-#include "chatmessage.h"
-
 #include "lconfig.h"
 #include "filecontrol.h"
 
+#include "main.h"
+
+#include "aiplayercar.h"
+#include "remoteplayer.h"
+
+#include "objectchoice.h"
+#include "chatmessage.h"
+
 #include "client.h"
+#include "gamecorethread.h"
+#include "networkthread.h"
 
 //The game objects
-vector<CPlayer *> players;
+CCriticalVector<CObjectChoice> ObjectChoices;
 CGamecoreThread gamecorethread;
 CNetworkThread networkthread;
-
 CClientList Clients;
+
+vector<CRemotePlayer *> RemotePlayers;
+vector<CAIPlayerCar *> AIPlayers;
 
 //The variables
 CString Trackfile = "tracks/default.track";
-unsigned int remoteplayers = 2;
 
 struct SAIDescr
 {
@@ -74,15 +78,108 @@ CString getInput(CString question="")
 	return out;
 }
 
-void addPlayers()
+void unReadyPlayers()
 {
-	//AI players:
+	Clients.enter();
+	for(unsigned int i=0; i < Clients.size(); i++)
+		Clients[i].ready = false;
+	Clients.leave();
+}
+
+void wait4ReadyPlayers()
+{
+	printf("waiting until all clients are ready\n");
+	while(true)
+	{
+		bool ready = true;
+
+		Clients.enter();
+		for(unsigned int i=0; i < Clients.size(); i++)
+			if(!Clients[i].ready)
+				{ready = false; break;}
+		Clients.leave();
+
+		if(ready) break;
+
+		sleep(1);
+	}
+	printf("OK, they are ready\n");
+}
+
+void clearPlayerLists()
+{
+	printf("\n---Players\n");
+	for(unsigned int i=0; i < AIPlayers.size(); i++)
+		delete AIPlayers[i];
+	AIPlayers.clear();
+	for(unsigned int i=0; i < RemotePlayers.size(); i++)
+		delete RemotePlayers[i];
+	RemotePlayers.clear();
+
+	Clients.enter();
+	for(unsigned int i=0; i < Clients.size(); i++)
+	{
+		Clients[i].players.clear();
+		Clients[i].ready = false;
+	}
+	Clients.leave();
+
+	ObjectChoices.enter();
+	ObjectChoices.clear();
+	ObjectChoices.leave();
+}
+
+void addRemotePlayers()
+{
+	Clients.enter();
+
+	//add them
+	for(unsigned int i=0; i < Clients.playerRequests.size(); i++)
+	{
+		CString name = CString("Remote player ") + int(i); //TODO
+
+		RemotePlayers.push_back(new CRemotePlayer);
+		CRemotePlayer *p = RemotePlayers.back();
+
+		CObjectChoice &choice = Clients.playerRequests[i];
+
+		if(!gamecorethread.m_GameCore->addPlayer(p, name, choice))
+		{
+			printf("Sim doesn't accept remote player %s\n", name.c_str());
+			delete p;
+			RemotePlayers.erase(RemotePlayers.end());
+			continue;
+		}
+
+		//add to the objecechoice list
+		ObjectChoices.enter();
+		ObjectChoices.push_back(choice);
+		ObjectChoices.leave();
+	}
+
+	//remove player requests:
+	Clients.playerRequests.clear();
+
+	//Make references in the client info
+	for(unsigned int i=0; i < Clients.size(); i++)
+	{
+		Clients[i].players = Clients[i].playerRequests;
+		Clients[i].playerRequests.clear();
+		Clients[i].ready = false;
+	}
+
+	Clients.leave();
+}
+
+void addAIPlayers()
+{
 	for(unsigned int i=0; i<AIDescriptions.size(); i++)
 	{
+		AIPlayers.push_back(new CAIPlayerCar);
+		CAIPlayerCar *p = AIPlayers.back();
+
 		CString name = AIDescriptions[i].name;
 		CString car = AIDescriptions[i].carFile;
-
-		CPlayer *p = new CAIPlayerCar();
 
 		CObjectChoice choice;
 		choice.m_Filename = car;
@@ -91,10 +188,14 @@ void addPlayers()
 		{
 			printf("Sim doesn't accept AI player %s\n", name.c_str());
 			delete p;
+			AIPlayers.erase(AIPlayers.end());
 			continue;
 		}
 
-		players.push_back(p);
+		//add to the objecechoice list
+		ObjectChoices.enter();
+		ObjectChoices.push_back(choice);
+		ObjectChoices.leave();
 	}
 }
 
@@ -103,8 +204,26 @@ void cmd_start()
 	//TODO: super-server setup
 	gamecorethread.m_GameCore->initLocalGame(Trackfile);
 
-	addPlayers();
+	//wait until all players are ready
+	wait4ReadyPlayers();
+	unReadyPlayers();
+
+	//now send the track info, so that they can load the track
+	networkthread.sendToAll("TRACK=" + Trackfile);
+
+	clearPlayerLists();
+	addRemotePlayers(); //add remote human and AI players
+	addAIPlayers(); //add local AI players
+
+	//load the track and moving objects
 	gamecorethread.m_GameCore->readyAndLoad();
+
+	//wait a second time for a ready signal
+	wait4ReadyPlayers();
+	unReadyPlayers();
+
+	//Then tell everybody to start the game
+	networkthread.sendToAll("READY");
 
 	printf("Starting gamecore thread\n");
 	if(!gamecorethread.start())
@@ -116,18 +235,21 @@ void cmd_stop()
 	printf("Stopping gamecore thread\n");
 	if(!gamecorethread.stop())
 		printf("For some reason, stopping the thread failed\n");
+
+	clearPlayerLists();
 }
 
 void cmd_exit()
 {
-	printf("\n---Players\n");
-	for(unsigned int i=0; i<players.size(); i++)
-		delete players[i];
-	players.clear();
+	cmd_stop(); //to make sure that nothing is running
 
 	printf("\n---Gamecore\n");
 	delete gamecorethread.m_GameCore;
 	
+	printf("Stopping network thread\n");
+	if(!networkthread.stop())
+		printf("For some reason, stopping the thread failed\n");
+
 	exit(EXIT_SUCCESS);
 }
 
@@ -165,8 +287,8 @@ void cmd_set(const CString &args)
 			{Trackfile = val;}
 		else if(var=="port")
 			{networkthread.setPort(val.toInt());}
-		else if(var=="remoteplayers")
-			{remoteplayers = val.toInt();}
+		else if(var=="maxRequests")
+			{Clients.maxRequests = val.toInt();}
 		else
 		{
 			printf("Unknown variable \'%s\'. Try \'help\'\n", var.c_str());
@@ -179,12 +301,38 @@ void cmd_show()
 	printf("Variables:\n");
 	printf("  track = %s\n", Trackfile.c_str());
 	printf("  port = %d\n", networkthread.getPort());
-	printf("  remoteplayers = %d\n", remoteplayers);
+	printf("  maxRequests = %d\n", Clients.maxRequests);
 	//printf("   = %\n", );
-	printf("AI players:\n");
+	printf("\nRemote players:\n");
+	Clients.enter();
+	for(unsigned int i=0; i < Clients.size(); i++)
+	{
+		CClient &c = Clients[i];
+		printf("  Client %d: %s port %d\n", i, c.ip.toString().c_str(), c.port);
+		printf("    Requests:\n");
+		for(unsigned int j=0; j < c.playerRequests.size(); j++)
+		{
+			int reqID = c.playerRequests[j];
+			if(reqID < 0)
+				{printf("      %d: refused\n", reqID);}
+			else
+				{printf("      %d: %s\n", reqID, Clients.playerRequests[reqID].m_Filename.c_str());}
+		}
+	}
+	Clients.leave();
+
+	printf("\nAI players:\n");
 	for(unsigned int i=0; i < AIDescriptions.size(); i++)
 		printf("  %s playing with car %s\n",
 			AIDescriptions[i].name.c_str(), AIDescriptions[i].carFile.c_str());
+
+	printf("Players:\n");
+	ObjectChoices.enter();
+	for(unsigned int j=0; j < ObjectChoices.size(); j++)
+	{
+		printf("  %s\n", ObjectChoices[j].m_Filename.c_str());
+	}
+	ObjectChoices.leave();
 }
 
 void cmd_write(const CString &args)
@@ -192,13 +340,8 @@ void cmd_write(const CString &args)
 	CChatMessage msg;
 	msg.m_Message = args;
 
-	CStuntsNet net(0);
 	CMessageBuffer buf = msg.getBuffer();
-	CIPNumber ipnum;
-	ipnum = "localhost";
-	buf.setIP(ipnum);
-	buf.setPort(1500);
-	net.sendData(buf);
+	networkthread.sendToAll(buf);
 }
 
 void executeCommand(const CString &cmd)
@@ -217,7 +360,7 @@ void executeCommand(const CString &cmd)
 			"Variables are: \n"
 			"  track                Track file\n"
 			"  port                 Port where the server should listen\n"
-			"  remoteplayers        Maximum number of remote players\n"
+			"  maxRequests          Maximum number of remote players\n"
 			);
 	}
 	else if(cmd.length() > 6 && cmd.mid(0, 6) == "addai ")
@@ -275,7 +418,6 @@ int main(int argc, char *argv[])
 	gamecorethread.m_GameCore = new CGameCore;
 
 	printf("Starting network thread\n");
-	networkthread.giveClientList(&Clients);
 	networkthread.start();
 	
 	printf("\nNow you can enter commands. Try \'help\' for a list of commands.\n");

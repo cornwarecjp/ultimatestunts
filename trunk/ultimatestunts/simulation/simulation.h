@@ -27,14 +27,11 @@
 
 class CSimulation {
 public: 
-	CSimulation(CWorld *w);
+	CSimulation();
 	virtual ~CSimulation();
 
 	//while playing:
 	virtual bool update() =0;
-
-protected:
-	CWorld *m_World;
 };
 
 #endif

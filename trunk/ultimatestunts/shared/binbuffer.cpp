@@ -151,6 +151,23 @@ float CBinBuffer::getFloat32(int unsigned &pos, float unit) const
 }
 
 //Vector:
+CBinBuffer & CBinBuffer::addVector8(const CVector & v, float unit)
+{
+	addFloat8(v.x, unit);
+	addFloat8(v.y, unit);
+	addFloat8(v.z, unit);
+	return *this;
+}
+
+CVector CBinBuffer::getVector8(int unsigned &pos, float unit) const
+{
+	CVector ret;
+	ret.x = getFloat8(pos, unit);
+	ret.y = getFloat8(pos, unit);
+	ret.z = getFloat8(pos, unit);
+	return ret;
+}
+
 CBinBuffer & CBinBuffer::addVector16(const CVector & v, float unit)
 {
 	addFloat16(v.x, unit);

@@ -23,6 +23,7 @@
   *@author CJP
   */
 #include "message.h"
+#include "movobjinput.h"
 #include "dataobject.h"
 
 #include "vector.h"
@@ -37,30 +38,39 @@ public:
 	CMovingObject(CDataManager *manager);
 	~CMovingObject();
 
-	virtual void resetBodyPositions(CVector pos, const CMatrix &ori)=0; //should be called after setting object position, orientation
-
-	virtual CMessageBuffer::eMessageType getType() const {return CMessageBuffer::movingObject;}
-
+	virtual bool load(const CString &filename, const CParamList &list);
 	virtual void unload();
 	//Update: physics simulation
 	virtual void update(CPhysics *simulator, float dt);
 
+	//For network transfer & other stuff
+	virtual CBinBuffer &getData(CBinBuffer &b) const;   //puts body positions etc. into buffer
+	virtual bool setData(const CBinBuffer &b);          //rebuild class data from binbuffer
+	virtual CMessageBuffer::eMessageType getType() const {return CMessageBuffer::movingObject;}
+
+	//CMessage wrappers:
+	CMessageBuffer getBuffer(){return CMessage::getBuffer();}
+	bool setBuffer(const CMessageBuffer &b){return CMessage::setBuffer(b);}
+
+	unsigned int getMovObjID()
+		{return m_MovObjID;}
+
+	virtual void resetBodyPositions(CVector pos, const CMatrix &ori)=0; //should be called after setting object position, orientation
 	const CVector &getCameraPos() const
 		{return m_CameraPos;}
 
-	vector<CBody> m_Bodies; //The object bodies
+	//static data:
 	vector<unsigned int> m_Sounds; //The object sounds
 	vector<unsigned int> m_Textures; //The object textures
 
-	//For network transfer & other stuff
-	virtual CBinBuffer &getData(CBinBuffer &b) const;       // returns class data as binbuffer
-	virtual bool setData(const CBinBuffer &b);   // rebuild class data from binbuffer
+	//dynamic data:
+	vector<CBody> m_Bodies; //The object bodies
+	CMovObjInput *m_InputData;
 
-	virtual bool hasChanged();
-
-	CMessage *m_InputData;
 protected:
 	CVector m_CameraPos; //the relative position of the inside camera
+
+	Uint8 m_MovObjID;
 };
 
 #endif

@@ -57,6 +57,7 @@ protected:
 	CString m_HostName;
 	int m_HostPort;
 	CString m_TrackFile;
+	int m_MaxNumPlayers;
 
 	struct SPlayerDescr
 	{

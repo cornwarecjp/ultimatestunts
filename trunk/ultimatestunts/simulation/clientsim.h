@@ -21,16 +21,13 @@
 #include "simulation.h"
 #include "clientnet.h"
 
-//Temporary dummy implementation
-#include "rulecontrol.h"
-
 /**
   *@author CJP
   */
 
 class CClientSim : public CSimulation  {
 public: 
-	CClientSim(CClientNet *net, CWorld *w);
+	CClientSim(CClientNet *net);
 	~CClientSim();
 
 	CString getTrackname();
@@ -38,9 +35,6 @@ public:
 	virtual bool update();
 protected:
 	CClientNet *m_Net;
-
-	//Temporary dummy implementation
-	CRuleControl *m_RuleControl;
 };
 
 #endif

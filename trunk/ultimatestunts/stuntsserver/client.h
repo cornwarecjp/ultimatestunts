@@ -22,6 +22,8 @@
 namespace std {}
 using namespace std;
 
+#include "criticalvector.h"
+
 #include "ipnumber.h"
 #include "bthread.h"
 #include "objectchoice.h"
@@ -32,12 +34,36 @@ public:
 	CIPNumber ip;
 	unsigned int port;
 	vector<int> players;
-	vector<CObjectChoice> playerRequests;
+	vector<int> playerRequests;
+	bool ready;
 };
 
-class CClientList : public vector<CClient>, public CBCriticalSection
+class CClientList : public CCriticalVector<CClient>
 {
-	;
+public:
+	CClientList()
+	{
+		maxRequests = 2;
+	}
+
+	int addRequest_safe(unsigned int ID, const CObjectChoice &oc)
+	{
+		enter();
+		if(playerRequests.size() >= maxRequests)
+		{
+			leave();
+			return -1;
+		}
+		
+		playerRequests.push_back(oc);
+		int ret = playerRequests.size()-1;
+		operator[](ID).playerRequests.push_back(ret);
+		leave();
+		return ret;
+	}
+
+	vector<CObjectChoice> playerRequests;
+	unsigned int maxRequests;
 };
 
 #endif

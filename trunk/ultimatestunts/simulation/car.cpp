@@ -98,7 +98,8 @@ bool CCar::load(const CString &filename, const CParamList &list)
 	//One texture:
 	m_Textures.push_back(theWorld->loadObject(cfile.getValue("texture", "file"), CParamList(), CDataObject::eMaterial));
 
-	//The input object
+	//The input object: CCarInput instead of CMovObjInput
+	delete m_InputData;
 	m_InputData = new CCarInput;
 
 	//initial state

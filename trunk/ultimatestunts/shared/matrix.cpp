@@ -17,6 +17,10 @@
 #include "matrix.h"
 #include <cmath>
 
+#ifndef M_PI
+#define M_PI 3.1415926536
+#endif
+
 //#include <cstdio>
 //#include "cstring.h" //debugging
 
@@ -242,12 +246,101 @@ void CMatrix::setRotation(CVector v)
 	A.setElement(1,2,v3.y);
 	A.setElement(2,2,v3.z);
 
-
 	rot.rotZ(v.abs());
+
+	/*
+	printf("rot:\n");
+	for(unsigned int i=0; i < 3; i++)
+	{
+		for(unsigned int j=0; j < 3; j++)
+			printf("%.3f  ", rot.Element(i, j));
+		printf("\n");
+	}
+	printf("A:\n");
+	for(unsigned int i=0; i < 3; i++)
+	{
+		for(unsigned int j=0; j < 3; j++)
+			printf("%.3f  ", A.Element(i, j));
+		printf("\n");
+	}
+	*/
 
 	this->operator=(A);
 	this->operator*=(rot);
 	this->operator/=(A);
+}
+
+CVector CMatrix::getRotation()
+{
+	//movement of the unit axes
+	//they are perpendicular to the rotation axis
+	CVector
+		dx(Element(0,0)-1, Element(1,0),   Element(2,0)  ),
+		dy(Element(0,1),   Element(1,1)-1, Element(2,1)  ),
+		dz(Element(0,2),   Element(1,2),   Element(2,2)-1);
+
+	//find the largest one
+	float dxabs2 = dx.abs2();
+	float dyabs2 = dy.abs2();
+	float dzabs2 = dz.abs2();
+	CVector u = dx;
+	if(dyabs2 > dxabs2 && dyabs2 > dzabs2)
+		{u = dy;}
+	else if(dzabs2 > dxabs2)
+		{u = dz;}
+
+	//normalise
+	u.normalise();
+
+	//rotate
+	CVector urot = (*this) * u;
+
+	//Determine the rotation axis:
+	CVector v = u.crossProduct(urot);
+	if(v.abs2() < 0.0000001)
+	{
+		//we have either 0 degree or 180 degree rotation
+		if(u.dotProduct(urot) > 0.0) //0 degree
+			{return CVector(0,0,0);}
+		else
+		{
+			//for 180 degree, we still need to find the rotation axis
+			//but the direction is not important
+
+			//nominations:
+			CVector
+				v1 = dx.crossProduct(u),
+				v2 = dy.crossProduct(u),
+				v3 = dz.crossProduct(u);
+			
+			//find the largest one
+			float v1abs2 = v1.abs2();
+			float v2abs2 = v2.abs2();
+			float v3abs2 = v3.abs2();
+			v = v1;
+			if(v2abs2 > v1abs2 && v2abs2 > v3abs2)
+				{v = v2;}
+			else if(v3abs2 > v1abs2)
+				{v = v3;}
+
+			v.normalise();
+			return M_PI * v; //180 degree
+		}
+	}
+	//all other cases:
+	v.normalise();
+
+	//Another axis perpendicular to the rotation axis
+	CVector w = u.crossProduct(v);
+
+	//The coordinates of the rotated u axis
+	float urot_u = urot.dotProduct(u);
+	float urot_w = urot.dotProduct(w);
+
+	//the rotation angle
+	float angle = atan2f(urot_w, urot_u);
+
+	return v * angle;
 }
 
 CMatrix CMatrix::transpose() const

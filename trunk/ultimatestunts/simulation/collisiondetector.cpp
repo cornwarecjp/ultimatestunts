@@ -41,8 +41,13 @@ void CCollisionDetector::calculateCollisions()
 
 	clearData(); //clear all previously stored collision data
 
-	//Collision with track bounds
+	//The objects:
 	vector<CDataObject *> objs = theWorld->getObjectArray(CDataObject::eMovingObject);
+
+	//nothing to do if there are no objects
+	if(objs.size() == 0) return;
+
+	//Collision with track bounds
 	for(unsigned int i=0; i < objs.size(); i++)
 		for(unsigned int j=0; j < ((CMovingObject *)objs[i])->m_Bodies.size(); j++)
 			ObjTrackBoundTest(((CMovingObject *)objs[i])->m_Bodies[j]);

@@ -83,19 +83,33 @@ bool CGameCore::addPlayer(CPlayer *p, CString name, CObjectChoice choice)
 
 void CGameCore::readyAndLoad()
 {
-	if(	m_ClientNet != NULL)
+	if(m_ClientNet != NULL)
 	{
-		//TODO: send ready, and wait for start
 		CClientSim *csim = (CClientSim *)(m_Simulations[0]);
 		m_TrackFile = csim->getTrackname();
 	}
 	
 	loadTrackData();
 	loadMovObjData();
+
+	if(m_ClientNet != NULL)
+	{
+		printf("Telling the server that we're ready\n");
+		m_ClientNet->sendReady();
+
+		printf("Wait until everybody is ready\n");
+		m_ClientNet->wait4Ready();
+	}
 }
 
 bool CGameCore::update() //true = continue false = leave
 {
+	if(m_ClientNet != NULL)
+	{
+		m_ClientNet->m_ReceiveBuffer.clear(); //all messages that were not used in the previous turn
+		m_ClientNet->receiveData(1); //1 millisecond
+	}
+
 	for(unsigned int i=0; i<m_Players.size(); i++)
 		m_Players[i]->update(); //Makes moving decisions
 
@@ -116,14 +130,15 @@ void CGameCore::resetGame()
 	if(m_ClientNet == NULL) //local game
 	{
 		m_PCtrl = new CPlayerControl;
-		m_Simulations.push_back(new CRuleControl(m_World));
-		m_Simulations.push_back(new CPhysics(theMainConfig, m_World));
+		m_Simulations.push_back(new CRuleControl);
+		m_Simulations.push_back(new CPhysics(theMainConfig));
 	}
 	else
 	{
 		m_PCtrl = new CClientPlayerControl(m_ClientNet);
-		m_Simulations.push_back(new CClientSim(m_ClientNet, m_World));
-		m_Simulations.push_back(new CPhysics(theMainConfig, m_World));
+		m_Simulations.push_back(new CClientSim(m_ClientNet));
+		//m_Simulations.push_back(new CPhysics(theMainConfig));
+		//TODO: CApproximation or CPhysics for slow connections
 	}
 }
 

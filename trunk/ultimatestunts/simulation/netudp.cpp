@@ -17,6 +17,9 @@
 
  // NOT TESTED!
 
+//and commented because it isn't used
+/*
+
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -131,5 +134,7 @@ bool CNetUDP::sendData(const SNetDatagram & d) const {
   return (true);
 
 }
+*/
+
 
 

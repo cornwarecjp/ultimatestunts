@@ -20,7 +20,7 @@
 #include "rulecontrol.h"
 #include "usmacros.h"
 
-CRuleControl::CRuleControl(CWorld *w) : CSimulation(w)
+CRuleControl::CRuleControl()
 {
 	firstUpdate = true;
 }
@@ -51,14 +51,14 @@ bool CRuleControl::findStartFinish()
 {
 	bool founds = false, foundf = false;
 
-	int wth = m_World->getTrack()->m_W;
-	int hth = m_World->getTrack()->m_H;
-	for(int x = 0; x < m_World->getTrack()->m_L; x++)
+	int wth = theWorld->getTrack()->m_W;
+	int hth = theWorld->getTrack()->m_H;
+	for(int x = 0; x < theWorld->getTrack()->m_L; x++)
 		for(int y = 0; y < wth; y++)
 			for(int h = 0; h < hth; h++)
 			{
-				STile &tile = m_World->getTrack()->m_Track[h + hth*(y + wth*x)];
-				if(m_World->getTileModel(tile.m_Model)->m_isStart)
+				STile &tile = theWorld->getTrack()->m_Track[h + hth*(y + wth*x)];
+				if(theWorld->getTileModel(tile.m_Model)->m_isStart)
 
 					if(founds) //more than 1 start position
 						{printf(">1 start\n"); return false;}
@@ -68,7 +68,7 @@ bool CRuleControl::findStartFinish()
 						m_StartX = x; m_StartY = y; m_StartH = h;
 					}
 
-				if(m_World->getTileModel(tile.m_Model)->m_isFinish)
+				if(theWorld->getTileModel(tile.m_Model)->m_isFinish)
 
 					if(foundf) //more than 1 finish position
 						{printf(">1 finish\n"); return false;}
@@ -102,7 +102,7 @@ void CRuleControl::placeStart()
 	|etc|
 	*---*
 	*/
-	for(unsigned int i=0; i<m_World->getNumObjects(CDataObject::eMovingObject); i++)
+	for(unsigned int i=0; i<theWorld->getNumObjects(CDataObject::eMovingObject); i++)
 	{
 		CVector carPos = CVector(
 			-3.0*(i%2==0) +3.0*(i%2!=0),
@@ -110,7 +110,7 @@ void CRuleControl::placeStart()
 			6.0*(i-i%2) + 3.0
 		);
 
-		m_World->getMovingObject(i)->resetBodyPositions(tilePos + carPos, CMatrix());
+		theWorld->getMovingObject(i)->resetBodyPositions(tilePos + carPos, CMatrix());
 	}
 }
 

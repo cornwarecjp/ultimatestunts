@@ -1,5 +1,5 @@
 /***************************************************************************
-                          stuntsnet.h  -  Basic network functions
+                          stuntsnet.h  -  UDP + reliability layer
                              -------------------
     begin                : do jan 13 2005
     copyright            : (C) 2005 by CJP
@@ -18,34 +18,24 @@
 #ifndef STUNTSNET_H
 #define STUNTSNET_H
 
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-
-#include <vector>
-namespace std {}
-using namespace std;
-
-#include "messagebuffer.h"
-#include "usmacros.h"
-
 /**
   *@author CJP
   */
 
-class CStuntsNet {
+#include "udpnet.h"
+  
+class CStuntsNet : public CUDPNet {
 public: 
 	CStuntsNet(unsigned int port); //0 = take a free port (like for clients)
 	virtual ~CStuntsNet();
 
-	virtual bool receiveData();
-	vector<CMessageBuffer> m_ReceivedData;
+	//Reliability functions:
+	virtual int sendDataReliable(CMessageBuffer &data);
+	virtual bool sendConfirmation(const CMessageBuffer &buf, Uint8 returnValue);
 
-	virtual bool sendData(const CMessageBuffer &data);
-
-private:
-	int m_Socket;
-	struct sockaddr_in m_MyAddress;
+	//useful tools:
+	CMessageBuffer *receiveExpectedData(CMessageBuffer::eMessageType type, unsigned int millisec);
+	int sendTextMessage(const CString &msg);
 };
 
 #endif

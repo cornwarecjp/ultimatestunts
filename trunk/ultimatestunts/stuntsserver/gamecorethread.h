@@ -20,6 +20,7 @@
 
 #include "bthread.h"
 #include "gamecore.h"
+#include "criticalvector.h"
 
 /**
   *@author CJP
@@ -32,8 +33,15 @@ public:
 
 	virtual void threadFunc();
 
+	void processInput(const CMessageBuffer &b);
+
 	//gamecore data:
 	CGameCore *m_GameCore;
+
+protected:
+
+	CCriticalVector<CMessageBuffer> m_InputQueue;
+	void processInputQueue();
 };
 
 #endif

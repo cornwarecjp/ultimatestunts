@@ -29,10 +29,11 @@ public:
 	//Which CMessage-methods should be re-implemented?
 	CMovObjInput(); //Give reasonable start values
 
-  float m_Up, m_Forward, m_Backward, m_Right;
+	float m_Up, m_Forward, m_Backward, m_Right;
 
-  bool setData(const CBinBuffer &);
-  CBinBuffer &getData(CBinBuffer &) const;
+	bool setData(const CBinBuffer &);
+	CBinBuffer &getData(CBinBuffer &) const;
+	Uint8 m_MovObjID;
 
 	virtual CMessageBuffer::eMessageType getType() const {return CMessageBuffer::movObjInput;}
 };

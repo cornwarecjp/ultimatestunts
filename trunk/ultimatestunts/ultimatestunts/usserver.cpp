@@ -18,13 +18,13 @@
 
 #include "usserver.h"
 
-CUSServer::CUSServer(int port, int remoteplayers)
+CUSServer::CUSServer(int port, int maxRequests)
 {
 	printf("Starting a server process\n");
 
 	CString cmd = CString("stuntsserver")
 		+ " port=" + port
-		+ " remoteplayers=" + remoteplayers
+		+ " maxRequests=" + maxRequests
 		+ " > server-stdout.txt 2> server-stderr.txt";
 
 	printf("Command is: \"%s\"\n", cmd.c_str());

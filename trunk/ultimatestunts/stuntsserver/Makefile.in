@@ -142,10 +142,10 @@ target_os = @target_os@
 target_vendor = @target_vendor@
 
 stunts_PROGRAMS = stuntsserver
-stuntsserver_SOURCES = gamecorethread.cpp networkthread.cpp main.cpp
+stuntsserver_SOURCES = gamecorethread.cpp main.cpp networkthread.cpp remoteplayer.cpp
 stuntsserver_LDADD = ../simulation/libsimulation.a ../shared/libshared.a @sdllibs@ @netlibs@ @odelibs@
 
-EXTRA_DIST = gamecorethread.cpp gamecorethread.h networkthread.cpp networkthread.h main.cpp 
+EXTRA_DIST = gamecorethread.cpp gamecorethread.h main.cpp networkthread.cpp networkthread.h remoteplayer.cpp remoteplayer.h
 
 # set the include path found by configure
 INCLUDES = $(all_includes) -I../shared -I../simulation
@@ -159,8 +159,8 @@ CONFIG_CLEAN_FILES =
 stunts_PROGRAMS = stuntsserver$(EXEEXT)
 PROGRAMS = $(stunts_PROGRAMS)
 
-am_stuntsserver_OBJECTS = gamecorethread.$(OBJEXT) \
-	networkthread.$(OBJEXT) main.$(OBJEXT)
+am_stuntsserver_OBJECTS = gamecorethread.$(OBJEXT) main.$(OBJEXT) \
+	networkthread.$(OBJEXT) remoteplayer.$(OBJEXT)
 stuntsserver_OBJECTS = $(am_stuntsserver_OBJECTS)
 stuntsserver_DEPENDENCIES = ../simulation/libsimulation.a \
 	../shared/libshared.a
@@ -169,7 +169,8 @@ DEFAULT_INCLUDES =  -I. -I$(srcdir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/gamecorethread.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/main.Po ./$(DEPDIR)/networkthread.Po
+@AMDEP_TRUE@	./$(DEPDIR)/main.Po ./$(DEPDIR)/networkthread.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/remoteplayer.Po
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 CXXLD = $(CXX)
@@ -225,6 +226,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gamecorethread.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/networkthread.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/remoteplayer.Po@am__quote@
 
 distclean-depend:
 	-rm -rf ./$(DEPDIR)

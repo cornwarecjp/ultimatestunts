@@ -18,9 +18,8 @@
 #include <cstdio>
 #include "simulation.h"
 
-CSimulation::CSimulation(CWorld *w)
+CSimulation::CSimulation()
 {
-	m_World = w;
 }
 
 CSimulation::~CSimulation(){

@@ -1,8 +1,8 @@
 /***************************************************************************
-                          carinput.h  -  Input for car objects
+                          confirmation.h  -  Confirming that a package has arrived
                              -------------------
-    begin                : ma dec 16 2002
-    copyright            : (C) 2002 by CJP
+    begin                : ma jan 17 2005
+    copyright            : (C) 2005 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
 
@@ -15,24 +15,37 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef CARINPUT_H
-#define CARINPUT_H
+#ifndef CONFIRMATION_H
+#define CONFIRMATION_H
+#include "message.h"
 
-#include "usmacros.h"
+class CConfirmation : public CMessage
+{
+public:
+	CMessageBuffer::eMessageType m_MessageType;
+	Uint16 m_Counter;
+	Uint8 m_ReturnValue;
 
-#include "movobjinput.h"
+	virtual bool setData(const CBinBuffer &b)
+	{
+		//CBinBuffer bb = b;                           // const!
+		unsigned int pos = 0;
+		m_MessageType = (CMessageBuffer::eMessageType)b.getUint8(pos);
+		m_Counter = b.getUint16(pos);
+		m_ReturnValue = b.getUint8(pos);
+		return true;
+	}
+	
+	virtual CBinBuffer &getData(CBinBuffer &b) const
+	{
+		b += (Uint8)m_MessageType;
+		b += m_Counter;
+		b += m_ReturnValue;
+		return b;
+	}
 
-/**
-  *@author CJP
-  */
-
-class CCarInput : public CMovObjInput  {
-public: 
-	//Which methods should be re-implemented?
-	CCarInput(); //Give reasonable start values
-
-	Uint8 m_Gear;
-	bool m_CarHorn;
+	virtual CMessageBuffer::eMessageType getType() const {return CMessageBuffer::confirmation;}
 };
 
 #endif
+

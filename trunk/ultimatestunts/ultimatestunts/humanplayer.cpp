@@ -44,9 +44,7 @@ bool CHumanPlayer::update()
 		//But it is the output of the player.
 		CMessage *input = theWorld->getMovingObject(m_MovingObjectId)->m_InputData;
 
-		if(input->getType() != CMessageBuffer::carInput)
-			{printf("Error: object input is not of type \"car\".\n"); return false;} //perhaps throw something
-
+		//TODO: find some way to check what kind of input it is
 		CCarInput *carin = (CCarInput *)input;
 
 		carin->m_Forward = up;

@@ -16,6 +16,8 @@
 
 
 // NOT YET TESTED!
+//and commented because it isn't used
+/*
 
 
 #include "netmessage.h"
@@ -55,4 +57,6 @@ CMessageBuffer * CNetMessage::recvMessage()
  delete dg;
  return (res);
 }
+
+*/
 

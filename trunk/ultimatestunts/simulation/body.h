@@ -1,5 +1,5 @@
 /***************************************************************************
-                          body.h  -  description
+                          body.h  -  A rigid body (like a wheel or a car's body)
                              -------------------
     begin                : di okt 7 2003
     copyright            : (C) 2003 by CJP
@@ -46,11 +46,15 @@ public:
 
 	CVector getPosition() const;
 	CMatrix getOrientationMatrix() const;
+	CVector getOrientationVector() const;
 	CVector getVelocity() const;
 	CVector getAngularVelocity() const;
 
 	void setPosition(CVector v);
 	void setOrientationMatrix(const CMatrix &m);
+	void setOrientationVector(CVector v);
+	void setVelocity(CVector v);
+	void setAngularVelocity(CVector v);
 
 	int m_Body;
 	CVector m_FBB_min, m_FBB_max; //Fixed bounding box

@@ -27,7 +27,7 @@
 
 class CUSServer {
 public: 
-	CUSServer(int port, int remoteplayers);
+	CUSServer(int port, int maxRequests);
 	~CUSServer();
 
 	void addai(const CString &name, const CString &car);

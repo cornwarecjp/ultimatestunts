@@ -15,6 +15,8 @@
  ***************************************************************************/
 
 // NOT TESTED!
+//and commented because it isn't used
+/*
 
 
 #ifndef _cnetudp_h
@@ -26,8 +28,8 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <cstdio>
-#include <unistd.h> /* close() */
-#include <string.h> /* memset() */
+#include <unistd.h> // close() 
+#include <string.h> // memset() 
 #include <fcntl.h>
 #include <sys/poll.h>
 #include <sys/select.h>
@@ -68,3 +70,5 @@ public:
 };
 
 #endif
+*/
+

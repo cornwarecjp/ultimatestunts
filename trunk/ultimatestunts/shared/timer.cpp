@@ -15,7 +15,13 @@
  *                                                                         *
  ***************************************************************************/
 
+#undef USE_SDL
 #ifdef HAVE_SDL
+//#define USE_SDL
+//SDL_getTicks has a problem with usleep??
+#endif
+
+#ifdef USE_SDL
 #include "SDL.h"
 #else
 #include <sys/time.h>
@@ -81,7 +87,7 @@ float CTimer::getF()
 
 float CTimer::getTime() const
 {
-#ifdef HAVE_SDL
+#ifdef USE_SDL
 	return ((float)SDL_GetTicks())/1000.0;
 #else
 	struct timeval tv;

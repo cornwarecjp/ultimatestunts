@@ -29,12 +29,12 @@ class CMessageBuffer : public CBinBuffer
 {
 public:
 
-	typedef struct _s_msg_header
+	struct s_msg_header
 	{
-		 Uint8 tid;		// type id
-		 Uint8 ac;		// acknowledge
-		 Uint16 counter; // package counter
-	} s_msg_header;
+		Uint8 tid;		// type id
+		Uint8 ac;		// acknowledge
+		Uint16 counter; // package counter
+	};
 
 
 	enum eMessageType
@@ -45,9 +45,10 @@ public:
 		movingObject = 3,
 		movObjInput = 4,
 		car = 5,
-		carInput = 6,
+		UNUSED_1 = 6,
 		chat = 7,
-		textMessage = 8
+		textMessage = 8,
+		confirmation = 9
 	};
 
 	CMessageBuffer(const CMessageBuffer::eMessageType & t);

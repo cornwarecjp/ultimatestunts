@@ -20,8 +20,6 @@
 #include "movobjinput.h"
 #include "physics.h"
 
-#define DBLPI 6.283185307
-
 CMovingObject::CMovingObject(CDataManager *manager) : CDataObject(manager, CDataObject::eMovingObject)
 {
 	m_InputData = new CMovObjInput;
@@ -30,6 +28,16 @@ CMovingObject::CMovingObject(CDataManager *manager) : CDataObject(manager, CData
 CMovingObject::~CMovingObject()
 {
 	delete m_InputData; //I guess this will happen for all CMovingObject-derived classes
+}
+
+bool CMovingObject::load(const CString &filename, const CParamList &list)
+{
+	CDataObject::load(filename, list);
+
+	m_MovObjID = list.getValue("ID", "0").toInt();
+	m_InputData->m_MovObjID = m_MovObjID;
+
+	return true;
 }
 
 void CMovingObject::unload()
@@ -50,24 +58,46 @@ void CMovingObject::update(CPhysics *simulator, float dt)
 
 CBinBuffer &CMovingObject::getData(CBinBuffer &b) const
 {
-	//b.addVector32(m_Position, 0.001);
-	//b.addVector16(m_Momentum, 50.0);
-	//b.addVector16(m_Orientation, 0.0001);
-	//b.addVector16(m_AngularMomentum, 15.0);
+	b += (Uint8)m_MovObjID;
+
+	for(unsigned int i=0; i < m_Bodies.size(); i++)
+	{
+		CVector
+			p = m_Bodies[i].getPosition(),
+			v = m_Bodies[i].getVelocity(),
+			o = m_Bodies[i].getOrientationVector(),
+			w = m_Bodies[i].getAngularVelocity();
+
+		b.addVector32(p, 0.001);
+		b.addVector16(v, 0.01);
+		b.addVector16(o, 0.0002);
+		b.addVector16(w, 0.01);
+	}
+
 	return b;
 }
 
 bool CMovingObject::setData(const CBinBuffer &b)
 {
-	//unsigned int pos = 0;
-	//setPosition(b.getVector32(pos, 0.001));
-	//m_Momentum = b.getVector16(pos, 50.0);
-	//setOrientation(b.getVector16(pos, 0.0001));
-	//m_AngularMomentum = b.getVector16(pos, 15.0);
-	return true;
-}
+	unsigned int pos = 0;
 
-bool CMovingObject::hasChanged()
-{
+	Uint8 ID = b.getUint8(pos);
+	if(ID != m_MovObjID) return false;
+
+	//TODO: check the number of objects
+	for(unsigned int i=0; i < m_Bodies.size(); i++)
+	{
+		CVector
+			p = b.getVector32(pos, 0.001),
+			v = b.getVector16(pos, 0.01),
+			o = b.getVector16(pos, 0.0002),
+			w = b.getVector16(pos, 0.01);
+
+		m_Bodies[i].setPosition(p);
+		m_Bodies[i].setVelocity(v);
+		m_Bodies[i].setOrientationVector(o);
+		m_Bodies[i].setAngularVelocity(w);
+	}
+
 	return true;
 }

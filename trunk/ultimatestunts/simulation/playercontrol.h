@@ -40,6 +40,13 @@ public:
 
 protected:
 	vector<CObjectChoice> m_LocalChoices;
+
+	//every player's vehicle is a unique object, even if
+	//they are loaded from the same file. That's why we
+	//have to add a unique parameter for each moving object:
+	//the ID. For the rest, the ID is used to identify objects
+	//in network messages.
+	virtual bool loadOneObject(CObjectChoice &oc, unsigned int ID);
 };
 
 #endif

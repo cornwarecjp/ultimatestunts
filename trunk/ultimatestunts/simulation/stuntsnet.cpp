@@ -1,5 +1,5 @@
 /***************************************************************************
-                          stuntsnet.cpp  -  Basic network functions
+                          stuntsnet.cpp  -  UDP + reliability layer
                              -------------------
     begin                : do jan 13 2005
     copyright            : (C) 2005 by CJP
@@ -16,126 +16,100 @@
  ***************************************************************************/
 
 #include <cstdio>
-#include <cstdlib>
-
-#include <netinet/in.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <sys/poll.h>
-#include <fcntl.h>
-#include <unistd.h>
 
 #include "stuntsnet.h"
 
-CStuntsNet::CStuntsNet(unsigned int port)
+#include "confirmation.h"
+#include "textmessage.h"
+
+CStuntsNet::CStuntsNet(unsigned int port) : CUDPNet(port)
 {
-	m_Socket = socket(AF_INET,SOCK_DGRAM,0);
-	if(m_Socket < 0) {
-		printf("cannot open socket\n");
-		exit(1);
-	}
-
-	/* bind to port */
-	m_MyAddress.sin_family = AF_INET;
-	m_MyAddress.sin_addr.s_addr = htonl(INADDR_ANY);
-	m_MyAddress.sin_port = htons(port);
-
-	int rc = bind (m_Socket, (struct sockaddr *) &m_MyAddress,sizeof(m_MyAddress));
-	if(rc < 0)
-	{
-		printf("cannot bind port number %d \n", port);
-		exit(1);
-	}
-
-	fcntl(m_Socket, F_SETFL, O_NONBLOCK);
-
-	printf("Connected to port %d\n", port);
 }
 
 CStuntsNet::~CStuntsNet()
 {
-	close(m_Socket);
-	printf("Disconnected\n");
 }
 
-bool CStuntsNet::receiveData()
+int CStuntsNet::sendDataReliable(CMessageBuffer &data)
 {
-	/* Watch socket to see when it has input. */
-	struct pollfd pfd;
-	pfd.fd = m_Socket;
-	pfd.events = POLLIN;
+	//printf("Sending reliable data\n");
+	//please return confirmation
+	data.setAC(1);
 
-	/* Wait up to 1 msec. */
-	poll(&pfd, 1, 1);
-	if ((pfd.revents & POLLIN) == 0)
-	{
-		//printf("poll() says: no data on socket     \n");
-		return false;
-	}
+	//send it
+	if(!sendData(data)) return -1;
 
-	//clear the data
-	m_ReceivedData.clear();
-
-	struct sockaddr_in caddr;
-	socklen_t clen = sizeof(caddr);
-
-	int len = 4096; //just for testing purposes. TODO: scan for MTU size (man ip(7))
-	Uint8 buffer[len];
-
-	//Receive:
 	while(true)
 	{
-	    // receive message
-		int n = recvfrom(m_Socket, (NETTYPE *)buffer, len, 0, (struct sockaddr *) &caddr, &clen);
 
-		if(n < 0) //nothing received
-			break;
+		//10 sec timeout for confirmation
+		CMessageBuffer *mbuf = receiveExpectedData(CMessageBuffer::confirmation, 10000);
+		if(mbuf == NULL) return -1; //nothing received for a long time
 
-		CIPNumber ipnum;
-		ipnum = caddr.sin_addr.s_addr;
-		int portnr = ntohs(caddr.sin_port);
-		
-		CBinBuffer binbuffer;
-		for(unsigned int i=0; i < (unsigned int)n; i++)
-			binbuffer.push_back(Uint8(buffer[i]));
+		//printf("received some kind of confirmation\n");
+		CConfirmation c;
+		c.setBuffer(*mbuf);
+		delete mbuf;
 
-		m_ReceivedData.push_back(CMessageBuffer());
-		CMessageBuffer &msgbuf = m_ReceivedData.back();
-		msgbuf.setBuffer(binbuffer);
-		msgbuf.setIP(ipnum);
-		msgbuf.setPort(portnr);
+		if(c.m_Counter == data.getCounter() && c.m_MessageType == data.getType())
+		{
+			//printf("It's the right confirmation\n");
+			return c.m_ReturnValue;
+		}
 	}
 
-	return true;
+	return -1; //we'll never reach this anyway
 }
 
-bool CStuntsNet::sendData(const CMessageBuffer &data)
+bool CStuntsNet::sendConfirmation(const CMessageBuffer &buf, Uint8 returnValue)
 {
-	CIPNumber ipnum = data.getIP();
+	CConfirmation c;
+	c.m_Counter = buf.getCounter();
+	c.m_MessageType = buf.getType();
+	c.m_ReturnValue = returnValue;
 
-	Uint8 num8[4];
-	for(unsigned int i=0; i<4; i++)
-		num8[i] = ipnum[i];
-	Uint32 num32 = *((Uint32 *)num8);
+	CMessageBuffer cbuf = c.getBuffer();
+	cbuf.setIP(buf.getIP());
+	cbuf.setPort(buf.getPort());
 
-	printf("Sending to %d.%d.%d.%d port %d\n", num8[0], num8[1], num8[2], num8[3], data.getPort());
+	//printf("Sending confirmation %d to %s port %d\n",
+	//	returnValue, cbuf.getIP().toString().c_str(), cbuf.getPort());
 
-	struct in_addr a;
-	a.s_addr = num32;
+	return sendData(cbuf);
+}
 
-	struct sockaddr_in remoteCliAddr;
-	remoteCliAddr.sin_family = AF_INET;
-	remoteCliAddr.sin_addr = a;
-	remoteCliAddr.sin_port = htons(data.getPort());
+CMessageBuffer *CStuntsNet::receiveExpectedData(CMessageBuffer::eMessageType type, unsigned int millisec)
+{
+	//printf("Expecting a certain kind of information\n");
 
-	unsigned int len = data.size();
-	Uint8 buffer[len];
-	for(unsigned int i=0; i < len; i++)
-		buffer[i] = data[i];
+	while(true)
+	{
+		//printf("Is it in the buffer?...\n");
+		for(unsigned int i=0; i < m_ReceiveBuffer.size(); i++)
+		{
+			if(m_ReceiveBuffer[i].getType() == type)
+			{
+				//printf("yes\n");
+				CMessageBuffer *ret = new CMessageBuffer;
+				ret->operator=(m_ReceiveBuffer[i]);
+				m_ReceiveBuffer.erase(m_ReceiveBuffer.begin() + i);
+				return ret;
+			}
+		}
+		//printf("no\n");
 
-	int rc = sendto(m_Socket, (NETTYPE *)buffer, len,0 ,
-		(struct sockaddr *) &remoteCliAddr,
-		sizeof(remoteCliAddr));
+		//printf("Waiting for new data\n");
+		if(!receiveData(millisec)) return NULL; //no data for a long time
+	}
 
-	return (rc >= 0);
+	return NULL; //we'll never reach this anyway
+}
+
+int CStuntsNet::sendTextMessage(const CString &msg)
+{
+	CTextMessage tm;
+	tm.m_Message = msg;
+	CMessageBuffer buf = tm.getBuffer();
+
+	return sendDataReliable(buf);
 }

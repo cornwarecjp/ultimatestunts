@@ -26,20 +26,22 @@
   *@author CJP
   */
 
-class CClientNet : protected CStuntsNet { //TODO: derive from CFileCtrl
+class CClientNet : public CStuntsNet { //TODO: derive from CFileCtrl
 public: 
 	CClientNet(CString host="localhost", int port=1500);
 	virtual ~CClientNet();
 
-	virtual bool reveiveData();
-	vector<CMessageBuffer> m_ReceivedData;
-
+	//Replacements that only send to host:port
+	virtual bool receiveData(unsigned int millisec=1);
 	virtual bool sendData(CMessageBuffer &data); //NOT const: it sets IP number and port
 
-	bool sendTextMessage(const CString &msg);
-
+	//get server info
 	CString getHost(){return m_Hostname;}
 	unsigned int getPort(){return m_ServerPort;}
+
+	//Protocol tools
+	bool sendReady();
+	bool wait4Ready();
 protected:
 	CString m_Hostname;
 	CIPNumber m_ServerIP;

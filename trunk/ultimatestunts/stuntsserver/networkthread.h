@@ -21,6 +21,12 @@
 #include "bthread.h"
 #include "stuntsnet.h"
 #include "client.h"
+#include "criticalvector.h"
+
+//Message types:
+#include "chatmessage.h"
+#include "textmessage.h"
+#include "objectchoice.h"
 
 /**
   *@author CJP
@@ -31,23 +37,32 @@ public:
 	CNetworkThread(unsigned int port=1500);
 	virtual ~CNetworkThread();
 
-	void giveClientList(CClientList *clients);
-
 	void setPort(unsigned int port);
 	unsigned int getPort()
 		{return m_Port;}
 
 	virtual void threadFunc();
+
+	//thrrad-safe sending of messages:
+	void sendToClient(const CMessageBuffer &b, unsigned int ID);
+	void sendToPlayer(const CMessageBuffer &b, unsigned int ID);
+	void sendToAll(const CMessageBuffer &b);
+	void sendToClient(const CString &s, unsigned int ID);
+	void sendToPlayer(const CString &s, unsigned int ID);
+	void sendToAll(const CString &s);
+
 protected:
 	unsigned int m_Port;
 	CStuntsNet *m_Net;
 
-	CClientList *m_Clients;
+	CCriticalVector<CMessageBuffer> m_OutputBuffer;
+
+
 	int identify(const CIPNumber &ip, unsigned int port);
 	void addClient(const CIPNumber &ip, unsigned int port);
 
-	void processMessage(const CMessageBuffer &buffer);
-	void processMessage(int ID, const CString &message);
+	Uint8 processMessage(const CMessageBuffer &buffer);
+	Uint8 processMessage(int ID, const CString &message);
 };
 
 #endif

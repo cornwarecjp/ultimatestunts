@@ -16,6 +16,9 @@
 
    // NOT YET TESTED!
 
+//and commented because it isn't used
+/*
+
 #ifndef _NETMESSAGE_H
 #define _NETMESSAGE_H
 
@@ -48,4 +51,6 @@ using namespace std;
 
 
 #endif
+
+*/
 

@@ -33,10 +33,9 @@ what we say about nature.
 Niels Bohr
 */
 
-CPhysics::CPhysics(const CLConfig *conf, CWorld *w) : CSimulation(w)
+CPhysics::CPhysics(const CLConfig *conf)
 {
 	m_Detector = new CCollisionDetector;
-	m_firstTime = true;
 	m_FastCPUMode = true; //start mode; not really important
 
 	m_dtMin = conf->getValue("simulation", "dtmin").toFloat();
@@ -54,12 +53,6 @@ bool CPhysics::update()
 	{
 		float dt = m_Timer.getdt(m_dtMin + 0.0001);
 
-		if(m_firstTime)
-		{
-			m_firstTime = false;
-			return true;
-		}
-		
 #ifdef DEBUGMSG
 		if(dt > 0.5)
 			{printf("Warning: Low update time detected\n"); dt = 0.5;}
@@ -104,7 +97,6 @@ bool CPhysics::update()
 			m_Detector->calculateCollisions();
 			dWorldStep(theWorld->m_ODEWorld, dt);
 		}
-
 	}
 	return true;
 }

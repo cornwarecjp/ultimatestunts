@@ -1,8 +1,8 @@
 /***************************************************************************
-                          carinput.h  -  Input for car objects
+                          remoteplayer.h  -  A player that gets input from a network
                              -------------------
-    begin                : ma dec 16 2002
-    copyright            : (C) 2002 by CJP
+    begin                : ma jan 17 2005
+    copyright            : (C) 2005 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
 
@@ -15,24 +15,21 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef CARINPUT_H
-#define CARINPUT_H
+#ifndef REMOTEPLAYER_H
+#define REMOTEPLAYER_H
 
-#include "usmacros.h"
-
-#include "movobjinput.h"
+#include "player.h"
 
 /**
   *@author CJP
   */
 
-class CCarInput : public CMovObjInput  {
+class CRemotePlayer : public CPlayer  {
 public: 
-	//Which methods should be re-implemented?
-	CCarInput(); //Give reasonable start values
+	CRemotePlayer();
+	virtual ~CRemotePlayer();
 
-	Uint8 m_Gear;
-	bool m_CarHorn;
+	virtual bool update();
 };
 
 #endif

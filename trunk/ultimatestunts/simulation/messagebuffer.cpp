@@ -41,6 +41,7 @@
 CMessageBuffer::CMessageBuffer()
 {
 	s_msg_header h;
+	h.ac = 0;
 	setHeader(h);
 }
 

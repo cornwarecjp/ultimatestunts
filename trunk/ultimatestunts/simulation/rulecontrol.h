@@ -28,7 +28,7 @@
 
 class CRuleControl : public CSimulation  {
 public: 
-	CRuleControl(CWorld *w);
+	CRuleControl();
 	~CRuleControl();
 
 	//while playing:

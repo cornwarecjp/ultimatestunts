@@ -33,7 +33,7 @@
 
 class CPhysics : public CSimulation {
 public: 
-	CPhysics(const CLConfig *conf, CWorld *w);
+	CPhysics(const CLConfig *conf);
 	virtual ~CPhysics();
 
 	virtual bool update();
@@ -41,7 +41,6 @@ public:
 	void addContactForces(unsigned int body, CVector &Ftot, CVector &Mtot);
 protected:
 	CTimer m_Timer;
-	bool m_firstTime;
 	bool m_FastCPUMode;
 
 	float m_dtMin;

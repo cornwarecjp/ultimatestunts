@@ -32,9 +32,9 @@ CClientNet::~CClientNet()
 	sendTextMessage("LEAVE");
 }
 
-bool CClientNet::reveiveData()
+bool CClientNet::receiveData(unsigned int millisec)
 {
-	if(!CStuntsNet::receiveData())
+	if(!CStuntsNet::receiveData(millisec))
 		return false;
 
 	//TODO (maybe) check if the packages come from the server
@@ -48,12 +48,25 @@ bool CClientNet::sendData(CMessageBuffer &data)
 	return CStuntsNet::sendData(data);
 }
 
-bool CClientNet::sendTextMessage(const CString &msg)
+bool CClientNet::sendReady()
 {
-	CTextMessage tm;
-	tm.m_Message = msg;
-	CMessageBuffer buf = tm.getBuffer();
+	return CStuntsNet::sendTextMessage("READY") == 0;
+}
 
-	//TODO: make it a loop, and wait for confirmation
-	return sendData(buf);
+bool CClientNet::wait4Ready()
+{
+	while(true)
+	{
+		CMessageBuffer *b = CStuntsNet::receiveExpectedData(CMessageBuffer::textMessage, 60000);
+		if(b == NULL) return false;
+
+		CTextMessage tm;
+		tm.setBuffer(*b);
+		delete b;
+
+		if(tm.m_Message == "READY")
+			return true;
+	}
+
+	return false;
 }

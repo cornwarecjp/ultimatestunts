@@ -36,19 +36,19 @@ bool CPlayerControl::loadObjects()
 {
 	bool ret = true;
 	for(unsigned int i=0; i < m_LocalChoices.size(); i++)
-	{
-		//every player's vehicle is a unique object, even if
-		//they are loaded from the same file. That's why we
-		//have to add a unique parameter for each moving object:
-		CParamList plist;
-		SParameter p;
-		p.name = "ID";
-		p.value = (int)i;
-		plist.push_back(p);
-		ret = (theWorld->loadObject(m_LocalChoices[i].m_Filename, plist, CDataObject::eMovingObject) >= 0) && ret;
-	}
+		ret = loadOneObject(m_LocalChoices[i], i) && ret;
 
 	return ret;
+}
+
+bool CPlayerControl::loadOneObject(CObjectChoice &oc, unsigned int ID)
+{
+	CParamList plist;
+	SParameter p;
+	p.name = "ID";
+	p.value = (int)ID;
+	plist.push_back(p);
+	return (theWorld->loadObject(oc.m_Filename, plist, CDataObject::eMovingObject) >= 0);
 }
 
 void CPlayerControl::clearPlayerList()
