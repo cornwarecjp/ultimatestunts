@@ -31,22 +31,15 @@ CString CCollisionModel::getSubset() const
 	return m_Subset;
 }
 
-bool CCollisionModel::load(const CString &idstring)
+bool CCollisionModel::load(const CString &filename, const CParamList &list)
 {
-	CDataObject::load(idstring);
+	CDataObject::load(filename, list);
 
-	m_Subset = "";
-	int pos = m_Filename.inStr(' ');
-	if(pos  > 0) //a space exists
-	{
-		if((unsigned int)pos < m_Filename.length()-1)
-			{m_Subset = m_Filename.mid(pos+1, m_Filename.length()-pos-1);}
-		m_Filename = m_Filename.mid(0, pos);
-	}
+	m_Subset = m_ParamList.getValue("subset", "");
 
 	//printf("filename = %s subset = %s\n", m_Filename.c_str(), m_Subset.c_str());
 
-	CMaterial **matarray = getMaterialSubset(m_Subset);
+	vector<CDataObject *> matarray = m_DataManager->getSubset(CDataObject::eMaterial, m_Subset);
 
 	CDataFile f(m_Filename);
 
@@ -73,7 +66,7 @@ bool CCollisionModel::load(const CString &idstring)
 
 				if(lhs == "Texture")
 				{
-					mat = matarray[rhs.toInt()];
+					mat = (CMaterial *)matarray[rhs.toInt()];
 				}
 				if(lhs == "Notex")
 				{
@@ -233,7 +226,6 @@ bool CCollisionModel::load(const CString &idstring)
 	}
 
 	//printf("Loaded %d faces from %s\n", m_Faces.size(), f->getName().c_str());
-	delete [] matarray;
 
 	determineOBVs();
 	determinePlaneEquations();
@@ -348,32 +340,4 @@ void CCollisionModel::determinePlaneEquations()
 		);
 		*/
 	}
-}
-
-CMaterial **CCollisionModel::getMaterialSubset(CString indices)
-{
-	//printf("Indices: \"%s\"\n", indices.c_str());
-	CMaterial **ret = new CMaterial *[1+indices.length()/2]; //We don't need more
-	int i=0;
-	while(true)
-	{
-		int sp = indices.inStr(' ');
-		if(sp > 0)
-		{
-			int n = indices.mid(0,sp).toInt();
-			indices = indices.mid(sp+1, indices.length()-sp-1);
-			//printf("    Adding %d\n", n);
-			*(ret+i) = (CMaterial *)m_DataManager->getObject(CDataObject::eMaterial, n);
-		}
-		else
-		{
-			//printf("    Adding %d\n", indices.toInt());
-			*(ret+i) = (CMaterial *)m_DataManager->getObject(CDataObject::eMaterial, indices.toInt()); //the last index
-			break;
-		}
-
-		i++;
-	}
-
-	return ret;
 }

@@ -26,32 +26,12 @@ CMaterial::CMaterial(CDataManager *manager) : CDataObject(manager, CDataObject::
 CMaterial::~CMaterial()
 {}
 
-bool CMaterial::load(const CString &idstring)
+bool CMaterial::load(const CString &filename, const CParamList &list)
 {
-	CDataObject::load(idstring);
+	CDataObject::load(filename, list);
 
-	CString line = idstring;
-
-	int pos = line.inStr("scale=");
-	if(pos  > 0) //scale is specified
-	{
-		if((unsigned int)pos < line.length()-6)
-			{m_Mul = line.mid(pos+6, line.length()-pos-6).toInt();}
-		//TODO: check for different y-direction mul
-	}
-
-	pos = line.inStr("mu=");
-	if(pos  > 0) //mu is specified
-	{
-		if((unsigned int)pos < line.length()-3)
-			{m_Mu = line.mid(pos+3, line.length()-pos-3).toFloat();}
-	}
-
-	pos = line.inStr(' ');
-	if(pos  > 0) //there is a space
-		line = line.mid(0, pos);
-
-	m_Filename = line;
+	m_Mul = m_ParamList.getValue("scale", "1").toInt();
+	m_Mu = m_ParamList.getValue("mu", "1.0").toFloat();
 
 	return true;
 }

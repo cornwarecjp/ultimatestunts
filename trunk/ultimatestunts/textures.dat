@@ -8,8 +8,8 @@ Syntax:
 
 BEGIN
 6
-textures/gras2.rgb
-textures/steen1.rgb
+textures/grass2.rgb
+textures/bricks1.rgb
 textures/door1.rgb
 textures/window1.rgb
 textures/wood.rgb

@@ -61,10 +61,6 @@ void CUSCore::startGame()
 	printf("Setting cameras\n");
 	m_Renderer->setCameras(m_Cameras, m_NumCameras);
 	m_SoundSystem->setCamera(m_Cameras[0]); //first camera
-
-	//Some white space for the debugging screen
-	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-
 }
 
 bool CUSCore::update()

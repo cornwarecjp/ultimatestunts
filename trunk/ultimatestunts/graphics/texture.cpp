@@ -16,26 +16,46 @@
  ***************************************************************************/
 #include "texture.h"
 #include "image.h"
+#include "datafile.h"
 
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <cstdlib>
 #include <cstdio>
 
-CTexture::CTexture()
+CTexture::CTexture(CDataManager *manager) : CDataObject(manager, CDataObject::eMaterial)
 {
 	m_Color = CVector(0,0,0);
 	m_TextureSmooth = true; //default
 
 	m_Texture = 0;
+
+	m_Sizex = m_Sizey = 256;
 }
 
-bool CTexture::loadFromFile(CString filename, int xs, int ys)
+CTexture::~CTexture()
 {
-	RGBImageRec *in_image = loadImage(filename);
-	in_image = loadFromImage(in_image, xs, ys);
+}
+
+bool CTexture::load(const CString &filename, const CParamList &list)
+{
+	CDataObject::load(filename, list);
+
+	m_Sizex = m_ParamList.getValue("sizex", "256").toInt();
+	m_Sizey = m_ParamList.getValue("sizey", "256").toInt();
+	m_TextureSmooth = m_ParamList.getValue("smooth", "true") == "true";
+
+	CDataFile f(m_Filename);
+	RGBImageRec *in_image = loadImage(f.useExtern());
+	in_image = loadFromImage(in_image, m_Sizex, m_Sizey);
 	freeImage(in_image);
 	return true;
+}
+
+void CTexture::unload()
+{
+	glDeleteTextures(1, &m_Texture);
+	CDataObject::unload();
 }
 
 RGBImageRec *CTexture::loadImage(CString filename)
@@ -74,8 +94,8 @@ RGBImageRec *CTexture::loadFromImage(RGBImageRec *in_image, int xs, int ys)
 		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 	}
 
-	sizex = image->sizeX;
-	sizey = image->sizeY;
+	m_Sizex = image->sizeX;
+	m_Sizey = image->sizeY;
 
 	freeImage(in_image);
 
@@ -108,12 +128,6 @@ void CTexture::freeImage(RGBImageRec *image)
 	}
 }
 
-
-void CTexture::unload()
-{
-	glDeleteTextures(1, &m_Texture);
-}
-
 void CTexture::draw() const
 {
   if (getSizeX() <= 4 || getSizeY() <= 4)
@@ -125,12 +139,12 @@ void CTexture::draw() const
 
 int CTexture::getSizeX() const
 {
-	return sizex;
+	return m_Sizex;
 }
 
 int CTexture::getSizeY() const
 {
-	return sizey;
+	return m_Sizey;
 }
 
 CVector CTexture::getColor() const

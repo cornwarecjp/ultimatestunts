@@ -22,9 +22,20 @@
 
 CEditRenderer::CEditRenderer(const CWinSystem *winsys) : CRenderer(winsys)
 {
-	m_EnvMap = new CTexture;
-	CDataFile df("environment/spheremap.rgb");
-	m_EnvMap->loadFromFile(df.useExtern(), m_ReflectionSize, m_ReflectionSize);
+	m_EnvMap = new CTexture(NULL);
+
+	CParamList plist;
+	SParameter p;
+	p.name = "sizex";
+	p.value = m_ReflectionSize;
+	plist.push_back(p);
+	p.name = "sizey";
+	p.value = m_ReflectionSize;
+	plist.push_back(p);
+	p.name = "smooth";
+	p.value = "true";
+	plist.push_back(p);
+	m_EnvMap->load("environment/spheremap.rgb", plist);
 }
 
 CEditRenderer::~CEditRenderer()

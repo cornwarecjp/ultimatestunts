@@ -23,6 +23,7 @@ namespace std {}
 using namespace std;
 
 #include "graphobj.h"
+#include "lodtexture.h"
 
 /**
   *@author CJP
@@ -45,6 +46,11 @@ class CEditGraphObj : public CGraphObj  {
 public: 
 	CEditGraphObj();
 	virtual ~CEditGraphObj();
+
+	/*
+	DON't use load(..) at the moment: use loadFromFile instead.
+	TODO: remove loadFromFile with a load-derived function
+	*/
 	virtual bool loadFromFile(CString filename, CLODTexture **matarray);
 	bool import_raw(CString filename, CLODTexture **matarray);
 	bool import_3ds(CString filename, CLODTexture **matarray);

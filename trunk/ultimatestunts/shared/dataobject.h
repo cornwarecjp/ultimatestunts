@@ -30,6 +30,18 @@ using namespace std;
 
 class CDataManager;
 
+struct SParameter
+{
+	CString name, value;
+};
+
+class CParamList : public vector<SParameter>
+{
+public:
+	bool operator==(const CParamList &val) const;
+	CString getValue(const CString &var, const CString &deflt) const;
+};
+
 class CDataObject {
 public: 
 	enum eDataType
@@ -50,12 +62,12 @@ public:
 	CDataObject(CDataManager *manager, eDataType type);
 	virtual ~CDataObject();
 	
-	virtual bool load(const CString &idstring);
+	virtual bool load(const CString &filename, const CParamList &list);
 	virtual void unload();
 
 	bool isLoaded()const {return m_isLoaded;}
 	CString getFilename() const {return m_Filename;}
-	CString getIDString() const {return m_IDString;}
+	const CParamList &getParamList() const {return m_ParamList;}
 	eDataType getType() const {return m_DataType;}
 
 protected:
@@ -63,7 +75,7 @@ protected:
 
 	bool m_isLoaded;
 	CString m_Filename;
-	CString m_IDString;
+	CParamList m_ParamList;
 	eDataType m_DataType;
 };
 

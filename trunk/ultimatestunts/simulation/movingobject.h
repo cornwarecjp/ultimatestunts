@@ -41,6 +41,7 @@ public:
 
 	virtual CMessageBuffer::eMessageType getType() const {return CMessageBuffer::movingObject;}
 
+	virtual void unload();
 	//Update: physics simulation
 	virtual void update(CPhysics *simulator, float dt);
 

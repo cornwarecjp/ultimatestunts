@@ -26,8 +26,9 @@
 
 #include "background.h"
 
-CBackground::CBackground(){
-}
+CBackground::CBackground(CDataManager *manager) : CTexture(manager)
+{}
+
 CBackground::~CBackground(){
 }
 

@@ -28,7 +28,7 @@
 class CBackground : public CTexture
 {
 public: 
-	CBackground();
+	CBackground(CDataManager *manager);
 	virtual ~CBackground();
 
 	void draw() const;

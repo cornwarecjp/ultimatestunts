@@ -32,15 +32,20 @@ CDataManager::~CDataManager()
 	unloadAll(CDataObject::eNone);
 }
 
-int CDataManager::getObjectID(const CString &idstring, CDataObject::eDataType type)
+int CDataManager::loadObject(const CString &filename, const CParamList plist, CDataObject::eDataType type)
 {
-	int ID = findObject(idstring, type);
+	int ID = findObject(filename, plist, type);
 	if(ID >= 0)
 		return ID;
 
 	//else
-	CDataObject *obj = createObject(idstring, type);
+	CDataObject *obj = createObject(filename, plist, type);
 	if(obj == NULL) return -1;
+	if(!obj->load(filename, plist))
+	{
+		delete obj;
+		return -1;
+	}
 
 	m_Objects[type].push_back(obj);
 	return m_Objects[type].size() - 1;
@@ -74,29 +79,49 @@ vector<const CDataObject *> CDataManager::getObjectArray(CDataObject::eDataType 
 	return ret;
 }
 
-CDataObject *CDataManager::createObject(const CString &idstring, CDataObject::eDataType type)
+vector<CDataObject *> CDataManager::getSubset(CDataObject::eDataType type, const CString &subset)
+{
+	//printf("Indices: \"%s\"\n", indices.c_str());
+	vector<CDataObject *> ret;
+
+	CString indices = subset;
+	while(true)
+	{
+		int sp = indices.inStr(' ');
+		if(sp > 0)
+		{
+			int n = indices.mid(0,sp).toInt();
+			indices= indices.mid(sp+1, indices.length()-sp-1);
+			//printf("    Adding %d\n", n);
+			CDataObject *obj = getObject(type, n);
+			ret.push_back(obj);
+		}
+		else
+		{
+			//printf("    Adding %d\n", indices.toInt());
+			CDataObject *obj = getObject(type, indices.toInt()); //the last index
+			ret.push_back(obj);
+			break;
+		}
+	}
+
+	return ret;
+}
+
+CDataObject *CDataManager::createObject(const CString &filename, const CParamList &plist, CDataObject::eDataType type)
 {
 	if(type == CDataObject::eNone)
-	{
-		CDataObject *obj = new CDataObject(this, CDataObject::eNone);
-		if(obj == NULL) return NULL;
-		if(!obj->load(idstring))
-		{
-			delete obj;
-			return NULL;
-		}
-		return obj;
-	}
+		return new CDataObject(this, CDataObject::eNone);
 
 	return NULL; //to be overloaded
 }
 
-int CDataManager::findObject(const CString &idstring, CDataObject::eDataType type)
+int CDataManager::findObject(const CString &filename, const CParamList plist, CDataObject::eDataType type)
 {
 	for(unsigned int i=0; i < m_Objects[type].size(); i++)
 	{
 		CDataObject *obj = m_Objects[type][i];
-		if(obj->getIDString() == idstring)
+		if(obj->getFilename() == filename && obj->getParamList() == plist)
 			return i;
 	}
 

@@ -23,11 +23,16 @@
 #include "graphobj.h"
 #include "usmacros.h"
 #include "lconfig.h"
+#include "graphicworld.h"
+#include "datafile.h"
+#include "lodtexture.h"
 
+
+//TODO: remove this (it's unnecessary)
 GLubyte notex_img[1][3];
 GLuint no_tex;
 
-CGraphObj::CGraphObj()
+CGraphObj::CGraphObj(CDataManager *manager, eDataType type) : CDataObject(manager, type)
 {
 	static bool eerst = true;
 	if(eerst)
@@ -46,17 +51,15 @@ CGraphObj::~CGraphObj()
 {
 }
 
-void CGraphObj::unload()
+//bool CGraphObj::loadFromFile(CFile *f, CLODTexture **matarray, int lod_offset)
+bool CGraphObj::load(const CString &filename, const CParamList &list)
 {
-	glDeleteLists(m_ObjListRef, 1);
-	glDeleteLists(m_ObjList1, 1);
-	glDeleteLists(m_ObjList2, 1);
-	glDeleteLists(m_ObjList3, 1);
-	glDeleteLists(m_ObjList4, 1);
-}
+	CDataObject::load(filename, list);
+	CDataFile f(filename);
+	CString subset = m_ParamList.getValue("subset", "");
+	vector<CDataObject *> matarray = m_DataManager->getSubset(CDataObject::eMaterial, subset);
+	int lod_offset = m_ParamList.getValue("lodoffset", "0").toInt();
 
-bool CGraphObj::loadFromFile(CFile *f, CLODTexture **matarray, int lod_offset)
-{
 	int startlod = lod_offset + 1;
 	int stoplod = lod_offset + 4;
 	if(startlod < 1) startlod = 1;
@@ -67,7 +70,7 @@ bool CGraphObj::loadFromFile(CFile *f, CLODTexture **matarray, int lod_offset)
 	for(int lod=0; lod<5; lod++)
 	{
 		//printf("Loading graphobj lod=%d\n", lod);
-		f->reopen();
+		f.reopen();
 
 		unsigned int objlist = glGenLists(1);
 		glNewList(objlist, GL_COMPILE);
@@ -104,7 +107,7 @@ bool CGraphObj::loadFromFile(CFile *f, CLODTexture **matarray, int lod_offset)
 
 		while(!eof)
 		{
-			CString line = f->readl();
+			CString line = f.readl();
 			eof = line[0]=='\n';
 
 			int sp = line.inStr(' ');
@@ -119,7 +122,7 @@ bool CGraphObj::loadFromFile(CFile *f, CLODTexture **matarray, int lod_offset)
 					if(rhs.inStr(lod_eff+'0') < 0)
 						while(true)
 						{
-							line = f->readl();
+							line = f.readl();
 							if(line[0]=='\n') break;
 							sp = line.inStr(' ');
 							if(sp > 0 && line.mid(0, sp) == "Lod")
@@ -134,7 +137,7 @@ bool CGraphObj::loadFromFile(CFile *f, CLODTexture **matarray, int lod_offset)
 				{
 					int t = rhs.toInt();
 
-					CLODTexture *tex = *(matarray+t);
+					CLODTexture *tex = (CLODTexture *)matarray[t];
 					if(tex->getSizeX(lod) <=4 || tex->getSizeY(lod) <= 4)
 					{
 						if(texture_isenabled)
@@ -240,6 +243,17 @@ bool CGraphObj::loadFromFile(CFile *f, CLODTexture **matarray, int lod_offset)
 	} //for(all lod's)
 
 	return true; //geslaagd
+}
+
+void CGraphObj::unload()
+{
+	CDataObject::unload();
+
+	glDeleteLists(m_ObjListRef, 1);
+	glDeleteLists(m_ObjList1, 1);
+	glDeleteLists(m_ObjList2, 1);
+	glDeleteLists(m_ObjList3, 1);
+	glDeleteLists(m_ObjList4, 1);
 }
 
 void CGraphObj::draw(int lod) const

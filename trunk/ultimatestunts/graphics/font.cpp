@@ -20,7 +20,7 @@
 
 #include "font.h"
 
-CFont::CFont()
+CFont::CFont(CDataManager *manager) : CTexture(manager)
 {
 	m_Texture = 0;
 	m_BaseDispList = 0;
@@ -36,9 +36,12 @@ void CFont::unload()
 	CTexture::unload();
 }
 
-bool CFont::loadFromFile(const CString &file, unsigned int texsize, float wth, float hth)
+bool CFont::load(const CString &filename, const CParamList &list)
 {
-	if(!CTexture::loadFromFile(file, texsize, texsize)) return false;
+	if(!CTexture::load(filename, list)) return false;
+
+	float wth = m_ParamList.getValue("wth", "1.0").toFloat();
+	float hth = m_ParamList.getValue("hth", "1.0").toFloat();
 
 	m_BaseDispList = glGenLists(256);
 	if(m_BaseDispList == 0) return false;

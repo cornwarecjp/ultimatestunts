@@ -30,7 +30,7 @@ public:
 	CMaterial(CDataManager *manager);
 	virtual ~CMaterial();
 
-	virtual bool load(const CString &idstring);
+	virtual bool load(const CString &filename, const CParamList &list);
 
 	int m_Mul; //texture size multiplier
 	float m_Mu; //static friction coefficient

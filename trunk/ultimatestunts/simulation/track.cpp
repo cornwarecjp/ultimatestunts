@@ -28,13 +28,13 @@ CTrack::~CTrack()
 {
 }
 
-bool CTrack::load(const CString &idstring)
+bool CTrack::load(const CString &filename, const CParamList &list)
 {
-	CDataObject::load(idstring);
+	CDataObject::load(filename, list);
 
 	//Open the track file
 	CDataFile tfile(m_Filename);
-	printf("   The world is being loaded from %s\n\n", tfile.getName().c_str());
+	//printf("   The world is being loaded from %s\n\n", tfile.getName().c_str());
 
 	CString line = tfile.readl();
 	if(line != "TRACKFILE")
@@ -54,8 +54,39 @@ bool CTrack::load(const CString &idstring)
 		line = tfile.readl();
 		if(line == "END") break;
 
+		CParamList plist;
+		
+		int pos = line.inStr("scale=");
+		if(pos  > 0) //scale is specified
+		{
+			if((unsigned int)pos < line.length()-6)
+			{
+				SParameter p;
+				p.name = "scale";
+				p.value = line.mid(pos+6, line.length()-pos-6);
+				plist.push_back(p);
+			}
+			//TODO: check for different y-direction mul
+		}
+
+		pos = line.inStr("mu=");
+		if(pos  > 0) //mu is specified
+		{
+			if((unsigned int)pos < line.length()-3)
+			{
+				SParameter p;
+				p.name = "mu";
+				p.value = line.mid(pos+3, line.length()-pos-3);
+				plist.push_back(p);
+			}
+		}
+
+		pos = line.inStr(' ');
+		if(pos  > 0) //there is a space
+			line = line.mid(0, pos);
+
 		//TODO: check if the ID is correct (starting from 0)
-		m_DataManager->getObjectID(line, CDataObject::eMaterial);
+		m_DataManager->loadObject(line, plist, CDataObject::eMaterial);
 	}
 	printf("\n   Loaded %d materials\n\n", m_DataManager->getNumObjects(CDataObject::eMaterial));
 
@@ -70,8 +101,37 @@ bool CTrack::load(const CString &idstring)
 		line = tfile.readl();
 		if(line == "END") break;
 
+		//printf("  line = \"%s\"\n", line.c_str());
+
+		CString tile_flags, texture_indices;;
+		int pos = line.inStr(' ');
+		if(pos  > 0) //a space exists
+		{
+			if((unsigned int)pos < line.length()-1)
+				{texture_indices = line.mid(pos+1, line.length()-pos-1);}
+			line = line.mid(0, pos);
+		}
+		pos = line.inStr(':');
+		if(pos > 0) //a : exists
+		{
+			if((unsigned int)pos < line.length()-1)
+				{tile_flags = line.mid(pos+1, line.length()-pos-1);}
+			line = line.mid(0, pos);
+		}
+
+		//printf("  flags = \"%s\"\n", tile_flags.c_str());
+
+		CParamList plist;
+		SParameter p;
+		p.name = "subset";
+		p.value = texture_indices;
+		plist.push_back(p);
+		p.name = "flags";
+		p.value = tile_flags;
+		plist.push_back(p);
+
 		//TODO: check if the ID is correct (starting from 0)
-		m_DataManager->getObjectID(line, CDataObject::eTileModel);
+		m_DataManager->loadObject(line, plist, CDataObject::eTileModel);
 	}
 	printf("\n   Loaded %d tile models\n\n", m_DataManager->getNumObjects(CDataObject::eTileModel));
 

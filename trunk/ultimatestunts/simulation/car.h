@@ -29,7 +29,7 @@ public:
 	CCar(CDataManager *manager);
 	virtual ~CCar();
 
-	virtual bool load(const CString &idstring);
+	virtual bool load(const CString &filename, const CParamList &list);
 	virtual void unload();
 
 	virtual void resetBodyPositions(CVector pos, const CMatrix &ori);

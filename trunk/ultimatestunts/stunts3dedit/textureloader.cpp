@@ -62,13 +62,22 @@ CTextureLoader::CTextureLoader(const CLConfig &conf, CString texdatfile)
 
 	for(int i=0; i<m_N; i++) //textures
 	{
-		CDataFile df(f.readl());
-		line = df.useExtern();
-		m_TexArray[i] = new CLODTexture;
+		line = f.readl();
+		m_TexArray[i] = new CLODTexture(NULL);
 
 		printf("%s\n", line.c_str());
-		m_TexArray[i]->setTextureSmooth(m_TexSmooth);
-		m_TexArray[i]->loadFromFile(line, m_TexMaxSize, m_TexMaxSize);
+		CParamList plist;
+		SParameter p;
+		p.name = "sizex";
+		p.value = m_TexMaxSize;
+		plist.push_back(p);
+		p.name = "sizey";
+		p.value = m_TexMaxSize;
+		plist.push_back(p);
+		p.name = "smooth";
+		p.value = m_TexSmooth;
+		plist.push_back(p);
+		m_TexArray[i]->load(line, plist);
 	}
 
 }

@@ -24,12 +24,13 @@
 #include "world.h"
 #include "lconfig.h"
 #include "reflection.h"
+#include "datamanager.h"
 
 /**
   *@author CJP
   */
 
-class CGraphicWorld
+class CGraphicWorld : public CDataManager
 {
 public: 
 	CGraphicWorld();
@@ -38,18 +39,16 @@ public:
 	bool loadWorld();
 	void unloadWorld();
 	bool loadObjects();
-	void unloadObjects();
 
-	vector<CGraphObj> m_Tiles;
-	vector<CGraphObj> m_MovingObjects;
+	CGraphObj *getTile(unsigned int n)
+		{return (CGraphObj *)getObject(CDataObject::eTileModel, n);}
+	CGraphObj *getMovObjBound(unsigned int n)
+		{return (CGraphObj *)getObject(CDataObject::eBound, n);}
 
-	CBackground m_Background;
-	CTexture m_EnvMap;
+	CBackground *m_Background;
+	CTexture *m_EnvMap;
 protected:
-	CLODTexture **getTextureSubset(CString indices);
-
-	vector<CLODTexture> m_TileTextures;
-	vector<CLODTexture> m_MovingObjectTextures;
+	virtual CDataObject *createObject(const CString &filename, const CParamList &plist, CDataObject::eDataType type);
 
 	const CWorld *m_World;
 	int m_TexMaxSize;

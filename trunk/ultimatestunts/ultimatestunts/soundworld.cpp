@@ -35,7 +35,7 @@ bool CSoundWorld::loadObjects()
 	for(unsigned int i=0; i<sounds.size(); i++)
 	{
 		CSndSample *sample = new CSndSample;
-		CDataFile f(sounds[i]->getIDString());
+		CDataFile f(sounds[i]->getFilename());
 		printf("   %s\n", f.getName().c_str());
 		sample->loadFromFile(f.useExtern());
 

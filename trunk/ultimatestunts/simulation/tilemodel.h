@@ -29,7 +29,7 @@ public:
 	CTileModel(CDataManager *manager);
 	virtual ~CTileModel();
 
-	virtual bool load(const CString &idstring);
+	virtual bool load(const CString &filename, const CParamList &list);
 
 	bool m_isStart, m_isFinish;
 	float m_Time;

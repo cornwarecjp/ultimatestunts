@@ -36,7 +36,7 @@ public:
 
 	ID's count up from 0 (every type counts separately)
 	*/
-	int getObjectID(const CString &idstring, CDataObject::eDataType type=CDataObject::eNone);
+	int loadObject(const CString &filename, const CParamList plist, CDataObject::eDataType type=CDataObject::eNone);
 
 	//returns the object with the ID
 	CDataObject *getObject(CDataObject::eDataType type, unsigned int ID)
@@ -48,12 +48,13 @@ public:
 
 	vector<CDataObject *> getObjectArray(CDataObject::eDataType type);
 	vector<const CDataObject *> getObjectArray(CDataObject::eDataType type) const;
+	vector<CDataObject *> getSubset(CDataObject::eDataType type, const CString &subset);
 
 	void unloadAll(CDataObject::eDataType type=CDataObject::eNone);
 protected:
-	virtual CDataObject *createObject(const CString &idstring, CDataObject::eDataType type);
+	virtual CDataObject *createObject(const CString &filename, const CParamList &plist, CDataObject::eDataType type);
 
-	int findObject(const CString &idstring, CDataObject::eDataType type);
+	int findObject(const CString &filename, const CParamList plist, CDataObject::eDataType type);
 	void unloadObject(unsigned int type, unsigned int i);
 	
 	vector<vector<CDataObject *> > m_Objects; //two dimensional array

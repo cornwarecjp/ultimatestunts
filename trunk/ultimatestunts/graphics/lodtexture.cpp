@@ -20,7 +20,7 @@
 
 #include "lodtexture.h"
 
-CLODTexture::CLODTexture()
+CLODTexture::CLODTexture(CDataManager *manager) : CTexture(manager)
 {
 	m_Texture2 = m_Texture3 = m_Texture4 = 0;
 }
@@ -45,8 +45,8 @@ RGBImageRec *CLODTexture::loadFromImage(RGBImageRec *in_image, int xs, int ys)
 	if(image==NULL)
 	{
 		m_Texture2 = m_Texture;
-		sizex2 = sizex;
-		sizey2 = sizey;
+		sizex2 = m_Sizex;
+		sizey2 = m_Sizey;
 	}
 	else
 	{
@@ -163,7 +163,7 @@ int CLODTexture::getSizeX(int i) const
 	switch(i)
 	{
 		case 1:
-			return sizex;
+			return m_Sizex;
 		case 2:
 			return sizex2;
 		case 3:
@@ -179,7 +179,7 @@ int CLODTexture::getSizeY(int i) const
 	switch(i)
 	{
 		case 1:
-			return sizey;
+			return m_Sizey;
 		case 2:
 			return sizey2;
 		case 3:

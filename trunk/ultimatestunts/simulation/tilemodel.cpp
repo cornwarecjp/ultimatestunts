@@ -25,34 +25,15 @@ CTileModel::CTileModel(CDataManager *manager) : CCollisionModel(manager)
 CTileModel::~CTileModel(){
 }
 
-bool CTileModel::load(const CString &idstring)
+bool CTileModel::load(const CString &filename, const CParamList &list)
 {
-	CString line = idstring;
-	CString tile_flags, texture_indices;;
-	int pos = line.inStr(' ');
-	if(pos  > 0) //a space exists
-	{
-		if((unsigned int)pos < line.length()-1)
-			{texture_indices = line.mid(pos+1, line.length()-pos-1);}
-		line = line.mid(0, pos);
-	}
-	pos = line.inStr(':');
-	if(pos > 0) //a : exists
-	{
-		if((unsigned int)pos < line.length()-1)
-			{tile_flags = line.mid(pos+1, line.length()-pos-1);}
-		line = line.mid(0, pos);
-	}
+	CCollisionModel::load(filename, list);
 
-	line = line + " " + texture_indices;
+	CString tile_flags = m_ParamList.getValue("flags", "");
 
 	m_isStart = tile_flags.inStr('s') >= 0;
 	m_isFinish = tile_flags.inStr('f') >= 0;
 	m_Time = 1.0;
 
-	bool ret = CCollisionModel::load(line);
-
-	m_IDString = idstring;
-
-	return ret;
+	return true;
 }

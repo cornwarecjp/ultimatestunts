@@ -29,7 +29,7 @@ public:
 	CBound(CDataManager *manager);
 	~CBound();
 
-	virtual bool load(const CString &idstring);
+	virtual bool load(const CString &filename, const CParamList &list);
 
 	vector<CVector> m_Points;
 
@@ -37,9 +37,9 @@ public:
 	float m_CylinderWidth, m_CylinderRadius;
 	bool isCylinder() const
 		{return m_isCylinder;}
-	void setCylinder(bool b); //also sets the cylinder parameters
 
 protected:
+	void setCylinder(bool b); //also sets the cylinder parameters
 	bool m_isCylinder;
 };
 

@@ -26,7 +26,7 @@
 
 class CLODTexture : public CTexture  {
 public: 
-	CLODTexture();
+	CLODTexture(CDataManager *manager);
 	virtual ~CLODTexture();
 
 	virtual void unload();

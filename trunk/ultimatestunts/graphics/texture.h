@@ -20,15 +20,15 @@
 #include "vector.h"
 
 #include "cstring.h"
+#include "dataobject.h"
 
-class CTexture
+class CTexture : public CDataObject
 {
 public:
-	CTexture();
-	void setTextureSmooth(bool texture_smooth)
-		{m_TextureSmooth = texture_smooth;}
+	CTexture(CDataManager *manager);
+	virtual ~CTexture();
 
-	virtual bool loadFromFile(CString filename, int xs, int ys);
+	virtual bool load(const CString &filename, const CParamList &list);
 	virtual void unload();
 
 	int getSizeX() const;
@@ -47,7 +47,7 @@ protected:
 
 	unsigned int m_Texture;
 
-	int sizex,sizey;
+	int m_Sizex, m_Sizey;
 
 	CVector m_Color;
 };

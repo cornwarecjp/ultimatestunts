@@ -19,6 +19,7 @@
 #include "bound.h"
 #include "graphicworld.h"
 #include "datafile.h"
+#include "world.h"
 
 CGraphicWorld::CGraphicWorld()
 {
@@ -31,6 +32,8 @@ CGraphicWorld::CGraphicWorld()
 	if(cnf != "")
 		m_TexMaxSize = cnf.toInt();
 
+	m_Background = new CBackground(this);
+	m_EnvMap = new CTexture(this);
 	cnf = theMainConfig->getValue("graphics", "background_size");
 	if(cnf != "")
 		m_BackgroundSize = cnf.toInt();
@@ -42,7 +45,25 @@ CGraphicWorld::CGraphicWorld()
 CGraphicWorld::~CGraphicWorld()
 {
 	unloadWorld();
-	unloadObjects();
+	delete m_Background;
+	delete m_EnvMap;
+}
+
+CDataObject *CGraphicWorld::createObject(const CString &filename, const CParamList &plist, CDataObject::eDataType type)
+{
+	CDataObject *obj = CDataManager::createObject(filename, plist, type);
+	if(obj != NULL) return obj;
+
+	if(type == CDataObject::eMaterial)
+		return new CLODTexture(this);
+
+	if(type == CDataObject::eTileModel)
+		return new CGraphObj(this, CDataObject::eTileModel);
+
+	if(type == CDataObject::eBound)
+		return new CGraphObj(this, CDataObject::eBound);
+
+	return NULL;
 }
 
 bool CGraphicWorld::loadWorld()
@@ -52,38 +73,48 @@ bool CGraphicWorld::loadWorld()
 	printf("  Loading tile textures:\n");
 	for(unsigned int i=0; i<m_World->getNumObjects(CDataObject::eMaterial); i++)
 	{
-		CLODTexture t;
-		CDataFile f(m_World->getMaterial(i)->getFilename());
 		int mul = m_World->getMaterial(i)->m_Mul;
-		printf("   Loading %s with mul=%d:\n", f.getName().c_str(), mul);
-		t.setTextureSmooth(m_TexSmooth);
+		//printf("   Loading %s with mul=%d:\n", f.getName().c_str(), mul);
 		int xs = m_TexMaxSize / mul;
 		int ys = m_TexMaxSize / mul;
-		t.loadFromFile(f.useExtern(), xs, ys);
-		m_TileTextures.push_back(t);
+		CParamList plist;
+		SParameter p;
+		p.name = "sizex";
+		p.value = xs;
+		plist.push_back(p);
+		p.name = "sizey";
+		p.value = ys;
+		plist.push_back(p);
+		p.name = "smooth";
+		p.value = m_TexSmooth;
+		plist.push_back(p);
+
+		//TODO: check ID
+		loadObject(m_World->getMaterial(i)->getFilename(), plist, CDataObject::eMaterial);
 	}
 
 	printf("  Loading tiles:\n");
 	for(unsigned int i=0; i<m_World->getNumObjects(CDataObject::eTileModel); i++)
-	{
-		CGraphObj obj;
-		CDataFile f(m_World->getTileModel(i)->getFilename());
-		CLODTexture **subset = getTextureSubset(m_World->getTileModel(i)->getSubset());
-		printf("   Loading %s:\n", f.getName().c_str());
-		obj.loadFromFile(&f, subset);
-		m_Tiles.push_back(obj);
-		delete [] subset;
-	}
+		loadObject(m_World->getTileModel(i)->getFilename(), m_World->getTileModel(i)->getParamList(), CDataObject::eTileModel);
 
-	CDataFile fb(m_World->getTrack()->m_BackgroundFilename);
-	printf("  Loading background %s:\n", fb.getName().c_str());
-	m_Background.setTextureSmooth(m_TexSmooth);
-	m_Background.loadFromFile(fb.useExtern(), 4*m_BackgroundSize, m_BackgroundSize);
+	//params for background and envmap
+	CParamList plist;
+	SParameter p;
+	p.name = "sizex";
+	p.value = m_BackgroundSize;
+	plist.push_back(p);
+	p.name = "sizey";
+	p.value = m_BackgroundSize;
+	plist.push_back(p);
+	p.name = "smooth";
+	p.value = m_TexSmooth;
+	plist.push_back(p);
 
-	CDataFile fe(m_World->getTrack()->m_EnvMapFilename);
-	printf("  Loading environment map %s:\n", fe.getName().c_str());
-	m_EnvMap.setTextureSmooth(m_TexSmooth);
-	m_EnvMap.loadFromFile(fe.useExtern(), m_BackgroundSize, m_BackgroundSize);
+	//printf("  Loading background %s:\n", fb.getName().c_str());
+	m_Background->load(m_World->getTrack()->m_BackgroundFilename, plist);
+
+	//printf("  Loading environment map %s:\n", fe.getName().c_str());
+	m_EnvMap->load(m_World->getTrack()->m_EnvMapFilename, plist);
 
 	return true;
 }
@@ -93,20 +124,12 @@ void CGraphicWorld::unloadWorld()
 	printf("Unloading the graphic world\n");
 
 	printf("  Unloading background\n");
-	m_Background.unload();
+	m_Background->unload();
 
 	printf("  Unloading environment map\n");
-	m_EnvMap.unload();
+	m_EnvMap->unload();
 
-	printf("  Unloading tiles:\n");
-	for(unsigned int i=0; i<m_Tiles.size(); i++)
-		m_Tiles[i].unload();
-	m_Tiles.clear();
-
-	printf("  Unloading tile textures:\n");
-	for(unsigned int i=0; i<m_TileTextures.size(); i++)
-		m_TileTextures[i].unload();
-	m_TileTextures.clear();
+	unloadAll();
 }
 
 bool CGraphicWorld::loadObjects()
@@ -118,50 +141,13 @@ bool CGraphicWorld::loadObjects()
 	vector<const CDataObject *> bounds = m_World->getObjectArray(CDataObject::eBound);
 	for(unsigned int i=0; i<bounds.size(); i++)
 	{
-		CGraphObj obj;
-		CDataFile f(((CBound *)bounds[i])->getFilename());
-		printf("   Loading from %s LOD %d\n", f.getName().c_str(), molod);
-		obj.loadFromFile(&f, NULL, molod);
-		m_MovingObjects.push_back(obj);
+		CParamList plist;
+		SParameter p;
+		p.name = "lodoffset";
+		p.value = molod;
+		plist.push_back(p);
+		loadObject(bounds[i]->getFilename(), plist, CDataObject::eBound);
 	}
 
 	return true;
-}
-
-void CGraphicWorld::unloadObjects()
-{
-	printf("Unloading moving object graphics:\n");
-	for(unsigned int i=0; i<m_MovingObjects.size(); i++)
-		m_MovingObjects[i].unload();
-	m_MovingObjects.clear();
-}
-
-CLODTexture **CGraphicWorld::getTextureSubset(CString indices)
-{
-	//printf("Indices: \"%s\"\n", indices.c_str());
-	CLODTexture **ret = new (CLODTexture *)[1+indices.length()/2]; //We don't need more
-	int i=0;
-	while(true)
-	{
-		int sp = indices.inStr(' ');
-		if(sp > 0)
-		{
-			int n = indices.mid(0,sp).toInt();
-			indices= indices.mid(sp+1, indices.length()-sp-1);
-			//printf("    Adding %d\n", n);
-			CLODTexture *tex = &(m_TileTextures[n]);
-			*(ret+i) = tex;
-		}
-		else
-		{
-			//printf("    Adding %d\n", indices.toInt());
-			CLODTexture *tex = &(m_TileTextures[indices.toInt()]); //the last index
-			*(ret+i) = tex;
-			break;
-		}
-
-		i++;
-	}
-
-	return ret;
 }

@@ -38,10 +38,28 @@ CConsole::CConsole(CWinSystem *winsys)
 
 	if(_ConsoleFont == NULL)
 	{
-		_ConsoleFont = new CFont;
-		CDataFile df("misc/courier.rgba");
-		printf("Loading font from %s\n", df.useExtern().c_str());
-		if(!_ConsoleFont->loadFromFile(df.useExtern(), 512, m_fontW, m_fontH))
+		CString fontfile = "misc/courier.rgba";
+		_ConsoleFont = new CFont(NULL);
+		printf("Loading font from %s\n", fontfile.c_str());
+
+		CParamList plist;
+		SParameter p;
+		p.name = "sizex";
+		p.value = 512;
+		plist.push_back(p);
+		p.name = "sizey";
+		p.value = 512;
+		plist.push_back(p);
+		p.name = "smooth";
+		p.value = true; //TODO?
+		plist.push_back(p);
+		p.name = "wth";
+		p.value = m_fontW;
+		plist.push_back(p);
+		p.name = "hth";
+		p.value = m_fontH;
+		plist.push_back(p);
+		if(!_ConsoleFont->load(fontfile, plist))
 			printf("Font loading failed!\n");
 	}
 

@@ -15,7 +15,41 @@
  *                                                                         *
  ***************************************************************************/
 
+#include <cstdio>
+
 #include "dataobject.h"
+
+bool CParamList::operator==(const CParamList &val) const
+{
+	for(unsigned int i=0; i < val.size(); i++)
+	{
+		CString name = val[i].name;
+		CString value = val[i].value;
+
+		CString ownval = getValue(name, "__NoTaVaLuE__");
+		if(ownval != value) return false;
+	}
+	
+	for(unsigned int i=0; i < size(); i++)
+	{
+		CString name = (*this)[i].name;
+		CString ownval = (*this)[i].value;
+
+		CString value = val.getValue(name, "__NoTaVaLuE__");
+		if(ownval != value) return false;
+	}
+
+	return true;
+}
+
+CString CParamList::getValue(const CString &var, const CString &deflt) const
+{
+	for(unsigned int i=0; i < size(); i++)
+		if ((*this)[i].name == var)
+			return (*this)[i].value;
+
+	return deflt;
+}
 
 CDataObject::CDataObject(CDataManager *manager, eDataType type)
 {
@@ -26,13 +60,17 @@ CDataObject::CDataObject(CDataManager *manager, eDataType type)
 CDataObject::~CDataObject(){
 }
 
-bool CDataObject::load(const CString &idstring)
+bool CDataObject::load(const CString &filename, const CParamList &list)
 {
+	printf("   Loading file %s\n", filename.c_str());
+	//for(unsigned int i=0; i < list.size(); i++)
+	//	printf("     %s = \"%s\"\n", list[i].name.c_str(), list[i].value.c_str());
+
 	if(m_isLoaded) unload();
 	m_isLoaded = true;
 
-	m_Filename = idstring;
-	m_IDString = idstring;
+	m_Filename = filename;
+	m_ParamList = list;
 	return true;
 }
 

@@ -51,89 +51,29 @@ CWorld::~CWorld(){
 	theWorld = NULL;
 }
 
-CDataObject *CWorld::createObject(const CString &idstring, CDataObject::eDataType type)
+CDataObject *CWorld::createObject(const CString &filename, const CParamList &plist, CDataObject::eDataType type)
 {
-	CDataObject *obj = CDataManager::createObject(idstring, type);
+	CDataObject *obj = CDataManager::createObject(filename, plist, type);
 	if(obj != NULL) return obj;
 
 	if(type == CDataObject::eSample)
-	{
-		obj = new CDataObject(this, CDataObject::eSample);
-		if(obj == NULL) return NULL;
-		if(!obj->load(idstring))
-		{
-			delete obj;
-			return NULL;
-		}
-		return obj;
-	}
+		return new CDataObject(this, CDataObject::eSample);
 
 	if(type == CDataObject::eMaterial)
-	{
-		obj = new CMaterial(this);
-		if(obj == NULL) return NULL;
-		if(!obj->load(idstring))
-		{
-			delete obj;
-			return NULL;
-		}
-		return obj;
-	}
+		return new CMaterial(this);
 
 	if(type == CDataObject::eBound)
-	{
-		obj = new CBound(this);
-		if(obj == NULL) return NULL;
-		if(!obj->load(idstring))
-		{
-			delete obj;
-			return NULL;
-		}
-
-		//a little dirty hack
-		if(idstring.inStr("wheel") >= 0)
-			((CBound *)obj)->setCylinder(true);
-
-		return obj;
-	}
+		return new CBound(this);
 
 	if(type == CDataObject::eTileModel)
-	{
-		obj = new CTileModel(this);
-		if(obj == NULL) return NULL;
-		if(!obj->load(idstring))
-		{
-			delete obj;
-			return NULL;
-		}
-		return obj;
-	}
+		return new CTileModel(this);
 
 	if(type == CDataObject::eMovingObject)
-	{
 		//TODO: other moving object types
-		obj = new CCar(this);
-		if(obj == NULL) return NULL;
-		if(!obj->load(idstring))
-		{
-			delete obj;
-			return NULL;
-		}
-		return obj;
-	}
+		return new CCar(this);
 
 	if(type == CDataObject::eTrack)
-	{
-		//TODO: other moving object types
-		obj = new CTrack(this);
-		if(obj == NULL) return NULL;
-		if(!obj->load(idstring))
-		{
-			delete obj;
-			return NULL;
-		}
-		return obj;
-	}
+		return new CTrack(this);
 
 	return NULL;
 }

@@ -33,7 +33,7 @@ public:
 	CCollisionModel(CDataManager *manager);
 	virtual ~CCollisionModel();
 
-	virtual bool load(const CString &idstring);
+	virtual bool load(const CString &filename, const CParamList &list);
 
 	CString getSubset() const;
 
@@ -54,7 +54,6 @@ protected:
 		Polygon
 	};
 
-	CMaterial **getMaterialSubset(CString indices);
 	CString m_Subset;
 
 	void determineOBVs();

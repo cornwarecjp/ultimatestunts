@@ -29,9 +29,9 @@ CBound::CBound(CDataManager *manager) : CCollisionModel(manager)
 CBound::~CBound()
 {}
 
-bool CBound::load(const CString &idstring)
+bool CBound::load(const CString &filename, const CParamList &list)
 {
-	CCollisionModel::load(idstring);
+	CCollisionModel::load(filename, list);
 
 	m_Points.clear();
 	for(unsigned int i=0; i < m_Faces.size()-2; i++)
@@ -64,6 +64,10 @@ bool CBound::load(const CString &idstring)
 				}
 			}
 		}
+
+	//if it is a cylinder
+	if(m_ParamList.getValue("cylinder", "false") == "true")
+		setCylinder(true);
 
 	return true;
 }

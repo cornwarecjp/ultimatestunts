@@ -34,9 +34,9 @@ CCar::~CCar()
 {
 }
 
-bool CCar::load(const CString &idstring)
+bool CCar::load(const CString &filename, const CParamList &list)
 {
-	CMovingObject::load(idstring);
+	CMovingObject::load(filename, list);
 
 	CDataFile dfile(getFilename());
 	CLConfig cfile(dfile.useExtern());
@@ -103,18 +103,27 @@ bool CCar::load(const CString &idstring)
 	CBody body, wheel1, wheel2, wheel3, wheel4;
 
 	//Set the indices to the body array
-	body.m_Body = theWorld->getObjectID(bodygeomfile, CDataObject::eBound);
+	body.m_Body = theWorld->loadObject(bodygeomfile, CParamList(), CDataObject::eBound);
 	if(body.m_Body < 0)
 		printf("Error: body geometry %s was not loaded\n", bodygeomfile.c_str());
 
-	wheel1.m_Body = theWorld->getObjectID(frontwheelgeomfile, CDataObject::eBound);
+	//The wheels are cylinders:
+	CParamList plist;
+	{
+		SParameter p;
+		p.name = "cylinder";
+		p.value = "true";
+		plist.push_back(p);
+	}
+	
+	wheel1.m_Body = theWorld->loadObject(frontwheelgeomfile, plist, CDataObject::eBound);
 	wheel2.m_Body = wheel1.m_Body;
 	if(wheel1.m_Body < 0)
 		printf("Error: frontwheel geometry %s was not loaded\n", frontwheelgeomfile.c_str());
 	m_FrontWheelRadius = ((CBound *)theWorld->getObject(CDataObject::eBound, wheel1.m_Body))->m_CylinderRadius;
 	m_FrontWheelWidth = ((CBound *)theWorld->getObject(CDataObject::eBound, wheel1.m_Body))->m_CylinderWidth;
 
-	wheel3.m_Body = theWorld->getObjectID(rearwheelgeomfile, CDataObject::eBound);
+	wheel3.m_Body = theWorld->loadObject(rearwheelgeomfile, plist, CDataObject::eBound);
 	wheel4.m_Body = wheel3.m_Body;
 	if(wheel3.m_Body < 0)
 		printf("Error: rearwheel geometry %s was not loaded\n", rearwheelgeomfile.c_str());
@@ -230,8 +239,8 @@ bool CCar::load(const CString &idstring)
 	dJointSetHinge2Param(m_joint4, dParamSuspensionCFM, m_RearSuspCFM);
 
 	//Two sounds:
-	m_Sounds.push_back(theWorld->getObjectID("sounds/engine.wav", CDataObject::eSample));
-	m_Sounds.push_back(theWorld->getObjectID("sounds/skid.wav", CDataObject::eSample));
+	m_Sounds.push_back(theWorld->loadObject("sounds/engine.wav", CParamList(), CDataObject::eSample));
+	m_Sounds.push_back(theWorld->loadObject("sounds/skid.wav", CParamList(), CDataObject::eSample));
 
 	return true;
 }
@@ -239,6 +248,7 @@ bool CCar::load(const CString &idstring)
 void CCar::unload()
 {
 	//TODO
+	CMovingObject::unload();
 }
 
 void CCar::resetBodyPositions(CVector pos, const CMatrix &ori)

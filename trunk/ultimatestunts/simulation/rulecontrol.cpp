@@ -61,7 +61,7 @@ bool CRuleControl::findStartFinish()
 				if(m_World->getTileModel(tile.m_Model)->m_isStart)
 
 					if(founds) //more than 1 start position
-						{return false;}
+						{printf(">1 start\n"); return false;}
 					else
 					{
 						founds = true;
@@ -71,7 +71,7 @@ bool CRuleControl::findStartFinish()
 				if(m_World->getTileModel(tile.m_Model)->m_isFinish)
 
 					if(foundf) //more than 1 finish position
-						{return false;}
+						{printf(">1 finish\n"); return false;}
 					else
 					{
 						foundf = true;

@@ -63,7 +63,7 @@ User Interface=*.ui,*.kdevdlg,*.rc,
 groups=Headers,Sources,GNU,Translations,User Interface,Others
 
 [Makefile.am]
-files=ultimatestunts.kdevprj,AUTHORS,COPYING,INSTALL,ChangeLog,README,TODO,acinclude.m4,aclocal.m4,install-sh,missing,mkinstalldirs,execselect.sh,execselect.x,restore-am,textures.dat,ultimatestunts.conf,configure.ac
+files=ultimatestunts.kdevprj,AUTHORS,COPYING,INSTALL,ChangeLog,README,TODO,acinclude.m4,aclocal.m4,install-sh,missing,mkinstalldirs,execselect.sh,execselect.x,restore-am,textures.dat,ultimatestunts.conf,configure.ac,ultimatestunts.conf.in
 sub_dirs=ultimatestunts,shared,filetransfer,graphics,simulation,stuntsai,stuntsserver,tileedit,trackedit,stunts3dedit,__test
 type=normal
 
@@ -996,6 +996,12 @@ install_location=
 type=SOURCE
 
 [ultimatestunts.conf]
+dist=true
+install=false
+install_location=
+type=DATA
+
+[ultimatestunts.conf.in]
 dist=true
 install=false
 install_location=

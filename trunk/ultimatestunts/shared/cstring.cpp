@@ -57,6 +57,14 @@ CString::CString(const CVector &v)
 	operator= (CString(v.x) + "," + v.y + "," + v.z);
 }
 
+CString::CString(bool val)
+{
+	if(val)
+		{this->assign("true");}
+	else
+		{this->assign("false");}
+}
+
 //
 // LTrim: Trim left
 //

@@ -24,7 +24,7 @@
 #include "editgraphobj.h"
 #include "cfile.h"
 
-CEditGraphObj::CEditGraphObj() : CGraphObj()
+CEditGraphObj::CEditGraphObj() : CGraphObj(NULL, CDataObject::eMovingObject)
 {
 	isRendered = false;
 }

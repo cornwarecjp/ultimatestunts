@@ -81,9 +81,12 @@ bool CGameCore::update() //true = continue false = leave
 	for(unsigned int i=0; i<m_Players.size(); i++)
 		m_Players[i]->update(); //Makes moving decisions
 
+	
 	bool retval = true;
 	for(unsigned int i=0; i<m_Simulations.size(); i++)
+	{
 		retval = retval && m_Simulations[i]->update(); //Modifies world object
+	}
 
 	return retval;
 }
@@ -110,7 +113,7 @@ void CGameCore::leaveGame()
 void CGameCore::loadTrackData()
 {
 	printf("---World track data\n");
-	m_World->getObjectID(m_TrackFile, CDataObject::eTrack);
+	m_World->loadObject(m_TrackFile, CParamList(), CDataObject::eTrack);
 }
 
 void CGameCore::loadMovObjData()

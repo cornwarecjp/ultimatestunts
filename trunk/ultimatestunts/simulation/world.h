@@ -77,7 +77,7 @@ public:
 	dJointGroupID m_ContactGroup;
 
 protected:
-	virtual CDataObject *createObject(const CString &idstring, CDataObject::eDataType type);
+	virtual CDataObject *createObject(const CString &filename, const CParamList &plist, CDataObject::eDataType type);
 };
 
 extern CWorld *theWorld;

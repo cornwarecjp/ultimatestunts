@@ -41,7 +41,7 @@ public:
 	CTrack(CDataManager *manager);
 	virtual ~CTrack();
 
-	virtual bool load(const CString &idstring);
+	virtual bool load(const CString &filename, const CParamList &list);
 	virtual void unload();
 
 	vector<STile> m_Track; //refer to tile model elements in the manager object

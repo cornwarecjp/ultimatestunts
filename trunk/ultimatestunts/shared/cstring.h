@@ -52,6 +52,7 @@
    CString & dump() const;
 
 	//CJP functions:
+	CString(bool val);
 	CString(int val);
 	CString(float val);
 	CString operator+(CString const &val); //std didn't do what I wanted

@@ -17,17 +17,17 @@
 #ifndef GRAPHOBJ_H
 #define GRAPHOBJ_H
 
-#include "lodtexture.h"
 #include "cstring.h"
-#include "cfile.h"
+#include "dataobject.h"
 
-class CGraphObj
+class CGraphObj : public CDataObject
 {
 	public:
-		CGraphObj();
+		CGraphObj(CDataManager *manager, eDataType type);
 		virtual ~CGraphObj();
-		virtual bool loadFromFile(CFile *f, CLODTexture **matarray, int lod_offset = 0);
-		void unload();
+
+		virtual bool load(const CString &filename, const CParamList &list);
+		virtual void unload();
 
 		void draw(int lod) const;
 	protected:

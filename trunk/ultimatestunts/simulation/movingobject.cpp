@@ -30,9 +30,14 @@ CMovingObject::CMovingObject(CDataManager *manager) : CDataObject(manager, CData
 CMovingObject::~CMovingObject()
 {
 	delete m_InputData; //I guess this will happen for all CMovingObject-derived classes
+}
 
+void CMovingObject::unload()
+{
 	for(unsigned int i=0; i < m_Bodies.size(); i++)
 		m_Bodies[i].destroyODE();
+
+	CDataObject::unload();
 }
 
 void CMovingObject::update(CPhysics *simulator, float dt)

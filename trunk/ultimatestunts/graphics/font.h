@@ -27,11 +27,11 @@
 class CFont : protected CTexture
 {
 public: 
-	CFont();
+	CFont(CDataManager *manager);
 	virtual ~CFont();
 
-	bool loadFromFile(const CString &file, unsigned int texsize, float wth, float hth);
-	void unload();
+	virtual bool load(const CString &filename, const CParamList &list);
+	virtual void unload();
 
 	//ALWAYS enable before drawing, and disable after (read the source)
 	void enable();

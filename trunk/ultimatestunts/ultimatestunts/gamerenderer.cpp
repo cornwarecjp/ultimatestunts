@@ -41,7 +41,7 @@ bool CGameRenderer::loadTrackData()
 {
 	if(m_GraphicWorld->loadWorld())
 	{
-		CVector fc = m_GraphicWorld->m_Background.getColor();
+		CVector fc = m_GraphicWorld->m_Background->getColor();
 		m_FogColor[0] = fc.x;
 		m_FogColor[1] = fc.y;
 		m_FogColor[2] = fc.z;
@@ -69,7 +69,7 @@ bool CGameRenderer::loadObjData()
 
 void CGameRenderer::unloadObjData()
 {
-	m_GraphicWorld->unloadObjects();
+	//TODO
 }
 
 void CGameRenderer::setCameras(CCamera **cams, unsigned int num)
@@ -298,7 +298,7 @@ void CGameRenderer::viewBackground()
 	if(m_ZBuffer)
 		glDisable(GL_DEPTH_TEST);
 
-	m_GraphicWorld->m_Background.draw();
+	m_GraphicWorld->m_Background->draw();
 
 	//if(m_FogMode != -1)
 	//	glEnable(GL_FOG);
@@ -479,7 +479,7 @@ void CGameRenderer::viewPilaar(int x, int y, int cur_zpos)
 						}
 
 						//tekenen
-						m_GraphicWorld->m_Tiles[temp.m_Model].draw(lod);
+						m_GraphicWorld->getTile(temp.m_Model)->draw(lod);
 					}
 				}
 				break;
@@ -497,7 +497,7 @@ void CGameRenderer::viewPilaar(int x, int y, int cur_zpos)
 			}
 
 			//tekenen
-			m_GraphicWorld->m_Tiles[temp.m_Model].draw(lod);
+			m_GraphicWorld->getTile(temp.m_Model)->draw(lod);
 		}
 
 	glPopMatrix();
@@ -534,7 +534,7 @@ void CGameRenderer::viewMovObj(unsigned int n)
 		glMultMatrixf(b.getOrientationMatrix().gl_mtr());
 
 		//The model
-		m_GraphicWorld->m_MovingObjects[b.m_Body].draw(lod);
+		m_GraphicWorld->getMovObjBound(b.m_Body)->draw(lod);
 
 		//The reflection
 		if(dist < m_ReflectionDist)
@@ -553,7 +553,7 @@ void CGameRenderer::viewMovObj(unsigned int n)
 			glPolygonOffset(0.0, -1.0);
 			//m_GraphicWorld->m_EnvMap.draw(1);
 			m_MovingObjectReflections[m_CurrentCamera + m_NumCameras * n].draw();
-			m_GraphicWorld->m_MovingObjects[b.m_Body].draw(0);
+			m_GraphicWorld->getMovObjBound(b.m_Body)->draw(0);
 
 			glDisable(GL_POLYGON_OFFSET_FILL);
 			glDisable(GL_TEXTURE_GEN_S);
