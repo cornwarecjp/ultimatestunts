@@ -33,6 +33,7 @@ public:
   bool setData(const CBinBuffer &);
   CBinBuffer & getData() const;
 
+	virtual CMessageBuffer::eMessageType getType() const {return CMessageBuffer::movObjInput;}
 };
 
 #endif

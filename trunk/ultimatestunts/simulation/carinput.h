@@ -33,6 +33,8 @@ public:
 
 	Uint8 m_Gear;
 	bool m_CarHorn;
+
+	virtual CMessageBuffer::eMessageType getType() const {return CMessageBuffer::carInput;}
 };
 
 #endif

@@ -60,18 +60,12 @@ int main(int argc, char *argv[])
   sim = new CPhysics(world);
 
   printf("\nCreating 3 players\n");
-  player1 = new CPlayer;
-  player2 = new CPlayer;
-  player3 = new CPlayer;
+  player1 = new CPlayer(world);
+  player2 = new CPlayer(world);
+  player3 = new CPlayer(world);
 
   printf("\nCreating a human player\n");
-  player4 = new CHumanPlayer;
-
-  printf("\nGiving the world object to the players\n");
-  player1->giveWorld(world);
-  player2->giveWorld(world);
-  player3->giveWorld(world);
-  player4->giveWorld(world);
+  player4 = new CHumanPlayer(world);
 
   printf("\nChoosing cars (or trains, cows, balloons etc)\n");
   CObjectChoice choice;

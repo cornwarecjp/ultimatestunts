@@ -51,7 +51,7 @@ bool CSimulation::addPlayer(CPlayer *p, CObjectChoice choice)
 bool CSimulation::removePlayer(CPlayer *p)
 {
   bool ret = false;
-  for(int i=0; i<m_LocalPlayers.size(); i++)
+  for(unsigned int i=0; i<m_LocalPlayers.size(); i++)
   {
     if(m_LocalPlayers[i]==p)
     {

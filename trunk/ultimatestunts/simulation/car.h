@@ -28,6 +28,8 @@ class CCar : public CMovingObject  {
 public: 
 	CCar();
 	~CCar();
+
+	virtual CMessageBuffer::eMessageType getType() const {return CMessageBuffer::car;}
 };
 
 #endif

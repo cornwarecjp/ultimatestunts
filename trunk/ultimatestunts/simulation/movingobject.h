@@ -29,6 +29,8 @@ class CMovingObject : public CDynamicObject {
 public: 
 	CMovingObject();
 	~CMovingObject();
+
+	virtual CMessageBuffer::eMessageType getType() const {return CMessageBuffer::movingObject;}
 };
 
 #endif

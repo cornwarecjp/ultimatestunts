@@ -17,8 +17,10 @@
 
 #include "player.h"
 
-CPlayer::CPlayer()
+CPlayer::CPlayer(const CWorld *w)
 {
+	m_World = w;
+
   //These have not been set:
   m_MovingObjectId = -1;
   m_PlayerId = -1;
@@ -27,13 +29,7 @@ CPlayer::CPlayer()
 CPlayer::~CPlayer(){
 }
 
-void CPlayer::giveWorld(const CWorld *w)
-{m_World = w;}
-
-const CMessage *CPlayer::getInputData()
-{
-  return NULL; //Base-class doesn't generate input data
-}
-
 bool CPlayer::Update()
-{}
+{
+	return true;
+}

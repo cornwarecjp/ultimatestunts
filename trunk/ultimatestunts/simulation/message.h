@@ -38,8 +38,8 @@ public:
   virtual ~CMessage();
 
 
-  virtual CBinBuffer & getData() const = 0;         // returns class data as binbuffer
-  virtual bool setData(const CBinBuffer &) = 0;   // rebuild class data from binbuffer
+  //virtual CBinBuffer & getData() const = 0;         // returns class data as binbuffer
+  //virtual bool setData(const CBinBuffer &) = 0;   // rebuild class data from binbuffer
 
 	CMessageBuffer & getBuffer();
  	bool setBuffer(const CMessageBuffer &);
@@ -49,7 +49,7 @@ public:
   void setType(const CMessageBuffer::eMessageType & t);
  	void setCounter(const Uint16 & counter);
   void setAC(const bool & ac);
-  CMessageBuffer::eMessageType getType() const { return ((CMessageBuffer::eMessageType) m_Data.getType()); }
+  virtual CMessageBuffer::eMessageType getType() const {return ((CMessageBuffer::eMessageType) m_Data.getType()); }
   Uint16 getCounter() const { return (m_Data.getCounter()); }
   Uint8 getAC() const { return (m_Data.getAC()); }
 

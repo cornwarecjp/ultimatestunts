@@ -59,7 +59,7 @@ User Interface=*.ui,*.kdevdlg,*.rc,
 groups=Headers,Sources,GNU,Translations,User Interface,Others
 
 [Makefile.am]
-files=ultimatestunts.kdevprj,AUTHORS,COPYING,INSTALL,ChangeLog,README,TODO,acinclude.m4,aclocal.m4,configure.in,install-sh,missing,mkinstalldirs,configure,config.log,config.cache,config.status,
+files=ultimatestunts.kdevprj,AUTHORS,COPYING,INSTALL,ChangeLog,README,TODO,acinclude.m4,aclocal.m4,configure.in,install-sh,missing,mkinstalldirs,execselect.sh,execselect.x,restore-am
 sub_dirs=ultimatestunts,shared,filetransfer,graphics,simulation,stuntsai,stuntsserver,tileedit,trackedit,stunts3dedit,__test
 type=normal
 
@@ -94,31 +94,19 @@ install=false
 install_location=
 type=DATA
 
-[config.cache]
-dist=true
-install=false
-install_location=
-type=DATA
-
-[config.log]
-dist=true
-install=false
-install_location=
-type=DATA
-
-[config.status]
-dist=true
-install=false
-install_location=
-type=DATA
-
-[configure]
-dist=true
-install=false
-install_location=
-type=DATA
-
 [configure.in]
+dist=true
+install=false
+install_location=
+type=DATA
+
+[execselect.sh]
+dist=true
+install=false
+install_location=
+type=DATA
+
+[execselect.x]
 dist=true
 install=false
 install_location=
@@ -176,10 +164,22 @@ install=false
 install_location=
 type=DATA
 
+[restore-am]
+dist=true
+install=false
+install_location=
+type=DATA
+
 [shared/Makefile.am]
-files=shared/hello.cpp,shared/hello.h,shared/matrix.cpp,shared/matrix.h,shared/vector.cpp,shared/vector.h,shared/binbuffer.h,shared/cstring.h
+files=shared/hello.cpp,shared/hello.h,shared/matrix.cpp,shared/matrix.h,shared/vector.cpp,shared/vector.h,shared/binbuffer.h,shared/cstring.h,shared/binbuffer.cpp,shared/usmacros.h
 sub_dirs=
 type=static_library
+
+[shared/binbuffer.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
 
 [shared/binbuffer.h]
 dist=true
@@ -217,6 +217,12 @@ install=false
 install_location=
 type=HEADER
 
+[shared/usmacros.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
 [shared/vector.cpp]
 dist=true
 install=false
@@ -230,7 +236,7 @@ install_location=
 type=HEADER
 
 [simulation/Makefile.am]
-files=simulation/physics.cpp,simulation/physics.h,simulation/simulation.cpp,simulation/simulation.h,simulation/player.cpp,simulation/player.h,simulation/world.cpp,simulation/world.h,simulation/tile.cpp,simulation/tile.h,simulation/movingobject.cpp,simulation/movingobject.h,simulation/car.cpp,simulation/car.h,simulation/message.cpp,simulation/message.h,simulation/messagebuffer.cpp,simulation/messagebuffer.h,simulation/dynamicobject.cpp,simulation/dynamicobject.h,simulation/objectchoice.cpp,simulation/objectchoice.h,simulation/netudp.h,simulation/netudp.cpp,simulation/netmessage.cpp,simulation/netmessage.h
+files=simulation/physics.cpp,simulation/physics.h,simulation/simulation.cpp,simulation/simulation.h,simulation/player.cpp,simulation/player.h,simulation/world.cpp,simulation/world.h,simulation/tile.cpp,simulation/tile.h,simulation/movingobject.cpp,simulation/movingobject.h,simulation/car.cpp,simulation/car.h,simulation/message.cpp,simulation/message.h,simulation/messagebuffer.cpp,simulation/messagebuffer.h,simulation/dynamicobject.cpp,simulation/dynamicobject.h,simulation/objectchoice.cpp,simulation/objectchoice.h,simulation/netudp.h,simulation/netudp.cpp,simulation/netmessage.cpp,simulation/netmessage.h,simulation/carinput.cpp,simulation/carinput.h,simulation/movobjinput.cpp,simulation/movobjinput.h
 sub_dirs=
 type=static_library
 
@@ -241,6 +247,18 @@ install_location=
 type=SOURCE
 
 [simulation/car.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[simulation/carinput.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[simulation/carinput.h]
 dist=true
 install=false
 install_location=
@@ -289,6 +307,18 @@ install_location=
 type=SOURCE
 
 [simulation/movingobject.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[simulation/movobjinput.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[simulation/movobjinput.h]
 dist=true
 install=false
 install_location=

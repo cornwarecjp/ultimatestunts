@@ -17,7 +17,7 @@
 
 #include "humanplayer.h"
 
-CHumanPlayer::CHumanPlayer() : CPlayer()
+CHumanPlayer::CHumanPlayer(const CWorld *w) : CPlayer(w)
 {}
 
 CHumanPlayer::~CHumanPlayer(){

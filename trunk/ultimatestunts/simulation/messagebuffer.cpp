@@ -68,7 +68,7 @@ bool CMessageBuffer::setCounter(const Uint16 counter) {
 
 bool CMessageBuffer::setData(const CBinBuffer & b) {
   this->resize(b.size() + this->getHeaderLength());
-  for (int i=0;i<b.size();i++) { (*this)[this->getHeaderLength()+i] = b[i]; }
+  for (unsigned int i=0;i<b.size();i++) { (*this)[this->getHeaderLength()+i] = b[i]; }
   return (true);
 }
 
@@ -118,7 +118,7 @@ bool CMessageBuffer::setHeader(s_msg_header & h) {
    tmp+=h.ac;
    tmp+=h.counter;
    if (this->size() < tmp.size()) { this->resize(tmp.size()); }
-   for (int i=0;i<tmp.size();i++) { (*this)[i] = tmp[i]; }
+   for (unsigned int i=0;i<tmp.size();i++) { (*this)[i] = tmp[i]; }
    return (true);
 }
 
@@ -127,7 +127,7 @@ bool CMessageBuffer::setBuffer(const CBinBuffer & b)
 {
       // fixme: bad code
   if (this->size() < b.size()) { this->resize(b.size()); }
-  for (int i=0;i<b.size();i++) { (*this)[i] = b[i]; }
+  for (unsigned int i=0;i<b.size();i++) { (*this)[i] = b[i]; }
   return (true);
 }
 

@@ -16,8 +16,10 @@
  ***************************************************************************/
 
 #include "car.h"
-
-CCar::CCar(){
+#include "carinput.h"
+CCar::CCar()
+{
+	m_InputData = new CCarInput;
 }
 CCar::~CCar(){
 }

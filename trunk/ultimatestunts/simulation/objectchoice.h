@@ -34,6 +34,8 @@ public:
   CBinBuffer & getData() const;
 
   Uint16 m_CarNumber; //temporary; probably replaced by CString
+
+	virtual CMessageBuffer::eMessageType getType() const {return CMessageBuffer::objectChoice;}
 };
 
 #endif

@@ -25,22 +25,14 @@
 
 #include "message.h"
 
-class CDynamicObject {
+class CDynamicObject : public CMessage {
 public: 
 	CDynamicObject();
 	virtual ~CDynamicObject();
 
-//  virtual const CMessage *getParameters();
-//  virtual void setParameters(const CMessage *m);
+	CMessage *m_InputData;
 
-//  virtual const CMessage *getInputData(); //Used by network
-//  virtual void setInputData(const CMessage *m);
-
-  virtual bool hasChanged();
-
-protected:
-//  CMessage *m_Parameters;
-//  CMessage *m_InputData;
+	virtual bool hasChanged();
 };
 
 #endif

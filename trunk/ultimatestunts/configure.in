@@ -17,10 +17,18 @@ AC_OBJEXT
 
 dnl Dit bestand komt oorspronkelijk van tuxkart.
 
-dnl Checks for library functions.
-dnl check for OpenGL related libraries
 
-dnl Removed: ", AC_DEFINE(WIN32)"
+dnl ----------------------
+dnl Initially no libraries
+dnl ----------------------
+graphlibs=""
+netlibs=""
+soundlibs=""
+
+
+dnl ----------------------------------
+dnl check for OpenGL related libraries
+dnl ----------------------------------
 AC_CHECK_HEADER(windows.h)
 
 if test "x$ac_cv_header_windows_h" != "xyes" ; then
@@ -31,8 +39,6 @@ if test "x$ac_cv_header_windows_h" != "xyes" ; then
 
   x_suffix="$X_LIBS $X_PRE_LIBS -lX11 -lXi -lXext -lXmu $X_EXTRA_LIBS -lm"
   graphlibs=$x_suffix
-  netlibs=""
-  soundlibs=""
 
   dnl Reasonable stuff non-windoze variants ... :-)
 
@@ -67,14 +73,18 @@ else
   graphlibs="-lm -lwinmm -lglut32 -lglu32 -lopengl32 -luser32 -lgdi32"
 fi
 
+
+dnl ---------------------
 dnl Check sockets library
+dnl ---------------------
 AC_CHECK_LIB(socket, socket,netlibs="-lsocket $netlibs")
 AC_CHECK_LIB(nsl, gethostbyname,netlibs="-lnsl $netlibs")
 AC_CHECK_LIB(resolv, inet_aton,netlibs="-lresolv $netlibs")
 
 
-dnl Checks for header files.
-
+dnl -----------------------
+dnl Checks for header files
+dnl -----------------------
 AC_HEADER_STDC
 
 AC_CHECK_HEADERS(GL/gl.h GL/glut.h)
@@ -83,10 +93,16 @@ AC_CHECK_HEADER(joystick.h, AC_DEFINE(JOYSTICK_IS_PRESENT))
 AC_CHECK_HEADER(linux/joystick.h, AC_DEFINE(LINUX_JOYSTICK_IS_PRESENT))
 
 
+dnl ------------------------
 dnl Check fmod audio library
+dnl ------------------------
 AC_CHECK_LIB(fmod, FSOUND_Close,soundlibs="-lfmod $soundlibs")
 AC_CHECK_HEADER(fmod/fmod.h, AC_DEFINE(FMOD_HEADER))
 
+
+dnl -------------------
+dnl Set the c/c++ flags
+dnl -------------------
 if test "x$ac_cv_header_windows_h" != "xyes" ; then
   if test "x$GXX" != "xyes" ; then
     CFLAGS="$CFLAGS -I/usr/local/include -L/usr/local/lib"
@@ -96,7 +112,13 @@ else
   CFLAGS="$CFLAGS $MACH -malign-double -I/usr/local/include -L/usr/local/lib"
   CXXFLAGS="$CXXFLAGS $MACH -malign-double -I/usr/local/include -L/usr/local/lib"
 fi
+CFLAGS="-Wall $CFLAGS"
+CXXFLAGS="-Wall $CXXFLAGS"
 
+
+dnl ------
+dnl Output
+dnl ------
 echo "Network libraries: $netlibs"
 echo "Sound libraries: $soundlibs"
 echo "Graphics libraries: $graphlibs"

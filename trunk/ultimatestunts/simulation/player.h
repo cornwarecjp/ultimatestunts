@@ -27,15 +27,14 @@
 
 class CPlayer {
 public: 
-	CPlayer();
+	CPlayer(const CWorld *w);
 	virtual ~CPlayer();
 
-  virtual void giveWorld(const CWorld *w);
-  virtual const CMessage *getInputData();
   virtual bool Update();
 
   int m_MovingObjectId;
   int m_PlayerId;
+
 protected:
   const CWorld *m_World;
 };

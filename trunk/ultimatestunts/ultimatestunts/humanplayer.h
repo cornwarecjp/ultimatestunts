@@ -26,7 +26,7 @@
 
 class CHumanPlayer : public CPlayer  {
 public: 
-	CHumanPlayer();
+	CHumanPlayer(const CWorld *w);
 	~CHumanPlayer();
 };
 

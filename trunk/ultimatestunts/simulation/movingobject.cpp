@@ -16,8 +16,14 @@
  ***************************************************************************/
 
 #include "movingobject.h"
+#include "movobjinput.h"
 
-CMovingObject::CMovingObject(){
+CMovingObject::CMovingObject()
+{
+	m_InputData = new CMovObjInput;
 }
-CMovingObject::~CMovingObject(){
+
+CMovingObject::~CMovingObject()
+{
+	delete m_InputData;
 }
