@@ -1,6 +1,6 @@
-# Makefile.in generated automatically by automake 1.4 from Makefile.am
+# Makefile.in generated automatically by automake 1.4-p5 from Makefile.am
 
-# Copyright (C) 1994, 1995-8, 1999 Free Software Foundation, Inc.
+# Copyright (C) 1994, 1995-8, 1999, 2001 Free Software Foundation, Inc.
 # This Makefile.in is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
 # with or without modifications, as long as this notice is preserved.
@@ -73,7 +73,7 @@ soundlibs = @soundlibs@
 
 noinst_LIBRARIES = libshared.a
 
-libshared_a_SOURCES = binbuffer.cpp hello.cpp matrix.cpp timer.cpp vector.cpp
+libshared_a_SOURCES = binbuffer.cpp hello.cpp matrix.cpp timer.cpp vector.cpp ipnumber.cpp
 
 EXTRA_DIST = binbuffer.cpp binbuffer.h hello.cpp hello.h matrix.cpp matrix.h timer.cpp timer.h vector.cpp vector.h
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -91,7 +91,7 @@ X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_PRE_LIBS = @X_PRE_LIBS@
 libshared_a_LIBADD = 
 libshared_a_OBJECTS =  binbuffer.$(OBJEXT) hello.$(OBJEXT) \
-matrix.$(OBJEXT) timer.$(OBJEXT) vector.$(OBJEXT)
+matrix.$(OBJEXT) timer.$(OBJEXT) vector.$(OBJEXT) ipnumber.$(OBJEXT)
 AR = ar
 CXXFLAGS = @CXXFLAGS@
 CXXCOMPILE = $(CXX) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -102,10 +102,10 @@ DIST_COMMON =  Makefile.am Makefile.in
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = tar
+TAR = gtar
 GZIP_ENV = --best
-DEP_FILES =  .deps/binbuffer.P .deps/hello.P .deps/matrix.P \
-.deps/timer.P .deps/vector.P
+DEP_FILES =  .deps/binbuffer.P .deps/hello.P .deps/ipnumber.P \
+.deps/matrix.P .deps/timer.P .deps/vector.P
 SOURCES = $(libshared_a_SOURCES)
 OBJECTS = $(libshared_a_OBJECTS)
 
@@ -202,7 +202,7 @@ distdir: $(DISTFILES)
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
-	    cp -pr $$/$$file $(distdir)/$$file; \
+	    cp -pr $$d/$$file $(distdir)/$$file; \
 	  else \
 	    test -f $(distdir)/$$file \
 	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \

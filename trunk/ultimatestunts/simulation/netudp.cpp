@@ -27,7 +27,7 @@ CNetUDP::CNetUDP()
   sockfd = -1;
 }
 
-bool CNetUDP::setNetwork(const CString & localHost, int port) {
+bool CNetUDP::setNetwork(const CIPNumber & localHost, int port) {
 
   struct sockaddr_in servaddr;
 
@@ -62,7 +62,12 @@ CNetUDP::SNetDatagram * CNetUDP::recvData() const {
   nread = recvfrom(sockfd, &msg[0], UDP_MAX_DATAGRAM-1, 0, (struct sockaddr *) &from, &fromlen);
 
   if (nread > 0) {
+   char ip[14];
    msg[nread] = 0;
+   if (inet_ntop(AF_INET, (struct sockaddr_in *) &from, ip, sizeof(ip)) != NULL) {
+     res->host = &ip[0];
+   }
+
    res->data = &msg[0];
    return (res);
   }
@@ -71,13 +76,38 @@ CNetUDP::SNetDatagram * CNetUDP::recvData() const {
 
 }
 
+// check socket for read-, writablillity
+bool CNetUDP::select(const bool sockread=false, const bool sockwrite=false, const int utimeout=500000) const
+{
+  struct timeval selecttimeout;
+  fd_set allset;
+  fd_set *sread;
+  fd_set *swrite;
+
+  FD_ZERO(&allset);
+  FD_SET(sockfd, &allset);
+
+
+  selecttimeout.tv_sec = int (utimeout / 1000000);
+  selecttimeout.tv_usec = int (utimeout % 1000000);
+
+  if (sockread) sread=&allset; else sread=NULL;
+  if (sockwrite) swrite=&allset; else swrite=NULL;
+
+  if (::select(sockfd+1, sread, swrite, NULL, (struct timeval *) &selecttimeout) > 0) {
+    return (true);
+  }
+  return (false);
+}
+
+
 bool CNetUDP::sendData(const SNetDatagram & d) const {
   struct sockaddr_in destaddr;
   char *dat = d.data.raw_str();
 
   bzero(&destaddr, sizeof(destaddr));
   destaddr.sin_family = AF_INET;
-  inet_pton(AF_INET, d.host.c_str(), &destaddr.sin_addr);
+  inet_pton(AF_INET, d.host.toString().c_str(), &destaddr.sin_addr);
   destaddr.sin_port = htons(d.port);
 
   int res = sendto(sockfd, dat, sizeof(*dat),0, (struct sockaddr *) &destaddr, sizeof(destaddr));

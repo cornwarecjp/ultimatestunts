@@ -40,12 +40,12 @@ class CBinBuffer : public vector<Uint8>
 	CBinBuffer & operator += (const CBinBuffer & bb);
 	CBinBuffer & operator += (const CString & bs);
 
-   Uint8 getUint8(const int unsigned pos=0, int *newpos = NULL) const;
-   Uint16 getUint16(const int unsigned pos=0, int *newpos = NULL) const;
-   CString & getCString(const int unsigned pos=0, int *newpos = NULL) const;
+   Uint8 getUint8(const int unsigned pos, int *newpos) const;
+   Uint16 getUint16(const int unsigned pos, int *newpos) const;
+   CString & getCString(const int unsigned pos, int *newpos) const;
 
    CString & dump() const;
-   CBinBuffer & substr(const int unsigned pos = 0, const int n = -1) const ;
+   CBinBuffer & substr(const int unsigned pos, const int n) const ;
 
    char * raw_str() const;
 };

@@ -52,6 +52,7 @@ CBinBuffer & CBinBuffer::operator += (const CString & bs) {
 	for (int unsigned i=0;i<bs.size();i++) {
 		this->push_back((Uint8) bs[i]);
 	}
+  return (*this);
 }
 
 Uint8 CBinBuffer::getUint8(const int unsigned pos=0, int *newpos = NULL) const {

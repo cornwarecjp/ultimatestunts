@@ -18,6 +18,8 @@
 #ifndef MESSAGEBUFFER_H
 #define MESSAGEBUFFER_H
 
+
+#include "ipnumber.h"
 #include "binbuffer.h"
 #include "cstring.h"
 
@@ -49,7 +51,7 @@ private:
  s_msg_header * getHeader() const;
  bool setHeader(s_msg_header &);
 
- CString m_netIP;      // to be set to tranfer messages over network
+ CIPNumber m_netIP;      // to be set to tranfer messages over network
  int m_netPort;        // this can be eigher source or destination address
 
 
@@ -79,9 +81,9 @@ public:
  CBinBuffer & getBuffer();
 	~CMessageBuffer();
 
- void setIP(const CString & ip) { m_netIP = ip; }
+ void setIP(const CIPNumber & ip) { m_netIP = ip; }
  void setPort(const int port) { m_netPort = port; }
- CString & getIP() const { return (* new CString(m_netIP)); }
+ CIPNumber & getIP() const { return (* new CIPNumber(m_netIP)); }
  int getPort() const { return (m_netPort); }
 
 };

@@ -5,11 +5,14 @@ physics.o: physics.cpp /usr/include/stdio.h /usr/include/features.h \
   /usr/include/bits/sched.h /usr/include/libio.h /usr/include/_G_config.h \
   /usr/include/wchar.h /usr/include/bits/wchar.h /usr/include/gconv.h \
   /usr/lib/gcc-lib/i386-redhat-linux/2.96/include/stdarg.h \
-  /usr/include/bits/stdio_lim.h /usr/include/bits/stdio.h physics.h \
-  simulation.h /usr/include/g++-3/vector \
-  /usr/include/g++-3/stl_algobase.h /usr/include/g++-3/stl_config.h \
-  /usr/include/g++-3/stl_relops.h /usr/include/g++-3/stl_pair.h \
-  /usr/include/g++-3/type_traits.h /usr/include/string.h \
+  /usr/include/bits/stdio_lim.h /usr/include/bits/stdio.h \
+  /usr/include/math.h /usr/include/bits/huge_val.h \
+  /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h \
+  /usr/include/bits/mathinline.h physics.h simulation.h \
+  /usr/include/g++-3/vector /usr/include/g++-3/stl_algobase.h \
+  /usr/include/g++-3/stl_config.h /usr/include/g++-3/stl_relops.h \
+  /usr/include/g++-3/stl_pair.h /usr/include/g++-3/type_traits.h \
+  /usr/include/string.h \
   /usr/lib/gcc-lib/i386-redhat-linux/2.96/include/limits.h \
   /usr/lib/gcc-lib/i386-redhat-linux/2.96/include/syslimits.h \
   /usr/include/limits.h /usr/include/bits/posix1_lim.h \
@@ -30,12 +33,7 @@ physics.o: physics.cpp /usr/include/stdio.h /usr/include/features.h \
   /usr/include/bits/sigthread.h /usr/include/g++-3/stl_construct.h \
   /usr/include/g++-3/stl_uninitialized.h /usr/include/g++-3/stl_vector.h \
   /usr/include/g++-3/stl_bvector.h player.h world.h tile.h movingobject.h \
-  dynamicobject.h message.h messagebuffer.h ../shared/binbuffer.h \
-  ../shared/cstring.h /usr/include/g++-3/std/bastring.h \
-  /usr/include/g++-3/cstddef /usr/include/g++-3/std/straits.h \
-  /usr/include/g++-3/cctype /usr/include/ctype.h \
-  /usr/include/g++-3/cstring /usr/include/g++-3/alloc.h \
-  /usr/include/g++-3/iterator /usr/include/g++-3/std/bastring.cc \
+  dynamicobject.h message.h messagebuffer.h ../shared/ipnumber.h \
   /usr/local/include/SDL/SDL.h /usr/local/include/SDL/SDL_main.h \
   /usr/local/include/SDL/SDL_types.h /usr/local/include/SDL/SDL_getenv.h \
   /usr/local/include/SDL/SDL_error.h /usr/local/include/SDL/begin_code.h \
@@ -49,11 +47,23 @@ physics.o: physics.cpp /usr/include/stdio.h /usr/include/features.h \
   /usr/local/include/SDL/SDL_keysym.h /usr/local/include/SDL/SDL_mouse.h \
   /usr/local/include/SDL/SDL_video.h /usr/local/include/SDL/SDL_mutex.h \
   /usr/local/include/SDL/SDL_quit.h /usr/local/include/SDL/SDL_version.h \
+  /usr/include/arpa/inet.h /usr/include/netinet/in.h \
+  /usr/include/stdint.h /usr/include/bits/wordsize.h \
+  /usr/include/bits/socket.h /usr/include/bits/sockaddr.h \
+  /usr/include/asm/socket.h /usr/include/asm/sockios.h \
+  /usr/include/bits/in.h /usr/include/bits/byteswap.h ../shared/cstring.h \
+  /usr/include/g++-3/std/bastring.h /usr/include/g++-3/cstddef \
+  /usr/include/g++-3/std/straits.h /usr/include/g++-3/cctype \
+  /usr/include/ctype.h /usr/include/g++-3/cstring \
+  /usr/include/g++-3/alloc.h /usr/include/g++-3/iterator \
+  /usr/include/g++-3/std/bastring.cc ../shared/binbuffer.h \
   ../shared/usmacros.h /usr/local/include/SDL/SDL_endian.h \
   /usr/include/asm/byteorder.h /usr/include/asm/types.h \
   /usr/include/linux/byteorder/little_endian.h \
   /usr/include/linux/byteorder/swab.h \
-  /usr/include/linux/byteorder/generic.h objectchoice.h
+  /usr/include/linux/byteorder/generic.h ../shared/vector.h \
+  ../shared/matrix.h objectchoice.h ../shared/timer.h carinput.h \
+  movobjinput.h
 physics.cpp :
 /usr/include/stdio.h :
 /usr/include/features.h :
@@ -71,6 +81,11 @@ physics.cpp :
 /usr/lib/gcc-lib/i386-redhat-linux/2.96/include/stdarg.h :
 /usr/include/bits/stdio_lim.h :
 /usr/include/bits/stdio.h :
+/usr/include/math.h :
+/usr/include/bits/huge_val.h :
+/usr/include/bits/mathdef.h :
+/usr/include/bits/mathcalls.h :
+/usr/include/bits/mathinline.h :
 physics.h :
 simulation.h :
 /usr/include/g++-3/vector :
@@ -122,17 +137,7 @@ movingobject.h :
 dynamicobject.h :
 message.h :
 messagebuffer.h :
-../shared/binbuffer.h :
-../shared/cstring.h :
-/usr/include/g++-3/std/bastring.h :
-/usr/include/g++-3/cstddef :
-/usr/include/g++-3/std/straits.h :
-/usr/include/g++-3/cctype :
-/usr/include/ctype.h :
-/usr/include/g++-3/cstring :
-/usr/include/g++-3/alloc.h :
-/usr/include/g++-3/iterator :
-/usr/include/g++-3/std/bastring.cc :
+../shared/ipnumber.h :
 /usr/local/include/SDL/SDL.h :
 /usr/local/include/SDL/SDL_main.h :
 /usr/local/include/SDL/SDL_types.h :
@@ -155,6 +160,27 @@ messagebuffer.h :
 /usr/local/include/SDL/SDL_mutex.h :
 /usr/local/include/SDL/SDL_quit.h :
 /usr/local/include/SDL/SDL_version.h :
+/usr/include/arpa/inet.h :
+/usr/include/netinet/in.h :
+/usr/include/stdint.h :
+/usr/include/bits/wordsize.h :
+/usr/include/bits/socket.h :
+/usr/include/bits/sockaddr.h :
+/usr/include/asm/socket.h :
+/usr/include/asm/sockios.h :
+/usr/include/bits/in.h :
+/usr/include/bits/byteswap.h :
+../shared/cstring.h :
+/usr/include/g++-3/std/bastring.h :
+/usr/include/g++-3/cstddef :
+/usr/include/g++-3/std/straits.h :
+/usr/include/g++-3/cctype :
+/usr/include/ctype.h :
+/usr/include/g++-3/cstring :
+/usr/include/g++-3/alloc.h :
+/usr/include/g++-3/iterator :
+/usr/include/g++-3/std/bastring.cc :
+../shared/binbuffer.h :
 ../shared/usmacros.h :
 /usr/local/include/SDL/SDL_endian.h :
 /usr/include/asm/byteorder.h :
@@ -162,4 +188,9 @@ messagebuffer.h :
 /usr/include/linux/byteorder/little_endian.h :
 /usr/include/linux/byteorder/swab.h :
 /usr/include/linux/byteorder/generic.h :
+../shared/vector.h :
+../shared/matrix.h :
 objectchoice.h :
+../shared/timer.h :
+carinput.h :
+movobjinput.h :

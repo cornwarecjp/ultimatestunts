@@ -19,13 +19,15 @@
 #define _CString_H
 
 
-#include <std/bastring.h>
+// #include <std/bastring.h>
+#include <string>
 #include <stdio.h>
 #include <stdlib.h>
 
  using namespace std;
 
- class CString : public std::basic_string<char>
+//  class CString : public std::basic_string<char>
+ class CString : public string
  {
   private:
     char c_up(const char c) const

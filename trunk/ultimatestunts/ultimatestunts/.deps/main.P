@@ -32,12 +32,7 @@ main.o: main.cpp /usr/include/stdlib.h /usr/include/features.h \
   /usr/include/g++-3/stl_bvector.h ../simulation/tile.h \
   ../simulation/movingobject.h ../simulation/dynamicobject.h \
   ../simulation/message.h ../simulation/messagebuffer.h \
-  ../shared/binbuffer.h ../shared/cstring.h \
-  /usr/include/g++-3/std/bastring.h /usr/include/g++-3/cstddef \
-  /usr/include/g++-3/std/straits.h /usr/include/g++-3/cctype \
-  /usr/include/ctype.h /usr/include/g++-3/cstring \
-  /usr/include/g++-3/alloc.h /usr/include/g++-3/iterator \
-  /usr/include/g++-3/std/bastring.cc /usr/local/include/SDL/SDL.h \
+  ../shared/ipnumber.h /usr/local/include/SDL/SDL.h \
   /usr/local/include/SDL/SDL_main.h /usr/local/include/SDL/SDL_types.h \
   /usr/local/include/SDL/SDL_getenv.h /usr/local/include/SDL/SDL_error.h \
   /usr/local/include/SDL/begin_code.h /usr/local/include/SDL/close_code.h \
@@ -51,13 +46,25 @@ main.o: main.cpp /usr/include/stdlib.h /usr/include/features.h \
   /usr/local/include/SDL/SDL_keysym.h /usr/local/include/SDL/SDL_mouse.h \
   /usr/local/include/SDL/SDL_video.h /usr/local/include/SDL/SDL_mutex.h \
   /usr/local/include/SDL/SDL_quit.h /usr/local/include/SDL/SDL_version.h \
+  /usr/include/arpa/inet.h /usr/include/netinet/in.h \
+  /usr/include/stdint.h /usr/include/bits/wordsize.h \
+  /usr/include/bits/socket.h /usr/include/bits/sockaddr.h \
+  /usr/include/asm/socket.h /usr/include/asm/sockios.h \
+  /usr/include/bits/in.h /usr/include/bits/byteswap.h ../shared/cstring.h \
+  /usr/include/g++-3/std/bastring.h /usr/include/g++-3/cstddef \
+  /usr/include/g++-3/std/straits.h /usr/include/g++-3/cctype \
+  /usr/include/ctype.h /usr/include/g++-3/cstring \
+  /usr/include/g++-3/alloc.h /usr/include/g++-3/iterator \
+  /usr/include/g++-3/std/bastring.cc ../shared/binbuffer.h \
   ../shared/usmacros.h /usr/local/include/SDL/SDL_endian.h \
   /usr/include/asm/byteorder.h /usr/include/asm/types.h \
   /usr/include/linux/byteorder/little_endian.h \
   /usr/include/linux/byteorder/swab.h \
-  /usr/include/linux/byteorder/generic.h ../simulation/objectchoice.h \
-  ../simulation/player.h ../simulation/simulation.h \
-  ../simulation/physics.h humanplayer.h
+  /usr/include/linux/byteorder/generic.h ../shared/vector.h \
+  ../shared/matrix.h ../simulation/objectchoice.h \
+  ../simulation/simulation.h ../simulation/player.h \
+  ../simulation/physics.h ../shared/timer.h ../simulation/aiplayercar.h \
+  humanplayer.h
 main.cpp :
 /usr/include/stdlib.h :
 /usr/include/features.h :
@@ -123,17 +130,7 @@ main.cpp :
 ../simulation/dynamicobject.h :
 ../simulation/message.h :
 ../simulation/messagebuffer.h :
-../shared/binbuffer.h :
-../shared/cstring.h :
-/usr/include/g++-3/std/bastring.h :
-/usr/include/g++-3/cstddef :
-/usr/include/g++-3/std/straits.h :
-/usr/include/g++-3/cctype :
-/usr/include/ctype.h :
-/usr/include/g++-3/cstring :
-/usr/include/g++-3/alloc.h :
-/usr/include/g++-3/iterator :
-/usr/include/g++-3/std/bastring.cc :
+../shared/ipnumber.h :
 /usr/local/include/SDL/SDL.h :
 /usr/local/include/SDL/SDL_main.h :
 /usr/local/include/SDL/SDL_types.h :
@@ -156,6 +153,27 @@ main.cpp :
 /usr/local/include/SDL/SDL_mutex.h :
 /usr/local/include/SDL/SDL_quit.h :
 /usr/local/include/SDL/SDL_version.h :
+/usr/include/arpa/inet.h :
+/usr/include/netinet/in.h :
+/usr/include/stdint.h :
+/usr/include/bits/wordsize.h :
+/usr/include/bits/socket.h :
+/usr/include/bits/sockaddr.h :
+/usr/include/asm/socket.h :
+/usr/include/asm/sockios.h :
+/usr/include/bits/in.h :
+/usr/include/bits/byteswap.h :
+../shared/cstring.h :
+/usr/include/g++-3/std/bastring.h :
+/usr/include/g++-3/cstddef :
+/usr/include/g++-3/std/straits.h :
+/usr/include/g++-3/cctype :
+/usr/include/ctype.h :
+/usr/include/g++-3/cstring :
+/usr/include/g++-3/alloc.h :
+/usr/include/g++-3/iterator :
+/usr/include/g++-3/std/bastring.cc :
+../shared/binbuffer.h :
 ../shared/usmacros.h :
 /usr/local/include/SDL/SDL_endian.h :
 /usr/include/asm/byteorder.h :
@@ -163,8 +181,12 @@ main.cpp :
 /usr/include/linux/byteorder/little_endian.h :
 /usr/include/linux/byteorder/swab.h :
 /usr/include/linux/byteorder/generic.h :
+../shared/vector.h :
+../shared/matrix.h :
 ../simulation/objectchoice.h :
-../simulation/player.h :
 ../simulation/simulation.h :
+../simulation/player.h :
 ../simulation/physics.h :
+../shared/timer.h :
+../simulation/aiplayercar.h :
 humanplayer.h :

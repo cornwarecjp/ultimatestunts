@@ -30,8 +30,10 @@
 #include <string.h> /* memset() */
 #include <fcntl.h>
 #include <sys/poll.h>
+#include <sys/select.h>
 
 #include "binbuffer.h"
+#include "ipnumber.h"
 
 
 #define UDP_MAX_DATAGRAM 4096
@@ -43,7 +45,7 @@ class CNetUDP {
 
 public:
 typedef struct _SNetDatagram {
-  CString host;
+  CIPNumber host;
   Uint16 port;
   CBinBuffer data;
 } SNetDatagram;
@@ -57,9 +59,11 @@ private:
 
 public:
   CNetUDP();
+  bool select(const bool sockread=false, const bool sockwrite=false, const int utimeout=500000) const;    // own select() impl.
   bool sendData(const SNetDatagram &) const;
-  SNetDatagram* recvData() const ;   // NULL if end of buffer
-  bool setNetwork(const CString & localHost, const int port);
+  SNetDatagram* recvData() const ;   // returns NULL if end of buffer
+
+  bool setNetwork(const CIPNumber & localHost, const int port);
 
 };
 

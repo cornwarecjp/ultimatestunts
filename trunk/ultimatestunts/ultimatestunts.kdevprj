@@ -171,7 +171,7 @@ install_location=
 type=DATA
 
 [shared/Makefile.am]
-files=shared/hello.cpp,shared/hello.h,shared/matrix.cpp,shared/matrix.h,shared/vector.cpp,shared/vector.h,shared/binbuffer.h,shared/cstring.h,shared/binbuffer.cpp,shared/usmacros.h,shared/timer.cpp,shared/timer.h
+files=shared/hello.cpp,shared/hello.h,shared/matrix.cpp,shared/matrix.h,shared/vector.cpp,shared/vector.h,shared/binbuffer.h,shared/cstring.h,shared/binbuffer.cpp,shared/usmacros.h,shared/timer.cpp,shared/timer.h,shared/bthread.h,shared/ipnumber.h,shared/ipnumber.cpp
 sub_dirs=
 type=static_library
 
@@ -182,6 +182,12 @@ install_location=
 type=SOURCE
 
 [shared/binbuffer.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[shared/bthread.h]
 dist=true
 install=false
 install_location=
@@ -200,6 +206,18 @@ install_location=
 type=SOURCE
 
 [shared/hello.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[shared/ipnumber.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[shared/ipnumber.h]
 dist=true
 install=false
 install_location=

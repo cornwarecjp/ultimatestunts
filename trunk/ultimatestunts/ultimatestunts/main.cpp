@@ -37,9 +37,11 @@ CWorld *world;
 CPlayer *player1, *player2, *player3, *player4;
 CSimulation *sim;
 
+
+
 bool mainloop()
 {
-	//Debugging 'display'
+ //Debugging 'display'
 	printf("\033[1H");
 	printf("\033[1G");
 	printf("**********\n");
@@ -68,7 +70,7 @@ bool mainloop()
 
 int main(int argc, char *argv[])
 {
-	printf("Welcome to " PACKAGE " version " VERSION "\n");
+  printf("Welcome to " PACKAGE " version " VERSION "\n");
 
 	printf("\nCreating world object\n");
 	world = new CWorld;
