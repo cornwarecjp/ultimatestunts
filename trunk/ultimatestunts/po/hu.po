@@ -5,16 +5,16 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Ultimate Stunts 0.5.3\n"
+"Project-Id-Version: Ultimate Stunts 0.5.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-02-03 14:11+0100\n"
+"POT-Creation-Date: 2005-02-28 22:55+0100\n"
 "PO-Revision-Date: 2005-02-03 14:11+0100\n"
 "Last-Translator: Borbola Balazs <EMAIL@ADDRESS>\n"
 "Language-Team: Hungarian <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ISO-8859-1\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
 #: ultimatestunts/gamegui.cpp:65
 msgid "Main menu"
@@ -91,7 +91,6 @@ msgstr " [a szerver fog választani egyet]"
 msgid " [%d player selected]"
 msgid_plural " [%d players selected]"
 msgstr[0] " [%d játékos kiválasztva]"
-msgstr[1] " [%d játékosok kiválasztva]"
 
 #: ultimatestunts/gamegui.cpp:184
 msgid "Local game"
@@ -163,20 +162,21 @@ msgstr "Ez egy számítógép által vezérelt játékos?"
 msgid "Player %s was refused"
 msgstr "Játékos visszautasítva: %s"
 
-#: ultimatestunts/uscore.cpp:87
+#: ultimatestunts/uscore.cpp:89
 #, c-format
 msgid "Frame rate: %.1f FPS"
 msgstr "Képkocka/másodperc: %.1f FPS"
 
-#: ultimatestunts/uscore.cpp:88
+#: ultimatestunts/uscore.cpp:90
 #, c-format
 msgid "Top speed in this session: %.1f km/h"
 msgstr "Csúcssebesség ebben a szakaszban: %.1f km/h"
 
-#: ultimatestunts/uscore.cpp:101
+#: ultimatestunts/uscore.cpp:103
 #, c-format
 msgid "Car %d velocity %.1f km/h; gear %d; %.1f RPM"
-msgstr "Jármû %d sebesség %.1f km/h; sebességváltó állás: %d; fordulatszám: %.1f RPM"
+msgstr ""
+"Jármû %d sebesség %.1f km/h; sebességváltó állás: %d; fordulatszám: %.1f RPM"
 
 #: graphics/messagebox.cpp:115
 msgid "OK"

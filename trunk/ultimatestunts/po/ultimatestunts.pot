@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-02-03 14:11+0100\n"
+"POT-Creation-Date: 2005-02-28 22:55+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -164,17 +164,17 @@ msgstr ""
 msgid "Player %s was refused"
 msgstr ""
 
-#: ultimatestunts/uscore.cpp:87
+#: ultimatestunts/uscore.cpp:89
 #, c-format
 msgid "Frame rate: %.1f FPS"
 msgstr ""
 
-#: ultimatestunts/uscore.cpp:88
+#: ultimatestunts/uscore.cpp:90
 #, c-format
 msgid "Top speed in this session: %.1f km/h"
 msgstr ""
 
-#: ultimatestunts/uscore.cpp:101
+#: ultimatestunts/uscore.cpp:103
 #, c-format
 msgid "Car %d velocity %.1f km/h; gear %d; %.1f RPM"
 msgstr ""

@@ -5,9 +5,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Ultimate Stunts 0.5.3\n"
+"Project-Id-Version: Ultimate Stunts 0.5.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-02-03 14:11+0100\n"
+"POT-Creation-Date: 2005-02-28 22:55+0100\n"
 "PO-Revision-Date: 2005-02-03 14:11+0100\n"
 "Last-Translator: Marcelo De Nardin <EMAIL@ADDRESS>\n"
 "Language-Team: Brasilian Portuguese <LL@li.org>\n"
@@ -163,17 +163,17 @@ msgstr "Ele é um jogador de IA?"
 msgid "Player %s was refused"
 msgstr "Jogador %s foi recusado"
 
-#: ultimatestunts/uscore.cpp:87
+#: ultimatestunts/uscore.cpp:89
 #, c-format
 msgid "Frame rate: %.1f FPS"
 msgstr "Taxa de quadros por segundo: %.1f FPS"
 
-#: ultimatestunts/uscore.cpp:88
+#: ultimatestunts/uscore.cpp:90
 #, c-format
 msgid "Top speed in this session: %.1f km/h"
 msgstr "aior velocidade nesta sessão: %.1f km/h"
 
-#: ultimatestunts/uscore.cpp:101
+#: ultimatestunts/uscore.cpp:103
 #, c-format
 msgid "Car %d velocity %.1f km/h; gear %d; %.1f RPM"
 msgstr "Carro %d velocidade %.1f km/h; marcha %d; %.1f RPM"
