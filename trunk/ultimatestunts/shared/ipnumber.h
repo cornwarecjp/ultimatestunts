@@ -17,7 +17,7 @@
 #ifndef IPNUMBER_H
 #define IPNUMBER_H
 
-#include <SDL/SDL.h>
+#include "SDL.h"
 #include <vector>
 namespace std {}
 using namespace std;

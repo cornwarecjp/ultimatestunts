@@ -60,6 +60,12 @@ void CCar::simulate(CPhysics &theSimulator)
 
 void CCar::updateBodyData()
 {
+	for(unsigned int i=0; i < m_Bodies.size(); i++)
+	{
+		m_Bodies[i].m_PreviousPosition = m_Bodies[i].m_Position;
+		m_Bodies[i].m_PreviousOrientation = m_Bodies[i].m_Orientation;
+	}
+
 	CMatrix wheelmatrix;
 	wheelmatrix.rotX(m_WheelAngle);
 

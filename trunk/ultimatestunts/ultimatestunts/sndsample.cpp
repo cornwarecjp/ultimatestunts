@@ -38,7 +38,7 @@ CSndSample::~CSndSample()
 
 int CSndSample::loadFromFile(CString filename)
 {
-	m_Sample = FSOUND_Sample_Load(FSOUND_FREE, filename.c_str(), FSOUND_HW3D, 0);
+	m_Sample = FSOUND_Sample_Load(FSOUND_FREE, filename.c_str(), FSOUND_HW3D, 0, 0);
 
 	if (!m_Sample)
 	{
@@ -48,7 +48,7 @@ int CSndSample::loadFromFile(CString filename)
 
 	// increasing mindistnace makes it louder in 3d space
 	FSOUND_Sample_SetMinMaxDistance((FSOUND_SAMPLE  *)m_Sample, 4.0f, 1000.0f);
-	FSOUND_Sample_SetLoopMode((FSOUND_SAMPLE  *)m_Sample, FSOUND_LOOP_NORMAL);
+	FSOUND_Sample_SetMode((FSOUND_SAMPLE  *)m_Sample, FSOUND_LOOP_NORMAL);
 
 	return 0;
 }

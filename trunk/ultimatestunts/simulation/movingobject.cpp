@@ -21,13 +21,6 @@
 CMovingObject::CMovingObject()
 {
 	m_InputData = new CMovObjInput;
-
-	//Give some default values
-	//Just for not letting them uninitialised
-	//The simulation should re-initialise them.
-	m_Position = m_Velocity = m_Orientation = m_AngularVelocity = CVector(0,0,0);
-
-	m_RotationMatrix = CMatrix(m_Orientation);
 }
 
 CMovingObject::~CMovingObject()
@@ -35,16 +28,18 @@ CMovingObject::~CMovingObject()
 	delete m_InputData; //I guess this will happen for all CMovingObject-derived classes
 }
 
-void CMovingObject::setOrientation(CVector v)
+void CMovingObject::setOrientationVector(CVector v)
 {
-	m_Orientation = v;
-	m_RotationMatrix = CMatrix(m_Orientation);
+	m_OrientationVector = v;
+	m_PreviousOrientation = m_Orientation;
+	m_Orientation = CMatrix(v);
 }
 
-void CMovingObject::setRotationMatrix(CMatrix &M)
+void CMovingObject::setOrientation(const CMatrix &M)
 {
-	m_RotationMatrix = M;
-	//and something to set m_Orientation
+	m_PreviousOrientation = m_Orientation;
+	m_Orientation = M;
+	//and something to set m_OrientationVector
 }
 
 void CMovingObject::simulate(CPhysics &theSimulator)

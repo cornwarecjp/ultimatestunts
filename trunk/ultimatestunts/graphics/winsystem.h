@@ -18,7 +18,7 @@
 #ifndef WINSYSTEM_H
 #define WINSYSTEM_H
 
-#include <SDL/SDL.h>
+#include "SDL.h"
 
 #include "cstring.h"
 #include "usmacros.h"

@@ -34,6 +34,8 @@ public:
 	int m_Body;
 	CVector m_Position;
 	CMatrix m_Orientation;
+	CVector m_PreviousPosition;
+	CMatrix m_PreviousOrientation;
 
 	CVector m_FBB_min, m_FBB_max; //Fixed bounding box
 

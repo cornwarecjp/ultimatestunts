@@ -49,6 +49,22 @@ bool CCollisionModel::loadFromFile(CFile *f, CString subset, CMaterial **matarra
 				CString lhs = line.mid(0, sp);
 				CString rhs = line.mid(sp+1);
 
+				if(lhs == "Lod")
+				{
+					if(rhs.inStr('c') < 0)
+						while(true)
+						{
+							line = f->readl();
+							if(line[0]=='\n') break;
+							sp = line.inStr(' ');
+							if(sp > 0 && line.mid(0, sp) == "Lod")
+							{
+								rhs = line.mid(sp+1);
+								if(rhs.inStr('c') >= 0)
+									break;
+							}
+						}
+				}
 				if(lhs=="Vertex" && currentType != None)
 				{
 					CVector v = rhs.toVector();

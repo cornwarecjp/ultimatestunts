@@ -22,7 +22,7 @@ namespace std {}
 using namespace std;
 
 #include "cstring.h"
-#include <SDL/SDL.h>
+#include "SDL.h"
 #include "usmacros.h"
 
 

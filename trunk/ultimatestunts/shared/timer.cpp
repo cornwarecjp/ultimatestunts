@@ -16,7 +16,7 @@
  ***************************************************************************/
 
 #ifdef HAVE_SDL
-#include <SDL/SDL.h>
+#include "SDL.h"
 #else
 #include <sys/time.h>
 #endif

@@ -20,7 +20,7 @@
 #define _NETMESSAGE_H
 
 #include "netudp.h"
-#include <SDL/SDL.h>
+#include "SDL.h"
 #include <vector>
 namespace std {}
 using namespace std;

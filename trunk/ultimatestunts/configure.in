@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 
 AC_INIT(ultimatestunts/main.cpp)
-AM_INIT_AUTOMAKE(ultimatestunts,0.4.0)
+AM_INIT_AUTOMAKE(ultimatestunts,0.4.1)
 
 dnl Checks for programs.
 AC_PROG_CC
@@ -74,6 +74,7 @@ fi
 dnl Check for SDL
 AM_PATH_SDL(1.1.0, AC_DEFINE(HAVE_SDL))
 CFLAGS="$CFLAGS $SDL_CFLAGS"
+CXXFLAGS="$CXXFLAGS $SDL_CFLAGS"
 sdllibs="$SDL_LIBS $sdllibs"
 
 dnl ---------------------

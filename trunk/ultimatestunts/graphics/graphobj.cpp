@@ -77,15 +77,30 @@ bool CGraphObj::loadFromFile(CFile *f, CTexture **matarray)
 			eof = line[0]=='\n';
 
 			int sp = line.inStr(' ');
-			//printf("Spatie op positie %d\n",sp);
 			if(sp>0)
 			{
-				if(line.mid(0, sp)=="Texture")
+				CString lhs = line.mid(0, sp);
+				CString rhs = line.mid(sp+1);
+				if(lhs == "Lod")
 				{
-					line = line.mid(sp+1);
-					int t = line.toInt();
+					if(rhs.inStr(lod+'0') < 0)
+						while(true)
+						{
+							line = f->readl();
+							if(line[0]=='\n') break;
+							sp = line.inStr(' ');
+							if(sp > 0 && line.mid(0, sp) == "Lod")
+							{
+								rhs = line.mid(sp+1);
+								if(rhs.inStr(lod+'0') >= 0)
+									break;
+							}
+						}
+				}
+				if(lhs == "Texture")
+				{
+					int t = rhs.toInt();
 
-					//printf("  Using texture %d\n", t);
 					CTexture *tex = *(matarray+t);
 					if(tex->getSizeX(lod) <=4 || tex->getSizeY(lod) <= 4)
 					{
@@ -113,47 +128,40 @@ bool CGraphObj::loadFromFile(CFile *f, CTexture **matarray)
 					}
 
 				}
-				if(line.mid(0, sp)=="Color")
+				if(lhs == "Color")
 				{
-					//printf("Color keyword gevonden\n");
-					line = line.mid(sp+1);
 					if(texture_isenabled) //oplossing van de kleurenbug
-						setMaterialColor(line.toVector());
+						setMaterialColor(rhs.toVector());
 				}
-				if(line.mid(0, sp)=="Vertex")
+				if(lhs == "Vertex")
 				{
-					//printf("Vertex keyword gevonden\n");
-					line = line.mid(sp+1);
-					CVector v = line.toVector();
+					CVector v = rhs.toVector();
 					glVertex3f(v.x, v.y, v.z);
 				}
-				if(line.mid(0, sp)=="TexCoord")
+				if(lhs == "TexCoord")
 				{
-					//printf("TexCoord keyword gevonden\n");
-					line = line.mid(sp+1);
-					CVector v = line.toVector();
+					CVector v = rhs.toVector();
 					glTexCoord2f(v.x, v.y);
 				}
-				if(line.mid(0, sp)=="Normal")
+				if(lhs == "Normal")
 				{
 					//printf("Normal keyword gevonden\n");
-					line = line.mid(sp+1);
-					CVector v = line.toVector();
+					CVector v = rhs.toVector();
 					glNormal3f(v.x, v.y, v.z);
 				}
-				if(line.mid(0, sp)=="Quads")
+				if(lhs == "Quads")
 					glBegin(GL_QUADS);
-				if(line.mid(0, sp)=="Triangles")
+				if(lhs == "Triangles")
 					glBegin(GL_TRIANGLES);
-				if(line.mid(0, sp)=="Trianglestrip")
+				if(lhs == "Trianglestrip")
 					glBegin(GL_TRIANGLE_STRIP);
-				if(line.mid(0, sp)=="Quadstrip")
+				if(lhs == "Quadstrip")
 					glBegin(GL_QUAD_STRIP);
-				if(line.mid(0, sp)=="Polygon")
+				if(lhs == "Polygon")
 					glBegin(GL_POLYGON);
-				if(line.mid(0, sp)=="End")
+				if(lhs == "End")
 					glEnd();
-				if(line.mid(0, sp)=="Notex")
+				if(lhs == "Notex")
 					glBindTexture(GL_TEXTURE_2D, no_tex);
 			}
 			else //no spaces
@@ -190,7 +198,6 @@ bool CGraphObj::loadFromFile(CFile *f, CTexture **matarray)
 void CGraphObj::draw(int lod) const
 {
 	//TODO: make this code very fast (it's the main drawing routine)
-	//printf("Drawing beautiful openGL graphics...\n");
 	switch(lod)
 	{
 		case 1: glCallList(m_ObjList1); break;

@@ -18,7 +18,7 @@
 #ifndef OBJECTCHOICE_H
 #define OBJECTCHOICE_H
 
-#include <SDL/SDL.h>
+#include "SDL.h"
 #include "message.h"
 #include "cstring.h"
 

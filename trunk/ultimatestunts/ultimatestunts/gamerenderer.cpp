@@ -166,7 +166,7 @@ void CGameRenderer::viewMovObj(CMovingObject *mo)
 	glPushMatrix();
 
 	CVector r = mo->getPosition();
-	const CMatrix &m = mo->getRotationMatrix();
+	const CMatrix &m = mo->getOrientation();
 	//printf("Drawing a car at position %f,%f,%f\n", r.x,r.y,r.z);
 
 	glTranslatef (r.x, r.y, r.z);

@@ -50,7 +50,7 @@ CMusic::~CMusic()
 
 int CMusic::loadFromFile(CString filename)
 {
-	m_Stream = FSOUND_Stream_OpenFile(filename.c_str(), FSOUND_NORMAL, 0);
+	m_Stream = FSOUND_Stream_Open(filename.c_str(), FSOUND_NORMAL, 0, 0);
 
 	if (!m_Stream)
 	{

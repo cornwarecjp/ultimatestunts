@@ -73,7 +73,7 @@ bool CPhysics::update()
 			//Total force
 			CVector Ftot;
 
-			CMatrix R = mo->getRotationMatrix();
+			CMatrix R = mo->getOrientation();
 			float m = mo->m_Mass;
 
 			float gas = input->m_Forward;
@@ -148,7 +148,7 @@ bool CPhysics::update()
 			CMatrix dR;
 			dR.rotY(stuur*invstraal*vabs*dt);
 			R *= dR;
-			mo->setRotationMatrix(R);
+			mo->setOrientation(R);
 
 			//standard acceleration:
 			v += Ftot * dt/m;

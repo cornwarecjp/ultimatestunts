@@ -225,7 +225,7 @@ void CSound::update()
 	}
 
 	//Update:
-	FSOUND_3D_Update();
+	FSOUND_Update();
 }
 
 #else

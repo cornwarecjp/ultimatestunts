@@ -23,7 +23,7 @@
 #ifndef _bthread_use_SDL
 #include <pthread.h>
 #else
-#include <SDL/SDL_thread.h>
+#include "SDL_thread.h"
 #endif
 
 class CBThread {

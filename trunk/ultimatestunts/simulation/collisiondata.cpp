@@ -24,6 +24,7 @@
 CCollisionData::CCollisionData(const CWorld *w)
 {
 	m_World = w;
+	m_FirstUpdate = true;
 }
 
 CCollisionData::~CCollisionData()
@@ -32,6 +33,12 @@ CCollisionData::~CCollisionData()
 
 void CCollisionData::calculateCollisions()
 {
+	if(m_FirstUpdate)
+	{
+		m_FirstUpdate = false;
+		calculateTrackBounds();
+	}
+
 	m_Events.clear();
 
 	for(unsigned int i=0; i<m_World->m_MovObjs.size(); i++)
@@ -40,6 +47,10 @@ void CCollisionData::calculateCollisions()
 		m_Events.push_back(CColEvents());
 		m_Events[i].isHit = false;
 	}
+
+	//Collision with track bounds
+	for(unsigned int i=0; i<m_World->m_MovObjs.size(); i++)
+		ObjTrackBoundTest(i);
 
 	//Moving object to moving object collisions
 	for(unsigned int i=0; i < m_World->m_MovObjs.size()-1; i++)
@@ -68,6 +79,127 @@ void CCollisionData::calculateCollisions()
 					ObjTileTest(i, x, z, h);
 				}
 	}
+}
+
+void CCollisionData::calculateTrackBounds()
+{
+	int minz = 0;
+	int maxz = 0;
+
+	int lth = m_World->m_L;
+	int wth = m_World->m_W;
+	int hth = m_World->m_H;
+	for(int x = 0; x < lth; x++)
+		for(int y = 0; y < wth; y++)
+			for(int h = 0; h < hth; h++)
+			{
+				int z = m_World->m_Track[h + hth*(y + wth*x)].m_Z;
+				if(z < minz) minz = z;
+				if(z > maxz) maxz = z;
+			}
+
+	m_TrackMin = CVector(
+		-0.5*TILESIZE,
+		minz*VERTSIZE,
+		-0.5*TILESIZE);
+	m_TrackMax = CVector(
+		((float)lth-0.5)*TILESIZE,
+		(maxz+30)*VERTSIZE,
+		((float)wth-0.5)*TILESIZE);
+}
+
+void CCollisionData::ObjTrackBoundTest(int n)
+{
+	CMovingObject *o = m_World->m_MovObjs[n];
+	CVector pos = o->getPosition();
+	CVector mom = o->getVelocity() * o->m_Mass;
+	//TODO: per body collision
+	//for(unsigned int i=0; i<o->m_Bodies.size(); i++)
+	int i=0;
+		{
+			CVector p = pos + o->m_Bodies[i].m_Position;
+			const CBound *b = m_World->m_MovObjBounds[o->m_Bodies[i].m_Body];
+			float r = b->m_BSphere_r;
+
+			if(p.x - r < m_TrackMin.x)
+			{
+				CCollision c;
+				c.body = i;
+				c.dp = CVector(-mom.x,0,0);
+				c.dr = CVector(m_TrackMin.x-p.x+r,0,0);
+				c.mat1 = c.mat2 = NULL;
+				c.nor = CVector(-1,0,0);
+				c.pos = CVector(-r,0,0);
+
+				m_Events[n].isHit = true;
+				m_Events[n].push_back(c);
+			}
+			if(p.y - r < m_TrackMin.y)
+			{
+				CCollision c;
+				c.body = i;
+				c.dp = CVector(0,-mom.y,0);
+				c.dr = CVector(0,m_TrackMin.y-p.y+r,0);
+				c.mat1 = c.mat2 = NULL;
+				c.nor = CVector(0,-1,0);
+				c.pos = CVector(0,-r,0);
+
+				m_Events[n].isHit = true;
+				m_Events[n].push_back(c);
+			}
+			if(p.z - r < m_TrackMin.z)
+			{
+				CCollision c;
+				c.body = i;
+				c.dp = CVector(0,0,-mom.z);
+				c.dr = CVector(0,0,m_TrackMin.z-p.z+r);
+				c.mat1 = c.mat2 = NULL;
+				c.nor = CVector(0,0,-1);
+				c.pos = CVector(0,0,-r);
+
+				m_Events[n].isHit = true;
+				m_Events[n].push_back(c);
+			}
+			if(p.x + r > m_TrackMax.x)
+			{
+				CCollision c;
+				c.body = i;
+				c.dp = CVector(-mom.x,0,0);
+				c.dr = CVector(m_TrackMax.x-p.x-r,0,0);
+				c.mat1 = c.mat2 = NULL;
+				c.nor = CVector(1,0,0);
+				c.pos = CVector(r,0,0);
+
+				m_Events[n].isHit = true;
+				m_Events[n].push_back(c);
+			}
+			if(p.y + r > m_TrackMax.y)
+			{
+				CCollision c;
+				c.body = i;
+				c.dp = CVector(0,-mom.y,0);
+				c.dr = CVector(0,m_TrackMax.y-p.y-r,0);
+				c.mat1 = c.mat2 = NULL;
+				c.nor = CVector(0,1,0);
+				c.pos = CVector(0,r,0);
+
+				m_Events[n].isHit = true;
+				m_Events[n].push_back(c);
+			}
+			if(p.z + r > m_TrackMax.z)
+			{
+				CCollision c;
+				c.body = i;
+				c.dp = CVector(0,0,-mom.z);
+				c.dr = CVector(0,0,m_TrackMax.z-p.z-r);
+				c.mat1 = c.mat2 = NULL;
+				c.nor = CVector(0,0,1);
+				c.pos = CVector(0,0,r);
+
+				m_Events[n].isHit = true;
+				m_Events[n].push_back(c);
+			}
+		}
 }
 
 #define elasticity 0.6
@@ -145,9 +277,11 @@ void CCollisionData::ObjTileTest(int nobj, int xtile, int ztile, int htile)
 
 	CMovingObject *obj = m_World->m_MovObjs[nobj];
 	CVector pos = obj->getPosition();
+	CVector prevpos = obj->getPreviousPosition();
 	for(unsigned int i=0; i<obj->m_Bodies.size(); i++)
 	{
 		CVector p = pos + obj->m_Bodies[i].m_Position;
+		CVector pp = prevpos + obj->m_Bodies[i].m_PreviousPosition;
 		const CBound *b = m_World->m_MovObjBounds[obj->m_Bodies[i].m_Body];
 
 		//Test bounding spheres
@@ -168,18 +302,19 @@ void CCollisionData::ObjTileTest(int nobj, int xtile, int ztile, int htile)
 
 			CVector midpos = p - tilepos;
 			float ddiff = midpos.dotProduct(theFace.nor) - theFace.d;
+			CVector prevmidpos = pp - tilepos;
+			float prevddiff = prevmidpos.dotProduct(theFace.nor) - theFace.d;
 			float r = b->m_BSphere_r;
 
-			bool isFront = true;
-			if(ddiff > r || ddiff < -r)
+			if(ddiff > r)
 				continue;
-			else if(ddiff < 0.0)
-				isFront = false;
-
-			if(!isFront) continue; //quick fix
+			if(ddiff < 0.0 && prevddiff < 0.0)
+				continue;
 
 			//check if it is inside the face
-			CVector coll_pos = midpos - ddiff * theFace.nor;
+			CVector curcoll_pos = midpos - ddiff * theFace.nor;
+			CVector prevcoll_pos = prevmidpos - prevddiff * theFace.nor;
+			CVector coll_pos = ((prevddiff-r)*curcoll_pos + (r-ddiff)*prevcoll_pos) / (prevddiff-ddiff);
 			float angle = 0.0;
 			for(unsigned int j=1; j<theFace.size(); j++)
 			{

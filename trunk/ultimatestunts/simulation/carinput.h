@@ -18,7 +18,6 @@
 #ifndef CARINPUT_H
 #define CARINPUT_H
 
-#include <SDL/SDL.h>
 #include "usmacros.h"
 
 #include "movobjinput.h"

@@ -23,8 +23,8 @@
 #ifndef _USENDIAN_H
 #define _USENDIAN_H
 
-#include <SDL/SDL_endian.h>
-#include <SDL/SDL.h>
+#include "SDL_endian.h"
+#include "SDL.h"
 
 #if SDL_BYTEORDER == SDL_LIL_ENDIAN
 #define ENDIANFIX16(X)    (X)

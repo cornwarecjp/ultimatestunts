@@ -20,6 +20,7 @@
 
 #include "simulation.h"
 #include "timer.h"
+#include "vector.h"
 
 /**
   *@author CJP
