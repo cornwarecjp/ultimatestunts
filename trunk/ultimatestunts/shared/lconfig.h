@@ -23,14 +23,14 @@ class CLCData
 {
 private:
 
-typedef struct {
+	typedef struct {
 		CString sec;
 		CString field;
 		CString val;
 		CString line;
-} d_data;
+	} d_data;
 
-typedef vector<CString> CStringArray;
+	typedef vector<CString> CStringArray;
 
 	vector<d_data> m_Data;
 
@@ -45,7 +45,7 @@ public:
 	CString find(CString, CString) const;
 
 
-  CStringArray findAll(CString) const;
+	CStringArray findAll(CString) const;
 
 };
 
@@ -64,9 +64,9 @@ private:
 
 public:
 
-  CString getValue(const CString, const CString) const;
-  vector<CString> getSection(CString) const;
-  vector<CString> getFieldsInSection(CString) const;
+	CString getValue(const CString, const CString) const;
+	vector<CString> getSection(CString) const;
+	vector<CString> getFieldsInSection(CString) const;
 	bool setFilename(CString);
 	bool setArgs(int argc, char *argv[]);
 	CLConfig();
@@ -76,5 +76,7 @@ public:
 	virtual ~CLConfig();
 
 };
+
+extern CLConfig *theMainConfig;
 
 #endif

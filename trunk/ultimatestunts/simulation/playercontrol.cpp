@@ -17,9 +17,8 @@
 
 #include "playercontrol.h"
 
-CPlayerControl::CPlayerControl(CWorld *w)
+CPlayerControl::CPlayerControl()
 {
-	m_World = w;
 }
 
 CPlayerControl::~CPlayerControl()
@@ -35,6 +34,9 @@ int CPlayerControl::addPlayer(CObjectChoice choice)
 
 bool CPlayerControl::loadObjects()
 {
-	//Temporary solution: nr of objs put in string
-	return m_World->loadMovObjs((CString)( (int)m_LocalChoices.size() ));
+	bool ret = true;
+	for(unsigned int i=0; i < m_LocalChoices.size(); i++)
+		ret = theWorld->loadMovingObject(m_LocalChoices[i]) && ret;
+
+	return ret;
 }

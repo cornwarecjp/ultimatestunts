@@ -49,7 +49,7 @@ protected:
 	//Object <-> tile collisions
 	void ObjTileTest(int nobj, int xtile, int ztile, int htile);
 	void tileRotate(CVector &v, int rot);
-	void addTileCollision(CBody &body, const CVector &pos, const CVector &nor, float penetr_depth);
+	void addTileCollision(CBody &body, const CVector &pos, const CVector &nor, float penetr_depth, CMaterial *tileMaterial);
 
 	//Object <-> track bound collisions
 	void calculateTrackBounds();

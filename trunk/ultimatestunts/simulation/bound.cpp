@@ -15,6 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
+#include <cmath>
+
 #include "bound.h"
 
 CBound::CBound(){
@@ -60,4 +62,15 @@ bool CBound::loadFromFile(CFile *f, CString subset, CMaterial **matarray)
 		}
 
 	return true;
+}
+
+void CBound::setCylinder(bool b)
+{
+	m_isCylinder = b;
+
+	if(b)
+	{
+		m_CylinderWidth = fabs(m_OBB_max.x - m_OBB_min.x);
+		m_CylinderRadius = 0.5 * fabs(m_OBB_max.y - m_OBB_min.y);
+	}
 }

@@ -36,4 +36,6 @@ public:
 	CString useExtern();
 };
 
+CString getShortName(const CString &longname);
+
 #endif

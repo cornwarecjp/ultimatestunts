@@ -30,7 +30,8 @@ using namespace std;
 
 class CVertex {
 public:
-	CVector pos, nor, col, tex;
+	CVector pos, nor, col, tex; //position, normal, color, texcoord
+	float opacity, reflectance;
 };
 
 class CPrimitive {
@@ -46,8 +47,9 @@ public:
 	virtual ~CEditGraphObj();
 	virtual bool loadFromFile(CString filename, CTexture **matarray);
 	bool import_raw(CString filename, CTexture **matarray);
+	void merge(const CEditGraphObj &obj, const CString &lods);
 
-	void render(); //updates openGL data when primitives are changed
+	void render(const CString &visibleLODs); //updates openGL data when primitives are changed
 
 	void clear();
 	void saveToFile(CString filename);

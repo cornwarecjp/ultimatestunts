@@ -20,7 +20,7 @@
 #include "aiplayercar.h"
 #include "carinput.h"
 
-CAIPlayerCar::CAIPlayerCar(CWorld *w) : CPlayer(w)
+CAIPlayerCar::CAIPlayerCar() : CPlayer()
 {
 	m_FirstTime = true;
 }
@@ -42,15 +42,17 @@ bool CAIPlayerCar::update()
 	if(m_FirstTime)
 	{
 		printf("AI Player %d is setting input of object %d\n", m_PlayerId, m_MovingObjectId);
-		carin->m_Forward = 1.0;
-		carin->m_Backward = 0.0;
-		carin->m_Right = -0.1;
-		carin->m_Gear = 1;
-		carin->m_CarHorn = true;
-
+		
 		m_FirstTime = false;
 		return true; //input has changed
 	}
 
-	return false; //input has not changed
+	carin->m_Forward = 1.0;
+	carin->m_Backward = 0.0;
+	carin->m_Right = -0.1;
+	carin->m_Gear = 1;
+	carin->m_CarHorn = true;
+	setAutomaticGear(carin->m_Forward, carin->m_Backward);
+
+	return true; //input has changed
 }

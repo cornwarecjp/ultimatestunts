@@ -99,8 +99,23 @@ CString CGUI::getValue(CString section, CString field)
 	if(section=="playermenu")
 	{
 		if(field=="number") return (int)(m_PlayerDescr.size());
-		int i = field.toInt();
-		return m_PlayerDescr[i];
+		int sp = field.inStr(' ');
+		if(sp > 0)
+		{
+			CString lhs = field.mid(0, sp);
+			int rhs = field.mid(sp+1).toInt();
+			if(lhs == "name")
+				return m_PlayerDescr[rhs].name;
+			if(lhs == "ishuman")
+			{
+				if(m_PlayerDescr[rhs].isHuman)
+					{return "true";}
+				else
+					{return "false";}
+			}
+			if(lhs == "carfile")
+				return m_PlayerDescr[rhs].carFile;
+		}
 	}
 	return "";
 }
@@ -213,9 +228,11 @@ CString CGUI::viewHostMenu()
 
 CString CGUI::viewTrackMenu()
 {
+	CString defaulttrack = "tracks/default.track";
 	printf("Track menu:\n");
-	printf("Enter the track filename (relative to the data files directory): ");
+	printf("Enter the track filename (default is %s): ", defaulttrack.c_str());
 	m_TrackFile = getInput();
+	if(m_TrackFile == "") m_TrackFile = defaulttrack;
 
 	m_PassedTrackMenu = true;
 	return "playermenu";
@@ -223,11 +240,16 @@ CString CGUI::viewTrackMenu()
 
 CString CGUI::viewPlayerMenu()
 {
+	CString defaultcar = "cars/porsche.conf";
 	m_PlayerDescr.clear();
 
 	printf("Player menu:\n");
 	printf("Enter your name: ");
-	addPlayer(getInput(), true);
+	CString name = getInput();
+	printf("Enter your car file (default is %s):", defaultcar.c_str());
+	CString carfile = getInput();
+	if(carfile == "") carfile = defaultcar;
+	addPlayer(name, true, carfile);
 
 	while(true)
 	{
@@ -236,27 +258,31 @@ CString CGUI::viewPlayerMenu()
 		if(!(answ == "y" || answ == "Y")) break;
 
 		printf("Enter the name: ");
-		addPlayer(getInput(), false);
+		name = getInput();
+		printf("Enter the car file (default is %s):", defaultcar.c_str());
+		carfile = getInput();
+		if(carfile == "") carfile = defaultcar;
+		addPlayer(name, false, carfile);
 	}
 
 	m_PassedPlayerMenu = true;
 	return ""; //TODO: loading
 }
 
-void CGUI::addPlayer(CString name, bool human)
+void CGUI::addPlayer(CString name, bool human, CString carfile)
 {
-	CString pd = name;
-	if(human)
-		pd = "H" + pd;
-	else
-		pd = "A" + pd;
-
+	SPlayerDescr pd;
+	pd.name = name;
+	pd.isHuman = human;
+	pd.carFile = carfile;
 	m_PlayerDescr.push_back(pd);
 }
 
 CString CGUI::getInput()
 {
 	char input[80];
-	scanf("%s", input);
-	return input;
+	fgets(input, 79, stdin);
+	CString ret(input);
+	ret = ret.mid(0, ret.length() - 1); //remove \n
+	return ret;
 }

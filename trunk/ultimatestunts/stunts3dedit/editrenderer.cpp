@@ -18,33 +18,63 @@
 
 #include "editrenderer.h"
 #include "usmacros.h"
+#include "datafile.h"
 
-CEditRenderer::CEditRenderer(const CLConfig &conf) : CRenderer(conf)
+CEditRenderer::CEditRenderer() : CRenderer()
 {
+	m_EnvMap = new CTexture;
+	CDataFile df("environment/spheremap.rgb");
+	m_EnvMap->loadFromFile(df.useExtern(), 512, 512);
 }
 
-CEditRenderer::~CEditRenderer(){
+CEditRenderer::~CEditRenderer()
+{
+	delete m_EnvMap;
 }
 
 void CEditRenderer::update()
 {
 	//printf("Updating graphics\n");
 
+	//Clear the screen
 	if(m_ZBuffer)
 		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 	else
 		glClear( GL_COLOR_BUFFER_BIT );
 
+	//Set the camera
 	const CMatrix &cammat = m_Camera->getOrientation();
-	//glLoadIdentity();
 	glLoadMatrixf(cammat.transpose().gl_mtr());
-
 	const CVector &camera = m_Camera->getPosition();
-
 	glTranslatef (-camera.x, -camera.y, -camera.z);
 
-	int lod = 1;
-	m_GraphObj->draw(lod);
+	//The model
+	m_GraphObj->draw(1);
+
+	//The reflection
+	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_POLYGON_OFFSET_FILL);
+	glEnable(GL_TEXTURE_GEN_S);
+	glEnable(GL_TEXTURE_GEN_T);
+	glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+	glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+	GLfloat oldambient[4];
+	GLfloat newambient[] = {1.0,1.0,1.0,1.0};
+	glGetFloatv(GL_LIGHT_MODEL_AMBIENT, oldambient);
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, newambient);
+	glPolygonOffset(0.0, -1.0);
+
+	m_EnvMap->draw(1);
+	m_GraphObj->draw(0);
+
+	glDisable(GL_POLYGON_OFFSET_FILL);
+	glDisable(GL_TEXTURE_GEN_S);
+	glDisable(GL_TEXTURE_GEN_T);
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, oldambient);
+
+	//The coordinate axes
+	float kleur[] = {1.0, 1.0, 1.0, 1.0};
+	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, kleur);
 
 	glBegin(GL_LINES);
 	glVertex3f(-TILESIZE/2,0.0,0.0);

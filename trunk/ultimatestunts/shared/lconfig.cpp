@@ -7,7 +7,7 @@
 
 #include "lconfig.h"
 
-
+CLConfig *theMainConfig = NULL;
 
 
 ///////////////////
@@ -129,7 +129,7 @@ bool CLConfig::readFile(void)
 	char buffer[512];
 	CString cSection;
 
-  strcpy(buffer,m_szFilename.c_str());
+	strcpy(buffer,m_szFilename.c_str());
 
 	FILE *f=fopen(m_szFilename.c_str(), "r");
 	
@@ -147,23 +147,26 @@ bool CLConfig::readFile(void)
 
 
 		if (tbuf[0] == '[') {						// check for new section
-		   int last = tbuf.find_last_of("]");
-		   if (last < 0) { fclose(f); return (false); }
-		   cSection = tbuf.subStr(1, last - 1);
+			int last = tbuf.find_last_of("]");
+			if (last < 0) { fclose(f); return (false); }
+			cSection = tbuf.subStr(1, last - 1);
 		} else {									// sonst feld == wert
-		   int sep=tbuf.find_first_of("=");
-		   CString field;
-		   CString val;
+			int sep=tbuf.find_first_of("=");
+			if(sep > 0)								//else it is not a valid line, ignore it
+			{
+				CString field;
+				CString val;
 
-		   field = tbuf.subStr(0, sep);
-		   val = tbuf.subStr(sep+1);
-		   field.Trim();
-		   val.Trim();					
-       m_data.push(cSection, field, val, tbuf);
+				field = tbuf.subStr(0, sep);
+				val = tbuf.subStr(sep+1);
+				field.Trim();
+				val.Trim();
+				m_data.push(cSection, field, val, tbuf);
+			}
 		}
 	}
-   fclose(f);
-   return (true);
+	fclose(f);
+	return (true);
 }
 
 

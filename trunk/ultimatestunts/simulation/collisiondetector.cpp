@@ -350,10 +350,10 @@ void CCollisionDetector::ObjTileTest(int nobj, int xtile, int ztile, int htile)
 			CVector cpos, cnor;
 			float penetr_depth;
 			
-			if(theBound->m_isCylinder)
+			if(theBound->isCylinder())
 			{
-				CVector posleft(-0.5*theBound->m_CyliderWidth,0,0);
-				CVector posright(0.5*theBound->m_CyliderWidth,0,0);
+				CVector posleft(-0.5*theBound->m_CylinderWidth,0,0);
+				CVector posright(0.5*theBound->m_CylinderWidth,0,0);
 				posleft *= ori;
 				posright *= ori;
 				posleft += r; //to tile coordinates
@@ -402,7 +402,7 @@ void CCollisionDetector::ObjTileTest(int nobj, int xtile, int ztile, int htile)
 					inpr /= (p1.abs() * p2.abs());
 					angle += acos(inpr);
 				}
-				if(angle < 6.0 || angle > 6.2832) //!= 2*pi: outside face
+				if(angle < 6.0 || angle > 6.283186) //!= 2*pi: outside face
 				{
 					continue;
 				}
@@ -473,13 +473,13 @@ void CCollisionDetector::ObjTileTest(int nobj, int xtile, int ztile, int htile)
 
 
 			//3: Generate collision info
-			addTileCollision(theObj->m_Bodies[i], cpos, cnor, penetr_depth);
+			addTileCollision(theObj->m_Bodies[i], cpos, cnor, penetr_depth, theFace.material);
 
 		} //for tf
 	} //for i
 }
 
-void CCollisionDetector::addTileCollision(CBody &body, const CVector &pos, const CVector &nor, float penetr_depth)
+void CCollisionDetector::addTileCollision(CBody &body, const CVector &pos, const CVector &nor, float penetr_depth, CMaterial *tileMaterial)
 {
 	//TODO: internal saving
 	CCollisionData cd;
@@ -500,10 +500,15 @@ void CCollisionDetector::addTileCollision(CBody &body, const CVector &pos, const
 	c.geom.depth = penetr_depth;
 	c.geom.g1 = 0; //I don't use geoms here
 	c.geom.g2 = 0;
-	c.surface.mode = dContactSlip1 | dContactSlip2 | dContactApprox1 | dContactSoftERP | dContactSoftCFM;
-	c.surface.soft_erp = 0.9;
-	c.surface.soft_cfm = 0.0005;
-	c.surface.mu = body.m_mu;
+	c.surface.mode = dContactApprox1 | dContactSlip1 | dContactSlip2; // | dContactSoftERP | dContactSoftCFM;
+	//c.surface.soft_erp = 0.8;
+	//c.surface.soft_cfm = 0.0005;
+
+	if(tileMaterial == NULL)
+		{c.surface.mu = body.m_mu;}
+	else
+		{c.surface.mu = body.m_mu * tileMaterial->m_Mu;}
+
 	c.surface.slip1 = 0.0000001;
 	c.surface.slip2 = 0.0000001;
 	dJointID cid = dJointCreateContact(theWorld->m_ODEWorld, theWorld->m_ContactGroup, &c);

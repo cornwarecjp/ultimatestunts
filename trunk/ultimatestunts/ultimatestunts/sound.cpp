@@ -25,7 +25,6 @@
 #include "datafile.h"
 #include "car.h"
 
-CSound *_theSoundObject;
 bool _song_has_ended;
 
 void musicEndCallback()
@@ -45,8 +44,6 @@ void musicEndCallback()
 
 CSound::CSound(const CLConfig &conf)
 {
-	_theSoundObject = this;
-
 	//The world object:
 	m_World = theWorld;
 
@@ -243,7 +240,7 @@ void CSound::update()
 				float engineRPS = theCar->m_MainAxisVelocity * theCar->getGearRatio();
 				int vol = 100 + (int)(100 * theCar->m_gas);
 				if(vol > 255) vol = 255;
-				chn->setFrequency(0.03 * engineRPS); //correct for sound sample frequency & 2*pi
+				chn->setFrequency(0.005 * engineRPS); //correct for sound sample frequency & 2*pi
 				chn->setVolume((vol * m_SoundVolume) >> 8);
 			}
 		}
@@ -255,7 +252,7 @@ void CSound::update()
 
 #else
 
-CSound::CSound(const CLConfig &conf, const CWorld *world)
+CSound::CSound(const CLConfig &conf)
 {
 	printf("   No sound: sound support not compiled in\n");
 }

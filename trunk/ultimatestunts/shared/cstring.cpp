@@ -230,7 +230,7 @@ bool CString::operator!= (const CString &val) const
 	return !(*this == val);
 }
 
-CString CString::mid(unsigned int i, int l)
+CString CString::mid(unsigned int i, int l) const
 {
 	if(i > length())
 		return "";
@@ -265,14 +265,22 @@ CString & CString::subStr(const int unsigned pos, const int n) const
  return (*res);
 }
 
-int CString::inStr(char c)
+int CString::inStr(char c) const
 {
-    int ret = -1;
-    for(unsigned int i=0; i<length(); i++)
-            if ((*this)[i] == c)
-                    {ret = i; break;}
+	/*
+	int ret = -1;
+	for(unsigned int i=0; i<length(); i++)
+		if ((*this)[i] == c)
+			{ret = i; break;}
 
-    return ret;
+	return ret;
+	*/
+    return find(c);
+}
+
+int CString::inStr(const CString &s) const
+{
+	return find(s);
 }
 
 float CString::toFloat()

@@ -93,8 +93,7 @@ void CGameCamera::update()
 	switch(m_Mode)
 	{
 		case In:
-			//viewpoint is higher than center of mass
-			tp = to->m_Bodies[0].getPosition() + CVector(0.0,0.8,0.0);
+			tp = to->m_Bodies[0].getPosition() + to->m_Bodies[0].getOrientationMatrix() * to->getCameraPos();
 			if(m_Reached)
 				{tm = to->m_Bodies[0].getOrientationMatrix();}
 			//else: autotarget
@@ -105,10 +104,11 @@ void CGameCamera::update()
 			{
 				tv = to->m_Bodies[0].getVelocity();
 				float vabs = tv.abs();
-				float z = 0.5 * vabs + 15.0;
-				float y = 0.01 * vabs + 3.0;
-				tp = CVector(0.0, y, z); //further away when going faster
-				tp *= to->m_Bodies[0].getOrientationMatrix();
+				const CMatrix &rmat = to->m_Bodies[0].getOrientationMatrix();
+				tp = CVector(rmat.Element(2,0), 0.0, rmat.Element(2,2));
+				tp.normalise();
+				tp *= 0.5 * vabs + 15.0; //further away when going faster
+				tp.y = 0.01 * vabs + 3.0;
 				tp += to->m_Bodies[0].getPosition();
 				autotarget = true; //point the camera to the object
 				m_Reached = false; //always have "smooth" camera movement

@@ -25,6 +25,7 @@ CCollisionFace::CCollisionFace(const CCollisionFace &f)
 	d = f.d;
 	nor = f.nor;
 	reverse = f.reverse;
+	material = f.material;
 }
 
 const CCollisionFace &CCollisionFace::operator=(const CCollisionFace &f)
@@ -36,6 +37,7 @@ const CCollisionFace &CCollisionFace::operator=(const CCollisionFace &f)
 	d = f.d;
 	nor = f.nor;
 	reverse = f.reverse;
+	material = f.material;
 
 	return *this;
 }
@@ -49,6 +51,7 @@ void CCollisionFace::cull(const CCollisionFace &plane, const CVector &dr)
 	CCollisionFace theFace2;
 	theFace2.nor = nor;
 	theFace2.d = d;
+	theFace2.material = material;
 
 	//The first vertex
 	float dist_first = operator[](0).dotProduct(plane_nor);

@@ -52,7 +52,7 @@ CString getInput(CString question="")
 
 bool addPlayer()
 {
-	CPlayer *p = new CAIPlayerCar(world);
+	CPlayer *p = new CAIPlayerCar();
 
 	CObjectChoice choice;
 
@@ -107,15 +107,15 @@ int main(int argc, char *argv[])
 	unsigned int ai_players;
 
 	printf("Loading configuration file\n");
-	CLConfig conffile(argc, argv);
-	conffile.setFilename("ultimatestunts.conf");
+	theMainConfig = new CLConfig(argc, argv);
+	theMainConfig->setFilename("ultimatestunts.conf");
 
 	CFileControl *fctl = new CFileControl;
 	{
 		//Default:
 		CString DataDir = ""; //try in default directories, like "./"
 
-		CString cnf = conffile.getValue("files", "datadir");
+		CString cnf = theMainConfig->getValue("files", "datadir");
 		if(cnf != "")
 		{
 			if(cnf[cnf.length()-1] != '/') cnf += '/';
@@ -150,7 +150,7 @@ int main(int argc, char *argv[])
 
 		printf("Creating client-type simulation\n");
 		clientnet = new CClientNet(h, p);
-		pctrl = new CClientPlayerControl(clientnet, world);
+		pctrl = new CClientPlayerControl(clientnet);
 		CClientSim *csim = new CClientSim(clientnet, world);
 
 		simulations.push_back(csim);
@@ -159,7 +159,7 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
-		pctrl = new CPlayerControl(world);
+		pctrl = new CPlayerControl;
 		simulations.push_back(new CRuleControl(world));
 		simulations.push_back(new CPhysics(world));
 

@@ -71,27 +71,39 @@ bool CWorld::loadTrack(CString filename)
 	while(true)
 	{
 		int mul = 1;
+		float mu = 1.0;
 		line = tfile.readl();
 		if(line == "END") break;
-		int pos = line.inStr(' ');
-		if(pos  > 0) //a space exists
+		int pos = line.inStr("scale=");
+		if(pos  > 0) //scale is specified
 		{
-			if((unsigned int)pos < line.length()-1)
-				{mul = line.mid(pos+1, line.length()-pos-1).toInt();}
+			if((unsigned int)pos < line.length()-6)
+				{mul = line.mid(pos+6, line.length()-pos-6).toInt();}
 			//TODO: check for different y-direction mul
-
-			line = line.mid(0, pos);
 		}
 
+		pos = line.inStr("mu=");
+		if(pos  > 0) //mu is specified
+		{
+			if((unsigned int)pos < line.length()-3)
+				{mu = line.mid(pos+3, line.length()-pos-3).toFloat();}
+		}
+
+		pos = line.inStr(' ');
+		if(pos  > 0) //there is a space
+			line = line.mid(0, pos);
+
 		CMaterial *m = new CMaterial;
-		m->loadFromFile(line, mul);
-		//TODO: set friction coefficients etc.
+		m->m_Filename = line;
+		m->m_Mul =  mul;
+		m->m_Mu = mu;
 		m_TileMaterials.push_back(m);
 	}
 	printf("\n   Loaded %d materials\n\n", m_TileMaterials.size());
 
 	while(tfile.readl() != "BEGIN"); //Begin of background section
 	m_BackgroundFilename = tfile.readl();
+	m_EnvMapFilename = tfile.readl();
 
 	//Second: loading collision (and graphics) data
 	while(tfile.readl() != "BEGIN"); //begin of tiles section
@@ -201,71 +213,59 @@ void CWorld::unloadTrack()
 	}
 }
 
-bool CWorld::loadMovObjs(CString filename)
+int CWorld::getMovObjBoundID(const CString &filename)
 {
-	//Temporary solution: nr of objs put in string
-	int num = filename.toInt();
+	int ret = -1;
+	for(unsigned int i=0; i < m_MovObjBounds.size(); i++)
+		if(getShortName(m_MovObjBounds[i]->m_Filename) == filename)
+		{
+			ret = i;
+			break;
+		}
 
-	//First: load materials/textures
-	//for example:
-	/*
-	CMaterial *m = createMaterial();
-	m->loadFromFile("no_file.rgb", 256, 256); //Only useful for textures
-	//TODO: set friction coefficients
-	m_MovObjMaterials.push_back(m);
-    */
-
-	//Second: loading collision (and graphics) data
-	//For example:
+	if(ret < 0) //we have to load it
 	{
-		CBound *body = new CBound, *wheel = new CBound;
-		CDataFile bodyf("cars/body.gl"), wheelf("cars/wheel.gl");
-		body->loadFromFile(&bodyf, "", NULL);
-		wheel->loadFromFile(&wheelf, "", NULL);
+		CBound *body = new CBound;
+		CDataFile fbody(filename);
+		body->loadFromFile(&fbody, "", NULL);
 
-		//TODO: load this info from the file
-		wheel->m_isCylinder = true;
-		wheel->m_CyliderWidth = 0.2; //20 cm
-		wheel->m_CylinderRadius = 0.35; //35 cm
-		
+		//temporary way to find the wheels
+		if(filename.inStr("wheel") >= 0)
+			body->setCylinder(true);
+
 		m_MovObjBounds.push_back(body);
-		m_MovObjBounds.push_back(wheel);
+		ret = m_MovObjBounds.size() - 1;
 	}
 
-	//Third: defining sound data
+	return ret;
+}
+
+int CWorld::getMovObjSoundID(const CString &filename)
+{
+	int ret = -1;
+	for(unsigned int i=0; i < m_MovObjSounds.size(); i++)
+		if(m_MovObjSounds[i] == filename)
+		{
+			ret = i;
+			break;
+		}
+
+	if(ret < 0) //we have to load it
 	{
-		CString filename = "sounds/engine.ogg";
 		m_MovObjSounds.push_back(filename);
-		filename = "sounds/skid.ogg";
-		m_MovObjSounds.push_back(filename);
+		ret = m_MovObjSounds.size() - 1;
 	}
 
-	//Finally: Initialising car array
-	for(int i=0; i<num; i++)
-	{
-		CMovingObject *m = new CCar; //making a general car object
+	return ret;
+}
 
-		if(m->getType() != CMessageBuffer::car)
-			printf("   Error: created car is not a car!\n");
+bool CWorld::loadMovingObject(const CObjectChoice &oc)
+{
+	CMovingObject *m = new CCar(oc.m_Filename);
+	m_MovObjs.push_back(m);
+	printf("   Added car %s\n", oc.m_Filename.c_str());
 
-		//setting the car settings
-		m->m_Bodies[0].m_Body = 0; //The car's body
-		m->m_Bodies[1].m_Body = 1; //The car's wheels
-		m->m_Bodies[2].m_Body = 1;
-		m->m_Bodies[3].m_Body = 1;
-		m->m_Bodies[4].m_Body = 1;
-
-		m->m_Sounds[0] = 0; //The engine sound
-		m->m_Sounds[1] = 1; //The skid sound
-
-		m_MovObjs.push_back(m);
-
-		int s = m_MovObjs.size();
-		printf("   Added car: total %d moving objects\n", s);
-
-	}
-
-		return true;
+	return true;
 }
 
 void CWorld::unloadMovObjs()

@@ -60,8 +60,9 @@
 	bool operator!= (const CString &val) const;
 
 	//Don't know how to do these with std::string:
-	CString mid(unsigned int i, int l=-1); //-1 means as long as possible
-	int inStr(char c);
+	CString mid(unsigned int i, int l=-1) const; //-1 means as long as possible
+	int inStr(char c) const;
+	int inStr(const CString &s) const;
 
 	//Don't know how to do this with std::string:
 	float toFloat();

@@ -71,7 +71,14 @@ protected:
 	int m_HostPort;
 	int m_ServerPort;
 	CString m_TrackFile;
-	vector<CString> m_PlayerDescr;
+
+	struct SPlayerDescr
+	{
+		CString name;
+		bool isHuman;
+		CString carFile;
+	};
+	vector<SPlayerDescr> m_PlayerDescr;
 	
 
 	//The menu code
@@ -81,7 +88,7 @@ protected:
 	CString viewTrackMenu();
 	CString viewPlayerMenu();
 
-	void addPlayer(CString name, bool human=false);
+	void addPlayer(CString name, bool human, CString carfile);
 
 	CString getInput();
 };

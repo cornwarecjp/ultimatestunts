@@ -17,7 +17,7 @@
 
 #include "clientplayercontrol.h"
 
-CClientPlayerControl::CClientPlayerControl(CClientNet *net, CWorld *w) : CPlayerControl(w)
+CClientPlayerControl::CClientPlayerControl(CClientNet *net) : CPlayerControl()
 {
 	m_Net = net;
 }

@@ -18,10 +18,10 @@
 #include <cstdio>
 #include "gamerenderer.h"
 
-CGameRenderer::CGameRenderer(const CLConfig &conf, const CWorld *world) : CRenderer(conf)
+CGameRenderer::CGameRenderer() : CRenderer()
 {
-	m_World = world;
-	m_GraphicWorld = new CGraphicWorld(world, conf);
+	m_World = theWorld;
+	m_GraphicWorld = new CGraphicWorld();
 }
 
 CGameRenderer::~CGameRenderer()
@@ -71,7 +71,6 @@ void CGameRenderer::unloadObjData()
 
 void CGameRenderer::update()
 {
-
 	if(m_ZBuffer)
 		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 	else
@@ -117,7 +116,8 @@ void CGameRenderer::update()
 	int zmin = (z-m_VisibleTiles < 0)? 0 : z-m_VisibleTiles;
 	int zmax = (z+m_VisibleTiles > breedte)? breedte : z+m_VisibleTiles;
 
-	if(!m_ZBuffer)
+	//if(!m_ZBuffer)
+	//always back to front
 	{
 		if (x >= 0) //Linker deel
 		{
@@ -131,11 +131,13 @@ void CGameRenderer::update()
 		}
 
 	}
+	/*
 	else //zbuffer
 	{
 		//printf("Using z-buffering\n");
 		viewTrackPart(xmin, zmin, xmax, zmax, 1, 1, y);
 	}
+	*/
 
 	glPopMatrix();
 
@@ -163,29 +165,61 @@ void CGameRenderer::viewBackground()
 
 void CGameRenderer::viewMovObj(CMovingObject *mo)
 {
-	//glPushMatrix();
-
-	//CVector r = mo->getPosition();
-	//const CMatrix &m = mo->getOrientationMatrix();
-	//printf("Drawing a car at position %f,%f,%f\n", r.x,r.y,r.z);
-
-	//glTranslatef (r.x, r.y, r.z);
-	//glMultMatrixf(m.gl_mtr());
-
 	for(unsigned int i=mo->m_Bodies.size(); i > 0; i--) //TODO: depth sorting?
 	{
-		glPushMatrix();
-
 		CBody &b = mo->m_Bodies[i-1];
 		CVector r = b.getPosition();
+
+		float dist = (m_Camera->getPosition() - r).abs();
+		if(dist > TILESIZE * m_VisibleTiles) continue; //not visible
+
+		int lod;
+		if(dist > TILESIZE * 7)
+			lod = 4;
+		else if(dist > TILESIZE * 3)
+			lod = 3;
+		else if(dist > TILESIZE * 1)
+			lod = 2;
+		else
+			lod = 1;
+
+		lod += m_MovingObjectLOD;
+		if(lod > 4) lod = 4;
+		if(lod < 1) lod = 1;
+
+		glPushMatrix();
 		glTranslatef (r.x, r.y, r.z);
 		glMultMatrixf(b.getOrientationMatrix().gl_mtr());
-		m_GraphicWorld->m_MovingObjects[b.m_Body].draw(1); //TODO: LOD
+
+		//The model
+		m_GraphicWorld->m_MovingObjects[b.m_Body].draw(lod);
+
+		//The reflection
+		if(dist < m_ReflectionDist)
+		{
+			glEnable(GL_TEXTURE_2D);
+			glEnable(GL_POLYGON_OFFSET_FILL);
+			glEnable(GL_TEXTURE_GEN_S);
+			glEnable(GL_TEXTURE_GEN_T);
+			glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+			glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+			GLfloat oldambient[4];
+			GLfloat newambient[] = {1.0,1.0,1.0,1.0};
+			glGetFloatv(GL_LIGHT_MODEL_AMBIENT, oldambient);
+			glLightModelfv(GL_LIGHT_MODEL_AMBIENT, newambient);
+
+			glPolygonOffset(0.0, -1.0);
+			m_GraphicWorld->m_EnvMap.draw(1);
+			m_GraphicWorld->m_MovingObjects[b.m_Body].draw(0);
+
+			glDisable(GL_POLYGON_OFFSET_FILL);
+			glDisable(GL_TEXTURE_GEN_S);
+			glDisable(GL_TEXTURE_GEN_T);
+			glLightModelfv(GL_LIGHT_MODEL_AMBIENT, oldambient);
+		}
 
 		glPopMatrix();
 	}
-
-	//glPopMatrix();
 }
 
 void CGameRenderer::viewTrackPart(

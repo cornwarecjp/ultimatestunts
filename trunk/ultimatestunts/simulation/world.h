@@ -60,11 +60,13 @@ public:
 
 	//Moving objects
 	vector<CMovingObject *> m_MovObjs;
-	bool loadMovObjs(CString filename);
+	bool loadMovingObject(const CObjectChoice &oc);
 	void unloadMovObjs();
 
+	int getMovObjBoundID(const CString &filename); //on demand loading
 	vector<CBound *>m_MovObjBounds;
 	vector<CMaterial *> m_MovObjMaterials;
+	int getMovObjSoundID(const CString &filename); //on demand loading
 	vector<CString> m_MovObjSounds;
 
 	//Collision data
@@ -75,6 +77,8 @@ public:
 
 	CString getBackgroundFilename() const
 		{return m_BackgroundFilename;}
+	CString getEnvMapFilename() const
+		{return m_EnvMapFilename;}
 
 	//debug
 	bool printDebug;
@@ -89,6 +93,7 @@ protected:
 	CMaterial **getMaterialSubset(CString indices);
 
 	CString m_BackgroundFilename;
+	CString m_EnvMapFilename;
 };
 
 extern CWorld *theWorld;

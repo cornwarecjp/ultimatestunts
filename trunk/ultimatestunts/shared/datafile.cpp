@@ -58,3 +58,11 @@ CString CDataFile::useExtern()
 	CFile::close();
 	return m_Filename;
 }
+
+CString getShortName(const CString &longname)
+{
+	int pos = longname.inStr(filecontroldatadir);
+	if(pos < 0) return "";
+
+	return longname.mid(pos + filecontroldatadir.length());
+}

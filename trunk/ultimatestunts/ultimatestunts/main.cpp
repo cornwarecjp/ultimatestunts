@@ -129,16 +129,14 @@ bool mainloop()
 	return retval;
 }
 
-bool addPlayer(CString desc)
+bool addPlayer(bool isHuman, CString name, CObjectChoice choice)
 {
 	CPlayer *p;
 
-	if(desc[0]=='H')
-		p = new CHumanPlayer(world, winsys);
+	if(isHuman)
+		p = new CHumanPlayer(winsys);
 	else
-		p = new CAIPlayerCar(world);
-
-	CObjectChoice choice;
+		p = new CAIPlayerCar();
 
 	int id = pctrl->addPlayer(choice);
 	p->m_MovingObjectId = id;
@@ -150,7 +148,7 @@ bool addPlayer(CString desc)
 		return false;
 	}
 
-	if(desc[0]=='H') //set the camera to this player:
+	if(isHuman) //set the camera to this player:
 		camera->setTrackedObject(id);
 
 	players.push_back(p);
@@ -161,8 +159,8 @@ void start(int argc, char *argv[]) //first things before becoming interactive
 {
 	printf("Welcome to " PACKAGE " version " VERSION "\n");
 
-	CLConfig conffile(argc, argv);
-	if(!conffile.setFilename("ultimatestunts.conf"))
+	theMainConfig = new CLConfig(argc, argv);
+	if(!theMainConfig->setFilename("ultimatestunts.conf"))
 	{
 		printf("Error: could not read ultimatestunts.conf\n");
 		//TODO: create a default one
@@ -173,7 +171,7 @@ void start(int argc, char *argv[]) //first things before becoming interactive
 		//Default:
 		CString DataDir = ""; //try in default directories, like "./"
 
-		CString cnf = conffile.getValue("files", "datadir");
+		CString cnf = theMainConfig->getValue("files", "datadir");
 		if(cnf != "")
 		{
 			if(cnf[cnf.length()-1] != '/') cnf += '/';
@@ -183,18 +181,18 @@ void start(int argc, char *argv[]) //first things before becoming interactive
 	}
 
 	printf("Initialising Ultimate Stunts:\n---Window system\n");
-	winsys = new CWinSystem("Ultimate Stunts", conffile);
+	winsys = new CWinSystem("Ultimate Stunts", *theMainConfig);
 
 	world = new CWorld();
 
 	printf("---GUI\n");
-	gui = new CGUI(conffile, winsys);
+	gui = new CGUI(*theMainConfig, winsys);
 
 	printf("---Sound system\n");
-	soundsystem = new CSound(conffile);
+	soundsystem = new CSound(*theMainConfig);
 
 	printf("---Rendering engine\n");
-	renderer = new CGameRenderer(conffile, world);
+	renderer = new CGameRenderer();
 
 	printf("---Camera\n");
 	camera = new CGameCamera(world);
@@ -263,7 +261,7 @@ int main(int argc, char *argv[])
 	switch(maininput)
 	{
 		case CGUI::LocalGame:
-			pctrl = new CPlayerControl(world);
+			pctrl = new CPlayerControl;
 			simulations.push_back(new CRuleControl(world));
 			simulations.push_back(new CPhysics(world));
 			while(!( gui->isPassed("trackmenu") )); //waiting for input
@@ -283,7 +281,7 @@ int main(int argc, char *argv[])
 			server = new CUSServer(port, trackfile);
 			printf("Creating client-type simulation with %s:%d\n", name.c_str(), port);
 			clientnet = new CClientNet(name, port);
-			pctrl = new CClientPlayerControl(clientnet, world);
+			pctrl = new CClientPlayerControl(clientnet);
 			simulations.push_back(new CClientSim(clientnet, world));
 			simulations.push_back(new CPhysics(world));
 			break;
@@ -295,7 +293,7 @@ int main(int argc, char *argv[])
 			int port = gui->getValue("hostmenu", "portnumber").toInt();
 			printf("Creating client-type simulation with %s:%d\n", name.c_str(), port);
 			clientnet = new CClientNet(name, port);
-			pctrl = new CClientPlayerControl(clientnet, world);
+			pctrl = new CClientPlayerControl(clientnet);
 			CClientSim *csim = new CClientSim(clientnet, world);
 			trackfile = csim->getTrackname();
 			simulations.push_back(csim);
@@ -317,9 +315,13 @@ int main(int argc, char *argv[])
 	printf("\nNumber of players to be added: %d\n", num_players);
 	for(int i=0; i<num_players; i++)
 	{
-		CString desc = gui->getValue("playermenu", i);
-		printf("%d: \"%s\"\n", i, desc.c_str());
-		addPlayer(desc);
+		CString name = gui->getValue("playermenu", CString("name ") + i);
+		bool isHuman = gui->getValue("playermenu", CString("ishuman ") + i) == "true";
+		CString carFile = gui->getValue("playermenu", CString("carfile ") + i);
+		CObjectChoice oc;
+		oc.m_Filename = carFile;
+		printf("%d: \"%s\" driving %s\n", i, name.c_str(), carFile.c_str());
+		addPlayer(isHuman, name, oc);
 	}
 
 	printf("\nLoading moving objects\n");

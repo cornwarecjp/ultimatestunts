@@ -16,15 +16,89 @@
  ***************************************************************************/
 
 #include "player.h"
+#include "car.h"
+#include "carinput.h"
 
-CPlayer::CPlayer(const CWorld *w)
+CPlayer::CPlayer()
 {
-	m_World = w;
+	m_World = theWorld;
 
   //These have not been set:
   m_MovingObjectId = -1;
   m_PlayerId = -1;
 }
 
-CPlayer::~CPlayer(){
+CPlayer::~CPlayer()
+{
+}
+
+int CPlayer::setAutomaticGear(float &gas, float &brake)
+{
+	if(m_MovingObjectId < 0)
+		return -1; //not set because not connected to a moving object
+
+	if(theWorld->m_MovObjs[m_MovingObjectId]->getType() != CMessageBuffer::car)
+		return -2;
+
+	CCar *theCar = (CCar *)theWorld->m_MovObjs[m_MovingObjectId];
+	CCarInput *carin = (CCarInput *)theCar->m_InputData;
+
+	int gear = theCar->m_Gear;
+	int maxgear = 6;
+	float r = theCar->getGearRatio();
+	float w = theCar->m_MainAxisVelocity * r;
+	float M = theCar->getEngineTorque(w) * r;
+
+	float speed = theCar->m_Bodies[0].getVelocity().abs();
+
+	if(gear < maxgear && gear > 0) //gear up if possible (and no reverse gear)
+	{
+		float rhigher = theCar->getGearRatio(gear+1);
+		float whigher = theCar->m_MainAxisVelocity * rhigher;
+		float Mhigher = theCar->getEngineTorque(whigher) * rhigher;
+
+		if(Mhigher > M)
+		{
+			carin->m_Gear = gear + 1;
+			return carin->m_Gear;
+		}
+	}
+
+	if(gear > 1) //gear down if possible
+	{
+		float rlower = theCar->getGearRatio(gear-1);
+		float wlower = theCar->m_MainAxisVelocity * rlower;
+		float Mlower = theCar->getEngineTorque(wlower) * rlower;
+		
+		if(Mlower > M)
+		{
+			carin->m_Gear = gear - 1;
+			return carin->m_Gear;
+		}
+	}
+
+	if(gear == 1 && brake > gas && speed < 1.0) //go to reverse gear
+	{
+		float t = gas;
+		gas = brake;
+		brake = t;
+		carin->m_Gear = 0;
+		return carin->m_Gear;
+	}
+
+	if(gear == 0)
+	{
+		if(gas > brake && speed < 1.0) //leave reverse gear
+		{
+			carin->m_Gear = 1;
+			return carin->m_Gear;
+		}
+
+		float t = gas;
+		gas = brake;
+		brake = t;
+	}
+
+	carin->m_Gear = gear;
+	return gear;
 }

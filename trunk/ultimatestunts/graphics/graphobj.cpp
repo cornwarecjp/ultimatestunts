@@ -22,6 +22,7 @@
 #include "vector.h"
 #include "graphobj.h"
 #include "usmacros.h"
+#include "lconfig.h"
 
 GLubyte notex_img[1][3];
 GLuint no_tex;
@@ -46,9 +47,16 @@ CGraphObj::~CGraphObj()
 	//TODO: remove display list when needed
 }
 
-bool CGraphObj::loadFromFile(CFile *f, CTexture **matarray)
+bool CGraphObj::loadFromFile(CFile *f, CTexture **matarray, int lod_offset)
 {
-	for(int lod=1; lod<5; lod++)
+	int startlod = lod_offset + 1;
+	int stoplod = lod_offset + 4;
+	if(startlod < 1) startlod = 1;
+	if(startlod > 4) startlod = 4;
+	if(stoplod < 1) stoplod = 1;
+	if(stoplod > 4) stoplod = 4;
+
+	for(int lod=0; lod<5; lod++)
 	{
 		//printf("Loading graphobj lod=%d\n", lod);
 		f->reopen();
@@ -58,16 +66,31 @@ bool CGraphObj::loadFromFile(CFile *f, CTexture **matarray)
 
 		switch(lod)
 		{
+			case 0: m_ObjListRef = objlist; break;
 			case 1: m_ObjList1 = objlist; break;
 			case 2: m_ObjList2 = objlist; break;
 			case 3: m_ObjList3 = objlist; break;
 			case 4: m_ObjList4 = objlist; break;
 		}
 
-		bool texture_isenabled = true;
-		setMaterialColor(CVector(1,1,1));
-		glBindTexture(GL_TEXTURE_2D, no_tex);
+		if( (lod > 0 && lod < startlod) || lod > stoplod)
+		{
+			glEndList();
+			continue;
+		}
 
+		bool texture_isenabled = true;
+		if(lod == 0)
+		{
+			m_OpacityState = 0.0;
+		}
+		else
+		{
+			m_OpacityState = 1.0;
+			glBindTexture(GL_TEXTURE_2D, no_tex);
+		}
+		m_ColorState = CVector(1,1,1);
+		setMaterialColor();
 
 		bool eof = false;
 
@@ -83,7 +106,9 @@ bool CGraphObj::loadFromFile(CFile *f, CTexture **matarray)
 				CString rhs = line.mid(sp+1);
 				if(lhs == "Lod")
 				{
-					if(rhs.inStr(lod+'0') < 0)
+					int lod_eff = lod;
+					if(lod == 0) lod_eff = startlod;
+					if(rhs.inStr(lod_eff+'0') < 0)
 						while(true)
 						{
 							line = f->readl();
@@ -92,12 +117,12 @@ bool CGraphObj::loadFromFile(CFile *f, CTexture **matarray)
 							if(sp > 0 && line.mid(0, sp) == "Lod")
 							{
 								rhs = line.mid(sp+1);
-								if(rhs.inStr(lod+'0') >= 0)
+								if(rhs.inStr(lod_eff+'0') >= 0)
 									break;
 							}
 						}
 				}
-				if(lhs == "Texture")
+				if(lhs == "Texture" && lod != 0)
 				{
 					int t = rhs.toInt();
 
@@ -116,7 +141,8 @@ bool CGraphObj::loadFromFile(CFile *f, CTexture **matarray)
 						{
 							glEnable(GL_TEXTURE_2D);
 							texture_isenabled=true;
-							setMaterialColor(CVector(1,1,1));
+							m_ColorState = CVector(1,1,1);
+							setMaterialColor();
 						}
 					}
 
@@ -124,21 +150,34 @@ bool CGraphObj::loadFromFile(CFile *f, CTexture **matarray)
 						{tex->draw(lod);}
 					else //geen texture
 					{
-						setMaterialColor(tex->getColor());
+						m_ColorState = tex->getColor();
+						setMaterialColor();
 					}
 
 				}
-				if(lhs == "Color")
+				if(lhs == "Color" && lod != 0)
 				{
+					m_ColorState = rhs.toVector();
 					if(texture_isenabled) //oplossing van de kleurenbug
-						setMaterialColor(rhs.toVector());
+						setMaterialColor();
+				}
+				if(lhs == "Opacity" && lod != 0)
+				{
+					m_OpacityState = rhs.toFloat();
+					if(texture_isenabled) //oplossing van de kleurenbug
+						setMaterialColor();
+				}
+				if(lhs == "Reflectance" && lod == 0)
+				{
+					m_OpacityState = rhs.toFloat();
+					setMaterialColor();
 				}
 				if(lhs == "Vertex")
 				{
 					CVector v = rhs.toVector();
 					glVertex3f(v.x, v.y, v.z);
 				}
-				if(lhs == "TexCoord")
+				if(lhs == "TexCoord" && lod != 0)
 				{
 					CVector v = rhs.toVector();
 					glTexCoord2f(v.x, v.y);
@@ -161,7 +200,7 @@ bool CGraphObj::loadFromFile(CFile *f, CTexture **matarray)
 					glBegin(GL_POLYGON);
 				if(lhs == "End")
 					glEnd();
-				if(lhs == "Notex")
+				if(lhs == "Notex" && lod != 0)
 					glBindTexture(GL_TEXTURE_2D, no_tex);
 			}
 			else //no spaces
@@ -178,7 +217,7 @@ bool CGraphObj::loadFromFile(CFile *f, CTexture **matarray)
 					glBegin(GL_POLYGON);
 				if(line=="End")
 					glEnd();
-				if(line=="Notex")
+				if(line=="Notex" && lod != 0)
 					glBindTexture(GL_TEXTURE_2D, no_tex);
 			} //if a space exists
 
@@ -200,6 +239,7 @@ void CGraphObj::draw(int lod) const
 	//TODO: make this code very fast (it's the main drawing routine)
 	switch(lod)
 	{
+		case 0: glCallList(m_ObjListRef); break;
 		case 1: glCallList(m_ObjList1); break;
 		case 2: glCallList(m_ObjList2); break;
 		case 3: glCallList(m_ObjList3); break;
@@ -207,8 +247,8 @@ void CGraphObj::draw(int lod) const
 	}
 }
 
-void CGraphObj::setMaterialColor(CVector c)
+void CGraphObj::setMaterialColor()
 {
-	float kleur[] = {c.x, c.y, c.z};
+	float kleur[] = {m_ColorState.x, m_ColorState.y, m_ColorState.z, m_OpacityState};
 	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, kleur);
 }

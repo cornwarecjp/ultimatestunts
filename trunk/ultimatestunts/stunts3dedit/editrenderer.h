@@ -20,6 +20,7 @@
 
 #include "renderer.h"
 #include "graphobj.h"
+#include "texture.h"
 
 /**
   *@author CJP
@@ -27,7 +28,7 @@
 
 class CEditRenderer : public CRenderer  {
 public: 
-	CEditRenderer(const CLConfig &conf);
+	CEditRenderer();
 	virtual ~CEditRenderer();
 
 	void setGraphobj(const CGraphObj *obj)
@@ -37,6 +38,8 @@ public:
 
 protected:
 	const CGraphObj *m_GraphObj;
+
+	CTexture *m_EnvMap;
 };
 
 #endif

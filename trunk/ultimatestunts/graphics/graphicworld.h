@@ -31,7 +31,7 @@
 class CGraphicWorld
 {
 public: 
-	CGraphicWorld(const CWorld *world, const CLConfig &conf);
+	CGraphicWorld();
 	virtual ~CGraphicWorld();
 
 	bool loadWorld();
@@ -43,6 +43,7 @@ public:
 	vector<CGraphObj> m_MovingObjects;
 
 	CBackground m_Background;
+	CTexture m_EnvMap;
 protected:
 	CTexture **getTextureSubset(CString indices);
 

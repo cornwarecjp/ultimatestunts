@@ -26,12 +26,15 @@ class CGraphObj
 	public:
 		CGraphObj();
 		virtual ~CGraphObj();
-		virtual bool loadFromFile(CFile *f, CTexture **matarray);
+		virtual bool loadFromFile(CFile *f, CTexture **matarray, int lod_offset = 0);
 
 		void draw(int lod) const;
 	protected:
-		unsigned int m_ObjList1, m_ObjList2, m_ObjList3, m_ObjList4;
-		void setMaterialColor(CVector c);
+		unsigned int m_ObjListRef, m_ObjList1, m_ObjList2, m_ObjList3, m_ObjList4;
+
+		float m_OpacityState;
+		CVector m_ColorState;
+		void setMaterialColor();
 };
 
 #endif

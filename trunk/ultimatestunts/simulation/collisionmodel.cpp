@@ -35,6 +35,9 @@ bool CCollisionModel::loadFromFile(CFile *f, CString subset, CMaterial **matarra
 	m_Filename = f->getName();
 	m_Subset = subset;
 
+	//initial state
+	CMaterial *mat = NULL;
+	
 	//Load faces from file
 	f->reopen();
 	ePrimitiveType currentType = None;
@@ -48,6 +51,15 @@ bool CCollisionModel::loadFromFile(CFile *f, CString subset, CMaterial **matarra
 		{
 				CString lhs = line.mid(0, sp);
 				CString rhs = line.mid(sp+1);
+
+				if(lhs == "Texture")
+				{
+					mat = matarray[rhs.toInt()];
+				}
+				if(lhs == "Notex")
+				{
+					mat = NULL; //TODO: assign a number for non-texturised materials
+				}
 
 				if(lhs == "Lod")
 				{
@@ -78,6 +90,7 @@ bool CCollisionModel::loadFromFile(CFile *f, CString subset, CMaterial **matarra
 						{
 							m_Faces.push_back(CCollisionFace()); //new face
 							m_Faces.back().reverse = false;
+							m_Faces.back().material = mat;
 						}
 						break;
 					case Quads:
@@ -85,6 +98,7 @@ bool CCollisionModel::loadFromFile(CFile *f, CString subset, CMaterial **matarra
 						{
 							m_Faces.push_back(CCollisionFace()); //new face
 							m_Faces.back().reverse = false;
+							m_Faces.back().material = mat;
 						}
 						break;
 					case Trianglestrip:
@@ -96,6 +110,7 @@ bool CCollisionModel::loadFromFile(CFile *f, CString subset, CMaterial **matarra
 							newFace.push_back(oldFace[1]);
 							newFace.push_back(oldFace[2]);
 							newFace.reverse = !theFace.reverse;
+							newFace.material = mat;
 						}
 						break;
 					case Quadstrip:
@@ -107,6 +122,7 @@ bool CCollisionModel::loadFromFile(CFile *f, CString subset, CMaterial **matarra
 							newFace.push_back(oldFace[3]);
 							newFace.push_back(oldFace[2]);
 							newFace.reverse = true;
+							newFace.material = mat;
 						}
 						else if(index == 2) //only for the first quad
 						{
@@ -122,28 +138,78 @@ bool CCollisionModel::loadFromFile(CFile *f, CString subset, CMaterial **matarra
 					(m_Faces.back()).push_back(v);
 				}
 				if(lhs=="Triangles")
-					{currentType = Triangles; m_Faces.push_back(CCollisionFace()); m_Faces.back().reverse = false;}
+				{
+					currentType = Triangles;
+					m_Faces.push_back(CCollisionFace());
+					m_Faces.back().reverse = false;
+					m_Faces.back().material = mat;
+				}
 				if(lhs=="Quads")
-					{currentType = Quads; m_Faces.push_back(CCollisionFace()); m_Faces.back().reverse = false;}
+				{
+					currentType = Quads;
+					m_Faces.push_back(CCollisionFace());
+					m_Faces.back().reverse = false;
+					m_Faces.back().material = mat;
+				}
 				if(lhs=="Trianglestrip")
-					{currentType = Trianglestrip; m_Faces.push_back(CCollisionFace()); m_Faces.back().reverse = false;}
+				{
+					currentType = Trianglestrip;
+					m_Faces.push_back(CCollisionFace());
+					m_Faces.back().reverse = false;
+					m_Faces.back().material = mat;
+				}
 				if(lhs=="Quadstrip")
-					{currentType = Quadstrip; m_Faces.push_back(CCollisionFace()); m_Faces.back().reverse = true;}
+				{
+					currentType = Quadstrip;
+					m_Faces.push_back(CCollisionFace());
+					m_Faces.back().reverse = true;
+					m_Faces.back().material = mat;
+				}
 				if(lhs=="Polygon")
-					{currentType = Polygon; m_Faces.push_back(CCollisionFace()); m_Faces.back().reverse = false;}
+				{
+					currentType = Polygon;
+					m_Faces.push_back(CCollisionFace());
+					m_Faces.back().reverse = false;
+					m_Faces.back().material = mat;
+				}
 		}
 		else
 		{
 			if(line=="Triangles")
-				{currentType = Triangles; m_Faces.push_back(CCollisionFace()); m_Faces.back().reverse = false;}
+			{
+				currentType = Triangles;
+				m_Faces.push_back(CCollisionFace());
+				m_Faces.back().reverse = false;
+				m_Faces.back().material = mat;
+			}
 			if(line=="Quads")
-				{currentType = Quads; m_Faces.push_back(CCollisionFace()); m_Faces.back().reverse = false;}
+			{
+				currentType = Quads;
+				m_Faces.push_back(CCollisionFace());
+				m_Faces.back().reverse = false;
+				m_Faces.back().material = mat;
+			}
 			if(line=="Trianglestrip")
-				{currentType = Trianglestrip; m_Faces.push_back(CCollisionFace()); m_Faces.back().reverse = false;}
+			{
+				currentType = Trianglestrip;
+				m_Faces.push_back(CCollisionFace());
+				m_Faces.back().reverse = false;
+				m_Faces.back().material = mat;
+			}
 			if(line=="Quadstrip")
-				{currentType = Quadstrip; m_Faces.push_back(CCollisionFace()); m_Faces.back().reverse = true;}
+			{
+				currentType = Quadstrip;
+				m_Faces.push_back(CCollisionFace());
+				m_Faces.back().reverse = true;
+				m_Faces.back().material = mat;
+			}
 			if(line=="Polygon")
-				{currentType = Polygon; m_Faces.push_back(CCollisionFace()); m_Faces.back().reverse = false;}
+			{
+				currentType = Polygon;
+				m_Faces.push_back(CCollisionFace());
+				m_Faces.back().reverse = false;
+				m_Faces.back().material = mat;
+			}
 		}
 	}
 

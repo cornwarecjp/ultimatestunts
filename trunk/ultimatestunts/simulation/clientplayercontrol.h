@@ -27,7 +27,7 @@
 
 class CClientPlayerControl : public CPlayerControl  {
 public: 
-	CClientPlayerControl(CClientNet *net, CWorld *w);
+	CClientPlayerControl(CClientNet *net);
 	virtual ~CClientPlayerControl();
 
 	virtual int addPlayer(CObjectChoice choice);

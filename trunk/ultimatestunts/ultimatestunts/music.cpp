@@ -26,16 +26,18 @@
 #endif
 
 void (CALLBACKFUN *_endCallbackFunc)();
+bool _true = true;
+bool _false = false;
 
-signed char endCallback(FSOUND_STREAM *stream, void *buff, int len, int param)
+signed char endCallback(FSOUND_STREAM *stream, void *buff, int len, void *param)
 {
 	//printf("endCallback:\n");
 
-	if(param)
+	if( *((bool *)param) && _endCallbackFunc != NULL)
 		_endCallbackFunc();
 
 	//printf("...endCallback done\n");
-	return true;
+	return false;
 }
 
 CMusic::CMusic()
@@ -70,12 +72,13 @@ void CMusic::setEndCallback(void (CALLBACKFUN *endfunc)())
 {
 	if(endfunc == NULL) //disable callback
 	{
-		FSOUND_Stream_SetEndCallback(m_Stream, endCallback, false);
+		FSOUND_Stream_SetEndCallback(m_Stream, endCallback, &_false);
+		_endCallbackFunc = NULL;
 	}
 	else
 	{
 		_endCallbackFunc = endfunc;
-		FSOUND_Stream_SetEndCallback(m_Stream, endCallback, true);
+		FSOUND_Stream_SetEndCallback(m_Stream, endCallback, &_true);
 	}
 }
 

@@ -26,20 +26,10 @@
 
 class CMaterial {
 public:
-	virtual ~CMaterial(){;}
-
-	virtual bool loadFromFile(CString filename, int mul)
-		{m_Filename = filename; m_Mul = mul; return true;}
-
-	CString getFilename()
-		{return m_Filename;}
-
-	int getTextureMul()
-		{return m_Mul;}
-
-protected:
 	CString m_Filename; //Texture filename
 	int m_Mul; //texture size multiplier
+
+	float m_Mu; //static friction coefficient
 };
 
 #endif

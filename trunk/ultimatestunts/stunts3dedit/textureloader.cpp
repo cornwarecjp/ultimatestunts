@@ -17,6 +17,7 @@
 
 #include <cstdio>
 #include "cfile.h"
+#include "datafile.h"
 #include "textureloader.h"
 
 CTextureLoader::CTextureLoader(const CLConfig &conf, CString texdatfile)
@@ -25,9 +26,11 @@ CTextureLoader::CTextureLoader(const CLConfig &conf, CString texdatfile)
 	m_TexMaxSize = 1024;
 	m_TexSmooth = true;
 
+	/*
 	CString topdir = conf.getValue("files", "datadir");
 	if(topdir != "" && topdir[topdir.length()-1] != '/')
 		topdir += '/';
+	*/
 
 	CString cnf = conf.getValue("graphics", "texture_maxsize");
 	if(cnf != "")
@@ -59,7 +62,8 @@ CTextureLoader::CTextureLoader(const CLConfig &conf, CString texdatfile)
 
 	for(int i=0; i<m_N; i++) //textures
 	{
-		line = topdir + f.readl();
+		CDataFile df(f.readl());
+		line = df.useExtern();
 		m_TexArray[i] = new CTexture;
 
 		printf("%s\n", line.c_str());

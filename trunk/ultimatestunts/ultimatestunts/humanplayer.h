@@ -28,7 +28,7 @@
 
 class CHumanPlayer : public CPlayer  {
 public: 
-	CHumanPlayer(const CWorld *w, CWinSystem *ws);
+	CHumanPlayer(CWinSystem *ws);
 	~CHumanPlayer();
 
 	virtual bool update();

@@ -17,6 +17,7 @@
 
 #include <GL/gl.h>
 #include <cstdio> //for sscanf
+#include <cmath> //for fabs
 #include "editgraphobj.h"
 #include "cfile.h"
 
@@ -42,6 +43,8 @@ bool CEditGraphObj::loadFromFile(CString filename, CTexture **matarray)
 		state.nor = CVector(0,1,0);
 		state.col = CVector(1,1,1);
 		state.tex = CVector(0,0,0);
+		state.opacity = 1.0;
+		state.reflectance = 0.0;
 	int texid = -1;
 	CString name = "default-name";
 	CString LODs = "1234c";
@@ -66,6 +69,10 @@ bool CEditGraphObj::loadFromFile(CString filename, CTexture **matarray)
 				texid =rhs.toInt();
 			if(lhs == "Color")
 				state.col = rhs.toVector();
+			if(lhs == "Opacity")
+				state.opacity = rhs.toFloat();
+			if(lhs == "Reflectance")
+				state.reflectance = rhs.toFloat();
 			if(lhs == "Normal")
 				state.nor = rhs.toVector();
 			if(lhs == "TexCoord")
@@ -185,7 +192,6 @@ bool CEditGraphObj::loadFromFile(CString filename, CTexture **matarray)
 		}
 	}
 
-	render();
 	return true;
 }
 
@@ -225,6 +231,8 @@ bool CEditGraphObj::import_raw(CString filename, CTexture **matarray)
 			v2.nor = -n2;
 			v3.nor = -n3;
 			v1.col = v2.col = v3.col = CVector(1,1,1);
+			v1.opacity = v2.opacity = v3.opacity = 1.0;
+			v1.reflectance = v2.reflectance = v3.reflectance = 0.0;
 
 			m_Primitives[m_Primitives.size()-1].m_Vertex.push_back(v1);
 			m_Primitives[m_Primitives.size()-1].m_Vertex.push_back(v2);
@@ -232,8 +240,68 @@ bool CEditGraphObj::import_raw(CString filename, CTexture **matarray)
 		}
 	}
 
-	render();
 	return true;
+}
+
+void CEditGraphObj::merge(const CEditGraphObj &obj, const CString &lods)
+{
+	//merge 2 objects
+	//if objects have equal names, then they are placed together
+	//and the new one gets the suffix of the LODS
+
+	//calculate CG position
+	CVector CG1, CG2;
+	unsigned int num1 = 0, num2 = 0;
+	for(unsigned int i=0; i < obj.m_Primitives.size(); i++)
+		for(unsigned int j=0; j < obj.m_Primitives[i].m_Vertex.size(); j++)
+		{
+			CG2 += obj.m_Primitives[i].m_Vertex[j].pos;
+			num2++;
+		}
+	CG2 /= num2;
+
+	for(unsigned int i=0; i < m_Primitives.size(); i++)
+		for(unsigned int j=0; j < m_Primitives[i].m_Vertex.size(); j++)
+		{
+			CG1 += m_Primitives[i].m_Vertex[j].pos;
+			num1++;
+		}
+	CG1 /= num1;
+
+	for(unsigned int i=0; i < obj.m_Primitives.size(); i++)
+	{
+		CPrimitive thePrimitive = obj.m_Primitives[i];
+
+		//Correct CG position
+		thePrimitive.m_LODs = lods;
+		for(unsigned int j=0; j < thePrimitive.m_Vertex.size(); j++)
+			thePrimitive.m_Vertex[j].pos += CG1 - CG2;
+
+		int match = -1;
+		for(unsigned int j=0; j < m_Primitives.size(); j++)
+			if(m_Primitives[j].m_Name == thePrimitive.m_Name)
+				{match = j; break;}
+
+		if(match < 0) //no match: just add it to the end
+		{
+			m_Primitives.push_back(thePrimitive);
+			continue;
+		}
+
+		//there is a match
+		thePrimitive.m_Name = thePrimitive.m_Name + "_" + lods;
+
+		//set the color
+		for(unsigned int j=0; j < thePrimitive.m_Vertex.size(); j++)
+		{
+			thePrimitive.m_Vertex[j].col = m_Primitives[match].m_Vertex[0].col;
+			thePrimitive.m_Vertex[j].opacity = m_Primitives[match].m_Vertex[0].opacity;
+			thePrimitive.m_Vertex[j].reflectance = m_Primitives[match].m_Vertex[0].reflectance;
+		}
+		
+		m_Primitives.insert(m_Primitives.begin() + match, thePrimitive);
+		
+	}
 }
 
 void CEditGraphObj::clear()
@@ -249,12 +317,16 @@ void CEditGraphObj::saveToFile(CString filename)
 	f.writel("");
 	f.writel("Normal 0,1,0");
 	f.writel("Color 1,1,1");
+	f.writel("Opacity 1");
+	f.writel("Reflectance 0");
 
 	//State variables:
 	CVertex state;
 		state.pos = CVector(0,0,0);
 		state.nor = CVector(0,1,0);
 		state.col = CVector(1,1,1);
+		state.opacity = 1.0;
+		state.reflectance = 0.0;
 		state.tex = CVector(0,0,0);
 	int texid = -1;
 	CString name = "default-name";
@@ -275,6 +347,12 @@ void CEditGraphObj::saveToFile(CString filename)
 		{
 			LODs = pr.m_LODs;
 			f.writel("Lod " + LODs);
+
+			//rewrite the entire state (set the current state totally invalid)
+			//TODO: more efficient
+			texid = -2;
+			state.col = state.nor = state.tex = CVector(2,2,2);
+			state.opacity = state.reflectance = 2;
 		}
 		if(!(pr.m_Texture == texid))
 		{
@@ -314,6 +392,20 @@ void CEditGraphObj::saveToFile(CString filename)
 				state.col = vt.col;
 			}
 
+			//opacity
+			if(fabs(vt.opacity - state.opacity) > 0.01)
+			{
+				f.writel(CString("Opacity ")+vt.opacity);
+				state.opacity = vt.opacity;
+			}
+
+			//reflectance
+			if(fabs(vt.reflectance - state.reflectance) > 0.01)
+			{
+				f.writel(CString("Reflectance ")+vt.reflectance);
+				state.reflectance = vt.reflectance;
+			}
+
 			//normal
 			if((vt.nor-state.nor).abs2() > 0.0001)
 			{
@@ -322,7 +414,7 @@ void CEditGraphObj::saveToFile(CString filename)
 			}
 
 			//texcoord
-			if((vt.tex-state.tex).abs2() > 0.0001)
+			if((vt.tex-state.tex).abs2() > 0.001)
 			{
 				f.writel(CString("TexCoord ")+vt.tex.x+", "+vt.tex.y);
 				state.tex = vt.tex;
@@ -337,19 +429,33 @@ void CEditGraphObj::saveToFile(CString filename)
 
 }
 
-void CEditGraphObj::render()
+void CEditGraphObj::render(const CString &visibleLODs)
 {
 	//delete existing list
 	if(isRendered)
-		{printf("Deleting old model...\n"); glDeleteLists(m_ObjList1, 1);}
+	{
+		printf("Deleting old model...\n");
+		glDeleteLists(m_ObjList1, 1);
+		glDeleteLists(m_ObjListRef, 1);
+	}
 
 	printf("Generating model...\n");
+
+	//Normal model
 	m_ObjList1 = m_ObjList2 = m_ObjList3 = m_ObjList4 = glGenLists(1);
 	glNewList(m_ObjList1, GL_COMPILE);
 
 	for(unsigned int i=0; i<m_Primitives.size(); i++)
 	{
 		CPrimitive &pr = m_Primitives[i];
+
+		CString LODs = pr.m_LODs;
+		bool doit = false;
+		for(unsigned int j=0; j < LODs.length(); j++)
+			if(visibleLODs.inStr( (LODs[j]) ) >= 0)
+				{doit = true; break;}
+		if(!doit) continue;
+		
 		if(pr.m_Texture < 0)
 			{glDisable(GL_TEXTURE_2D);}
 		else
@@ -364,9 +470,9 @@ void CEditGraphObj::render()
 			CVertex &vt = pr.m_Vertex[j];
 			CVector &nor = vt.nor;
 			glNormal3f(nor.x, nor.y, nor.z);
-			CVector &col = vt.col;
-			GLfloat kleur[] = {col.x, col.y, col.z, 1.0};
-			glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, kleur);
+			m_OpacityState = vt.opacity;
+			m_ColorState = vt.col;
+			setMaterialColor();
 			CVector &tex = vt.tex;
 			glTexCoord2f(tex.x, tex.y);
 			CVector &pos = vt.pos;
@@ -377,5 +483,33 @@ void CEditGraphObj::render()
 
 	glEndList();
 
+	
+	//Reflection model
+	m_ObjListRef = glGenLists(1);
+	glNewList(m_ObjListRef, GL_COMPILE);
+
+	m_ColorState = CVector(1,1,1);
+	for(unsigned int i=0; i<m_Primitives.size(); i++)
+	{
+		CPrimitive &pr = m_Primitives[i];
+		if(pr.m_LODs.inStr('1') < 0) continue; //reflection model = LOD 1
+
+		glBegin(pr.m_Type);
+		for(unsigned int j=0; j<pr.m_Vertex.size(); j++)
+		{
+			CVertex &vt = pr.m_Vertex[j];
+			CVector &nor = vt.nor;
+			glNormal3f(nor.x, nor.y, nor.z);
+			m_OpacityState = vt.reflectance;
+			setMaterialColor();
+			CVector &pos = vt.pos;
+			glVertex3f(pos.x, pos.y, pos.z);
+		}
+		glEnd();
+	}
+
+	glEndList();
+
+	
 	isRendered = true;
 }

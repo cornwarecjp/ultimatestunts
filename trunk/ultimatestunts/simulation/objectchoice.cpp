@@ -22,7 +22,7 @@
 CObjectChoice::CObjectChoice()
 {
 	m_ObjType = CMessageBuffer::movingObject;
-	m_Filename = "not_a_file.cardef";
+	m_Filename = "not_a_file.conf";
 	this->setType(CMessageBuffer::objectChoice);
 }
 

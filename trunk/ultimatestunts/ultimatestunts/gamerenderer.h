@@ -29,7 +29,7 @@
 
 class CGameRenderer : public CRenderer  {
 public: 
-	CGameRenderer(const CLConfig &conf, const CWorld *world);
+	CGameRenderer();
 	virtual ~CGameRenderer();
 
 	bool loadTrackData();

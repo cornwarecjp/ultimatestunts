@@ -42,12 +42,18 @@ public:
 	//Update: physics simulation
 	virtual void update(CPhysics *simulator, float dt);
 
+	const CVector &getCameraPos()
+		{return m_CameraPos;}
+
 	vector<CBody> m_Bodies; //The object bodies
 	vector<int> m_Sounds; //The object sounds
 
 	//For network transfer & other stuff
 	virtual CBinBuffer &getData(CBinBuffer &b) const;       // returns class data as binbuffer
 	virtual bool setData(const CBinBuffer &b);   // rebuild class data from binbuffer
+
+protected:
+	CVector m_CameraPos; //the relative position of the inside camera
 };
 
 #endif

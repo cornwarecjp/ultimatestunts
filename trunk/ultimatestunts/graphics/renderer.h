@@ -27,7 +27,7 @@
 
 class CRenderer {
 public: 
-	CRenderer(const CLConfig &conf);
+	CRenderer();
 	virtual ~CRenderer();
 
 	void setCamera(const CCamera *cam)
@@ -42,8 +42,11 @@ protected:
 
 	bool m_UseBackground;
 	bool m_ZBuffer;
+	float m_ReflectionDist;
 	int m_VisibleTiles;
 	int m_FogMode;
+	int m_MovingObjectLOD;
+	enum {off, blend} m_Transparency;
 	bool m_TexPerspective;
 	bool m_TexSmooth;
 	bool m_ShadowSmooth;

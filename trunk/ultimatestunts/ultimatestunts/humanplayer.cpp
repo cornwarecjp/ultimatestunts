@@ -22,7 +22,7 @@
 #include "car.h"
 #include "carinput.h"
 
-CHumanPlayer::CHumanPlayer(const CWorld *w, CWinSystem *ws) : CPlayer(w)
+CHumanPlayer::CHumanPlayer(CWinSystem *ws) : CPlayer()
 {
 	m_WinSys = ws;
 }
@@ -59,7 +59,13 @@ bool CHumanPlayer::update()
 		if(joy.y < -THR)
 			carin->m_Forward = (float)-joy.y / 32767;
 
+		//default
 		carin->m_Gear = ((CCar *)theWorld->m_MovObjs[m_MovingObjectId])->m_Gear;
+		
+		//try the automatic gear
+		setAutomaticGear(carin->m_Forward, carin->m_Backward);
+
+		//Try the manual thing
 		if(m_WinSys->wasPressed('a') && carin->m_Gear < 6)
 			carin->m_Gear++;
 		if(m_WinSys->wasPressed('z') && carin->m_Gear > 0)

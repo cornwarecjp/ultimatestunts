@@ -31,7 +31,7 @@ using namespace std;
 
 class CPlayerControl {
 public: 
-	CPlayerControl(CWorld *w);
+	CPlayerControl();
 	virtual ~CPlayerControl();
 
 	virtual int addPlayer(CObjectChoice choice);
@@ -39,8 +39,6 @@ public:
 
 protected:
 	vector<CObjectChoice> m_LocalChoices;
-
-	CWorld *m_World;
 };
 
 #endif

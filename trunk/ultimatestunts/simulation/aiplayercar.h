@@ -27,7 +27,7 @@
 class CAIPlayerCar : public CPlayer
 {
 	public:
-		CAIPlayerCar(CWorld *w);
+		CAIPlayerCar();
 		~CAIPlayerCar();
 
 		virtual bool update();

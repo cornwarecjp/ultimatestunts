@@ -27,7 +27,7 @@
 
 class CPlayer {
 public: 
-	CPlayer(const CWorld *w);
+	CPlayer();
 	virtual ~CPlayer();
 
 	virtual bool update()=0; //abstract method
@@ -36,7 +36,9 @@ public:
 	int m_PlayerId;
 
 protected:
-  const CWorld *m_World;
+	const CWorld *m_World;
+
+	int setAutomaticGear(float &gas, float &brake);
 };
 
 #endif

@@ -21,7 +21,7 @@
 #include "renderer.h"
 #include "usmacros.h"
 
-CRenderer::CRenderer(const CLConfig &conf)
+CRenderer::CRenderer()
 {
 	m_FogColor = new float[4];
 
@@ -30,46 +30,62 @@ CRenderer::CRenderer(const CLConfig &conf)
 	m_ZBuffer = true;
 	m_VisibleTiles = 10;
 	m_FogMode = GL_EXP;
+	m_Transparency = blend;
 	m_TexPerspective = true;
 	m_TexSmooth = true;
 	m_ShadowSmooth = true;
 
 	//Load the setings
-	CString cnf = conf.getValue("graphics", "background_size");
+	CString cnf = theMainConfig->getValue("graphics", "background_size");
 	//printf("Background size: %s\n", cnf.c_str());
 	if(cnf != "" && cnf.toInt() <= 4)
 		m_UseBackground = false;
 
-	cnf = conf.getValue("graphics", "visible_tiles");
+	cnf = theMainConfig->getValue("graphics", "visible_tiles");
 	//printf("Visible tiles: %s\n", cnf.c_str());
 	if(cnf != "")
 		m_VisibleTiles = cnf.toInt();
 
-	cnf = conf.getValue("graphics", "texture_perspective");
+	cnf = theMainConfig->getValue("graphics", "texture_perspective");
 	//printf("Texture perspective: %s\n", cnf.c_str());
 	m_TexPerspective = (cnf != "false");
 
-	cnf = conf.getValue("graphics", "zbuffer");
+	cnf = theMainConfig->getValue("graphics", "zbuffer");
 	//printf("Z buffer: %s\n", cnf.c_str());
 	m_ZBuffer = (cnf != "false");
 
-	cnf = conf.getValue("graphics", "texture_smooth");
+	cnf = theMainConfig->getValue("graphics", "texture_smooth");
 	//printf("Smooth textures: %s\n", cnf.c_str());
 	m_TexSmooth = (cnf != "false");
 
-	cnf = conf.getValue("graphics", "shadows_smooth");
+	cnf = theMainConfig->getValue("graphics", "shadows_smooth");
 	//printf("Smooth shadows: %s\n", cnf.c_str());
 	m_ShadowSmooth = (cnf != "false");
 
-	cnf = conf.getValue("graphics", "fogmode");
+	cnf = theMainConfig->getValue("graphics", "fogmode");
 	//printf("Fog mode: %s\n", cnf.c_str());
 	if(cnf != "")
 	{
-		if(cnf == "off")		m_FogMode = -1;
+		if(cnf == "off")	m_FogMode = -1;
 		if(cnf == "linear")	m_FogMode = GL_LINEAR;
-		if(cnf == "exp")		m_FogMode = GL_EXP;
+		if(cnf == "exp")	m_FogMode = GL_EXP;
 		if(cnf == "exp2")	m_FogMode = GL_EXP2;
 	}
+
+	cnf = theMainConfig->getValue("graphics", "transparency");
+	//printf("Transparency: %s\n", cnf.c_str());
+	if(cnf != "")
+	{
+		if(cnf == "off")	m_Transparency = off;
+		if(cnf == "blend")	m_Transparency = blend;
+	}
+
+	cnf = theMainConfig->getValue("graphics", "reflectiondist");
+	//printf("Reflection: %s\n", cnf.c_str());
+	m_ReflectionDist = cnf.toFloat();
+
+	cnf = theMainConfig->getValue("graphics", "movingobjectlod");
+	m_MovingObjectLOD = cnf.toInt();
 
 	//Next: use these settings
 	if(m_ZBuffer)
@@ -88,6 +104,16 @@ CRenderer::CRenderer(const CLConfig &conf)
 		glFogi(GL_FOG_END, TILESIZE*m_VisibleTiles);
 	}
 
+	if(m_Transparency == blend)
+	{
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	}
+	else
+	{
+		glDisable(GL_BLEND);
+	}
+	
 	if(m_TexSmooth)
 	{
 		glHint( GL_POINT_SMOOTH_HINT, GL_NICEST );

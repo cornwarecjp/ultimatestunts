@@ -23,11 +23,25 @@
 #include <cstdlib>
 #include <GL/gl.h>
 
+//Common files
+#include "lconfig.h"
+#include "cstring.h"
+#include "filecontrol.h"
+
+//Graphics stuff
+#include "winsystem.h"
+#include "editrenderer.h"
+#include "editcamera.h"
+
+#include "editgraphobj.h"
+#include "textureloader.h"
+
 //Key configuration:
 enum eKeyconf {
 	eExit = '\e',
 	eLoad = 'F',
 	eSave = 'f',
+	eSettings = 'S',
 
 	ePrimitive = 'p',
 	eVertex = 'v',
@@ -36,6 +50,7 @@ enum eKeyconf {
 	eChange = 'c',
 	eChangePrimitive = 'C',
 	eDuplicatePrimitive = 'd',
+
 	eRotate = 'r',
 	eScale = 's',
 	eMirror = 'm',
@@ -47,24 +62,13 @@ enum eKeyconf {
 	eHelp = 'h'
 };
 
-//Common files
-#include "lconfig.h"
-#include "cstring.h"
-
-//Graphics stuff
-#include "winsystem.h"
-#include "editrenderer.h"
-#include "editcamera.h"
-
-#include "editgraphobj.h"
-#include "textureloader.h"
-
 CWinSystem *winsys;
 CEditRenderer *renderer;
 CEditCamera *camera;
 
 CEditGraphObj *graphobj;
 CTextureLoader *texloader;
+CString VisibleLODs;
 
 CString topdir;
 
@@ -99,27 +103,60 @@ bool mainloop()
 
 	if(winsys->wasPressed(eLoad))
 	{
-		printf("Opening file. Choose from:\n"
-			"1: *.gl file\n"
-			"2: 3dto3d smooth *.raw file\n");
-		switch(getInput("Your choice: ").toInt())
+		if(getInput("Do you want to merge the file as a LOD (y/n)? ") == "y")
 		{
-			case 1:
-				graphobj->loadFromFile(
-					topdir + getInput("Enter filename: "),
-					texloader->m_TexArray); break;
-			case 2:
-				graphobj->import_raw(
-					topdir + getInput("Enter filename: "),
-					texloader->m_TexArray); break;
-			default:
-				printf("Please choose between 1 and 2\n");
+			CString lods = getInput("Enter the LODs of the new objects: ");
+
+			CEditGraphObj obj2;
+			printf("Opening file. Choose from:\n"
+				"1: *.gl file\n"
+				"2: 3dto3d smooth *.raw file\n");
+			switch(getInput("Your choice: ").toInt())
+			{
+				case 1:
+					obj2.loadFromFile(
+						topdir + getInput("Enter filename: "),
+						texloader->m_TexArray); break;
+				case 2:
+					obj2.import_raw(
+						topdir + getInput("Enter filename: "),
+						texloader->m_TexArray); break;
+				default:
+					printf("Please choose between 1 and 2\n");
+			}
+			graphobj->merge(obj2, lods);
 		}
+		else
+		{
+			printf("Opening file. Choose from:\n"
+				"1: *.gl file\n"
+				"2: 3dto3d smooth *.raw file\n");
+			switch(getInput("Your choice: ").toInt())
+			{
+				case 1:
+					graphobj->loadFromFile(
+						topdir + getInput("Enter filename: "),
+						texloader->m_TexArray); break;
+				case 2:
+					graphobj->import_raw(
+						topdir + getInput("Enter filename: "),
+						texloader->m_TexArray); break;
+				default:
+					printf("Please choose between 1 and 2\n");
+			}
+		}
+		graphobj->render(VisibleLODs);
 	}
 
 	if(winsys->wasPressed(eSave))
 		graphobj->saveToFile(
 			topdir + getInput("Saving *.gl file.\nEnter filename: "));
+
+	if(winsys->wasPressed(eSettings))
+	{
+		VisibleLODs = getInput("Set visible LODs: ");
+		graphobj->render(VisibleLODs);
+	}
 
 	if(winsys->wasPressed(ePrimitive))
 	{
@@ -150,6 +187,8 @@ bool mainloop()
 			vt.pos = getInput("Give position: ").toVector();
 			vt.nor = getInput("Give normal: ").toVector();
 			vt.col = getInput("Give color: ").toVector();
+			vt.opacity = getInput("Give opacity: ").toFloat();
+			vt.reflectance = getInput("Give reflectance: ").toFloat();
 			vt.tex = getInput("Give texcoord: ").toVector();
 			graphobj->m_Primitives[curr_primitive].m_Vertex.push_back(vt);
 		}
@@ -178,7 +217,7 @@ bool mainloop()
 			curr_primitive = graphobj->m_Primitives.size()-1;
 		}
 
-		graphobj->render();
+		graphobj->render(VisibleLODs);
 	}
 
 	if(winsys->wasPressed(eChange))
@@ -187,6 +226,8 @@ bool mainloop()
 		printf("Pos: %f,%f,%f\n", vt.pos.x, vt.pos.y, vt.pos.z);
 		printf("Nor: %f,%f,%f\n", vt.nor.x, vt.nor.y, vt.nor.z);
 		printf("Col: %f,%f,%f\n", vt.col.x, vt.col.y, vt.col.z);
+		printf("Opacity: %f\n", vt.opacity);
+		printf("Reflectance: %f\n", vt.reflectance);
 		printf("Tex: %f,%f\n", vt.tex.x, vt.tex.y);
 
 		CString answ = getInput("Give new position: ");
@@ -201,11 +242,19 @@ bool mainloop()
 		if(answ != "-")
 			vt.col = answ.toVector();
 
+		answ = getInput("Give new opacity: ");
+		if(answ != "-")
+			vt.opacity = answ.toFloat();
+
+		answ = getInput("Give new reflectance: ");
+		if(answ != "-")
+			vt.reflectance = answ.toFloat();
+
 		answ = getInput("Give new texcoord: ");
 		if(answ != "-")
 			vt.tex = answ.toVector();
 
-		graphobj->render();
+		graphobj->render(VisibleLODs);
 	}
 
 	if(winsys->wasPressed(eChangePrimitive))
@@ -255,6 +304,22 @@ bool mainloop()
 				p.m_Vertex[i].col = c;
 		}
 
+		answ = getInput("Enter new opacity: ");
+		if(answ != "-")
+		{
+			float o = answ.toFloat();
+			for(unsigned int i=0; i < p.m_Vertex.size(); i++)
+				p.m_Vertex[i].opacity = o;
+		}
+
+		answ = getInput("Enter new reflectance: ");
+		if(answ != "-")
+		{
+			float o = answ.toFloat();
+			for(unsigned int i=0; i < p.m_Vertex.size(); i++)
+				p.m_Vertex[i].reflectance = o;
+		}
+
 		answ = getInput("Enter new texture: ");
 		if(answ != "-")
 			p.m_Texture = answ.toInt();
@@ -263,7 +328,7 @@ bool mainloop()
 		if(answ != "-")
 			p.m_LODs = answ;
 
-		graphobj->render();
+		graphobj->render(VisibleLODs);
 	}
 
 	if(winsys->wasPressed(eDuplicatePrimitive))
@@ -271,7 +336,7 @@ bool mainloop()
 		CPrimitive p = graphobj->m_Primitives[curr_primitive];
 		graphobj->m_Primitives.push_back(p);
 		curr_primitive =graphobj->m_Primitives.size()-1;
-		graphobj->render();
+		graphobj->render(VisibleLODs);
 	}
 
 	if(winsys->wasPressed(eRotate))
@@ -331,7 +396,7 @@ bool mainloop()
 				}
 		}
 
-		graphobj->render();
+		graphobj->render(VisibleLODs);
 	}
 
 	if(winsys->wasPressed(eScale))
@@ -424,7 +489,7 @@ bool mainloop()
 					pr.m_Vertex[j].pos = center + (pr.m_Vertex[j].pos-center)*sf;
 		}
 
-		graphobj->render();
+		graphobj->render(VisibleLODs);
 	}
 
 	if(winsys->wasPressed(eMirror))
@@ -454,7 +519,7 @@ bool mainloop()
 			}
 		}
 
-		graphobj->render();
+		graphobj->render(VisibleLODs);
 	}
 
 	if(winsys->wasPressed(eTranslate))
@@ -478,7 +543,7 @@ bool mainloop()
 				pr.m_Vertex[j].pos += v;
 		}
 
-		graphobj->render();
+		graphobj->render(VisibleLODs);
 	}
 
 	if(winsys->wasPressed(eRotateTexture))
@@ -494,7 +559,7 @@ bool mainloop()
 		for(unsigned int j=0; j<pr.m_Vertex.size(); j++)
 			pr.m_Vertex[j].tex *= m;
 
-		graphobj->render();
+		graphobj->render(VisibleLODs);
 	}
 
 	if(winsys->wasPressed(eTranslateTexture))
@@ -505,7 +570,7 @@ bool mainloop()
 		for(unsigned int j=0; j<pr.m_Vertex.size(); j++)
 			pr.m_Vertex[j].tex += v;
 
-		graphobj->render();
+		graphobj->render(VisibleLODs);
 	}
 
 	if(winsys->wasPressed(eHelp))
@@ -513,6 +578,7 @@ bool mainloop()
 			"Esc: Exit\n"
 			"%c: Load\n"
 			"%c: Save\n"
+			"%c: Settings\n"
 			"%c: Primitive\n"
 			"%c: Vertex\n"
 			"%c: New primitive or vertex\n"
@@ -526,7 +592,7 @@ bool mainloop()
 			"%c: Rotate Texture\n"
 			"%c: Translate Texture\n"
 			"%c: Help\n",
-			eLoad, eSave, ePrimitive, eVertex, eNew, eChange,
+			eLoad, eSave, eSettings, ePrimitive, eVertex, eNew, eChange,
 			eChangePrimitive, eDuplicatePrimitive, eRotate, eScale,
 			eMirror, eTranslate, eRotateTexture, eTranslateTexture,
 			eHelp
@@ -554,32 +620,38 @@ bool mainloop()
 
 int main(int argc, char *argv[])
 {
-	CLConfig conffile(argc, argv);
-	if(!conffile.setFilename("ultimatestunts.conf"))
+	theMainConfig = new CLConfig(argc, argv);
+	if(!theMainConfig->setFilename("ultimatestunts.conf"))
 	{
 		printf("Error: could not read ultimatestunts.conf\n"); return 1;
 		//TODO: create a default one
 	} else {printf("Using ultimatestunts.conf\n");}
 
-	printf("\nCreating a window\n");
-	winsys = new CWinSystem("Stunts 3D Edit", conffile);
+	VisibleLODs = "1234c";
 
-	topdir = conffile.getValue("files", "datadir");
+	printf("\nCreating a window\n");
+	winsys = new CWinSystem("Stunts 3D Edit", *theMainConfig);
+
+	topdir = theMainConfig->getValue("files", "datadir");
 	if(topdir != "" && topdir[topdir.length()-1] != '/')
 		topdir += '/';
+	CFileControl fcont;
+	fcont.setDataDir(topdir);
+
 	printf("Filenames are relative to \"%s\"\n", topdir.c_str());
 
 	printf("\nLoading textures from textures.dat\n");
-	texloader = new CTextureLoader(conffile, "textures.dat");
+	texloader = new CTextureLoader(*theMainConfig, "textures.dat");
 
 	CString fn = getInput("Enter the filename: ");
 	graphobj = new CEditGraphObj;
 	printf("Loading graphic object...\n");
 	graphobj->loadFromFile(topdir + fn, texloader->m_TexArray);
+	graphobj->render(VisibleLODs);
 	printf("...done\n");
 
 	printf("\nInitialising the rendering engine\n");
-	renderer = new CEditRenderer(conffile);
+	renderer = new CEditRenderer();
 	camera = new CEditCamera();
 	renderer->setCamera(camera);
 	renderer->setGraphobj(graphobj);

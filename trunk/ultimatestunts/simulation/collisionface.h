@@ -24,6 +24,7 @@ using namespace std;
 
 #include "vector.h"
 #include "matrix.h"
+#include "material.h"
 
 /**
   *@author CJP
@@ -35,7 +36,9 @@ public:
 	float d;
 	bool reverse; //points are defined clockwise instead of ccw
 
-	CCollisionFace(){;}
+	CMaterial *material; //points to material array
+
+	CCollisionFace(){material = NULL;}
 	CCollisionFace(const CCollisionFace &f);
 	const CCollisionFace &operator=(const CCollisionFace &f);
 
