@@ -26,19 +26,21 @@ class CMatrix
 		CMatrix(CVector v);
 		CMatrix(CMatrix const &val);
 		~CMatrix();
+		void reset();
 
+		//Matrix-operations:
 		CMatrix const &operator=(CMatrix const &val);
 		CMatrix const &operator*=(CMatrix const &val);
+		CMatrix inverse() const;
 
+		//Special ways to create the right rotation matrix:
 		void  rotY ( float hoek);
 		void  rotX ( float hoek);
-		void reset();
+		void targetZ(CVector d, bool normalize=true);
 
 		float Element(int i, int j) const;
 		void setElement(int i, int j, float e);
 		const float *gl_mtr() const;
-
-		CMatrix inverse() const;
 
 	protected:
 		float *m_M;

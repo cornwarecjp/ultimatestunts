@@ -109,6 +109,37 @@ void  CMatrix::rotX ( float hoek)
 	setElement(2,0,0.0);	setElement(2,1,sin(hoek));	setElement(2,2,cos(hoek));
 }
 
+void CMatrix::targetZ(CVector d, bool normalize)
+{
+	if(normalize)
+		d /= d.abs();
+
+	float sq =  sqrt(d.x*d.x+d.z*d.z);
+
+	if(sq < 0.01) //prevent division by zero
+	{
+		reset();
+		setElement(1,1, 0.0);		setElement(2,1, 1.0);
+		setElement(1,2, -1.0);		setElement(2,2, 0.0);
+		return;
+	}
+
+	float invsqrt = 1.0 / sq;
+
+	setElement(0,0, d.z * invsqrt);
+			setElement(1,0, -d.x*d.y * invsqrt);
+				setElement(2,0, d.x);
+
+	setElement(0,1, 0.0);
+			setElement(1,1, sq);
+				setElement(2,1, d.y);
+
+	setElement(0,2, -d.x * invsqrt);
+			setElement(1,2, -d.z*d.y * invsqrt);
+				setElement(2,2, d.z);
+
+}
+
 void CMatrix::reset()
 {
     for (int i=0; i<4; i++)

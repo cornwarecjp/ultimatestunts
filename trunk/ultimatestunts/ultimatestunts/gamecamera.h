@@ -20,6 +20,7 @@
 
 #include "camera.h"
 #include "world.h"
+#include "timer.h"
 
 /**
   *@author CJP
@@ -44,6 +45,9 @@ public:
 
 	virtual void update();
 protected:
+	CVector m_Velocity;
+	CTimer m_Timer;
+
 	eCameraMode m_Mode;
 	int m_Id;
 	const CWorld *m_World;

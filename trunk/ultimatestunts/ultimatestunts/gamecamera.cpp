@@ -18,11 +18,10 @@
 
 #include "gamecamera.h"
 
-#define NEWPERFRAME 0.1
-#define OLDPERFRAME (1-NEWPERFRAME)
-
 CGameCamera::CGameCamera(const CWorld *w)
 {
+	m_Velocity = CVector(0,0,0);
+
 	m_Mode = In;
 	m_Id = -1;
 	m_World = w;
@@ -57,11 +56,15 @@ void CGameCamera::setTrackedObject(int id)
 
 void CGameCamera::update()
 {
+	float dt = m_Timer.getdt();
+
 	if(m_Id < 0) return;
 
 	CMovingObject *to = (m_World->m_MovObjs)[m_Id]; //tracked object
+	CVector tv; //target velocity
 	CVector tp; //target position
 	CMatrix tm; //target orientation
+	bool autotarget = false; //default: use tm
 
 	switch(m_Mode)
 	{
@@ -69,15 +72,14 @@ void CGameCamera::update()
 			//viewpoint is higher than center of mass
 			tp = to->getPosition() + CVector(0.0,0.3,0.0);
 			tm = to->getRotationMatrix();
+			tv = to->getVelocity();
 			break;
 		case Tracking:
-			tp = CVector(0.0,3.0,15.0);
+			tp = CVector(0.0, 3.0, 15.0);
 			tp *= to->getRotationMatrix();
 			tp += to->getPosition();
-
-			tm.rotX(0.197); //arctan(3/15) = 0.197 rad
-			tm *= to->getRotationMatrix();
-
+			tv = to->getVelocity();
+			autotarget = true; //point the camera to the object
 			m_Reached = false; //always have "smooth" camera movement
 			break;
 		case UserDefined:
@@ -88,13 +90,27 @@ void CGameCamera::update()
 	}
 
 	if(m_Reached)
-		{m_Position = tp;}
+		{m_Position = tp; m_Velocity = tv;}
 	else
 	{
-		m_Position = OLDPERFRAME * m_Position + NEWPERFRAME * tp;
-		if((m_Position - tp).abs() < 1.0) m_Reached = true;
+		CVector prel = m_Position - tp;
+		CVector vrel = m_Velocity - tv;
+
+		//"damper" + "spring" model
+		//spring oscillation frequency: 1.0 sec.
+		//damper is needed to prevent real oscillations
+		//critical damping occurs at sqrt(4*FREQ*FREQ) = 2.0
+#define FREQ 1.0
+#define DAMPC 1.1 // a little oscillation
+		CVector a = -DAMPC*vrel - FREQ*FREQ*prel;
+		m_Velocity += a * dt;
+		m_Position += m_Velocity * dt;
+
+		if(prel.abs() < 1.0) m_Reached = true;
 	}
 
-	m_Orientation = tm; //TODO: better rotation
-
+	if(autotarget)
+		{m_Orientation.targetZ(m_Position - to->getPosition(), true);}
+	else
+		{m_Orientation = tm;}
 }

@@ -47,28 +47,30 @@ bool CPhysics::update()
 		if(mo->getType()==CMessageBuffer::car)
 		{
 			CCarInput *input = (CCarInput *)mo->m_InputData;
+			CMatrix R = mo->getRotationMatrix();
 
 			//Dummy versnel-functie
 			float gas = input->m_Forward;
 			float rem = input->m_Backward;
 			CVector v = mo->getVelocity();
-			float vz = v.z; //used for air friction
-			float F = -gasmax*gas - copysign((remmax*rem + cwA*vz*vz),vz);
-			CVector a(0,0,F/m); //acceleration. Note that this is only in z-direction
+			CVector vrel = v / R;
+			vrel.x = vrel.y = 0.0;
+			float vz = vrel.z; //used for air friction
+			float F = -gasmax*gas - copysign(remmax*rem + cwA*vz*vz, vz);
+			CVector arel(0,0,F/m); //acceleration
 
-			v += (a * dt); //v is increased by a. So v (if beginning at zero) should only have a z-component
+			vrel += (arel * dt); //Now vrel should only have a z-component
+			v = vrel * R;
 			mo->setVelocity(v);
 
 			//Dummy roteer-functie:
 			float stuur = input->m_Right;
 			CMatrix dR;
 			dR.rotY(-stuur*invstraal*vz*dt);
-			CMatrix R = mo->getRotationMatrix();
 			R *= dR;
 			mo->setRotationMatrix(R);
 
-			//(bijna) standaard versnellen:
-			v *= R; //so that v.z points in the looking direction
+			//standard avveleration:
 			CVector r = mo->getPosition();
 			r += v * dt;
 			mo->setPosition(r);
