@@ -47,6 +47,7 @@ public:
 	SDL_Surface *getScreen(){return m_Screen;}
 protected:
 	int m_W, m_H, m_BPP;
+	bool m_Fullscreen;
 	Uint32 m_Flags;
 	void reshape(int w, int h);
 

@@ -261,7 +261,7 @@ CSound::CSound(const CLConfig &conf, const CWorld *world)
 	m_MusicObject = new CSoundObj;
 	m_MusicSample->loadFromFile(fn);
 	m_MusicObject->setSample(m_MusicSample);
-	m_MusicObject->setVolume(100); //less than 50% volume
+	m_MusicObject->setVolume(120); //less than 50% volume
 }
 
 CSound::~CSound()
@@ -330,7 +330,7 @@ void CSound::update()
 		CMovingObject *o = m_World->m_MovObjs[m_ObjIDs[i]];
 		CVector v = o->getVelocity();
 		m_Channels[i]->setPosVel(o->getPosition(), v);
-		int vol = 30 + (int)(7*v.abs());
+		int vol = 20 + (int)(4*v.abs());
 		float freq = 0.1 + 0.1 * v.abs();
 		//printf("Setting vol,freq of %d to %d,%3.3f\n", i, vol, freq);
 		m_Channels[i]->setFrequency(freq);

@@ -216,6 +216,8 @@ int main(int argc, char *argv[])
 
 	delete world;
 
+	delete winsys; //Important; don't remove: this calls SDL_Quit!!!
+
 	printf("\nProgram finished succesfully\n");
 
 	return EXIT_SUCCESS;
