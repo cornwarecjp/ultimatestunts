@@ -33,6 +33,7 @@
 #include "aiplayercar.h"
 
 #include "lconfig.h"
+#include "filecontrol.h"
 
 CWorld *world;
 vector<CPlayer *> players;
@@ -105,6 +106,20 @@ int main(int argc, char *argv[])
 	CLConfig conffile(argc, argv);
 	conffile.setFilename("ultimatestunts.conf");
 
+	CFileControl *fctl = new CFileControl;
+	{
+		//Default:
+		CString DataDir = ""; //try in default directories, like "./"
+
+		CString cnf = conffile.getValue("files", "datadir");
+		if(cnf != "")
+		{
+			if(cnf[cnf.length()-1] != '/') cnf += '/';
+			DataDir = cnf;
+		}
+		fctl->setDataDir(DataDir);
+	}
+
 	printf("Parsing input arguments\n");
 	for(int i=0; i<argc; i++)
 	{
@@ -120,7 +135,7 @@ int main(int argc, char *argv[])
 	}
 
 	printf("Creating world object\n");
-	world = new CWorld(conffile);
+	world = new CWorld();
 
 	CString answ = getInput("Do you want to use a \"super-server\" (y/n)? ");
 	printf("\nYou entered %c\n", answ[0]);

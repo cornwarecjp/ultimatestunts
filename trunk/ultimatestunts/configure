@@ -4981,7 +4981,7 @@ echo "Sound libraries: $soundlibs"
 echo "Graphics libraries: $graphlibs"
 echo "SDL libraries: $sdllibs"
 
-ac_config_files="$ac_config_files Makefile shared/Makefile simulation/Makefile graphics/Makefile filetransfer/Makefile stuntsserver/Makefile stuntsai/Makefile stunts3dedit/Makefile trackedit/Makefile ultimatestunts/Makefile"
+ac_config_files="$ac_config_files Makefile shared/Makefile simulation/Makefile graphics/Makefile stuntsserver/Makefile stuntsai/Makefile stunts3dedit/Makefile trackedit/Makefile ultimatestunts/Makefile"
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure
@@ -5317,13 +5317,12 @@ do
   "shared/Makefile" ) CONFIG_FILES="$CONFIG_FILES shared/Makefile" ;;
   "simulation/Makefile" ) CONFIG_FILES="$CONFIG_FILES simulation/Makefile" ;;
   "graphics/Makefile" ) CONFIG_FILES="$CONFIG_FILES graphics/Makefile" ;;
-  "filetransfer/Makefile" ) CONFIG_FILES="$CONFIG_FILES filetransfer/Makefile" ;;
   "stuntsserver/Makefile" ) CONFIG_FILES="$CONFIG_FILES stuntsserver/Makefile" ;;
   "stuntsai/Makefile" ) CONFIG_FILES="$CONFIG_FILES stuntsai/Makefile" ;;
   "stunts3dedit/Makefile" ) CONFIG_FILES="$CONFIG_FILES stunts3dedit/Makefile" ;;
   "trackedit/Makefile" ) CONFIG_FILES="$CONFIG_FILES trackedit/Makefile" ;;
   "ultimatestunts/Makefile" ) CONFIG_FILES="$CONFIG_FILES ultimatestunts/Makefile" ;;
-  *) { { echo "$as_me:5326: error: invalid argument: $ac_config_target" >&5
+  *) { { echo "$as_me:5325: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}
    { (exit 1); exit 1; }; };;
   esac
@@ -5567,7 +5566,7 @@ done; }
   esac
 
   if test x"$ac_file" != x-; then
-    { echo "$as_me:5570: creating $ac_file" >&5
+    { echo "$as_me:5569: creating $ac_file" >&5
 echo "$as_me: creating $ac_file" >&6;}
     rm -f "$ac_file"
   fi
@@ -5585,7 +5584,7 @@ echo "$as_me: creating $ac_file" >&6;}
       -) echo $tmp/stdin ;;
       [\\/$]*)
          # Absolute (can't be DOS-style, as IFS=:)
-         test -f "$f" || { { echo "$as_me:5588: error: cannot find input file: $f" >&5
+         test -f "$f" || { { echo "$as_me:5587: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          echo $f;;
@@ -5598,7 +5597,7 @@ echo "$as_me: error: cannot find input file: $f" >&2;}
            echo $srcdir/$f
          else
            # /dev/null tree
-           { { echo "$as_me:5601: error: cannot find input file: $f" >&5
+           { { echo "$as_me:5600: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          fi;;

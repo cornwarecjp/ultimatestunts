@@ -20,7 +20,7 @@
 
 CFile::CFile(CString filename, bool write)
 {
-	open(filename, write);
+	CFile::open(filename, write);
 }
 
 CFile::CFile()
@@ -30,11 +30,14 @@ CFile::CFile()
 
 CFile::~CFile()
 {
-	close();
+	CFile::close();
 }
 
 bool CFile::open(CString filename, bool write)
 {
+	m_Filename = filename;
+	m_Write = write;
+
 	const char *fn = filename.c_str();
 
 	if(write)
@@ -60,6 +63,12 @@ void CFile::close()
 	if(fp==NULL) return;
 	fclose(fp);
 	fp = NULL;
+}
+
+void CFile::reopen()
+{
+	CFile::close();
+	CFile::open(m_Filename, m_Write);
 }
 
 CString CFile::readl()

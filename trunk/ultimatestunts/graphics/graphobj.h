@@ -19,13 +19,14 @@
 
 #include "texture.h"
 #include "cstring.h"
+#include "cfile.h"
 
 class CGraphObj
 {
 	public:
 		CGraphObj();
 		virtual ~CGraphObj();
-		virtual bool loadFromFile(CString filename, CTexture **matarray);
+		virtual bool loadFromFile(CFile *f, CTexture **matarray);
 
 		void draw(int lod) const;
 	protected:

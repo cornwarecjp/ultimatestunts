@@ -31,14 +31,15 @@ bool CPhysics::update()
 	float dt = m_Timer.getdt();
 	if(dt > 1.0)
 		{printf("Warning: Low update time detected\n"); dt = 1.0;}
-	//printf("Now doing physics calculations (dt = %f)\n", dt);
+	if(dt < 0.0001)
+		{printf("Physics debugging message: dt = %f\n", dt);}
 
 //Dummy physics version 2.0 !!!!
 #define m 1000
 #define cwA 10
 #define gasmax 10000
 #define remmax 10000
-#define invstraal 0.1
+#define invstraal 0.05
 
 	for(unsigned int i=0; i < (m_World->m_MovObjs.size()); i++)
 	{
@@ -70,7 +71,7 @@ bool CPhysics::update()
 			R *= dR;
 			mo->setRotationMatrix(R);
 
-			//standard avveleration:
+			//standard acceleration:
 			CVector r = mo->getPosition();
 			r += v * dt;
 			mo->setPosition(r);

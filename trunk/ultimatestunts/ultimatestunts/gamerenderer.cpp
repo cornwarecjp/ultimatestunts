@@ -15,7 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 #include <GL/gl.h>
-
+#include <stdio.h>
 #include "gamerenderer.h"
 
 CGameRenderer::CGameRenderer(const CLConfig &conf, const CWorld *world) : CRenderer(conf)
@@ -120,28 +120,20 @@ void CGameRenderer::update()
 	if(!m_ZBuffer)
 	{
 		if (x >= 0) //Linker deel
-		{   //setColor(red);
-			if (z >= 0) viewTrackPart(xmin,zmin, x,z, 1,1, y); //voor
+		{
 			if (z <= breedte) viewTrackPart(xmin,zmax-1, x,z, 1,-1, y); //achter
-			if (z<breedte && z>=0) viewTrackPart(xmin,z, x,z+1, 1,1, y); //linker strook
+			if (z >= 0) viewTrackPart(xmin,zmin, x,z+1, 1,1, y); //voor+linker strook
 		}
 		if (x <= lengte) //Rechter deel
-		{   //setColor(green);
-			if (z >= 0) viewTrackPart(xmax-1,zmin, x,z, -1,1, y); //voor
-			if (z <= breedte) viewTrackPart(xmax-1,zmax-1, x,z, -1,-1, y); //achter
-			if (z<breedte && z>=0) viewTrackPart(xmax-1,z, x,z+1, -1,1, y); //rechter strook
+		{
+			if (z <= breedte) viewTrackPart(xmax-1,zmax-1, x-1,z, -1,-1, y); //achter
+			if (z >= 0) viewTrackPart(xmax-1,zmin, x-1,z+1, -1,1, y); //voor+rechter strook
 		}
 
-		//setColor(blue);
-		if (z >= 0 && x<lengte && x>=0) viewTrackPart(x,zmin, x+1,z, 1,1, y); //voor strook
-		if (z <= breedte && x<lengte && x>=0) viewTrackPart(x,zmax-1, x+1,z, 1,-1, y); //achter strook
-
-		glTranslatef(x * TILESIZE, 0, z * TILESIZE);
-
-		if (x>=0 && z>=0 && x<lengte && z<breedte) viewPilaar(x, z, y);
 	}
 	else //zbuffer
 	{
+		//printf("Using z-buffering\n");
 		viewTrackPart(xmin, zmin, xmax, zmax, 1, 1, y);
 	}
 
@@ -280,7 +272,6 @@ void CGameRenderer::viewPilaar(int x, int y, int cur_zpos)
 					}
 
 					//tekenen
-					//((CGraphicShape *)(temp.m_Shape))->draw(lod);
 					m_GraphicWorld->m_Tiles[temp.m_Shape].draw(lod);
 				}
 				break;

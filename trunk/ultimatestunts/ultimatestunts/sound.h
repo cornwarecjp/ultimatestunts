@@ -57,7 +57,6 @@ protected:
 
 	vector<CSndSample *> m_Samples;
 
-	CString m_TopDir;
 	int m_MusicVolume, m_SoundVolume;
 };
 

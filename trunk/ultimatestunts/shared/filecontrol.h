@@ -14,3 +14,14 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
+
+#include "cstring.h"
+
+class CFileControl
+{
+public:
+	CFileControl();
+	~CFileControl();
+
+	void setDataDir(const CString &dir);
+};

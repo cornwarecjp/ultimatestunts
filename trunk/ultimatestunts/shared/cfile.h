@@ -30,12 +30,15 @@ class CFile
 
 		virtual bool open(CString filename, bool write=false);
 		virtual void close();
+		virtual void reopen();
 
 		virtual CString readl();
 		virtual void writel(CString l);
 
 	protected:
 		FILE * fp;
+		CString m_Filename;
+		bool m_Write;
 };
 
 #endif

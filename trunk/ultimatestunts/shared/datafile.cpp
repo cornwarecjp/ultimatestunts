@@ -15,7 +15,27 @@
  *                                                                         *
  ***************************************************************************/
 
+#include "filecontrol.h"
 #include "datafile.h"
+
+//Shared data part:
+
+CString filecontroldatadir;
+
+//CFileControl part
+
+CFileControl::CFileControl()
+{}
+
+CFileControl::~CFileControl()
+{}
+
+void CFileControl::setDataDir(const CString &dir)
+{
+	filecontroldatadir = dir;
+}
+
+//CDataFile part
 
 CDataFile::CDataFile(CString filename, bool write)
 {
@@ -30,6 +50,11 @@ CDataFile::~CDataFile()
 bool CDataFile::open(CString filename, bool write=false)
 {
 	//Do something special
-	CFile::open(filename, write);
+	CFile::open(filecontroldatadir + filename, write);
 }
 
+CString CDataFile::useExtern()
+{
+	CFile::close();
+	return m_Filename;
+}

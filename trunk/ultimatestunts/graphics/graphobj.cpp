@@ -22,7 +22,6 @@
 #include "vector.h"
 #include "graphobj.h"
 #include "usmacros.h"
-#include "cfile.h"
 
 GLubyte notex_img[1][3];
 GLuint no_tex;
@@ -47,11 +46,12 @@ CGraphObj::~CGraphObj()
 	//TODO: remove display list when needed
 }
 
-bool CGraphObj::loadFromFile(CString filename, CTexture **matarray)
+bool CGraphObj::loadFromFile(CFile *f, CTexture **matarray)
 {
 	for(int lod=1; lod<5; lod++)
 	{
 		//printf("Loading graphobj lod=%d\n", lod);
+		f->reopen();
 
 		unsigned int objlist = glGenLists(1);
 		glNewList(objlist, GL_COMPILE);
@@ -69,16 +69,11 @@ bool CGraphObj::loadFromFile(CString filename, CTexture **matarray)
 		glBindTexture(GL_TEXTURE_2D, no_tex);
 
 
-		if(filename.length()==0) //lege string
-			{glEndList(); break;}
-
 		bool eof = false;
-
-		CFile f(filename);
 
 		while(!eof)
 		{
-			CString line = f.readl();
+			CString line = f->readl();
 			eof = line[0]=='\n';
 
 			int sp = line.inStr(' ');

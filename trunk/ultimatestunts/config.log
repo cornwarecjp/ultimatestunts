@@ -327,16 +327,15 @@ This file was extended by config.status 2.52, executed with
   > ./config.status 
 on pentagon
 
-config.status:5570: creating Makefile
-config.status:5570: creating shared/Makefile
-config.status:5570: creating simulation/Makefile
-config.status:5570: creating graphics/Makefile
-config.status:5570: creating filetransfer/Makefile
-config.status:5570: creating stuntsserver/Makefile
-config.status:5570: creating stuntsai/Makefile
-config.status:5570: creating stunts3dedit/Makefile
-config.status:5570: creating trackedit/Makefile
-config.status:5570: creating ultimatestunts/Makefile
+config.status:5569: creating Makefile
+config.status:5569: creating shared/Makefile
+config.status:5569: creating simulation/Makefile
+config.status:5569: creating graphics/Makefile
+config.status:5569: creating stuntsserver/Makefile
+config.status:5569: creating stuntsai/Makefile
+config.status:5569: creating stunts3dedit/Makefile
+config.status:5569: creating trackedit/Makefile
+config.status:5569: creating ultimatestunts/Makefile
 
 ## ----------------- ##
 ## Cache variables.  ##

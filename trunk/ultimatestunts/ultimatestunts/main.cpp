@@ -29,6 +29,7 @@ using namespace std;
 //Frequently used
 #include "cstring.h"
 #include "lconfig.h"
+#include "filecontrol.h"
 
 //Simulation stuff
 #include "world.h"
@@ -142,10 +143,24 @@ int main(int argc, char *argv[])
 		//TODO: create a default one
 	} else {printf("Using ultimatestunts.conf\n");}
 
+	CFileControl *fctl = new CFileControl;
+	{
+		//Default:
+		CString DataDir = ""; //try in default directories, like "./"
+
+		CString cnf = conffile.getValue("files", "datadir");
+		if(cnf != "")
+		{
+			if(cnf[cnf.length()-1] != '/') cnf += '/';
+			DataDir = cnf;
+		}
+		fctl->setDataDir(DataDir);
+	}
+
 	printf("\nCreating a window\n");
 	winsys = new CWinSystem(conffile);
 
-	world = new CWorld(conffile);
+	world = new CWorld();
 
 	printf("\nSetting up the GUI:\n");
 	gui = new CGUI(conffile, winsys);

@@ -22,6 +22,7 @@
 
 #include "vector.h"
 #include "usmacros.h"
+#include "datafile.h"
 
 #ifdef HAVE_LIBFMOD
 
@@ -190,15 +191,11 @@ CSound::CSound(const CLConfig &conf, const CWorld *world)
   printf("%s\n", FSOUND_GetDriverName(FSOUND_GetDriver()));
   printf("Hardware 3D channels : %d\n", FSOUND_GetNumHardwareChannels());
 
-	m_TopDir = conf.getValue("files", "datadir");
-	if(m_TopDir != "" && m_TopDir[m_TopDir.length()-1] != '/')
-		m_TopDir += '/';
-
-	CString fn = m_TopDir + "music/kssthbss.ogg";
-	printf("\nLoading music file %s\n", fn.c_str());
+	CDataFile f("music/kssthbss.ogg");
+	printf("\nLoading music file %s\n", f.getName().c_str());
 	m_MusicSample = new CSndSample(SAMPLE_2D);
 	m_MusicObject = new CSoundObj;
-	m_MusicSample->loadFromFile(fn);
+	m_MusicSample->loadFromFile(f.useExtern());
 	m_MusicObject->setSample(m_MusicSample);
 
 	m_MusicVolume = conf.getValue("sound", "musicvolume").toInt();
@@ -220,7 +217,9 @@ CSound::~CSound()
 bool CSound::load()
 {
 	CSndSample *engine = new CSndSample(SAMPLE_3D);
-	engine->loadFromFile(m_TopDir + "sounds/engine.wav");
+	CDataFile f("sounds/engine.wav");
+	printf("Loading enine sound from %s\n", f.getName().c_str());
+	engine->loadFromFile(f.useExtern());
 
 	m_Samples.push_back(engine);
 

@@ -114,21 +114,9 @@ install_location=
 type=DATA
 
 [filetransfer/Makefile.am]
-files=filetransfer/usfile.cpp,filetransfer/usfile.h,
+files=
 sub_dirs=
 type=static_library
-
-[filetransfer/usfile.cpp]
-dist=true
-install=false
-install_location=
-type=SOURCE
-
-[filetransfer/usfile.h]
-dist=true
-install=false
-install_location=
-type=HEADER
 
 [graphics/Makefile.am]
 files=graphics/winsystem.cpp,graphics/winsystem.h,graphics/graphobj.cpp,graphics/graphobj.h,graphics/image.c,graphics/image.h,graphics/texture.cpp,graphics/texture.h,graphics/renderer.cpp,graphics/renderer.h,graphics/graphicworld.cpp,graphics/graphicworld.h,graphics/gui.cpp,graphics/gui.h,graphics/camera.h,graphics/background.cpp,graphics/background.h

@@ -131,4 +131,4 @@ AC_SUBST(soundlibs)
 AC_SUBST(graphlibs)
 AC_SUBST(sdllibs)
 
-AC_OUTPUT(Makefile shared/Makefile simulation/Makefile graphics/Makefile filetransfer/Makefile stuntsserver/Makefile stuntsai/Makefile stunts3dedit/Makefile trackedit/Makefile ultimatestunts/Makefile)
+AC_OUTPUT(Makefile shared/Makefile simulation/Makefile graphics/Makefile stuntsserver/Makefile stuntsai/Makefile stunts3dedit/Makefile trackedit/Makefile ultimatestunts/Makefile)

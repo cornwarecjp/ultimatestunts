@@ -18,19 +18,10 @@
 
 #include "world.h"
 #include "car.h"
-#include "cfile.h"
+#include "datafile.h"
 
-CWorld::CWorld(const CLConfig &conf)
+CWorld::CWorld()
 {
-	//Default:
-	m_DataDir = ""; //try in default directories, like "./"
-
-	CString cnf = conf.getValue("files", "datadir");
-	if(cnf != "")
-	{
-		if(cnf[cnf.length()-1] != '/') cnf += '/';
-		m_DataDir = cnf;
-	}
 }
 
 CWorld::~CWorld(){
@@ -40,12 +31,9 @@ CWorld::~CWorld(){
 
 bool CWorld::loadTrack(CString filename)
 {
-	filename = m_DataDir + filename;
-	printf("The world is being loaded from %s\n\n", filename.c_str());
-
 	//Open the track file
-	CFile tfile(filename);
-	//TODO: change so that it checks for existence
+	CDataFile tfile(filename);
+	printf("The world is being loaded from %s\n\n", tfile.getName().c_str());
 
 	CString line = tfile.readl();
 	if(line != "TRACKFILE")
@@ -73,7 +61,7 @@ bool CWorld::loadTrack(CString filename)
 			line = line.mid(0, pos);
 		}
 
-		line = m_DataDir + line;
+		//line = m_DataDir + line;
 		//printf("Loading %s with mul=%d\n", line.c_str(), mul);
 		CMaterial *m = new CMaterial;
 		m->loadFromFile(line, mul);
@@ -83,7 +71,7 @@ bool CWorld::loadTrack(CString filename)
 	printf("\nLoaded %d materials\n\n", m_TileMaterials.size());
 
 	while(tfile.readl() != "BEGIN"); //Begin of background section
-	m_BackgroundFilename = m_DataDir + tfile.readl();
+	m_BackgroundFilename = tfile.readl();
 
 	//Second: loading collision (and graphics) data
 	while(tfile.readl() != "BEGIN"); //begin of tiles section
@@ -100,7 +88,7 @@ bool CWorld::loadTrack(CString filename)
 			line = line.mid(0, pos);
 		}
 
-		line = m_DataDir + line;
+		//line = m_DataDir + line;
 		CShape *b = new CShape;
 
 		CMaterial **subset = getMaterialSubset(texture_indices);
@@ -198,7 +186,7 @@ bool CWorld::loadMovObjs(CString filename)
 	//Second: loading collision (and graphics) data
 	//For example:
 	CBound *b = new CBound;
-	b->loadFromFile(m_DataDir + "cars/default.gl", NULL);
+	b->loadFromFile("cars/default.gl", NULL);
 	m_MovObjBounds.push_back(b);
 
 	//Third: initialising car array

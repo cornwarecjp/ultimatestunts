@@ -22,6 +22,7 @@
 #include "graphobj.h"
 #include "background.h"
 #include "world.h"
+#include "lconfig.h"
 
 /**
   *@author CJP

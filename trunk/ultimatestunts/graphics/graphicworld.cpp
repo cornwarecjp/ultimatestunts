@@ -17,6 +17,7 @@
 #include <stdio.h>
 
 #include "graphicworld.h"
+#include "datafile.h"
 
 CGraphicWorld::CGraphicWorld(const CWorld *world, const CLConfig &conf)
 {
@@ -51,13 +52,13 @@ bool CGraphicWorld::loadWorld()
 	for(unsigned int i=0; i<m_World->m_TileMaterials.size(); i++)
 	{
 		CTexture t;
-		CString fn = m_World->m_TileMaterials[i]->getFilename();
+		CDataFile f(m_World->m_TileMaterials[i]->getFilename());
 		int mul = m_World->m_TileMaterials[i]->getTextureMul();
-		printf("loading %s with mul=%d:\n", fn.c_str(), mul);
+		printf("loading %s with mul=%d:\n", f.getName().c_str(), mul);
 		t.setTextureSmooth(m_TexSmooth);
 		int xs = m_TexMaxSize / mul;
 		int ys = m_TexMaxSize / mul;
-		t.loadFromFile(fn, xs, ys);
+		t.loadFromFile(f.useExtern(), xs, ys);
 		m_TileTextures.push_back(t);
 	}
 
@@ -65,18 +66,18 @@ bool CGraphicWorld::loadWorld()
 	for(unsigned int i=0; i<m_World->m_TileShapes.size(); i++)
 	{
 		CGraphObj obj;
-		CString fn = m_World->m_TileShapes[i]->getFilename();
+		CDataFile f(m_World->m_TileShapes[i]->getFilename());
 		CTexture **subset = getTextureSubset(m_World->m_TileShapes[i]->getSubset());
-		printf("loading %s:\n", fn.c_str());
-		obj.loadFromFile(fn, subset);
+		printf("loading %s:\n", f.getName().c_str());
+		obj.loadFromFile(&f, subset);
 		m_Tiles.push_back(obj);
 		delete [] subset;
 	}
 
-	CString fn = m_World->getBackgroundFilename();
-	printf("Loading background %s:\n", fn.c_str());
+	CDataFile f(m_World->getBackgroundFilename());
+	printf("Loading background %s:\n", f.getName().c_str());
 	m_Background.setTextureSmooth(m_TexSmooth);
-	m_Background.loadFromFile(fn, 4*m_BackgroundSize, m_BackgroundSize);
+	m_Background.loadFromFile(f.useExtern(), 4*m_BackgroundSize, m_BackgroundSize);
 
 	return true;
 }
@@ -92,8 +93,9 @@ bool CGraphicWorld::loadObjects()
 	for(unsigned int i=0; i<m_World->m_MovObjBounds.size(); i++)
 	{
 		CGraphObj obj;
-		CString fn = m_World->m_MovObjBounds[i]->getFilename();
-		obj.loadFromFile(fn, NULL);
+		CDataFile f(m_World->m_MovObjBounds[i]->getFilename());
+		printf("Loading from %s\n", f.getName().c_str());
+		obj.loadFromFile(&f, NULL);
 		m_MovingObjects.push_back(obj);
 	}
 
@@ -103,17 +105,6 @@ bool CGraphicWorld::loadObjects()
 void CGraphicWorld::unloadObjects()
 {
 }
-
-/*
-bool CGraphicWorld::loadBackground(const CString &descr)
-{
-	m_BackgroundFilename = descr; //temp
-
-	printf("The background %s is being loaded\n", descr.c_str());
-	m_Background.setTextureSmooth(m_TexSmooth);
-	return m_Background.loadFromFile(descr, m_BackgroundSize, m_BackgroundSize / 4);
-}
-*/
 
 CTexture **CGraphicWorld::getTextureSubset(CString indices)
 {

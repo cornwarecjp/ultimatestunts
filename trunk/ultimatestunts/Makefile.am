@@ -4,4 +4,4 @@ CFLAGS=-Wall
 
 AUTOMAKE_OPTIONS = foreign 1.4
 
-SUBDIRS = shared simulation filetransfer graphics stuntsserver stuntsai stunts3dedit trackedit ultimatestunts
+SUBDIRS = shared simulation graphics stuntsserver stuntsai stunts3dedit trackedit ultimatestunts

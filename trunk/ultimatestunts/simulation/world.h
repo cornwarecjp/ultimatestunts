@@ -29,11 +29,10 @@ using namespace std;
 #include "tile.h"
 #include "movingobject.h"
 #include "objectchoice.h"
-#include "lconfig.h"
 
 class CWorld {
 public: 
-	CWorld(const CLConfig &conf);
+	CWorld();
 	virtual ~CWorld();
 
 	vector<CTile> m_Track; //refer to elements from m_TileShapes
@@ -57,7 +56,6 @@ public:
 protected:
 	CMaterial **getMaterialSubset(CString indices);
 
-	CString m_DataDir;
 	CString m_BackgroundFilename;
 };
 

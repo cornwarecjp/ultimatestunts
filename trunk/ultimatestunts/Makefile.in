@@ -81,7 +81,7 @@ CFLAGS = -Wall
 
 AUTOMAKE_OPTIONS = foreign 1.4
 
-SUBDIRS = shared simulation filetransfer graphics stuntsserver stuntsai stunts3dedit trackedit ultimatestunts
+SUBDIRS = shared simulation graphics stuntsserver stuntsai stunts3dedit trackedit ultimatestunts
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_CLEAN_FILES = 
