@@ -1,8 +1,9 @@
 /***************************************************************************
-                          ipnumber.h  -  ip number storage+converting class
+                          stuntsnet.h  -  Basic network functions
                              -------------------
-    copyright            : (C) 2002 by bones
-    email                : boesemar@users.sourceforge.net
+    begin                : do jan 13 2005
+    copyright            : (C) 2005 by CJP
+    email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
 
 /***************************************************************************
@@ -14,37 +15,37 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef IPNUMBER_H
-#define IPNUMBER_H
+#ifndef STUNTSNET_H
+#define STUNTSNET_H
 
-#include "SDL.h"
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+
 #include <vector>
 namespace std {}
 using namespace std;
 
-#include "cstring.h"
+#include "messagebuffer.h"
+#include "usmacros.h"
 
-class CIPNumber
-{
-public:
-	CIPNumber();
-	CIPNumber(const CIPNumber & c);
-	virtual ~CIPNumber();
+/**
+  *@author CJP
+  */
 
-	Uint8 operator[] (const Uint8 ix) const;
-	CIPNumber & operator = (const CString & s);
-	CIPNumber & operator = (u_int32_t s_addr);
-	bool operator==(const CIPNumber & two) const;
+class CStuntsNet {
+public: 
+	CStuntsNet(unsigned int port); //0 = take a free port (like for clients)
+	virtual ~CStuntsNet();
 
-	CString & toString () const;
+	virtual bool receiveData();
+	vector<CMessageBuffer> m_ReceivedData;
+
+	virtual bool sendData(const CMessageBuffer &data);
 
 private:
-	Uint8 m_IP[4];
-
+	int m_Socket;
+	struct sockaddr_in m_MyAddress;
 };
 
-
 #endif
-
-
-

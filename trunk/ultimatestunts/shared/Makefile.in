@@ -142,9 +142,9 @@ target_os = @target_os@
 target_vendor = @target_vendor@
 noinst_LIBRARIES = libshared.a
 
-libshared_a_SOURCES = binbuffer.cpp cfile.cpp cstring.cpp datafile.cpp datamanager.cpp dataobject.cpp generalmatrix.cpp generalvector.cpp hello.cpp lconfig.cpp matrix.cpp timer.cpp vector.cpp ipnumber.cpp
+libshared_a_SOURCES = binbuffer.cpp bthread.cpp cfile.cpp cstring.cpp datafile.cpp datamanager.cpp dataobject.cpp generalmatrix.cpp generalvector.cpp hello.cpp lconfig.cpp matrix.cpp timer.cpp vector.cpp ipnumber.cpp
 
-EXTRA_DIST = binbuffer.cpp binbuffer.h cfile.cpp cfile.h cstring.cpp cstring.h datafile.cpp datafile.h datamanager.cpp datamanager.h dataobject.cpp dataobject.h filecontrol.h generalmatrix.cpp generalmatrix.h generalvector.cpp generalvector.h hello.cpp hello.h lconfig.cpp lconfig.h matrix.cpp matrix.h timer.cpp timer.h vector.cpp vector.h
+EXTRA_DIST = binbuffer.cpp binbuffer.h bthread.cpp bthread.h cfile.cpp cfile.h cstring.cpp cstring.h datafile.cpp datafile.h datamanager.cpp datamanager.h dataobject.cpp dataobject.h filecontrol.h generalmatrix.cpp generalmatrix.h generalvector.cpp generalvector.h hello.cpp hello.h lconfig.cpp lconfig.h matrix.cpp matrix.h timer.cpp timer.h vector.cpp vector.h
 subdir = shared
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -153,20 +153,20 @@ LIBRARIES = $(noinst_LIBRARIES)
 
 libshared_a_AR = $(AR) cru
 libshared_a_LIBADD =
-am_libshared_a_OBJECTS = binbuffer.$(OBJEXT) cfile.$(OBJEXT) \
-	cstring.$(OBJEXT) datafile.$(OBJEXT) datamanager.$(OBJEXT) \
-	dataobject.$(OBJEXT) generalmatrix.$(OBJEXT) \
-	generalvector.$(OBJEXT) hello.$(OBJEXT) lconfig.$(OBJEXT) \
-	matrix.$(OBJEXT) timer.$(OBJEXT) vector.$(OBJEXT) \
-	ipnumber.$(OBJEXT)
+am_libshared_a_OBJECTS = binbuffer.$(OBJEXT) bthread.$(OBJEXT) \
+	cfile.$(OBJEXT) cstring.$(OBJEXT) datafile.$(OBJEXT) \
+	datamanager.$(OBJEXT) dataobject.$(OBJEXT) \
+	generalmatrix.$(OBJEXT) generalvector.$(OBJEXT) hello.$(OBJEXT) \
+	lconfig.$(OBJEXT) matrix.$(OBJEXT) timer.$(OBJEXT) \
+	vector.$(OBJEXT) ipnumber.$(OBJEXT)
 libshared_a_OBJECTS = $(am_libshared_a_OBJECTS)
 
 DEFAULT_INCLUDES =  -I. -I$(srcdir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/binbuffer.Po ./$(DEPDIR)/cfile.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/cstring.Po ./$(DEPDIR)/datafile.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/datamanager.Po \
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/binbuffer.Po ./$(DEPDIR)/bthread.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/cfile.Po ./$(DEPDIR)/cstring.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/datafile.Po ./$(DEPDIR)/datamanager.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/dataobject.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/generalmatrix.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/generalvector.Po ./$(DEPDIR)/hello.Po \
@@ -208,6 +208,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/binbuffer.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bthread.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cfile.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cstring.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/datafile.Po@am__quote@

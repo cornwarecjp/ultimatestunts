@@ -14,6 +14,8 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
+#include <cstdio>
+ 
 #include "binbuffer.h"
 
 //Code coming from binbuffer.h
@@ -104,10 +106,11 @@ CBinBuffer & CBinBuffer::operator += (const CString & bs)
 CString CBinBuffer::getCString(int unsigned &pos) const
 {
 	CString res;
-	if (pos > this->size()-1) throw(eEndOfBuffer);
+	if (pos > this->size()-1) return ""; //throw(eEndOfBuffer);
 	Uint8 ssize = getUint8(pos);
-	if ((pos + ssize) > this->size()-1) throw(eEndOfBuffer);
-	for (int i=0;i<ssize;i++) {
+	if ((pos + ssize) > this->size()) return ""; //throw(eEndOfBuffer);
+	for (int i=0;i<ssize;i++)
+	{
 		res.push_back(getUint8(pos));
 	}
 

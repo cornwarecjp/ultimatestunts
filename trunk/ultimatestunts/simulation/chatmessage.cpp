@@ -1,8 +1,9 @@
 /***************************************************************************
-                          ipnumber.h  -  ip number storage+converting class
+                          chatmessage.cpp  -  A chat message to all players
                              -------------------
-    copyright            : (C) 2002 by bones
-    email                : boesemar@users.sourceforge.net
+    begin                : do jan 13 2005
+    copyright            : (C) 2005 by CJP
+    email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
 
 /***************************************************************************
@@ -14,37 +15,9 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef IPNUMBER_H
-#define IPNUMBER_H
+#include "chatmessage.h"
 
-#include "SDL.h"
-#include <vector>
-namespace std {}
-using namespace std;
-
-#include "cstring.h"
-
-class CIPNumber
-{
-public:
-	CIPNumber();
-	CIPNumber(const CIPNumber & c);
-	virtual ~CIPNumber();
-
-	Uint8 operator[] (const Uint8 ix) const;
-	CIPNumber & operator = (const CString & s);
-	CIPNumber & operator = (u_int32_t s_addr);
-	bool operator==(const CIPNumber & two) const;
-
-	CString & toString () const;
-
-private:
-	Uint8 m_IP[4];
-
-};
-
-
-#endif
-
-
-
+CChatMessage::CChatMessage(){
+}
+CChatMessage::~CChatMessage(){
+}

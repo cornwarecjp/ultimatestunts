@@ -1,8 +1,9 @@
 /***************************************************************************
-                          ipnumber.h  -  ip number storage+converting class
+                          textmessage.cpp  -  A simple text message
                              -------------------
-    copyright            : (C) 2002 by bones
-    email                : boesemar@users.sourceforge.net
+    begin                : do jan 13 2005
+    copyright            : (C) 2005 by CJP
+    email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
 
 /***************************************************************************
@@ -14,37 +15,22 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef IPNUMBER_H
-#define IPNUMBER_H
+#include "textmessage.h"
 
-#include "SDL.h"
-#include <vector>
-namespace std {}
-using namespace std;
+CTextMessage::CTextMessage(){
+}
+CTextMessage::~CTextMessage(){
+}
 
-#include "cstring.h"
-
-class CIPNumber
+CBinBuffer &CTextMessage::getData(CBinBuffer &b) const
 {
-public:
-	CIPNumber();
-	CIPNumber(const CIPNumber & c);
-	virtual ~CIPNumber();
+	b += m_Message;
+	return b;
+}
 
-	Uint8 operator[] (const Uint8 ix) const;
-	CIPNumber & operator = (const CString & s);
-	CIPNumber & operator = (u_int32_t s_addr);
-	bool operator==(const CIPNumber & two) const;
-
-	CString & toString () const;
-
-private:
-	Uint8 m_IP[4];
-
-};
-
-
-#endif
-
-
-
+bool CTextMessage::setData(const CBinBuffer &b)
+{
+	unsigned int pos = 0;
+	m_Message = b.getCString(pos);
+	return true;
+}

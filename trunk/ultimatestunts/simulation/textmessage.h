@@ -1,8 +1,9 @@
 /***************************************************************************
-                          ipnumber.h  -  ip number storage+converting class
+                          textmessage.h  -  A simple text message
                              -------------------
-    copyright            : (C) 2002 by bones
-    email                : boesemar@users.sourceforge.net
+    begin                : do jan 13 2005
+    copyright            : (C) 2005 by CJP
+    email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
 
 /***************************************************************************
@@ -14,37 +15,29 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef IPNUMBER_H
-#define IPNUMBER_H
+#ifndef TEXTMESSAGE_H
+#define TEXTMESSAGE_H
 
-#include "SDL.h"
-#include <vector>
-namespace std {}
-using namespace std;
-
+#include "message.h"
 #include "cstring.h"
 
-class CIPNumber
-{
-public:
-	CIPNumber();
-	CIPNumber(const CIPNumber & c);
-	virtual ~CIPNumber();
+/**
+  *@author CJP
+  */
 
-	Uint8 operator[] (const Uint8 ix) const;
-	CIPNumber & operator = (const CString & s);
-	CIPNumber & operator = (u_int32_t s_addr);
-	bool operator==(const CIPNumber & two) const;
+class CTextMessage : public CMessage  {
+public: 
+	CTextMessage();
+	virtual ~CTextMessage();
 
-	CString & toString () const;
+	//For network transfer & other stuff
+	virtual CBinBuffer &getData(CBinBuffer &b) const;       // returns class data as binbuffer
+	virtual bool setData(const CBinBuffer &b);   // rebuild class data from binbuffer
 
-private:
-	Uint8 m_IP[4];
+	virtual CMessageBuffer::eMessageType getType() const
+		{return CMessageBuffer::textMessage;}
 
+	CString m_Message;
 };
 
-
 #endif
-
-
-
