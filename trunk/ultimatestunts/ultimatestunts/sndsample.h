@@ -31,8 +31,10 @@
 class CSndSample
 {
   public:
-    CSndSample(int t);
-    ~CSndSample();
+	CSndSample();
+	CSndSample(int t);
+	~CSndSample();
+	void init(int t);
 
     int loadFromFile(CString filename);
 

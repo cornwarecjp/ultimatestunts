@@ -27,16 +27,26 @@
 #include <fmod/wincompat.h> //debugging
 #endif
 
+CSndSample::CSndSample()
+{
+	  m_Sample = NULL;
+}
+
 CSndSample::CSndSample(int t)
 {
-  m_Sample = NULL;
-  m_Type = t;
+	m_Sample = NULL;
+	init(t);
 }
 
 CSndSample::~CSndSample()
 {
   FSOUND_Sample_Free((FSOUND_SAMPLE  *)m_Sample);
   m_Sample = NULL;
+}
+
+void CSndSample::init(int t)
+{
+  m_Type = t;
 }
 
 int CSndSample::loadFromFile(CString filename)

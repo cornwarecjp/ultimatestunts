@@ -42,9 +42,9 @@ CSoundObj::~CSoundObj()
 
 int CSoundObj::setSample(CSndSample *s)
 {
-  m_Channel = s->attachToChannel(FSOUND_FREE);
-
-  FSOUND_SetPaused(m_Channel, FALSE);
+	m_Channel = s->attachToChannel(FSOUND_FREE);
+	FSOUND_SetPaused(m_Channel, FALSE);
+	m_OriginalFrequency = FSOUND_GetFrequency(m_Channel);
 
   return 0;
 }
@@ -66,6 +66,26 @@ void CSoundObj::setVel(CVector v)
   FSOUND_3D_SetAttributes(m_Channel, parr, varr);
 }
 
+void CSoundObj::setPosVel(CVector p, CVector v)
+{
+	m_Pos = p;
+	m_Vel = v;
+	float parr[] = {m_Pos.x/10, m_Pos.y/10, m_Pos.z/10};
+	float varr[] = {m_Vel.x/10, m_Vel.y/10, m_Vel.z/10};
+	FSOUND_3D_SetAttributes(m_Channel, parr, varr);
+}
+
+void CSoundObj::setFrequency(float f)
+{
+	int freq = (int)(f * m_OriginalFrequency);
+	FSOUND_SetFrequency(m_Channel, freq);
+}
+
+void CSoundObj::setVolume(int v)
+{
+	FSOUND_SetVolume(m_Channel, v);
+}
+
 #else //no libfmod
 CSoundObj::CSoundObj()
 {;}
@@ -73,13 +93,22 @@ CSoundObj::CSoundObj()
 CSoundObj::~CSoundObj()
 {;}
 
-void CSoundobj::setPos(CVector p)
+void CSoundObj::setPos(CVector p)
 {;}
 
-void CSoundobj::setVel(CVector v)
+void CSoundObj::setVel(CVector v)
 {;}
 
-int CSoundobj::setSample(CSndSample *s)
+void CSoundObj::setPosVel(CVector p, CVector v)
 {;}
+
+void CSoundObj::setFrequency(float f)
+{;}
+
+void CSoundObj::setVolume(int v)
+{;}
+
+int CSoundObj::setSample(CSndSample *s)
+{return 0;}
 
 #endif //libfmod

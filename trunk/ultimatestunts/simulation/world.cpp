@@ -197,8 +197,6 @@ void CWorld::unloadTrack()
 
 bool CWorld::loadMovObjs(CString filename)
 {
-	printf("Loading moving objects...\n");
-
 	//Temporary solution: nr of objs put in string
 	int num = filename.toInt();
 

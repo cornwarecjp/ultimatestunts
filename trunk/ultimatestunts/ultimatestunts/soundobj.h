@@ -34,14 +34,20 @@ class CSoundObj
     ~CSoundObj();
     int setSample(CSndSample *s);
 
-    void setPos(CVector p);
-    void setVel(CVector v);
+	void setPos(CVector p);
+	void setVel(CVector v);
+	void setPosVel(CVector p, CVector v);
+
+	void setFrequency(float f); //1.0 = original sound
+	void setVolume(int v); //0 - 255
   protected:
     CVector m_Pos;
     CVector m_Vel;
 
 #ifdef HAVE_LIBFMOD
     int m_Channel;
+
+	int m_OriginalFrequency;
 #endif
 };
 

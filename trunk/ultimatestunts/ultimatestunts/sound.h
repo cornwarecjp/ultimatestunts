@@ -18,8 +18,13 @@
 #ifndef SOUND_H
 #define SOUND_H
 
+#include <vector>
+
 #include "gamecamera.h"
 #include "lconfig.h"
+
+#include "sndsample.h"
+#include "soundobj.h"
 
 /**
   *@author CJP
@@ -33,11 +38,24 @@ public:
 	void setCamera(const CCamera *cam)
 		{m_Camera = (CGameCamera *)cam;}
 
+	bool load(); //loads samples, using the world object
+	void unload(); //unloads the world samples
+
 	void update();
 
 protected:
 	const CGameCamera *m_Camera;
 	const CWorld *m_World;
+
+	CSndSample *m_MusicSample;
+	CSoundObj *m_MusicObject;
+
+	vector<CSoundObj *> m_Channels;
+	vector<int> m_ObjIDs;
+
+	vector<CSndSample *> m_Samples;
+
+	CString m_TopDir;
 
 #ifdef HAVE_LIBFMOD
 	int m_Driver;

@@ -144,6 +144,9 @@ int main(int argc, char *argv[])
 	printf("\nSetting up the GUI:\n");
 	gui = new CGUI(conffile, winsys);
 
+	printf("\nSetting up the sound\n");
+	soundsystem = new CSound(conffile, world);
+
 	gui->startFrom("mainmenu");
 	while(!( gui->isPassed("mainmenu") )); //waiting for input
 	CGUI::eMainMenu maininput =
@@ -178,10 +181,6 @@ int main(int argc, char *argv[])
 	camera = new CGameCamera(world);
 	renderer->setCamera(camera);
 
-	printf("\nInitialising sound\n");
-	soundsystem = new CSound(conffile, world);
-	soundsystem->setCamera(camera);
-
 	while(!( gui->isPassed("playermenu") )); //waiting for input
 	int num_players = gui->getValue("playermenu", "number").toInt();
 	printf("\nNumber of players to be added: %d\n", num_players);
@@ -192,8 +191,13 @@ int main(int argc, char *argv[])
 		addPlayer(desc);
 	}
 
+	printf("\nLoading moving objects\n");
 	if(!sim->loadObjects())
 		{printf("Error while loading moving objects\n");}
+
+	printf("\nLoading the sound samples\n");
+	soundsystem->load();
+	soundsystem->setCamera(camera);
 
 	printf("\nEntering mainloop\n");
 	//Creating some white space

@@ -19,8 +19,6 @@
 #include <stdio.h> //debugging
 
 #include "sound.h"
-#include "sndsample.h"
-#include "soundobj.h"
 
 #include "vector.h"
 #include "usmacros.h"
@@ -32,9 +30,6 @@
 #include <fmod/fmod_errors.h>
 #include <fmod/wincompat.h> //debugging
 #endif
-
-CSndSample *musicsample;
-CSoundObj *musicobject;
 
 CSound::CSound(const CLConfig &conf, const CWorld *world)
 {
@@ -259,59 +254,105 @@ CSound::CSound(const CLConfig &conf, const CWorld *world)
   printf("%s\n", FSOUND_GetDriverName(FSOUND_GetDriver()));
   printf("Hardware 3D channels : %d\n", FSOUND_GetNumHardwareChannels());
 
-	CString fn = conf.getValue("files", "datadir") + "music/canyon.mp3";
+	m_TopDir = conf.getValue("files", "datadir");
+	CString fn = m_TopDir + "music/canyon.mp3";
 	printf("\nLoading music file %s\n", fn.c_str());
-	musicsample = new CSndSample(SAMPLE_2D);
-	musicobject = new CSoundObj;
-	musicsample->loadFromFile(fn);
-	musicobject->setSample(musicsample);
+	m_MusicSample = new CSndSample(SAMPLE_2D);
+	m_MusicObject = new CSoundObj;
+	m_MusicSample->loadFromFile(fn);
+	m_MusicObject->setSample(m_MusicSample);
+	m_MusicObject->setVolume(100); //less than 50% volume
 }
 
 CSound::~CSound()
 {
-  printf("sound::~sound()\n");
-  // ==========================================================================================
-  // CLEANUP AND SHUTDOWN
-  // ==========================================================================================
+	unload();
 
-  // you dont need to free samples if you let fsound's sample manager look after samples, as
-  // it will free them all for you.
+	delete m_MusicObject;
+	delete m_MusicSample;
 
-  FSOUND_Close();
+	FSOUND_Close();
+}
+
+bool CSound::load()
+{
+	CSndSample *engine = new CSndSample(SAMPLE_3D);
+	engine->loadFromFile(m_TopDir + "sounds/engine.wav");
+
+	m_Samples.push_back(engine);
+
+	for(unsigned int i=0; i<m_World->m_MovObjs.size(); i++)
+		if(m_World->m_MovObjs[i]->getType() == CMessageBuffer::car)
+		{
+			CSoundObj *o = new CSoundObj;
+			o->setSample(engine);
+			o->setPosVel(CVector(0,0,0), CVector(0,0,0));
+
+			m_Channels.push_back(o);
+			m_ObjIDs.push_back(i);
+		}
+
+	return true;
+}
+
+void CSound::unload()
+{
+	for(unsigned int i=0; i<m_Channels.size(); i++)
+		delete m_Channels[i];
+
+	for(unsigned int i=0; i<m_Samples.size(); i++)
+		delete m_Samples[i];
+
+	m_Channels.clear();
+	m_Samples.clear();
+	m_ObjIDs.clear();
 }
 
 void CSound::update()
 {
-  CVector p = m_Camera->getPosition();
-  float pos[] = {p.x/10, p.y/10, p.z/10};
-  CVector v = m_Camera->getVelocity();
-  float vel[] = {v.x/10, v.y/10, v.z/10};
+	//Microphone:
+	CVector p = m_Camera->getPosition();
+	float pos[] = {p.x/10, p.y/10, p.z/10};
+	CVector v = m_Camera->getVelocity();
+	float vel[] = {v.x/10, v.y/10, v.z/10};
+	const CMatrix &ori = m_Camera->getOrientation();
 
-  FSOUND_3D_Listener_SetAttributes(&pos[0], &vel[0], 0, 0, 1.0f, 0, 1.0f, 0);
+	//Arguments: pos, vel, front x,y,z, top x,y,z
+	FSOUND_3D_Listener_SetAttributes(
+		&pos[0], &vel[0],
+		-ori.Element(0,2), ori.Element(1,2), ori.Element(2,2),
+		-ori.Element(0,1), ori.Element(1,1), ori.Element(2,1)
+	);
 
-  // print out a small visual display
-  {
-    char s[80];
+	//Objects:
+	for(unsigned int i=0; i<m_Channels.size(); i++)
+	{
+		CMovingObject *o = m_World->m_MovObjs[m_ObjIDs[i]];
+		CVector v = o->getVelocity();
+		m_Channels[i]->setPosVel(o->getPosition(), v);
+		int vol = 30 + (int)(7*v.abs());
+		float freq = 0.1 + 0.1 * v.abs();
+		//printf("Setting vol,freq of %d to %d,%3.3f\n", i, vol, freq);
+		m_Channels[i]->setFrequency(freq);
+		m_Channels[i]->setVolume(vol);
+	}
 
-    sprintf(s, "|.......................<1>..................|   <2>                           "
-);
-    s[(int)pos[0]+35] = 'L';
-
-    printf("%s\r", s);
-  }
-
-  FSOUND_3D_Update();
+	//Update:
+	FSOUND_3D_Update();
 }
 
 #else
 
-CSound::CSound()
+CSound::CSound(const CLConfig &conf, const CWorld *world)
 {
-  printf("No sound: sound support not compiled in\n");
+	printf("No sound: sound support not compiled in\n");
 }
 
 CSound::~CSound()
 {;}
+
+bool CSound::load()
+{return true;}
 
 void CSound::update()
 {;}
