@@ -34,8 +34,10 @@ using namespace std;
 
 class CCollisionFace : public vector<CVector>
 {
+public:
 	CVector nor;
 	float d;
+	bool reverse; //points are defined clockwise instead of ccw
 };
 
 class CCollisionModel {
@@ -64,6 +66,9 @@ protected:
 		Quadstrip,
 		Polygon
 	};
+
+	void determineOBVs();
+	void determinePlaneEquations();
 };
 
 #endif

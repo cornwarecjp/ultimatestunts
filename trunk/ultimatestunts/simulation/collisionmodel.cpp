@@ -16,6 +16,7 @@
  ***************************************************************************/
 
 #include <stdio.h>
+#include <math.h>
 #include "collisionmodel.h"
 
 CCollisionModel::CCollisionModel(){
@@ -58,19 +59,26 @@ bool CCollisionModel::loadFromFile(CFile *f, CString subset, CMaterial **matarra
 					{
 					case Triangles:
 						if(index == 3)
+						{
 							m_Faces.push_back(CCollisionFace());
+							m_Faces.back().reverse = false;
+						}
 						break;
 					case Quads:
 						if(index == 4)
+						{
 							m_Faces.push_back(CCollisionFace());
+							m_Faces.back().reverse = false;
+						}
 						break;
 					case Trianglestrip:
 						if(index == 3)
 						{
 							m_Faces.push_back(CCollisionFace());
 							CCollisionFace &newFace = m_Faces[m_Faces.size()-1];
-							newFace.push_back(theFace[2]);
 							newFace.push_back(theFace[1]);
+							newFace.push_back(theFace[2]);
+							newFace.reverse = !theFace.reverse;
 						}
 						break;
 					case Quadstrip:
@@ -84,6 +92,7 @@ bool CCollisionModel::loadFromFile(CFile *f, CString subset, CMaterial **matarra
 							theFace[3] = v2;
 							newFace.push_back(v2);
 							newFace.push_back(v3);
+							newFace.reverse = false;
 						}
 						break;
 					case Polygon:
@@ -93,31 +102,39 @@ bool CCollisionModel::loadFromFile(CFile *f, CString subset, CMaterial **matarra
 					(m_Faces[m_Faces.size()-1]).push_back(v);
 				}
 				if(lhs=="Triangles")
-					{currentType = Triangles; m_Faces.push_back(CCollisionFace());}
+					{currentType = Triangles; m_Faces.push_back(CCollisionFace()); m_Faces.back().reverse = false;}
 				if(lhs=="Quads")
-					{currentType = Quads; m_Faces.push_back(CCollisionFace());}
+					{currentType = Quads; m_Faces.push_back(CCollisionFace()); m_Faces.back().reverse = false;}
 				if(lhs=="Trianglestrip")
-					{currentType = Trianglestrip; m_Faces.push_back(CCollisionFace());}
+					{currentType = Trianglestrip; m_Faces.push_back(CCollisionFace()); m_Faces.back().reverse = false;}
 				if(lhs=="Quadstrip")
-					{currentType = Quadstrip; m_Faces.push_back(CCollisionFace());}
+					{currentType = Quadstrip; m_Faces.push_back(CCollisionFace()); m_Faces.back().reverse = false;}
 				if(lhs=="Polygon")
-					{currentType = Polygon; m_Faces.push_back(CCollisionFace());}
+					{currentType = Polygon; m_Faces.push_back(CCollisionFace()); m_Faces.back().reverse = false;}
 		}
 		else
 		{
 			if(line=="Triangles")
-				{currentType = Triangles; m_Faces.push_back(CCollisionFace());}
+				{currentType = Triangles; m_Faces.push_back(CCollisionFace()); m_Faces.back().reverse = false;}
 			if(line=="Quads")
-				{currentType = Quads; m_Faces.push_back(CCollisionFace());}
+				{currentType = Quads; m_Faces.push_back(CCollisionFace()); m_Faces.back().reverse = false;}
 			if(line=="Trianglestrip")
-				{currentType = Trianglestrip; m_Faces.push_back(CCollisionFace());}
+				{currentType = Trianglestrip; m_Faces.push_back(CCollisionFace()); m_Faces.back().reverse = false;}
 			if(line=="Quadstrip")
-				{currentType = Quadstrip; m_Faces.push_back(CCollisionFace());}
+				{currentType = Quadstrip; m_Faces.push_back(CCollisionFace()); m_Faces.back().reverse = false;}
 			if(line=="Polygon")
-				{currentType = Polygon; m_Faces.push_back(CCollisionFace());}
+				{currentType = Polygon; m_Faces.push_back(CCollisionFace()); m_Faces.back().reverse = false;}
 		}
 	}
 
+	determineOBVs();
+	determinePlaneEquations();
+
+	return true;
+}
+
+void CCollisionModel::determineOBVs()
+{
 	//Generating oriented bounding volumes
 	for(unsigned int i=0; i<m_Faces.size(); i++)
 	{
@@ -138,6 +155,71 @@ bool CCollisionModel::loadFromFile(CFile *f, CString subset, CMaterial **matarra
 			if(v.z < m_OBB_min.z) m_OBB_min.z = v.z;
 		}
 	}
+}
 
-	return true;
+void CCollisionModel::determinePlaneEquations()
+{
+	//Determine a plane equation for each face
+	for(unsigned int i=0; i<m_Faces.size(); i++)
+	{
+		CCollisionFace &theFace = m_Faces[i];
+
+		//initial:
+		theFace.d = 0.0;
+		theFace.nor = CVector(0,0,0);
+
+		if(theFace.size() < 3) break; //not a plane
+
+		//the first point
+		CVector p1 = theFace[0];
+
+		//the second point: as far away from 1 as possible
+		unsigned int index_2nd = 1;
+		CVector p2 = theFace[index_2nd];
+		float dist2 = (p2-p1).abs2();
+		for(unsigned int j=2; j<theFace.size(); j++)
+		{
+			float d2 = (theFace[j] - p1).abs2();
+			if(d2 > dist2)
+				{p2 = theFace[j]; dist2 = d2; index_2nd = j;}
+		}
+
+		//the third point: try to maximise cross product
+		CVector crosspr;
+		float crosspr_abs2 = 0.0;
+		bool reverse = false; //2 and 3 in reverse order
+		CVector p1p2 = p2 - p1;
+		for(unsigned int j=1; j<theFace.size(); j++)
+		{
+			const CVector &p3 = theFace[j];
+			CVector cp = (p3-p1).crossProduct(p1p2);
+			float abs2 = cp.abs2();
+
+			if(abs2 > crosspr_abs2)
+			{
+				crosspr = cp;
+				crosspr_abs2 = abs2;
+				reverse = (j<index_2nd);
+			}
+		}
+
+		if(crosspr_abs2 < 0.00001) break; //too small
+
+		reverse ^= theFace.reverse;
+		if(reverse) //2 and 3 in reverse order
+			theFace.nor = crosspr.normal();
+		else
+			theFace.nor = -crosspr.normal();
+
+		theFace.d = p1.dotProduct(theFace.nor);
+
+		/*
+		printf("  Face %d: p1=(%.2f,%.2f,%.2f) nor=(%.3f,%.3f,%.3f) d=%.2f\n",
+			i,
+			p1.x, p1.y, p1.z,
+			theFace.nor.x, theFace.nor.y, theFace.nor.z,
+			theFace.d
+		);
+		*/
+	}
 }

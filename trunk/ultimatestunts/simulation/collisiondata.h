@@ -65,9 +65,14 @@ public:
 protected:
 	const CWorld *m_World;
 
+	//Object <-> object collisions
 	void ObjObjTest(int n1, int n2);
-	void ObjTileTest(int nobj, int xtile, int ztile, int htile);
 
+	//Object <-> tile collisions
+	void ObjTileTest(int nobj, int xtile, int ztile, int htile);
+	CVector tileRotate(CVector v, int rot);
+
+	//Generic
 	bool sphereTest(const CVector &p1, const CCollisionModel *b1, const CVector &p2, const CCollisionModel *b2);
 };
 

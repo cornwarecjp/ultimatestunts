@@ -86,16 +86,40 @@ bool CPhysics::update()
 			//Collision response
 			if(m_World->m_CollData->m_Events[i].isHit)
 			{
-				printf("Object %d is hit\n", i);
-				CColEvents e = m_World->m_CollData->m_Events[i];
+				CVector dr_min, dp_min, dr_max, dp_max;
+				const CColEvents &e = m_World->m_CollData->m_Events[i];
 				for(unsigned int j=0; j<e.size(); j++)
 				{
-					CCollision c = e[j];
-					r += c.dr; //place back
+					const CCollision &c = e[j];
+					if(c.body != 0) continue; //TODO: multiple bodies
 
-					CVector Fcol = c.dp/dt; //collision force
-					Ftot += Fcol;
+					//quick&dirty:
+					if(c.dr.x > dr_max.x) dr_max.x = c.dr.x;
+					if(c.dr.y > dr_max.y) dr_max.y = c.dr.y;
+					if(c.dr.z > dr_max.z) dr_max.z = c.dr.z;
+					if(c.dr.x < dr_min.x) dr_min.x = c.dr.x;
+					if(c.dr.y < dr_min.y) dr_min.y = c.dr.y;
+					if(c.dr.z < dr_min.z) dr_min.z = c.dr.z;
+
+					if(c.dp.x > dr_max.x) dp_max.x = c.dp.x;
+					if(c.dp.y > dr_max.y) dp_max.y = c.dp.y;
+					if(c.dp.z > dr_max.z) dp_max.z = c.dp.z;
+					if(c.dp.x < dr_min.x) dp_min.x = c.dp.x;
+					if(c.dp.y < dr_min.y) dp_min.y = c.dp.y;
+					if(c.dp.z < dr_min.z) dp_min.z = c.dp.z;
 				}
+
+				//quick&dirty:
+				CVector dr, dp;
+				dr.x = (dr_max.x > -dr_min.x)? dr_max.x : dr_min.x;
+				dr.y = (dr_max.y > -dr_min.y)? dr_max.y : dr_min.y;
+				dr.z = (dr_max.z > -dr_min.z)? dr_max.z : dr_min.z;
+				dp.x = (dp_max.x > -dp_min.x)? dp_max.x : dp_min.x;
+				dp.y = (dp_max.y > -dp_min.y)? dp_max.y : dp_min.y;
+				dp.z = (dp_max.z > -dp_min.z)? dp_max.z : dp_min.z;
+
+				r += dr; //place back
+				Ftot += dp/dt; //collision force
 			}
 
 

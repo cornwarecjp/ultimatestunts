@@ -16,7 +16,7 @@
  ***************************************************************************/
 
 #include <stdio.h>
-
+#include <math.h>
 #include "collisiondata.h"
 #include "world.h"
 #include "usmacros.h"
@@ -138,36 +138,76 @@ void CCollisionData::ObjTileTest(int nobj, int xtile, int ztile, int htile)
 	int tindex = htile + m_World->m_H*(ztile + m_World->m_W*xtile);
 	const CTile &theTile = m_World->m_Track[tindex];
 	int tmodel = theTile.m_Model;
-	//int trot = theTile.m_R;
+	int trot = theTile.m_R;
 	int thth = theTile.m_Z;
 	CVector tilepos = CVector(xtile*TILESIZE, thth*VERTSIZE, ztile*TILESIZE);
 	CTileModel *tilemodel = m_World->m_TileModels[tmodel];
 
 	CMovingObject *obj = m_World->m_MovObjs[nobj];
 	CVector pos = obj->getPosition();
-	//TODO: per body collision
-	//for(unsigned int i=0; i<obj->m_Bodies.size(); i++)
-	int i=0;
+	for(unsigned int i=0; i<obj->m_Bodies.size(); i++)
 	{
 		CVector p = pos + obj->m_Bodies[i].m_Position;
 		const CBound *b = m_World->m_MovObjBounds[obj->m_Bodies[i].m_Body];
-		if(sphereTest(p, b, tilepos, tilemodel))
+
+		//Test bounding spheres
+		if(!sphereTest(p, b, tilepos, tilemodel)) continue;
+
+		//Per tile-face
+		for(unsigned int tf=0; tf<tilemodel->m_Faces.size(); tf++)
 		{
-			printf("Collision between %d and tile\n", nobj);
+			//face-sphere collision test
+
+			if(tilemodel->m_Faces[tf].nor.abs2() < 0.5) continue; //invalid plane
+			CCollisionFace theFace = tilemodel->m_Faces[tf]; //a copy
+
+			//rotate the copy
+			for(unsigned int j=0; j<theFace.size(); j++)
+				theFace[j] = tileRotate(theFace[j], trot);
+			theFace.nor = tileRotate(theFace.nor, trot);
+
+			CVector midpos = p - tilepos;
+			float ddiff = midpos.dotProduct(theFace.nor) - theFace.d;
+			float r = b->m_BSphere_r;
+
+			bool isFront = true;
+			if(ddiff > r || ddiff < -r)
+				continue;
+			else if(ddiff < 0.0)
+				isFront = false;
+
+			if(!isFront) continue; //quick fix
+
+			//check if it is inside the face
+			CVector coll_pos = midpos - ddiff * theFace.nor;
+			float angle = 0.0;
+			for(unsigned int j=1; j<theFace.size(); j++)
+			{
+				CVector p1 = theFace[j]-coll_pos;
+				CVector p2 = theFace[j-1]-coll_pos;
+				float inpr = p1.dotProduct(p2);
+				inpr /= (p1.abs() * p2.abs());
+				angle += acos(inpr);
+			}
+			{
+				CVector p1 = theFace[0]-coll_pos;
+				CVector p2 = theFace.back()-coll_pos;
+				float inpr = p1.dotProduct(p2);
+				inpr /= (p1.abs() * p2.abs());
+				angle += acos(inpr);
+			}
+			if(angle < 6.0 || angle > 6.5) //!= 2*pi: outside face
+				continue;
+
 			CCollision c;
 
-			c.nor = tilepos - p;
-			c.nor.normalise();
-
-			c.pos = b->m_BSphere_r * c.nor;
-
+			c.nor = theFace.nor;
+			c.pos = -ddiff * theFace.nor;
 			c.mat1 = NULL;
-
 			c.body = i;
 
 			//position correction
-			float dr = b->m_BSphere_r + tilemodel->m_BSphere_r - (tilepos-p).abs();
-			c.dr = c.nor * -dr;
+			c.dr = c.nor * (r - ddiff);
 
 			//determine momentum transfer
 			{
@@ -178,9 +218,27 @@ void CCollisionData::ObjTileTest(int nobj, int xtile, int ztile, int htile)
 
 			m_Events[nobj].isHit = true;
 			m_Events[nobj].push_back(c);
-		}
+
+		} //for tf
+	} //for i
+
+}
+
+CVector CCollisionData::tileRotate(CVector v, int rot)
+{
+	switch(rot % 4)
+	{
+	case 0:
+		return v;
+	case 1:
+		return CVector(v.z, v.y, -v.x);
+	case 2:
+		return CVector(-v.x, v.y, -v.z);
+	case 3:
+		return CVector(-v.z, v.y, v.x);
 	}
 
+	return v; //just to prevent warnings
 }
 
 bool CCollisionData::sphereTest(const CVector &p1, const CCollisionModel *b1, const CVector &p2, const CCollisionModel *b2)
