@@ -41,12 +41,15 @@ protected:
 	CVector m_TrackMin, m_TrackMax;
 	bool m_FirstUpdate;
 
+	void clearData();
+
 	//Object <-> object collisions
 	void ObjObjTest(const CBody &body1, const CBody &body2);
 
 	//Object <-> tile collisions
 	void ObjTileTest(int nobj, int xtile, int ztile, int htile);
 	void tileRotate(CVector &v, int rot);
+	void addTileCollision(CBody &body, const CVector &pos, const CVector &nor, float penetr_depth);
 
 	//Object <-> track bound collisions
 	void calculateTrackBounds();

@@ -42,28 +42,9 @@ public:
 protected:
 	CTimer m_Timer;
 	bool m_firstTime;
-
-	void calculateRestingContacts();
-	CCollision getFirstCollision();
-	void doCollision(CCollision &c);
-
-	unsigned int m_CurrentMovingObject;
+	bool m_FastCPUMode;
 
 	CCollisionDetector *m_Detector;
-
-
-	//used by addContactForces:
-	/*
-	vector<CCollision> m_col; //the relevant collisions
-
-	CGeneralVector *m_a, *m_b, *m_f;
-	CGeneralMatrix *m_A;
-	vector<unsigned int> m_C, m_NC;
-	unsigned int m_N;
-	void driveToZero(unsigned int d);
-	CGeneralVector fdirection(unsigned int d);
-	void maxstep(float &s, unsigned int &j, const CGeneralVector &df, const CGeneralVector &da, unsigned int d);
-	*/
 };
 
 #endif

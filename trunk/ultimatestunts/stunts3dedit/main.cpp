@@ -223,6 +223,7 @@ bool mainloop()
 		}
 		printf("Texture: %d\n", p.m_Texture);
 		printf("LODs: %s\n", p.m_LODs.c_str());
+		printf("Entering \"-\" will leave a property unchanged\n");
 
 		CString answ = getInput("Enter new name: ");
 		if(answ != "-")
@@ -245,6 +246,14 @@ bool mainloop()
 			case 4: p.m_Type = GL_QUAD_STRIP; break;
 			case 5: p.m_Type = GL_POLYGON; break;
 			}
+
+		answ = getInput("Enter new color: ");
+		if(answ != "-")
+		{
+			CVector c = answ.toVector();
+			for(unsigned int i=0; i < p.m_Vertex.size(); i++)
+				p.m_Vertex[i].col = c;
+		}
 
 		answ = getInput("Enter new texture: ");
 		if(answ != "-")
@@ -490,7 +499,13 @@ bool mainloop()
 
 	if(winsys->wasPressed(eTranslateTexture))
 	{
-		//TODO: implement this
+		CVector v = getInput("Enter translation vector: ").toVector();
+
+		CPrimitive &pr = graphobj->m_Primitives[curr_primitive];
+		for(unsigned int j=0; j<pr.m_Vertex.size(); j++)
+			pr.m_Vertex[j].tex += v;
+
+		graphobj->render();
 	}
 
 	if(winsys->wasPressed(eHelp))
@@ -521,17 +536,17 @@ bool mainloop()
 		camera->flipCameraCenter();
 
 	if(keystate[SDLK_PAGEUP])
-		camera->incrDist(-1.0);
+		camera->incrDist(-0.1);
 	if(keystate[SDLK_PAGEDOWN])
-		camera->incrDist(1.0);
+		camera->incrDist(0.1);
 	if(keystate[SDLK_LEFT])
-		camera->incrXAngle(0.1);
+		camera->incrXAngle(0.01);
 	if(keystate[SDLK_RIGHT])
-		camera->incrXAngle(-0.1);
+		camera->incrXAngle(-0.01);
 	if(keystate[SDLK_UP])
-		camera->incrYAngle(0.1);
+		camera->incrYAngle(0.01);
 	if(keystate[SDLK_DOWN])
-		camera->incrYAngle(-0.1);
+		camera->incrYAngle(-0.01);
 
 	renderer->update();
 	return ret;

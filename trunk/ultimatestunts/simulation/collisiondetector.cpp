@@ -39,6 +39,8 @@ void CCollisionDetector::calculateCollisions()
 		calculateTrackBounds();
 	}
 
+	clearData(); //clear all previously stored collision data
+
 	//Collision with track bounds
 	for(unsigned int i=0; i < theWorld->m_MovObjs.size(); i++)
 		for(unsigned int j=0; j < theWorld->m_MovObjs[i]->m_Bodies.size(); j++)
@@ -72,6 +74,17 @@ void CCollisionDetector::calculateCollisions()
 				for(int h=0; h<hoogte; h++)
 					ObjTileTest(i, x, z, h);
 	}
+}
+
+void CCollisionDetector::clearData()
+{
+	//Local data:
+	for(unsigned int i=0; i < theWorld->m_MovObjs.size(); i++)
+		for(unsigned int j=0; j < theWorld->m_MovObjs[i]->m_Bodies.size(); j++)
+			theWorld->m_MovObjs[i]->m_Bodies[j].m_Collisions.clear();
+
+	//ODE:
+	dJointGroupEmpty(theWorld->m_ContactGroup);
 }
 
 void CCollisionDetector::calculateTrackBounds()
@@ -254,7 +267,7 @@ void CCollisionDetector::ObjObjTest(const CBody &body1, const CBody &body2)
 		c.geom.g1 = 0; //I don't use geoms here
 		c.geom.g2 = 0;
 		c.surface.mode = dContactSlip1 | dContactSlip2 | dContactApprox1;
-		c.surface.mu = 1.0;
+		c.surface.mu = 0.5*(body1.m_mu + body2.m_mu);
 		c.surface.slip1 = 0.00001;
 		c.surface.slip2 = 0.00001;
 		dJointID cid = dJointCreateContact(theWorld->m_ODEWorld, theWorld->m_ContactGroup, &c);
@@ -389,7 +402,7 @@ void CCollisionDetector::ObjTileTest(int nobj, int xtile, int ztile, int htile)
 					inpr /= (p1.abs() * p2.abs());
 					angle += acos(inpr);
 				}
-				if(angle < 6.0 || angle > 6.5) //!= 2*pi: outside face
+				if(angle < 6.0 || angle > 6.2832) //!= 2*pi: outside face
 				{
 					continue;
 				}
@@ -460,27 +473,41 @@ void CCollisionDetector::ObjTileTest(int nobj, int xtile, int ztile, int htile)
 
 
 			//3: Generate collision info
+			addTileCollision(theObj->m_Bodies[i], cpos, cnor, penetr_depth);
 
-			//fprintf(stderr, "COLLISION body %d @ %s, nor = %s, depth = %.3f\n",
-			//	i, CString(cpos - pos).c_str(), CString(cnor).c_str(), penetr_depth);
-			dContact c;
-			c.geom.pos[0] = cpos.x;
-			c.geom.pos[1] = cpos.y;
-			c.geom.pos[2] = cpos.z;
-			c.geom.normal[0] = cnor.x;
-			c.geom.normal[1] = cnor.y;
-			c.geom.normal[2] = cnor.z;
-			c.geom.depth = penetr_depth;
-			c.geom.g1 = 0; //I don't use geoms here
-			c.geom.g2 = 0;
-			c.surface.mode = dContactSlip1 | dContactSlip2 | dContactApprox1;
-			c.surface.mu = 10.0;
-			c.surface.slip1 = 0.0000001;
-			c.surface.slip2 = 0.0000001;
-			dJointID cid = dJointCreateContact(theWorld->m_ODEWorld, theWorld->m_ContactGroup, &c);
-			dJointAttach(cid, theObj->m_Bodies[i].m_ODEBody, 0);
 		} //for tf
 	} //for i
+}
+
+void CCollisionDetector::addTileCollision(CBody &body, const CVector &pos, const CVector &nor, float penetr_depth)
+{
+	//TODO: internal saving
+	CCollisionData cd;
+	cd.pos = pos;
+	cd.nor = nor;
+	cd.vdiff = body.getVelocity() + body.getAngularVelocity().crossProduct(pos - body.getPosition());
+	cd.vmean = 0.5*cd.vdiff;
+	body.m_Collisions.push_back(cd);
+
+	//ODE contact:
+	dContact c;
+	c.geom.pos[0] = pos.x;
+	c.geom.pos[1] = pos.y;
+	c.geom.pos[2] = pos.z;
+	c.geom.normal[0] = nor.x;
+	c.geom.normal[1] = nor.y;
+	c.geom.normal[2] = nor.z;
+	c.geom.depth = penetr_depth;
+	c.geom.g1 = 0; //I don't use geoms here
+	c.geom.g2 = 0;
+	c.surface.mode = dContactSlip1 | dContactSlip2 | dContactApprox1 | dContactSoftERP | dContactSoftCFM;
+	c.surface.soft_erp = 0.9;
+	c.surface.soft_cfm = 0.0005;
+	c.surface.mu = body.m_mu;
+	c.surface.slip1 = 0.0000001;
+	c.surface.slip2 = 0.0000001;
+	dJointID cid = dJointCreateContact(theWorld->m_ODEWorld, theWorld->m_ContactGroup, &c);
+	dJointAttach(cid, body.m_ODEBody, 0);
 }
 
 void CCollisionDetector::tileRotate(CVector &v, int rot)

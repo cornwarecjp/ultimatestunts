@@ -39,6 +39,7 @@ using namespace std;
 #include "rulecontrol.h"
 #include "physics.h"
 #include "world.h"
+#include "car.h"
 
 #include "usserver.h"
 
@@ -72,6 +73,8 @@ CGameCamera *camera = NULL;
 
 CSound *soundsystem = NULL;
 
+float topspeed = 0.0;
+
 bool mainloop()
 {
 #ifdef DEBUGMSG
@@ -82,10 +85,18 @@ bool mainloop()
 	for(unsigned int i=0; i<world->m_MovObjs.size(); i++)
 	{
 		CMovingObject *mo = world->m_MovObjs[i];
-		CVector r = mo->m_Bodies[0].getPosition();
-		//CVector v = mo->getVelocity();
-		printf("Object %d: position (%.2f,%.2f,%.2f)\n",
-		               i,            r.x, r.y, r.z);
+		if(mo->getType() == CMessageBuffer::car)
+		{
+			CCar * theCar = (CCar *)mo;
+			float vel = theCar->m_Bodies[0].getVelocity().abs();
+			if(vel > topspeed) topspeed = vel;
+			float wEngine = theCar->getGearRatio() * theCar->m_MainAxisVelocity;
+			printf("Top speed in this session: %.2f km/h\n", topspeed * 3.6);
+			printf("Car %d: velocity %.2f km/h; gear %d; %.2f RPM\n"
+					"wheel %.2f rad/s; axis %.2f rad/s; engine %.2f rad/s\n",
+			             i,          vel * 3.6, theCar->m_Gear, 60.0 * wEngine / 6.28,
+			             vel / 0.35, theCar->m_MainAxisVelocity, wEngine);
+		}
 	}
 	printf("**********\n");
 #endif
@@ -180,7 +191,7 @@ void start(int argc, char *argv[]) //first things before becoming interactive
 	gui = new CGUI(conffile, winsys);
 
 	printf("---Sound system\n");
-	soundsystem = new CSound(conffile, world);
+	soundsystem = new CSound(conffile);
 
 	printf("---Rendering engine\n");
 	renderer = new CGameRenderer(conffile, world);

@@ -106,7 +106,7 @@ void CGameCamera::update()
 				tv = to->m_Bodies[0].getVelocity();
 				float vabs = tv.abs();
 				float z = 0.5 * vabs + 15.0;
-				float y = 0.05 * vabs + 3.0;
+				float y = 0.01 * vabs + 3.0;
 				tp = CVector(0.0, y, z); //further away when going faster
 				tp *= to->m_Bodies[0].getOrientationMatrix();
 				tp += to->m_Bodies[0].getPosition();

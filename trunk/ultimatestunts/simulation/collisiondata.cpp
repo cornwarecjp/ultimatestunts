@@ -1,8 +1,8 @@
 /***************************************************************************
-                          soundworld.h  -  All the sound data
+                          collisiondata.cpp  -  description
                              -------------------
-    begin                : ma aug 11 2003
-    copyright            : (C) 2003 by CJP
+    begin                : do aug 19 2004
+    copyright            : (C) 2004 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
 
@@ -15,38 +15,14 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef SOUNDWORLD_H
-#define SOUNDWORLD_H
+#include "collisiondata.h"
 
-#include <vector>
-namespace std {}
-using namespace std;
-#include "lconfig.h"
+float CCollisionData::getTangVel()
+{
+	return (vdiff - vdiff.component(nor)).abs();
+}
 
-#include "sndsample.h"
-#include "soundobj.h"
-#include "world.h"
-
-/**
-  *@author CJP
-  */
-
-class CSoundWorld {
-public: 
-	CSoundWorld(const CLConfig &conf);
-	~CSoundWorld();
-
-	const CWorld *m_World;
-
-	//bool loadWorld();
-	//void unloadWorld();
-	bool loadObjects();
-	void unloadObjects();
-
-	vector<CSoundObj *> m_Channels;
-	vector<int> m_ObjIDs;
-
-	vector<CSndSample *> m_Samples;
-};
-
-#endif
+float CCollisionData::getRadVel()
+{
+	return vdiff.component(nor).abs();;
+}

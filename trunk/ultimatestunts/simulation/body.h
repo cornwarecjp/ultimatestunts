@@ -19,14 +19,22 @@
 #define BODY_H
 
 #include <ode/ode.h>
+#include <vector>
+namespace std {}
+using namespace std;
 
 #include "collisionmodel.h"
+#include "collisiondata.h"
 #include "vector.h"
 #include "matrix.h"
 
 /**
   *@author CJP
   */
+
+struct SCollisionData
+{
+};
 
 class CBody
 {
@@ -39,6 +47,7 @@ public:
 	CVector getPosition() const;
 	CMatrix getOrientationMatrix() const;
 	CVector getVelocity() const;
+	CVector getAngularVelocity() const;
 
 	void setPosition(CVector v);
 	void setOrientationMatrix(const CMatrix &m);
@@ -49,6 +58,12 @@ public:
 	
 	//ODE data
 	dBodyID m_ODEBody;
+
+	//collision properties:
+	float m_mu;
+
+	//Other data:
+	vector<CCollisionData> m_Collisions; //for usage in the sound subsystem, dust graphics etc.
 };
 
 #endif

@@ -65,7 +65,7 @@
 
 #define NETTYPE char
 #undef UNIX_TREE
-#undef DEBUGMSG
+#define DEBUGMSG
 
 #else
 

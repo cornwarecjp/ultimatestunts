@@ -43,12 +43,12 @@ void musicEndCallback()
 #include <fmod/wincompat.h> //debugging
 #endif
 
-CSound::CSound(const CLConfig &conf, const CWorld *world)
+CSound::CSound(const CLConfig &conf)
 {
 	_theSoundObject = this;
 
 	//The world object:
-	m_World = world;
+	m_World = theWorld;
 
 	//Initialising the sound library:
 	CString drivername = "nosound"; //Default for unknown system types
@@ -111,7 +111,7 @@ CSound::CSound(const CLConfig &conf, const CWorld *world)
   }
 
 	//The sound world:
-	m_SoundWorld = new CSoundWorld(world, conf);
+	m_SoundWorld = new CSoundWorld(conf);
 
 	m_MusicVolume = conf.getValue("sound", "musicvolume").toInt();
 	m_SoundVolume = conf.getValue("sound", "soundvolume").toInt();
@@ -221,11 +221,31 @@ void CSound::update()
 			CSoundObj *chn = m_SoundWorld->m_Channels[i];
 			CVector v = theCar->m_Bodies[0].getVelocity();
 			chn->setPosVel(theCar->m_Bodies[0].getPosition(), v);
-			float engineRPM = theCar->m_MainAxisVelocity / theCar->getGearRatio();
-			int vol = 127 + (int)(128 * theCar->m_gas);
-			//fprintf(stderr, "Setting vol,freq of %d to %d,%3.3f\n", i, vol, freq);
-			chn->setFrequency(0.005 * engineRPM); //correct for sound sample frequency
-			chn->setVolume((vol * m_SoundVolume) >> 8);
+
+			if(i & 1) //small test to see if it is a skid sound (temporary)
+			{ //skid sound
+				unsigned int vol = 0;
+				
+				for(unsigned int w=1; w <= 4; w++)
+				{
+					bool skid = false;
+					for(unsigned int c=0; c < theCar->m_Bodies[w].m_Collisions.size(); c++)
+						if(theCar->m_Bodies[w].m_Collisions[c].getTangVel() > 1.0)
+							{skid = true; break;}
+
+					if(skid) vol += 63;
+				}
+				
+				chn->setVolume((vol * m_SoundVolume) >> 8);
+			}
+			else
+			{ //engine sound
+				float engineRPS = theCar->m_MainAxisVelocity * theCar->getGearRatio();
+				int vol = 100 + (int)(100 * theCar->m_gas);
+				if(vol > 255) vol = 255;
+				chn->setFrequency(0.03 * engineRPS); //correct for sound sample frequency & 2*pi
+				chn->setVolume((vol * m_SoundVolume) >> 8);
+			}
 		}
 	}
 

@@ -46,6 +46,7 @@ public:
 	unsigned int m_Gear;
 	float m_MainAxisVelocity;
 	float m_MainAxisTorque;
+	float m_DesiredSteeringAngle;
 	float m_gas;
 	
 	//constants:
@@ -55,10 +56,10 @@ public:
 protected:
 	//car specific physics
 	void updateAxisData();
-	void updateMainAxisVelocity();  //from the wheel velocities
+	void updateMainAxisVelocity(float dt);  //from the wheel velocities
 	void updateMainAxisTorque(); //engine + gearbox simulation
 	void applyWheelTorques();    //engine + brakes
-	void doSteering();
+	void doSteering(float dt);
 
 	//Cached data about the wheels' axes
 	CVector m_a1, m_a2, m_a3, m_a4;

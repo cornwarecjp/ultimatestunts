@@ -37,6 +37,7 @@ CPhysics::CPhysics(CWorld *w) : CSimulation(w)
 {
 	m_Detector = new CCollisionDetector;
 	m_firstTime = true;
+	m_FastCPUMode = true; //start mode; not really important
 }
 
 CPhysics::~CPhysics()
@@ -46,9 +47,12 @@ CPhysics::~CPhysics()
 
 bool CPhysics::update()
 {
+	float dtmin = 0.005; //max. 200 fps simulation
+	unsigned int Nmax = 10; //max. 10 simulation steps per loop
+
 	if(!(theWorld->m_Paused))
 	{
-		float dt = m_Timer.getdt(0.01); //max. 100 fps
+		float dt = m_Timer.getdt(dtmin + 0.0001);
 
 		if(m_firstTime)
 		{
@@ -61,15 +65,44 @@ bool CPhysics::update()
 			{printf("Warning: Low update time detected\n"); dt = 0.5;}
 #endif
 
-		for(unsigned int i=0; i < (m_World->m_MovObjs.size()); i++)
+		float dtreal = dt;
+		unsigned int N = 0;
+
+		if(m_FastCPUMode)
 		{
-			m_CurrentMovingObject = i;
-			theWorld->m_MovObjs[i]->update(this, dt);
+			N = (unsigned int)(dtreal / dtmin);
+			dt = dtmin;
+
+			if(N > Nmax)
+			{
+				m_FastCPUMode = false;
+				N = Nmax;
+				dt = dtreal / Nmax;
+			}
+		}
+		else
+		{
+			N = Nmax;
+			dt = dtreal / Nmax;
+
+			if(dt < dtmin)
+			{
+				m_FastCPUMode = true;
+				N = (unsigned int)(dtreal / dtmin);
+				dt = dtmin;
+			}
 		}
 
-		m_Detector->calculateCollisions();
-		dWorldStep(theWorld->m_ODEWorld, dt);
-		dJointGroupEmpty(theWorld->m_ContactGroup);
+		if(N == 0) N = 1; //should not be neccesary
+
+		for(unsigned int step=0; step < N; step++)
+		{
+			for(unsigned int i=0; i < (m_World->m_MovObjs.size()); i++)
+				theWorld->m_MovObjs[i]->update(this, dt);
+
+			m_Detector->calculateCollisions();
+			dWorldStep(theWorld->m_ODEWorld, dt);
+		}
 
 	}
 	return true;

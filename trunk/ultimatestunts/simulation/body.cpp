@@ -48,6 +48,16 @@ CVector CBody::getVelocity() const
 	return ret;
 }
 
+CVector CBody::getAngularVelocity() const
+{
+	const dReal *vel = dBodyGetAngularVel(m_ODEBody);
+	CVector ret;
+	ret.x = vel[0];
+	ret.y = vel[1];
+	ret.z = vel[2];
+	return ret;
+}
+
 CMatrix CBody::getOrientationMatrix() const
 {
 	CMatrix ret;

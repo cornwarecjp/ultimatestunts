@@ -17,10 +17,15 @@
 
  // NOT TESTED!
 
-
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <string.h>
+ 
 #include "netudp.h"
 #include "usmacros.h"
-
 
 
 CNetUDP::CNetUDP()
@@ -39,7 +44,8 @@ bool CNetUDP::setNetwork(const CIPNumber & localHost, int port) {
   }
 
   //Different arg type in Cygwin :-(
-  bzero((NETTYPE *)&servaddr, sizeof(servaddr));
+  //bzero((NETTYPE *)&servaddr, sizeof(servaddr)); //deprecated
+  memset((NETTYPE *)&servaddr, 0, sizeof(servaddr));
   servaddr.sin_family = AF_INET;
   servaddr.sin_addr.s_addr = htonl(INADDR_ANY);     // fixme: to localhost
   servaddr.sin_port = htons(port);
@@ -108,7 +114,8 @@ bool CNetUDP::sendData(const SNetDatagram & d) const {
   struct sockaddr_in destaddr;
   char *dat = d.data.raw_str();
 
-  bzero((NETTYPE *)&destaddr, sizeof(destaddr));
+  //bzero((NETTYPE *)&destaddr, sizeof(destaddr));
+  memset((NETTYPE *)&destaddr, 0, sizeof(destaddr));
   destaddr.sin_family = AF_INET;
 
   //removed inet_pton. Explanation in ipnumber.cpp

@@ -36,7 +36,6 @@
 */
 
 #include "messagebuffer.h"
-#include "messagebuffer.h"
 
 
 CMessageBuffer::CMessageBuffer()

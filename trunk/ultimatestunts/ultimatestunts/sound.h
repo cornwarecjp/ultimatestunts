@@ -28,6 +28,7 @@ using namespace std;
 
 #include "soundworld.h"
 #include "music.h"
+#include "world.h"
 
 /**
   *@author CJP
@@ -35,7 +36,7 @@ using namespace std;
 
 class CSound {
 public: 
-	CSound(const CLConfig &conf, const CWorld *world);
+	CSound(const CLConfig &conf);
 	~CSound();
 
 	void setCamera(const CCamera *cam)

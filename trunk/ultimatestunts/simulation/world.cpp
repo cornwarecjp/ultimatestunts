@@ -234,7 +234,9 @@ bool CWorld::loadMovObjs(CString filename)
 
 	//Third: defining sound data
 	{
-		CString filename = "sounds/engine.wav";
+		CString filename = "sounds/engine.ogg";
+		m_MovObjSounds.push_back(filename);
+		filename = "sounds/skid.ogg";
 		m_MovObjSounds.push_back(filename);
 	}
 
@@ -254,6 +256,7 @@ bool CWorld::loadMovObjs(CString filename)
 		m->m_Bodies[4].m_Body = 1;
 
 		m->m_Sounds[0] = 0; //The engine sound
+		m->m_Sounds[1] = 1; //The skid sound
 
 		m_MovObjs.push_back(m);
 

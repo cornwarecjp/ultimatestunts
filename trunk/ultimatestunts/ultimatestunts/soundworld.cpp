@@ -20,12 +20,13 @@
 
 #include <cstdio>
 
-CSoundWorld::CSoundWorld(const CWorld *world, const CLConfig &conf)
+CSoundWorld::CSoundWorld(const CLConfig &conf)
 {
-	m_World = world;
+	m_World = theWorld;
 }
 
-CSoundWorld::~CSoundWorld(){
+CSoundWorld::~CSoundWorld()
+{
 }
 
 /*
@@ -46,7 +47,7 @@ bool CSoundWorld::loadObjects()
 	{
 		CSndSample *sample = new CSndSample;
 		CDataFile f(m_World->m_MovObjSounds[i]);
-		printf("   Loading enine sound from %s\n", f.getName().c_str());
+		printf("   %s\n", f.getName().c_str());
 		sample->loadFromFile(f.useExtern());
 
 		m_Samples.push_back(sample);
@@ -55,12 +56,23 @@ bool CSoundWorld::loadObjects()
 	for(unsigned int i=0; i<m_World->m_MovObjs.size(); i++)
 	{
 		CMovingObject *mo = m_World->m_MovObjs[i];
-		CSoundObj *so = new CSoundObj;
-		so->setSample(m_Samples[mo->m_Sounds[0]]); //TODO: load other sounds
-		so->setPosVel(CVector(0,0,0), CVector(0,0,0));
 
-		m_Channels.push_back(so);
-		m_ObjIDs.push_back(i);
+		{ //engine sound
+			CSoundObj *so = new CSoundObj;
+			so->setSample(m_Samples[mo->m_Sounds[0]]);
+			so->setPosVel(CVector(0,0,0), CVector(0,0,0));
+			m_Channels.push_back(so);
+			m_ObjIDs.push_back(i);
+		}
+		{ //skid sound
+			CSoundObj *so = new CSoundObj;
+			so->setSample(m_Samples[mo->m_Sounds[1]]);
+			so->setPosVel(CVector(0,0,0), CVector(0,0,0));
+			m_Channels.push_back(so);
+			m_ObjIDs.push_back(i);
+		}
+
+		//TODO: load other sounds
 	}
 
 	return true;
@@ -68,6 +80,7 @@ bool CSoundWorld::loadObjects()
 
 void CSoundWorld::unloadObjects()
 {
+
 	for(unsigned int i=0; i<m_Channels.size(); i++)
 		delete m_Channels[i];
 
