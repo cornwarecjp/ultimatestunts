@@ -26,8 +26,11 @@
 
 class CCar : public CMovingObject  {
 public: 
-	CCar(const CString &conffile);
-	~CCar();
+	CCar(CDataManager *manager);
+	virtual ~CCar();
+
+	virtual bool load(const CString &idstring);
+	virtual void unload();
 
 	virtual void resetBodyPositions(CVector pos, const CMatrix &ori);
 

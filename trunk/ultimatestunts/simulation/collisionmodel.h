@@ -18,6 +18,7 @@
 #ifndef COLLISIONMODEL_H
 #define COLLISIONMODEL_H
 
+#include "dataobject.h"
 #include "collisionface.h"
 #include "material.h"
 #include "cstring.h"
@@ -27,12 +28,14 @@
   *@author CJP
   */
 
-class CCollisionModel {
+class CCollisionModel : public CDataObject {
 public: 
-	CCollisionModel();
+	CCollisionModel(CDataManager *manager);
 	virtual ~CCollisionModel();
 
-	virtual bool loadFromFile(CFile *f, CString subset, CMaterial **matarray);
+	virtual bool load(const CString &idstring);
+
+	CString getSubset() const;
 
 	//Bounded volume data:
 	float m_BSphere_r; //Bounding sphere
@@ -40,9 +43,6 @@ public:
 
 	//The shape itself
 	vector<CCollisionFace> m_Faces;
-
-	CString m_Filename;
-	CString m_Subset;
 
 protected:
 	enum ePrimitiveType {
@@ -53,6 +53,9 @@ protected:
 		Quadstrip,
 		Polygon
 	};
+
+	CMaterial **getMaterialSubset(CString indices);
+	CString m_Subset;
 
 	void determineOBVs();
 	void determinePlaneEquations();

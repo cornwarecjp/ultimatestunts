@@ -1,8 +1,8 @@
 /***************************************************************************
-                          tilemodel.h  -  The (collision) model of a tile
+                          dataobject.h  -  Object loaded from a data file
                              -------------------
-    begin                : wo sep 24 2003
-    copyright            : (C) 2003 by CJP
+    begin                : wo dec 1 2004
+    copyright            : (C) 2004 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
 
@@ -15,24 +15,60 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TILEMODEL_H
-#define TILEMODEL_H
+#ifndef DATAOBJECT_H
+#define DATAOBJECT_H
 
-#include "collisionmodel.h"
+#include <vector>
+namespace std {}
+using namespace std;
+
+#include "cstring.h"
 
 /**
   *@author CJP
   */
 
-class CTileModel : public CCollisionModel  {
+class CDataManager;
+
+class CDataObject {
 public: 
-	CTileModel(CDataManager *manager);
-	virtual ~CTileModel();
+	enum eDataType
+	{
+		eNone=0,
+		eTrack,
+		eCollisionModel,
+		eBound,
+		eTileModel,
+		eMaterial,
+		eMovingObject,
+		eGraphObj,
+		eTexture,
+		eSample,
+		eEnumTop
+	};
 
+	CDataObject(CDataManager *manager, eDataType type);
+	virtual ~CDataObject();
+	
 	virtual bool load(const CString &idstring);
+	virtual void unload();
 
-	bool m_isStart, m_isFinish;
-	float m_Time;
+	bool isLoaded()const {return m_isLoaded;}
+	CString getFilename() const {return m_Filename;}
+	CString getIDString() const {return m_IDString;}
+	eDataType getType() const {return m_DataType;}
+
+protected:
+	CDataManager *m_DataManager;
+
+	bool m_isLoaded;
+	CString m_Filename;
+	CString m_IDString;
+	eDataType m_DataType;
 };
+
+
+//you'll need this class in derived classes
+#include "datamanager.h"
 
 #endif

@@ -22,7 +22,7 @@
 
 #define DBLPI 6.283185307
 
-CMovingObject::CMovingObject()
+CMovingObject::CMovingObject(CDataManager *manager) : CDataObject(manager, CDataObject::eMovingObject)
 {
 	m_InputData = new CMovObjInput;
 }
@@ -55,5 +55,10 @@ bool CMovingObject::setData(const CBinBuffer &b)
 	//m_Momentum = b.getVector16(pos, 50.0);
 	//setOrientation(b.getVector16(pos, 0.0001));
 	//m_AngularMomentum = b.getVector16(pos, 15.0);
+	return true;
+}
+
+bool CMovingObject::hasChanged()
+{
 	return true;
 }

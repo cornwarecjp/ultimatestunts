@@ -32,7 +32,7 @@ bool CAIPlayerCar::update()
 {
 
 	if(m_MovingObjectId < 0) return false; //player not registered
-	CMessage *input = m_World->m_MovObjs[m_MovingObjectId]->m_InputData;
+	CMessage *input = theWorld->getMovingObject(m_MovingObjectId)->m_InputData;
 
 	if(input->getType() != CMessageBuffer::carInput)
 		{printf("Error: object input is not of type \"car\".\n"); return false;} //perhaps throw something

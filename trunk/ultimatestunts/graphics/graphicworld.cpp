@@ -16,6 +16,7 @@
  ***************************************************************************/
 #include <cstdio>
 
+#include "bound.h"
 #include "graphicworld.h"
 #include "datafile.h"
 
@@ -49,11 +50,11 @@ bool CGraphicWorld::loadWorld()
 	printf("Loading the graphic world\n");
 
 	printf("  Loading tile textures:\n");
-	for(unsigned int i=0; i<m_World->m_TileMaterials.size(); i++)
+	for(unsigned int i=0; i<m_World->getNumObjects(CDataObject::eMaterial); i++)
 	{
 		CLODTexture t;
-		CDataFile f(m_World->m_TileMaterials[i]->m_Filename);
-		int mul = m_World->m_TileMaterials[i]->m_Mul;
+		CDataFile f(m_World->getMaterial(i)->getFilename());
+		int mul = m_World->getMaterial(i)->m_Mul;
 		printf("   Loading %s with mul=%d:\n", f.getName().c_str(), mul);
 		t.setTextureSmooth(m_TexSmooth);
 		int xs = m_TexMaxSize / mul;
@@ -63,23 +64,23 @@ bool CGraphicWorld::loadWorld()
 	}
 
 	printf("  Loading tiles:\n");
-	for(unsigned int i=0; i<m_World->m_TileModels.size(); i++)
+	for(unsigned int i=0; i<m_World->getNumObjects(CDataObject::eTileModel); i++)
 	{
 		CGraphObj obj;
-		CFile f(m_World->m_TileModels[i]->m_Filename);
-		CLODTexture **subset = getTextureSubset(m_World->m_TileModels[i]->m_Subset);
+		CDataFile f(m_World->getTileModel(i)->getFilename());
+		CLODTexture **subset = getTextureSubset(m_World->getTileModel(i)->getSubset());
 		printf("   Loading %s:\n", f.getName().c_str());
 		obj.loadFromFile(&f, subset);
 		m_Tiles.push_back(obj);
 		delete [] subset;
 	}
 
-	CDataFile fb(m_World->getBackgroundFilename());
+	CDataFile fb(m_World->getTrack()->m_BackgroundFilename);
 	printf("  Loading background %s:\n", fb.getName().c_str());
 	m_Background.setTextureSmooth(m_TexSmooth);
 	m_Background.loadFromFile(fb.useExtern(), 4*m_BackgroundSize, m_BackgroundSize);
 
-	CDataFile fe(m_World->getEnvMapFilename());
+	CDataFile fe(m_World->getTrack()->m_EnvMapFilename);
 	printf("  Loading environment map %s:\n", fe.getName().c_str());
 	m_EnvMap.setTextureSmooth(m_TexSmooth);
 	m_EnvMap.loadFromFile(fe.useExtern(), m_BackgroundSize, m_BackgroundSize);
@@ -114,14 +115,14 @@ bool CGraphicWorld::loadObjects()
 
 	//Body graphics
 	printf("Loading moving object graphics:\n");
-	for(unsigned int i=0; i<m_World->m_MovObjBounds.size(); i++)
+	vector<const CDataObject *> bounds = m_World->getObjectArray(CDataObject::eBound);
+	for(unsigned int i=0; i<bounds.size(); i++)
 	{
 		CGraphObj obj;
-		CFile f(m_World->m_MovObjBounds[i]->m_Filename);
+		CDataFile f(((CBound *)bounds[i])->getFilename());
 		printf("   Loading from %s LOD %d\n", f.getName().c_str(), molod);
 		obj.loadFromFile(&f, NULL, molod);
 		m_MovingObjects.push_back(obj);
-
 	}
 
 	return true;

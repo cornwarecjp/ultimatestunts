@@ -73,7 +73,7 @@ void CGameCamera::setTrackedObject(int id)
 void CGameCamera::switchTrackedObject()
 {
 	unsigned int i = m_Id + 1;
-	if(i >= m_World->m_MovObjs.size()) i = 0;
+	if(i >= m_World->getNumObjects(CDataObject::eMovingObject)) i = 0;
 	setTrackedObject(i);
 }
 
@@ -83,7 +83,7 @@ void CGameCamera::update()
 
 	if(m_Id < 0) return;
 
-	CMovingObject *to = (m_World->m_MovObjs)[m_Id]; //tracked object
+	const CMovingObject *to = m_World->getMovingObject(m_Id); //tracked object
 	CVector tv; //target velocity
 	CVector tp; //target position
 	CMatrix tm; //target orientation

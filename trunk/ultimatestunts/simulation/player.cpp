@@ -37,10 +37,10 @@ int CPlayer::setAutomaticGear(float &gas, float &brake)
 	if(m_MovingObjectId < 0)
 		return -1; //not set because not connected to a moving object
 
-	if(theWorld->m_MovObjs[m_MovingObjectId]->getType() != CMessageBuffer::car)
+	if(theWorld->getMovingObject(m_MovingObjectId)->getType() != CMessageBuffer::car)
 		return -2;
 
-	CCar *theCar = (CCar *)theWorld->m_MovObjs[m_MovingObjectId];
+	CCar *theCar = (CCar *)theWorld->getMovingObject(m_MovingObjectId);
 	CCarInput *carin = (CCarInput *)theCar->m_InputData;
 
 	int gear = theCar->m_Gear;

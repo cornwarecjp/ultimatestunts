@@ -74,9 +74,9 @@ bool CUSCore::update()
 	static float topspeed = 0.0;
 
 	m_Console->print(CString("Top speed in this session: ") + (float)(topspeed*3.6) + " km/h");
-	for(unsigned int i=0; i<m_World->m_MovObjs.size(); i++)
+	for(unsigned int i=0; i<m_World->getNumObjects(CDataObject::eMovingObject); i++)
 	{
-		CMovingObject *mo = m_World->m_MovObjs[i];
+		CMovingObject *mo = m_World->getMovingObject(i);
 		if(mo->getType() == CMessageBuffer::car)
 		{
 			CCar * theCar = (CCar *)mo;
@@ -88,10 +88,7 @@ bool CUSCore::update()
 				CString("Car ") + (int)i +
 				" velocity " + (float)(vel * 3.6) + " km/h; "
 				"gear " + (int)(theCar->m_Gear) +
-				"; " + (float)(60.0 * wEngine / 6.28) + " RPM\n"
-				"wheel " + (float)(vel / 0.35) + " rad/s; "
-				"axis " + theCar->m_MainAxisVelocity + " rad/s; "
-				"engine " + wEngine + " rad/s");
+				"; " + (float)(60.0 * wEngine / 6.28) + " RPM");
 		}
 	}
 

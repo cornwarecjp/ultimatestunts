@@ -1,8 +1,8 @@
 /***************************************************************************
-                          dynamicobject.h  -  A dynamic object
+                          dataobject.cpp  -  Object loaded from a data file
                              -------------------
-    begin                : Thu Dec 5 2002
-    copyright            : (C) 2002 by CJP
+    begin                : wo dec 1 2004
+    copyright            : (C) 2004 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
 
@@ -15,23 +15,28 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef DYNAMICOBJECT_H
-#define DYNAMICOBJECT_H
+#include "dataobject.h"
 
+CDataObject::CDataObject(CDataManager *manager, eDataType type)
+{
+	m_DataManager = manager;
+	m_DataType = type;
+}
 
-/**
-  *@author CJP
-  */
+CDataObject::~CDataObject(){
+}
 
-#include "message.h"
+bool CDataObject::load(const CString &idstring)
+{
+	if(m_isLoaded) unload();
+	m_isLoaded = true;
 
-class CDynamicObject : public CMessage {
-public: 
-	CDynamicObject();
-	virtual ~CDynamicObject();
-	virtual bool hasChanged();
+	m_Filename = idstring;
+	m_IDString = idstring;
+	return true;
+}
 
-	CMessage *m_InputData;
-};
-
-#endif
+void CDataObject::unload()
+{
+	m_isLoaded = false;
+}

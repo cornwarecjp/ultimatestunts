@@ -18,32 +18,51 @@
 #include <cstdio>
 #include <cmath>
 #include "collisionmodel.h"
+#include "datafile.h"
 
-CCollisionModel::CCollisionModel(){
-}
+CCollisionModel::CCollisionModel(CDataManager *manager) : CDataObject(manager, CDataObject::eCollisionModel)
+{}
+
 CCollisionModel::~CCollisionModel(){
 }
 
-bool CCollisionModel::loadFromFile(CFile *f, CString subset, CMaterial **matarray)
+CString CCollisionModel::getSubset() const
 {
+	return m_Subset;
+}
+
+bool CCollisionModel::load(const CString &idstring)
+{
+	CDataObject::load(idstring);
+
+	m_Subset = "";
+	int pos = m_Filename.inStr(' ');
+	if(pos  > 0) //a space exists
+	{
+		if((unsigned int)pos < m_Filename.length()-1)
+			{m_Subset = m_Filename.mid(pos+1, m_Filename.length()-pos-1);}
+		m_Filename = m_Filename.mid(0, pos);
+	}
+
+	//printf("filename = %s subset = %s\n", m_Filename.c_str(), m_Subset.c_str());
+
+	CMaterial **matarray = getMaterialSubset(m_Subset);
+
+	CDataFile f(m_Filename);
+
 	//Initial bounding volume state
 	m_BSphere_r = 0.0;
 	m_OBB_min = CVector(0,0,0);
 	m_OBB_max = CVector(0,0,0);
 
-	//Data for graphics etc.
-	m_Filename = f->getName();
-	m_Subset = subset;
-
 	//initial state
 	CMaterial *mat = NULL;
 	
 	//Load faces from file
-	f->reopen();
 	ePrimitiveType currentType = None;
 	while(true)
 	{
-		CString line = f->readl();
+		CString line = f.readl();
 		if(line[0]=='\n') break;
 
 		int sp = line.inStr(' ');
@@ -66,7 +85,7 @@ bool CCollisionModel::loadFromFile(CFile *f, CString subset, CMaterial **matarra
 					if(rhs.inStr('c') < 0)
 						while(true)
 						{
-							line = f->readl();
+							line = f.readl();
 							if(line[0]=='\n') break;
 							sp = line.inStr(' ');
 							if(sp > 0 && line.mid(0, sp) == "Lod")
@@ -214,6 +233,7 @@ bool CCollisionModel::loadFromFile(CFile *f, CString subset, CMaterial **matarra
 	}
 
 	//printf("Loaded %d faces from %s\n", m_Faces.size(), f->getName().c_str());
+	delete [] matarray;
 
 	determineOBVs();
 	determinePlaneEquations();
@@ -328,4 +348,32 @@ void CCollisionModel::determinePlaneEquations()
 		);
 		*/
 	}
+}
+
+CMaterial **CCollisionModel::getMaterialSubset(CString indices)
+{
+	//printf("Indices: \"%s\"\n", indices.c_str());
+	CMaterial **ret = new CMaterial *[1+indices.length()/2]; //We don't need more
+	int i=0;
+	while(true)
+	{
+		int sp = indices.inStr(' ');
+		if(sp > 0)
+		{
+			int n = indices.mid(0,sp).toInt();
+			indices = indices.mid(sp+1, indices.length()-sp-1);
+			//printf("    Adding %d\n", n);
+			*(ret+i) = (CMaterial *)m_DataManager->getObject(CDataObject::eMaterial, n);
+		}
+		else
+		{
+			//printf("    Adding %d\n", indices.toInt());
+			*(ret+i) = (CMaterial *)m_DataManager->getObject(CDataObject::eMaterial, indices.toInt()); //the last index
+			break;
+		}
+
+		i++;
+	}
+
+	return ret;
 }

@@ -248,7 +248,7 @@ void CSound::update()
 	//Objects:
 	for(unsigned int i=0; i<m_SoundWorld->m_Channels.size(); i++)
 	{
-		CMovingObject *o = m_World->m_MovObjs[m_SoundWorld->m_ObjIDs[i]];
+		const CMovingObject *o = m_World->getMovingObject(m_SoundWorld->m_ObjIDs[i]);
 		if(o->getType() == CMessageBuffer::car)
 		{
 			CCar *theCar = (CCar *)o;

@@ -42,7 +42,7 @@ bool CHumanPlayer::update()
 
 		//This is called 'input', as it is the input of the moving object.
 		//But it is the output of the player.
-		CMessage *input = theWorld->m_MovObjs[m_MovingObjectId]->m_InputData;
+		CMessage *input = theWorld->getMovingObject(m_MovingObjectId)->m_InputData;
 
 		if(input->getType() != CMessageBuffer::carInput)
 			{printf("Error: object input is not of type \"car\".\n"); return false;} //perhaps throw something
@@ -54,7 +54,7 @@ bool CHumanPlayer::update()
 		carin->m_Right = right - left;
 
 		//default
-		carin->m_Gear = ((CCar *)theWorld->m_MovObjs[m_MovingObjectId])->m_Gear;
+		carin->m_Gear = ((CCar *)theWorld->getMovingObject(m_MovingObjectId))->m_Gear;
 		
 		//try the automatic gear
 		setAutomaticGear(carin->m_Forward, carin->m_Backward);

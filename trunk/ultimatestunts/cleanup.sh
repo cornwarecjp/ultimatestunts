@@ -16,3 +16,5 @@ rm -f *debuglog*
 rm -f config.log
 rm -f config.status
 
+rm -rf autom4te.cache
+

@@ -1,8 +1,8 @@
 /***************************************************************************
-                          dynamicobject.cpp  -  A dynamic object
+                          track.h  -  A racing track
                              -------------------
-    begin                : Thu Dec 5 2002
-    copyright            : (C) 2002 by CJP
+    begin                : di dec 7 2004
+    copyright            : (C) 2004 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
 
@@ -14,18 +14,41 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#include "dynamicobject.h"
 
+#ifndef TRACK_H
+#define TRACK_H
 
-CDynamicObject::CDynamicObject()
-{
-//  m_InputData = new CMessage;
-}
+#include <vector> //STL vector template
+namespace std {}
+using namespace std;
 
-CDynamicObject::~CDynamicObject()
-{
-//  delete m_InputData;
-}
+#include "dataobject.h"
 
-bool CDynamicObject::hasChanged()
-{return true;}
+/**
+  *@author CJP
+  */
+
+struct STile {
+	int m_Model;
+	int m_Z, m_R; //height, orientation. 0 <= m_R <= 3
+
+	bool m_isStart, m_isFinish;
+	float m_Time;
+};
+
+class CTrack : public CDataObject  {
+public: 
+	CTrack(CDataManager *manager);
+	virtual ~CTrack();
+
+	virtual bool load(const CString &idstring);
+	virtual void unload();
+
+	vector<STile> m_Track; //refer to tile model elements in the manager object
+	int m_L, m_W, m_H;
+
+	CString m_BackgroundFilename;
+	CString m_EnvMapFilename;
+};
+
+#endif

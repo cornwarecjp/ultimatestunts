@@ -42,24 +42,31 @@ void CCollisionDetector::calculateCollisions()
 	clearData(); //clear all previously stored collision data
 
 	//Collision with track bounds
-	for(unsigned int i=0; i < theWorld->m_MovObjs.size(); i++)
-		for(unsigned int j=0; j < theWorld->m_MovObjs[i]->m_Bodies.size(); j++)
-			ObjTrackBoundTest(theWorld->m_MovObjs[i]->m_Bodies[j]);
+	vector<CDataObject *> objs = theWorld->getObjectArray(CDataObject::eMovingObject);
+	for(unsigned int i=0; i < objs.size(); i++)
+		for(unsigned int j=0; j < ((CMovingObject *)objs[i])->m_Bodies.size(); j++)
+			ObjTrackBoundTest(((CMovingObject *)objs[i])->m_Bodies[j]);
 
 	//Moving object to moving object collisions
-	for(unsigned int i1=0; i1 < theWorld->m_MovObjs.size()-1; i1++)
-		for(unsigned int i2=i1+1; i2 < theWorld->m_MovObjs.size(); i2++)
-			for(unsigned int j1=0; j1 < theWorld->m_MovObjs[i1]->m_Bodies.size(); j1++)
-				for(unsigned int j2=0; j2 < theWorld->m_MovObjs[i2]->m_Bodies.size(); j2++)
-					ObjObjTest(theWorld->m_MovObjs[i1]->m_Bodies[j1], theWorld->m_MovObjs[i2]->m_Bodies[j2]);
+	for(unsigned int i1=0; i1 < objs.size()-1; i1++)
+	{
+		CMovingObject *o1 = (CMovingObject *)objs[i1];
+		for(unsigned int i2=i1+1; i2 < objs.size(); i2++)
+		{
+			CMovingObject *o2 = (CMovingObject *)objs[i2];
+			for(unsigned int j1=0; j1 < o1->m_Bodies.size(); j1++)
+				for(unsigned int j2=0; j2 < o2->m_Bodies.size(); j2++)
+					ObjObjTest(o1->m_Bodies[j1], o2->m_Bodies[j2]);
+		}
+	}
 
 	//Moving object to tile collisions
-	int lengte = theWorld->m_L;
-	int breedte = theWorld->m_W;
-	int hoogte = theWorld->m_H;
-	for(unsigned int i=0; i < theWorld->m_MovObjs.size(); i++)
+	int lengte = theWorld->getTrack()->m_L;
+	int breedte = theWorld->getTrack()->m_W;
+	int hoogte = theWorld->getTrack()->m_H;
+	for(unsigned int i=0; i < objs.size(); i++)
 	{
-		CVector pos = theWorld->m_MovObjs[i]->m_Bodies[0].getPosition();
+		CVector pos = ((CMovingObject *)objs[i])->m_Bodies[0].getPosition();
 
 		int x = (int)(0.5 + (pos.x)/TILESIZE);
 		int z = (int)(0.5 + (pos.z)/TILESIZE);
@@ -79,9 +86,9 @@ void CCollisionDetector::calculateCollisions()
 void CCollisionDetector::clearData()
 {
 	//Local data:
-	for(unsigned int i=0; i < theWorld->m_MovObjs.size(); i++)
-		for(unsigned int j=0; j < theWorld->m_MovObjs[i]->m_Bodies.size(); j++)
-			theWorld->m_MovObjs[i]->m_Bodies[j].m_Collisions.clear();
+	for(unsigned int i=0; i < theWorld->getNumObjects(CDataObject::eMovingObject); i++)
+		for(unsigned int j=0; j < theWorld->getMovingObject(i)->m_Bodies.size(); j++)
+			theWorld->getMovingObject(i)->m_Bodies[j].m_Collisions.clear();
 
 	//ODE:
 	dJointGroupEmpty(theWorld->m_ContactGroup);
@@ -92,14 +99,14 @@ void CCollisionDetector::calculateTrackBounds()
 	int minz = 0;
 	int maxz = 0;
 
-	int lth = theWorld->m_L;
-	int wth = theWorld->m_W;
-	int hth = theWorld->m_H;
+	int lth = theWorld->getTrack()->m_L;
+	int wth = theWorld->getTrack()->m_W;
+	int hth = theWorld->getTrack()->m_H;
 	for(int x = 0; x < lth; x++)
 		for(int y = 0; y < wth; y++)
 			for(int h = 0; h < hth; h++)
 			{
-				int z = theWorld->m_Track[h + hth*(y + wth*x)].m_Z;
+				int z = theWorld->getTrack()->m_Track[h + hth*(y + wth*x)].m_Z;
 				if(z < minz) minz = z;
 				if(z > maxz) maxz = z;
 			}
@@ -119,7 +126,7 @@ void CCollisionDetector::ObjTrackBoundTest(const CBody &body)
 	CVector p = body.getPosition();
 	CVector v = body.getVelocity();
 
-	const CBound *b = theWorld->m_MovObjBounds[body.m_Body];
+	const CBound *b = (CBound *)theWorld->getObject(CDataObject::eBound, body.m_Body);
 	float r = b->m_BSphere_r;
 
 	if(p.x - r < m_TrackMin.x)
@@ -248,8 +255,8 @@ void CCollisionDetector::ObjObjTest(const CBody &body1, const CBody &body2)
 	CVector p2 = body2.getPosition();
 	const CMatrix &o1 = body1.getOrientationMatrix();
 	const CMatrix &o2 = body2.getOrientationMatrix();
-	const CBound *b1 = theWorld->m_MovObjBounds[body1.m_Body];
-	const CBound *b2 = theWorld->m_MovObjBounds[body2.m_Body];
+	const CBound *b1 = (CBound *)theWorld->getObject(CDataObject::eBound, body1.m_Body);
+	const CBound *b2 = (CBound *)theWorld->getObject(CDataObject::eBound, body2.m_Body);
 
 	if(!sphereTest(p1, b1, p2, b2)) return;
 
@@ -310,12 +317,12 @@ void CCollisionDetector::ObjObjTest(const CBody &body1, const CBody &body2)
 void CCollisionDetector::ObjTileTest(int nobj, int xtile, int ztile, int htile)
 {
 	//Tile data
-	const CTile &theTile = theWorld->m_Track[htile + theWorld->m_H*(ztile + theWorld->m_W*xtile)];
+	const STile &theTile = theWorld->getTrack()->m_Track[htile + theWorld->getTrack()->m_H*(ztile + theWorld->getTrack()->m_W*xtile)];
 	CVector tilepos = CVector(xtile*TILESIZE, theTile.m_Z*VERTSIZE, ztile*TILESIZE);
-	CTileModel *tilemodel = theWorld->m_TileModels[theTile.m_Model];
+	CTileModel *tilemodel = theWorld->getTileModel(theTile.m_Model);
 
 	//Object data
-	CMovingObject *theObj = theWorld->m_MovObjs[nobj];
+	CMovingObject *theObj = theWorld->getMovingObject(nobj);
 
 	//fprintf(stderr, "New tile\n");
 	for(unsigned int i=0; i<theObj->m_Bodies.size(); i++)
@@ -332,7 +339,7 @@ void CCollisionDetector::ObjTileTest(int nobj, int xtile, int ztile, int htile)
 		//CVector dr = r1 - r0;
 
 		//the collision model of the body
-		const CBound *theBound = theWorld->m_MovObjBounds[theObj->m_Bodies[i].m_Body];
+		const CBound *theBound = (CBound *)theWorld->getObject(CDataObject::eBound, theObj->m_Bodies[i].m_Body);
 
 		//fprintf(stderr, "Body %d: r = %s\n", i, CString(r).c_str());
 

@@ -36,7 +36,7 @@ bool CPlayerControl::loadObjects()
 {
 	bool ret = true;
 	for(unsigned int i=0; i < m_LocalChoices.size(); i++)
-		ret = theWorld->loadMovingObject(m_LocalChoices[i]) && ret;
+		ret = (theWorld->getObjectID(m_LocalChoices[i].m_Filename, CDataObject::eMovingObject) >= 0) && ret;
 
 	return ret;
 }

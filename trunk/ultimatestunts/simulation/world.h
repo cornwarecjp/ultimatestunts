@@ -28,57 +28,44 @@ using namespace std;
 
 #include <ode/ode.h>
 
-#include "bound.h"
+#include "track.h"
 #include "tilemodel.h"
 #include "movingobject.h"
 #include "objectchoice.h"
 #include "collision.h"
 
-class CTile {
-public:
-	int m_Model;
-	int m_Z, m_R; //height, orientation. 0 <= m_R <= 3
+#include "datamanager.h"
 
-	bool m_isStart, m_isFinish;
-	float m_Time;
-};
 
-class CWorld {
+class CWorld : public CDataManager {
 public: 
 	CWorld();
 	virtual ~CWorld();
 
-	//Track
-	vector<CTile> m_Track; //refer to elements from m_TileModels
-	int m_L, m_W, m_H;
-	bool loadTrack(CString filename);
-	void unloadTrack();
+	//object helpers
+	CMovingObject *getMovingObject(unsigned int ID)
+		{return (CMovingObject *)getObject(CDataObject::eMovingObject, ID);}
+	const CMovingObject *getMovingObject(unsigned int ID) const
+		{return (const CMovingObject *)getObject(CDataObject::eMovingObject, ID);}
+	CTileModel *getTileModel(unsigned int ID)
+		{return (CTileModel *)getObject(CDataObject::eTileModel, ID);}
+	const CTileModel *getTileModel(unsigned int ID) const
+		{return (const CTileModel *)getObject(CDataObject::eTileModel, ID);}
+	CMaterial *getMaterial(unsigned int ID)
+		{return (CMaterial *)getObject(CDataObject::eMaterial, ID);}
+	const CMaterial *getMaterial(unsigned int ID) const
+		{return (const CMaterial *)getObject(CDataObject::eMaterial, ID);}
+	CTrack *getTrack()
+		{return (CTrack *)getObject(CDataObject::eTrack, 0);}
+	const CTrack *getTrack() const
+		{return (const CTrack *)getObject(CDataObject::eTrack, 0);}
 
-	vector<CTileModel *> m_TileModels;
-	vector<CMaterial *> m_TileMaterials;
-
-
-	//Moving objects
-	vector<CMovingObject *> m_MovObjs;
-	bool loadMovingObject(const CObjectChoice &oc);
-	void unloadMovObjs();
-
-	int getMovObjBoundID(const CString &filename); //on demand loading
-	vector<CBound *>m_MovObjBounds;
-	vector<CMaterial *> m_MovObjMaterials;
-	int getMovObjSoundID(const CString &filename); //on demand loading
-	vector<CString> m_MovObjSounds;
 
 	//Collision data
 	vector<CCollision> m_Collisions; //is re-filled by the simulation on every frame
 
 	//Rule data
 	float m_GameStartTime;
-
-	CString getBackgroundFilename() const
-		{return m_BackgroundFilename;}
-	CString getEnvMapFilename() const
-		{return m_EnvMapFilename;}
 
 	//debug
 	bool printDebug;
@@ -90,10 +77,7 @@ public:
 	dJointGroupID m_ContactGroup;
 
 protected:
-	CMaterial **getMaterialSubset(CString indices);
-
-	CString m_BackgroundFilename;
-	CString m_EnvMapFilename;
+	virtual CDataObject *createObject(const CString &idstring, CDataObject::eDataType type);
 };
 
 extern CWorld *theWorld;

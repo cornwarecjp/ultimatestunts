@@ -26,10 +26,10 @@
 
 class CBound : public CCollisionModel {
 public: 
-	CBound();
+	CBound(CDataManager *manager);
 	~CBound();
 
-	virtual bool loadFromFile(CFile *f, CString subset, CMaterial **matarray);
+	virtual bool load(const CString &idstring);
 
 	vector<CVector> m_Points;
 

@@ -18,17 +18,21 @@
 #ifndef MATERIAL_H
 #define MATERIAL_H
 
+#include "dataobject.h"
 #include "cstring.h"
 
 /**
   *@author CJP
   */
 
-class CMaterial {
+class CMaterial : public CDataObject {
 public:
-	CString m_Filename; //Texture filename
-	int m_Mul; //texture size multiplier
+	CMaterial(CDataManager *manager);
+	virtual ~CMaterial();
 
+	virtual bool load(const CString &idstring);
+
+	int m_Mul; //texture size multiplier
 	float m_Mu; //static friction coefficient
 };
 

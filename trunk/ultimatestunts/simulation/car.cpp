@@ -18,6 +18,7 @@
 #include <cstdio>
 #include <cmath>
 
+#include "bound.h"
 #include "car.h"
 #include "carinput.h"
 #include "world.h"
@@ -25,10 +26,22 @@
 #include "datafile.h"
 #include "lconfig.h"
 
-CCar::CCar(const CString &conffile)
+CCar::CCar(CDataManager *manager) : CMovingObject(manager)
 {
-	CDataFile dfile(conffile);
+}
+
+CCar::~CCar()
+{
+}
+
+bool CCar::load(const CString &idstring)
+{
+	CMovingObject::load(idstring);
+
+	CDataFile dfile(getFilename());
 	CLConfig cfile(dfile.useExtern());
+	//TODO: make a way to find out if this file exists
+	//and return false if it doesn't
 
 	//body
 	CString bodygeomfile = cfile.getValue("body", "geometry");
@@ -90,23 +103,23 @@ CCar::CCar(const CString &conffile)
 	CBody body, wheel1, wheel2, wheel3, wheel4;
 
 	//Set the indices to the body array
-	body.m_Body = theWorld->getMovObjBoundID(bodygeomfile);
+	body.m_Body = theWorld->getObjectID(bodygeomfile, CDataObject::eBound);
 	if(body.m_Body < 0)
 		printf("Error: body geometry %s was not loaded\n", bodygeomfile.c_str());
 
-	wheel1.m_Body = theWorld->getMovObjBoundID(frontwheelgeomfile);
+	wheel1.m_Body = theWorld->getObjectID(frontwheelgeomfile, CDataObject::eBound);
 	wheel2.m_Body = wheel1.m_Body;
 	if(wheel1.m_Body < 0)
 		printf("Error: frontwheel geometry %s was not loaded\n", frontwheelgeomfile.c_str());
-	m_FrontWheelRadius = theWorld->m_MovObjBounds[wheel1.m_Body]->m_CylinderRadius;
-	m_FrontWheelWidth = theWorld->m_MovObjBounds[wheel1.m_Body]->m_CylinderWidth;
+	m_FrontWheelRadius = ((CBound *)theWorld->getObject(CDataObject::eBound, wheel1.m_Body))->m_CylinderRadius;
+	m_FrontWheelWidth = ((CBound *)theWorld->getObject(CDataObject::eBound, wheel1.m_Body))->m_CylinderWidth;
 
-	wheel3.m_Body = theWorld->getMovObjBoundID(rearwheelgeomfile);
+	wheel3.m_Body = theWorld->getObjectID(rearwheelgeomfile, CDataObject::eBound);
 	wheel4.m_Body = wheel3.m_Body;
 	if(wheel3.m_Body < 0)
 		printf("Error: rearwheel geometry %s was not loaded\n", rearwheelgeomfile.c_str());
-	m_RearWheelRadius = theWorld->m_MovObjBounds[wheel3.m_Body]->m_CylinderRadius;
-	m_RearWheelWidth = theWorld->m_MovObjBounds[wheel3.m_Body]->m_CylinderWidth;
+	m_RearWheelRadius = ((CBound *)theWorld->getObject(CDataObject::eBound, wheel3.m_Body))->m_CylinderRadius;
+	m_RearWheelWidth = ((CBound *)theWorld->getObject(CDataObject::eBound, wheel3.m_Body))->m_CylinderWidth;
 
 	body.m_mu = m_BodyMu;
 	wheel1.m_mu = m_FrontWheelMu;
@@ -122,7 +135,7 @@ CCar::CCar(const CString &conffile)
 
 
 	dMass mbody, mfrontwheel, mrearwheel;
-	
+
 	dMassSetBox(&mbody, 1, m_BodySize.x, m_BodySize.y, m_BodySize.z);
 	dMassAdjust(&mbody, m_BodyMass);
 	dBodySetMass(body.m_ODEBody, &mbody);
@@ -215,14 +228,17 @@ CCar::CCar(const CString &conffile)
 	dJointSetHinge2Param(m_joint2, dParamSuspensionCFM, m_FrontSuspCFM);
 	dJointSetHinge2Param(m_joint3, dParamSuspensionCFM, m_RearSuspCFM);
 	dJointSetHinge2Param(m_joint4, dParamSuspensionCFM, m_RearSuspCFM);
-	
+
 	//Two sounds:
-	m_Sounds.push_back(theWorld->getMovObjSoundID("sounds/engine.wav"));
-	m_Sounds.push_back(theWorld->getMovObjSoundID("sounds/skid.wav"));
+	m_Sounds.push_back(theWorld->getObjectID("sounds/engine.wav", CDataObject::eSample));
+	m_Sounds.push_back(theWorld->getObjectID("sounds/skid.wav", CDataObject::eSample));
+
+	return true;
 }
 
-CCar::~CCar()
+void CCar::unload()
 {
+	//TODO
 }
 
 void CCar::resetBodyPositions(CVector pos, const CMatrix &ori)

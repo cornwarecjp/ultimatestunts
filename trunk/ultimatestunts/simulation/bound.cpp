@@ -18,16 +18,20 @@
 #include <cmath>
 
 #include "bound.h"
+#include "datafile.h"
 
-CBound::CBound(){
+CBound::CBound(CDataManager *manager) : CCollisionModel(manager)
+{
+	m_DataType = CDataObject::eBound;
 	m_isCylinder = false;
 }
-CBound::~CBound(){
-}
 
-bool CBound::loadFromFile(CFile *f, CString subset, CMaterial **matarray)
+CBound::~CBound()
+{}
+
+bool CBound::load(const CString &idstring)
 {
-	CCollisionModel::loadFromFile(f, subset, matarray);
+	CCollisionModel::load(idstring);
 
 	m_Points.clear();
 	for(unsigned int i=0; i < m_Faces.size()-2; i++)

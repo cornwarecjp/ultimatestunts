@@ -110,7 +110,7 @@ void CGameCore::leaveGame()
 void CGameCore::loadTrackData()
 {
 	printf("---World track data\n");
-	m_World->loadTrack(m_TrackFile);
+	m_World->getObjectID(m_TrackFile, CDataObject::eTrack);
 }
 
 void CGameCore::loadMovObjData()
@@ -123,6 +123,5 @@ void CGameCore::loadMovObjData()
 void CGameCore::unloadData()
 {
 	printf("---World data\n");
-	m_World->unloadTrack();
-	m_World->unloadMovObjs();
+	m_World->unloadAll();
 }

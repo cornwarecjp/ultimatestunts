@@ -124,11 +124,11 @@ void CGameRenderer::updateReflections()
 	if(currentSide == 0 || m_UpdRefAllSides)
 	{
 		currentObject++;
-		if(currentObject >= (int)(m_NumCameras * m_World->m_MovObjs.size())) currentObject = 0;
+		if(currentObject >= (int)(m_NumCameras * m_World->getNumObjects(CDataObject::eMovingObject))) currentObject = 0;
 	}
 
 	//initialising reflections if they don't exist
-	unsigned int numRequired = m_NumCameras * m_World->m_MovObjs.size();
+	unsigned int numRequired = m_NumCameras * m_World->getNumObjects(CDataObject::eMovingObject);
 	unsigned int numPresent = m_MovingObjectReflections.size();
 	if(numPresent < numRequired)
 		for(unsigned int i=0; i< (numRequired - numPresent); i++)
@@ -144,9 +144,9 @@ void CGameRenderer::updateReflections()
 		{
 			m_CurrentCamera = cam;
 
-			for(unsigned int obj=0; obj < m_World->m_MovObjs.size(); obj++)
+			for(unsigned int obj=0; obj < m_World->getNumObjects(CDataObject::eMovingObject); obj++)
 			{
-				CMovingObject *mo = theWorld->m_MovObjs[obj];
+				CMovingObject *mo = theWorld->getMovingObject(obj);
 				CVector pos = mo->m_Bodies[0].getPosition();
 
 				//we don't have to update a reflection that is not visible
@@ -176,7 +176,7 @@ void CGameRenderer::updateReflections()
 		unsigned int cam = currentObject - m_NumCameras * obj;
 		m_CurrentCamera = cam;
 
-		CMovingObject *mo = theWorld->m_MovObjs[obj];
+		CMovingObject *mo = theWorld->getMovingObject(obj);
 		CVector pos = mo->m_Bodies[0].getPosition();
 
 		//we don't have to update a reflection that is not visible
@@ -284,7 +284,7 @@ void CGameRenderer::renderScene()
 
 	//Tijdelijke plaats om auto's te renderen: achteraan
 	//float tobj = _DebugTimer.getTime();
-	int num_objs = m_World->m_MovObjs.size();
+	int num_objs = m_World->getNumObjects(CDataObject::eMovingObject);
 	for(int i=0; i<num_objs; i++)
 		if(i != m_UpdateBodyReflection) //don't draw the body in its own reflection
 			viewMovObj(i);
@@ -349,8 +349,8 @@ void CGameRenderer::viewTrack_normal()
 	glPushMatrix();
 
 	//Nu volgt de weergave-routine
-	int lengte = m_World->m_L;
-	int  breedte = m_World->m_W;
+	int lengte = m_World->getTrack()->m_L;
+	int  breedte = m_World->getTrack()->m_W;
 
 	//printf ("x,y,z = %d,%d,%d\n",camx,camy,camz);
 
@@ -392,8 +392,8 @@ void CGameRenderer::viewTrackPart(
 	int dx,  int dy,
 	int cur_zpos)
 {
-	int lengte = m_World->m_L;
-	int  breedte = m_World->m_W;
+	int lengte = m_World->getTrack()->m_L;
+	int  breedte = m_World->getTrack()->m_W;
 
 	glPushMatrix();
 	glTranslatef(xmin * TILESIZE, 0, ymin * TILESIZE);
@@ -424,8 +424,8 @@ void CGameRenderer::viewTrackPart(
 
 void CGameRenderer::viewPilaar(int x, int y, int cur_zpos)
 {
-	int  breedte = m_World->m_W;
-	int hoogte = m_World->m_H;
+	int  breedte = m_World->getTrack()->m_W;
+	int hoogte = m_World->getTrack()->m_H;
 
 	glPushMatrix();
 
@@ -449,7 +449,7 @@ void CGameRenderer::viewPilaar(int x, int y, int cur_zpos)
 
 		for (int i = 0; i < hoogte; i++) //bottom to top
 		{
-			CTile temp = m_World->m_Track[pilaar_index + i]; //welke tile?
+			STile temp = m_World->getTrack()->m_Track[pilaar_index + i]; //welke tile?
 
 			if(temp.m_Model == 0) break; //0 = empty tile
 
@@ -460,7 +460,7 @@ void CGameRenderer::viewPilaar(int x, int y, int cur_zpos)
 			{
 				for(int j = hoogte-1; j >= i; j--) //top to bottom
 				{
-					temp = m_World->m_Track[pilaar_index + j]; //welke tile?
+					temp = m_World->getTrack()->m_Track[pilaar_index + j]; //welke tile?
 
 					if(temp.m_Model > 0) //0 = empty tile
 					{
@@ -505,7 +505,7 @@ void CGameRenderer::viewPilaar(int x, int y, int cur_zpos)
 
 void CGameRenderer::viewMovObj(unsigned int n)
 {
-	CMovingObject *mo = theWorld->m_MovObjs[n];
+	CMovingObject *mo = theWorld->getMovingObject(n);
 
 	for(unsigned int i=mo->m_Bodies.size(); i > 0; i--) //TODO: depth sorting?
 	{

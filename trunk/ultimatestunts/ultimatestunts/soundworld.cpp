@@ -31,19 +31,20 @@ CSoundWorld::~CSoundWorld()
 
 bool CSoundWorld::loadObjects()
 {
-	for(unsigned int i=0; i<m_World->m_MovObjSounds.size(); i++)
+	vector<CDataObject *> sounds = theWorld->getObjectArray(CDataObject::eSample);
+	for(unsigned int i=0; i<sounds.size(); i++)
 	{
 		CSndSample *sample = new CSndSample;
-		CDataFile f(m_World->m_MovObjSounds[i]);
+		CDataFile f(sounds[i]->getIDString());
 		printf("   %s\n", f.getName().c_str());
 		sample->loadFromFile(f.useExtern());
 
 		m_Samples.push_back(sample);
 	}
 
-	for(unsigned int i=0; i<m_World->m_MovObjs.size(); i++)
+	for(unsigned int i=0; i<m_World->getNumObjects(CDataObject::eMovingObject); i++)
 	{
-		CMovingObject *mo = m_World->m_MovObjs[i];
+		const CMovingObject *mo = m_World->getMovingObject(i);
 
 		{ //engine sound
 			CSoundObj *so = new CSoundObj;

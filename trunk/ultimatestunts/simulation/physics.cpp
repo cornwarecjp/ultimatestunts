@@ -95,10 +95,11 @@ bool CPhysics::update()
 
 		if(N == 0) N = 1; //should not be neccesary
 
+		vector<CDataObject *> objs = theWorld->getObjectArray(CDataObject::eMovingObject);
 		for(unsigned int step=0; step < N; step++)
 		{
-			for(unsigned int i=0; i < (m_World->m_MovObjs.size()); i++)
-				theWorld->m_MovObjs[i]->update(this, dt);
+			for(unsigned int i=0; i < objs.size(); i++)
+				((CMovingObject *)objs[i])->update(this, dt);
 
 			m_Detector->calculateCollisions();
 			dWorldStep(theWorld->m_ODEWorld, dt);
