@@ -17,7 +17,12 @@
 #ifndef GRAPHOBJ_H
 #define GRAPHOBJ_H
 
+#include <vector>
+namespace std {}
+using namespace std;
+
 #include "cstring.h"
+#include "vector.h"
 #include "dataobject.h"
 
 class CGraphObj : public CDataObject
@@ -32,13 +37,27 @@ class CGraphObj : public CDataObject
 		void draw(int lod) const;
 
 	protected:
-		unsigned int m_ObjListRef, m_ObjList1, m_ObjList2, m_ObjList3, m_ObjList4;
 
-		float m_OpacityState;
-		CVector m_ColorState;
-		void setMaterialColor();
+		struct SPrimitive
+		{
+			unsigned int LODs;
+			
+			unsigned int texture[4];
+			CVector color[4];
+			float opacity, reflectance, emissivity;
+			
+			void *vertex;
+			unsigned int numVertices;
 
-		bool loadGLB(const CString &filename, const CParamList &list);
+			void *index;
+			unsigned int numIndices;
+		};
+		vector<SPrimitive> m_Primitives;
+
+		void unloadPrimitive(SPrimitive &pr);
+
+		//Draw one primitive:
+		void drawArray(void *vertex, void *index, unsigned int numV, unsigned int numI) const;
 };
 
 #endif

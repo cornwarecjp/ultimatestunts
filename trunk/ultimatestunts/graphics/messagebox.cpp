@@ -18,6 +18,9 @@
 #include "SDL.h"
 #include <GL/gl.h>
 
+#include <libintl.h>
+#define _(String) gettext (String)
+
 #include "messagebox.h"
 #include "console.h"
 
@@ -109,7 +112,7 @@ int CMessageBox::onRedraw()
 
 			glColor3f(1, 0.9, 0);
 			theConsoleFont->enable();
-			theConsoleFont->drawString("OK");
+			theConsoleFont->drawString(_("OK"));
 			theConsoleFont->disable();
 			break;
 
@@ -122,7 +125,7 @@ int CMessageBox::onRedraw()
 			else
 				{glColor3f(1, 1, 1);}
 			theConsoleFont->enable();
-			theConsoleFont->drawString("Yes");
+			theConsoleFont->drawString(_("Yes"));
 			theConsoleFont->disable();
 			glPopMatrix();
 			glTranslatef(0.3*m_W, -0.3*m_H, 0);
@@ -132,7 +135,7 @@ int CMessageBox::onRedraw()
 			else
 				{glColor3f(1, 1, 1);}
 			theConsoleFont->enable();
-			theConsoleFont->drawString("No");
+			theConsoleFont->drawString(_("No"));
 			theConsoleFont->disable();
 			break;
 	}

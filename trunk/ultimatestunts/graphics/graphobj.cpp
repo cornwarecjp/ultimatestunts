@@ -19,8 +19,9 @@
 
 #include <GL/gl.h>
 
+
+#include "glextensions.h"
 #include "vector.h"
-#include "graphobj.h"
 #include "usmacros.h"
 #include "lconfig.h"
 #include "graphicworld.h"
@@ -28,33 +29,239 @@
 #include "glbfile.h"
 #include "lodtexture.h"
 
+#include "graphobj.h"
 
 CGraphObj::CGraphObj(CDataManager *manager, eDataType type) : CDataObject(manager, type)
 {
-	m_ObjListRef = m_ObjList1 = m_ObjList2 = m_ObjList3 = m_ObjList4 = 0;
 }
 
 CGraphObj::~CGraphObj()
 {
 }
 
-//bool CGraphObj::loadFromFile(CFile *f, CLODTexture **matarray, int lod_offset)
 bool CGraphObj::load(const CString &filename, const CParamList &list)
 {
 	CDataObject::load(filename, list);
 
-	return loadGLB(filename, list);
-}
-
-bool CGraphObj::loadGLB(const CString &filename, const CParamList &list)
-{
 	CGLBFile f;
 	if(!f.load(filename)) return false;
 
 	CString subset = m_ParamList.getValue("subset", "");
 	vector<CDataObject *> matarray = m_DataManager->getSubset(CDataObject::eMaterial, subset);
-	int lod_offset = m_ParamList.getValue("lodoffset", "0").toInt();
 
+	//the primitives
+	for(unsigned int p=0; p < f.m_Primitives.size(); p++)
+	{
+		CGLBFile::SPrimitive &pr1 = f.m_Primitives[p];
+
+		m_Primitives.push_back(SPrimitive());
+		SPrimitive &pr2 = m_Primitives.back();
+
+		//set some properties
+		pr2.LODs = pr1.LODs;
+		pr2.opacity = pr1.Opacity;
+		pr2.reflectance = pr1.Reflectance;
+		pr2.emissivity = pr1.Emissivity;
+
+		//Color and texture:
+		//default:
+		pr2.texture[0] = pr2.texture[1] = pr2.texture[2] = pr2.texture[3] = 0;
+		pr2.color[0] = pr2.color[1] = pr2.color[2] = pr2.color[3] = pr1.ModulationColor;
+
+		//add texture
+		if(pr1.Texture >= 0)
+		{
+			CLODTexture *tex = (CLODTexture *)matarray[pr1.Texture];
+
+			for(unsigned int lod=0; lod < 3; lod++)
+			{
+				if(tex->getSizeX(lod+1) <=4 || tex->getSizeY(lod+1) <= 4)
+				{
+					//TODO: blend modulation & replacement color
+					pr2.color[lod] = pr1.ReplacementColor;
+				}
+				else
+				{
+					pr2.texture[lod] = tex->getTextureID(lod+1);
+				}
+			}
+			
+		}
+
+		//add vertices
+		pr2.numVertices = pr1.vertex.size();
+		GLfloat *vertexptr = new GLfloat[8*pr1.vertex.size()];
+		for(unsigned int v=0; v < pr1.vertex.size(); v++)
+		{
+			CGLBFile::SVertex &vt = pr1.vertex[v];
+
+			GLfloat *offset = vertexptr + 8*v;
+
+			//GL_T2F_N3F_V3F array format:
+			*(offset  ) = vt.tex.x;
+			*(offset+1) = vt.tex.y;
+			
+			*(offset+2) = vt.nor.x;
+			*(offset+3) = vt.nor.y;
+			*(offset+4) = vt.nor.z;
+			
+			*(offset+5) = vt.pos.x;
+			*(offset+6) = vt.pos.y;
+			*(offset+7) = vt.pos.z;
+		}
+		pr2.vertex = vertexptr;
+
+		//add indices
+		pr2.numIndices = pr1.index.size();
+		GLuint *indexptr = new GLuint[pr1.index.size()];
+		for(unsigned int i=0; i < pr1.index.size(); i++)
+			*(indexptr + i) = pr1.index[i];
+		pr2.index = indexptr;
+	}
+
+	return true;
+}
+
+void CGraphObj::unload()
+{
+	if(!isLoaded()) return;
+
+	CDataObject::unload();
+
+	//primitives:
+	for(unsigned int i=0; i < m_Primitives.size(); i++)
+		unloadPrimitive(m_Primitives[i]);
+	m_Primitives.clear();
+}
+
+void CGraphObj::unloadPrimitive(SPrimitive &pr)
+{
+	delete [] (GLfloat *)pr.vertex;
+	delete [] (GLuint *)pr.index;
+}
+
+bool tex_enabled;
+
+void CGraphObj::draw(int lod) const
+{
+	//TODO: make this code very fast (it's the main drawing routine)
+
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_NORMAL_ARRAY);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+	tex_enabled = true;
+
+	for(unsigned int p=0; p < m_Primitives.size(); p++)
+	{
+		const SPrimitive &pr = m_Primitives[p];
+
+		//LOD testing:
+		if(lod == 4 && (pr.LODs & 8) == 0) continue;
+		if(lod == 3 && (pr.LODs & 4) == 0) continue;
+		if(lod == 2 && (pr.LODs & 2) == 0) continue;
+		if(lod == 1 && (pr.LODs & 1) == 0) continue;
+		if(lod == 0 && (pr.LODs & 1) == 0) continue;
+
+		if(lod == 0) //reflection
+		{
+			float kleur[] = {1, 1, 1, pr.reflectance};
+			glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, kleur);
+		}
+		else
+		{
+			float kleur[] = {pr.color[lod-1].x, pr.color[lod-1].y, pr.color[lod-1].z, pr.opacity};
+			glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, kleur);
+
+			if(pr.texture[lod-1] == 0)
+			{
+				if(tex_enabled)
+				{
+					glDisable(GL_TEXTURE_2D);
+					tex_enabled = false;
+				}
+			}
+			else
+			{
+				if(!tex_enabled)
+				{
+					glEnable(GL_TEXTURE_2D);
+					tex_enabled = true;
+				}
+				glBindTexture(GL_TEXTURE_2D, pr.texture[lod-1]);
+			}
+		}
+
+		drawArray(pr.vertex, pr.index, pr.numVertices, pr.numIndices);
+	}
+
+	if(!tex_enabled)
+		glEnable(GL_TEXTURE_2D);
+
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	glEnableClientState(GL_NORMAL_ARRAY);
+	glEnableClientState(GL_VERTEX_ARRAY);
+}
+
+/*
+void CGraphObj::drawTriangles(void *vertex, void *index, unsigned int numV, unsigned int numI) const
+{
+	GLfloat *vertexptr = (GLfloat *)vertex;
+	GLuint *indexptr = (GLuint *)index;
+
+	glBegin(GL_TRIANGLES);
+
+	for(unsigned int i=0; i < numI; i++)
+	{
+		GLuint index = *(indexptr + i);
+
+		GLfloat *offset = vertexptr + 8*index;
+
+		//GL_T2F_N3F_V3F array format:
+
+		if(tex_enabled)
+			glTexCoord2fv(offset);
+
+		glNormal3fv(offset + 2);
+		glVertex3fv(offset + 5);
+	}
+
+	glEnd();
+}
+*/
+
+void CGraphObj::drawArray(void *vertex, void *index, unsigned int numV, unsigned int numI) const
+{
+	CGLExtensions ext;
+	if(ext.hasCompiledVertexArray) // && numV < numI) //it was just a try
+	{
+		glInterleavedArrays(GL_T2F_N3F_V3F, 0, vertex);
+		ext.glLockArrays(0, numV); //is the num argument correct??
+		glDrawElements(GL_TRIANGLES, numI, GL_UNSIGNED_INT, index);
+		ext.glUnlockArrays();
+	}
+	else
+	{
+		glInterleavedArrays(GL_T2F_N3F_V3F, 0, vertex);
+		glDrawElements(GL_TRIANGLES, numI, GL_UNSIGNED_INT, index);
+	}
+}
+
+/*
+void CGraphObj::drawDispList(int lod) const
+{
+	switch(lod)
+	{
+		case 0: glCallList(m_ObjListRef); break;
+		case 1: glCallList(m_ObjList1); break;
+		case 2: glCallList(m_ObjList2); break;
+		case 3: glCallList(m_ObjList3); break;
+		case 4: glCallList(m_ObjList4); break;
+	}
+}
+
+void CGraphObj::generateDispLists(int lod_offset)
+{
 	int startlod = lod_offset + 1;
 	int stoplod = lod_offset + 4;
 	if(startlod < 1) startlod = 1;
@@ -85,141 +292,10 @@ bool CGraphObj::loadGLB(const CString &filename, const CParamList &list)
 			continue;
 		}
 
-		//the flag in the LOD byte
-		unsigned int lodflag = 0;
-		if(lod == 0)
-			{lodflag = 1;}
-		else
-			{lodflag = 1 << (lod-1);}
-
-
-		//Initial state
-		bool texture_isenabled = true;
-		if(lod == 0)
-		{
-			m_OpacityState = 0.0;
-		}
-		else
-		{
-			m_OpacityState = 1.0;
-			glBindTexture(GL_TEXTURE_2D, 0);
-		}
-		m_ColorState = CVector(1,1,1);
-		setMaterialColor();
-
-		//the primitives
-		for(unsigned int p=0; p < f.m_Primitives.size(); p++)
-		{
-			CGLBFile::SPrimitive &pr = f.m_Primitives[p];
-			
-			if(!(pr.LODs & lodflag))
-				continue; //not in this LOD
-
-			//set colors etc.
-			//TODO: texture replacement color
-			if(lod == 0)
-			{
-				m_OpacityState = pr.Reflectance;
-			}
-			else
-			{
-				m_ColorState = pr.ModulationColor;
-				m_OpacityState = pr.Opacity;
-
-				if(pr.Texture < 0)
-				{
-					texture_isenabled = false;
-					glDisable(GL_TEXTURE_2D);
-				}
-				else
-				{
-					CLODTexture *tex = (CLODTexture *)matarray[pr.Texture];
-					if(tex->getSizeX(lod) <=4 || tex->getSizeY(lod) <= 4)
-					{
-						if(texture_isenabled)
-						{
-							glDisable(GL_TEXTURE_2D);
-							texture_isenabled=false;
-						}
-					}
-					else
-					{
-						if(!texture_isenabled)
-						{
-							glEnable(GL_TEXTURE_2D);
-							texture_isenabled=true;
-							//m_ColorState = CVector(1,1,1); //TODO
-						}
-					}
-
-					if(texture_isenabled)
-						{tex->draw(lod);}
-					else //geen texture
-					{
-						m_ColorState = tex->getColor(); //TODO: replace by texture replacement color
-					}
-				}
-			}
-			setMaterialColor();
-			
-			glBegin(GL_TRIANGLES);
-
-			for(unsigned int i=0; i < pr.index.size(); i++)
-			{
-				CGLBFile::SVertex v = pr.vertex[pr.index[i]];
-				glNormal3f(v.nor.x, v.nor.y, v.nor.z);
-				if(texture_isenabled)
-					glTexCoord2f(v.tex.x, v.tex.y);
-				glVertex3f(v.pos.x, v.pos.y, v.pos.z);
-			}
-
-			glEnd();
-		}
-
-		if(!texture_isenabled)
-			glEnable(GL_TEXTURE_2D);
+		drawLod(lod);
 
 		glEndList();
 	}
-
-	return true;
 }
+*/
 
-void CGraphObj::unload()
-{
-	if(!isLoaded()) return;
-
-	CDataObject::unload();
-
-	//fprintf(stderr, "unload object %d\n", m_ObjListRef);
-	//fprintf(stderr, "unload object %d\n", m_ObjList1);
-	//fprintf(stderr, "unload object %d\n", m_ObjList2);
-	//fprintf(stderr, "unload object %d\n", m_ObjList3);
-	//fprintf(stderr, "unload object %d\n", m_ObjList4);
-
-	glDeleteLists(m_ObjListRef, 1);
-	glDeleteLists(m_ObjList1, 1);
-	glDeleteLists(m_ObjList2, 1);
-	glDeleteLists(m_ObjList3, 1);
-	glDeleteLists(m_ObjList4, 1);
-	m_ObjListRef = m_ObjList1 = m_ObjList2 = m_ObjList3 = m_ObjList4 = 0;
-}
-
-void CGraphObj::draw(int lod) const
-{
-	//TODO: make this code very fast (it's the main drawing routine)
-	switch(lod)
-	{
-		case 0: glCallList(m_ObjListRef); break;
-		case 1: glCallList(m_ObjList1); break;
-		case 2: glCallList(m_ObjList2); break;
-		case 3: glCallList(m_ObjList3); break;
-		case 4: glCallList(m_ObjList4); break;
-	}
-}
-
-void CGraphObj::setMaterialColor()
-{
-	float kleur[] = {m_ColorState.x, m_ColorState.y, m_ColorState.z, m_OpacityState};
-	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, kleur);
-}

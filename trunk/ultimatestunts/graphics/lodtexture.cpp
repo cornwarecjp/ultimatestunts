@@ -195,22 +195,42 @@ int CLODTexture::getSizeY(int i) const
 
 void CLODTexture::draw(int lod) const
 {
-  if (getSizeX(lod) <= 4 || getSizeY(lod) <= 4)
-    {printf("   Error: trying to draw a too small texture:\n"
+	if (getSizeX(lod) <= 4 || getSizeY(lod) <= 4)
+		{printf("   Error: trying to draw a too small texture:\n"
 		"   lod=%d, x=%d, y=%d\n", lod, getSizeX(lod), getSizeY(lod)); return;}
 
-  switch(lod)
-  {
-    case 1:
-      glBindTexture(GL_TEXTURE_2D, m_Texture );
-      break;
-    case 2:
-      glBindTexture(GL_TEXTURE_2D, m_Texture2);
-      break;
-    case 3:
-      glBindTexture(GL_TEXTURE_2D, m_Texture3);
-      break;
-    case 4:
-      glBindTexture(GL_TEXTURE_2D, m_Texture4);
-  }
+	switch(lod)
+	{
+	case 1:
+		glBindTexture(GL_TEXTURE_2D, m_Texture );
+		break;
+	case 2:
+		glBindTexture(GL_TEXTURE_2D, m_Texture2);
+		break;
+	case 3:
+		glBindTexture(GL_TEXTURE_2D, m_Texture3);
+		break;
+	case 4:
+		glBindTexture(GL_TEXTURE_2D, m_Texture4);
+	}
+}
+
+unsigned int CLODTexture::getTextureID(int lod) const
+{
+	switch(lod)
+	{
+	case 1:
+		return m_Texture;
+		break;
+	case 2:
+		return m_Texture2;
+		break;
+	case 3:
+		return m_Texture3;
+		break;
+	case 4:
+		return m_Texture4;
+	}
+
+	return 0;
 }

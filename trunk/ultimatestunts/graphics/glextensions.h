@@ -1,8 +1,8 @@
 /***************************************************************************
-                          lodtexture.h  -  Texture with multiple Levels Of Detail
+                          glextensions.h  -  Interface to various openGL extensions
                              -------------------
-    begin                : do okt 28 2004
-    copyright            : (C) 2004 by CJP
+    begin                : do feb 3 2005
+    copyright            : (C) 2005 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
 
@@ -15,37 +15,26 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef LODTEXTURE_H
-#define LODTEXTURE_H
+#ifndef GLEXTENSIONS_H
+#define GLEXTENSIONS_H
 
-#include "texture.h"
+#include <GL/gl.h>
+#include <GL/glext.h>
 
 /**
   *@author CJP
   */
 
-class CLODTexture : public CTexture  {
-public: 
-	CLODTexture(CDataManager *manager);
-	virtual ~CLODTexture();
+class CGLExtensions
+{
+public:
+	CGLExtensions();
+	~CGLExtensions();
 
-	virtual void unload();
-
-	int getSizeX(int i) const;
-	int getSizeY(int i) const;
-	void draw(int lod) const;
-
-	unsigned int getTextureID(int lod) const; //only for low-level hacking to make things faster
-protected:
-	unsigned int m_Texture2;
-	unsigned int m_Texture3;
-	unsigned int m_Texture4;
-
-	int sizex2,sizey2,
-			sizex3,sizey3,
-			sizex4,sizey4;
-
-	virtual RGBImageRec *loadFromImage(RGBImageRec *in_image, int xs, int ys);
+	//GL_EXT_compiled_vertex_array
+	static bool hasCompiledVertexArray;
+	static PFNGLLOCKARRAYSEXTPROC glLockArrays;
+	static PFNGLUNLOCKARRAYSEXTPROC glUnlockArrays;
 };
 
 #endif

@@ -86,6 +86,8 @@ CRenderer::CRenderer(const CWinSystem *winsys)
 
 	m_MovingObjectLOD = theMainConfig->getValue("graphics", "movingobjectlod").toInt();
 
+	m_TrackDisplayList = theMainConfig->getValue("graphics", "trackdisplaylist") == "true";
+
 	//Next: use these settings
 	if(m_ZBuffer)
 		{glEnable(GL_DEPTH_TEST);}

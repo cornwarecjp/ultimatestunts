@@ -54,6 +54,8 @@ protected:
 	bool m_UpdRef, m_UpdRefAllSides, m_UpdRefAllObjs;
 	int m_ReflectionSize;
 	bool m_ReflectionDrawMovingObjects;
+
+	bool m_TrackDisplayList;
 };
 
 #endif
