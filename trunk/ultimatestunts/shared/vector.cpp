@@ -14,6 +14,8 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
+#include <math.h>
+
 #include "vector.h"
 #include "matrix.h"
 
