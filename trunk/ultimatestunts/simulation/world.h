@@ -74,6 +74,8 @@ public:
 	CString getBackgroundFilename() const
 		{return m_BackgroundFilename;}
 
+	//debug
+	bool printDebug;
 protected:
 	CMaterial **getMaterialSubset(CString indices);
 

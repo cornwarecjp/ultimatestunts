@@ -26,7 +26,7 @@
 #define M_PI 3.1415926536
 #endif
 
-#define g 9.81
+#define g 1.68 //9.81
 
 CPhysics::CPhysics(CWorld *w) : CSimulation(w)
 {}

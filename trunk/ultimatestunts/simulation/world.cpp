@@ -23,6 +23,7 @@
 CWorld::CWorld()
 {
 	m_CollData = new CCollisionData(this);
+	printDebug = false;
 }
 
 CWorld::~CWorld(){

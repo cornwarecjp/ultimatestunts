@@ -113,16 +113,23 @@ void CMatrix::setElement(int i, int j, float e)
 	*(m_M + 4*i + j) = e;
 }
 
+void  CMatrix::rotZ ( float hoek)
+{
+	setElement(0,0,cos(hoek));	setElement(1,0,-sin(hoek));	setElement(2,0,0.0);
+	setElement(0,1,sin(hoek));	setElement(1,1,cos(hoek));	setElement(2,1,0.0);
+	setElement(0,2,0.0);		setElement(1,2,0.0);		setElement(2,2,1.0);
+}
+
 void  CMatrix::rotY ( float hoek)
 {
 	setElement(0,0,cos(hoek));	setElement(1,0,0.0);	setElement(2,0,-sin(hoek));
-	setElement(0,1,0.0);				setElement(1,1,1.0);	setElement(2,1,0.0);
+	setElement(0,1,0.0);		setElement(1,1,1.0);	setElement(2,1,0.0);
 	setElement(0,2,sin(hoek));	setElement(1,2,0.0);	setElement(2,2,cos(hoek));
 }
 
 void  CMatrix::rotX ( float hoek)
 {
-	setElement(0,0,1.0);	setElement(0,1,0.0);				setElement(0,2,0.0);
+	setElement(0,0,1.0);	setElement(0,1,0.0);		setElement(0,2,0.0);
 	setElement(1,0,0.0);	setElement(1,1,cos(hoek));	setElement(1,2,-sin(hoek));
 	setElement(2,0,0.0);	setElement(2,1,sin(hoek));	setElement(2,2,cos(hoek));
 }

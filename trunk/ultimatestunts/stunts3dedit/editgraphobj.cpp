@@ -44,6 +44,7 @@ bool CEditGraphObj::loadFromFile(CString filename, CTexture **matarray)
 		state.tex = CVector(0,0,0);
 	int texid = -1;
 	CString name = "default-name";
+	CString LODs = "1234s";
 
 	CFile f(filename);
 
@@ -59,6 +60,8 @@ bool CEditGraphObj::loadFromFile(CString filename, CTexture **matarray)
 			CString rhs = line.mid(sp+1, line.length());
 			if(lhs == "#Tedit-name")
 				name = rhs;
+			if(lhs == "Lod")
+				LODs = rhs;
 			if(lhs == "Texture")
 				texid =rhs.toInt();
 			if(lhs == "Color")
@@ -79,6 +82,7 @@ bool CEditGraphObj::loadFromFile(CString filename, CTexture **matarray)
 				pr.m_Name = name;
 				pr.m_Texture = texid;
 				pr.m_Type = GL_QUADS;
+				pr.m_LODs = LODs;
 				m_Primitives.push_back(pr);
 			}
 			if(lhs == "Triangles")
@@ -87,6 +91,7 @@ bool CEditGraphObj::loadFromFile(CString filename, CTexture **matarray)
 				pr.m_Name = name;
 				pr.m_Texture = texid;
 				pr.m_Type = GL_TRIANGLES;
+				pr.m_LODs = LODs;
 				m_Primitives.push_back(pr);
 			}
 			if(lhs == "Trianglestrip")
@@ -95,6 +100,7 @@ bool CEditGraphObj::loadFromFile(CString filename, CTexture **matarray)
 				pr.m_Name = name;
 				pr.m_Texture = texid;
 				pr.m_Type = GL_TRIANGLE_STRIP;
+				pr.m_LODs = LODs;
 				m_Primitives.push_back(pr);
 			}
 			if(lhs == "Quadstrip")
@@ -103,6 +109,7 @@ bool CEditGraphObj::loadFromFile(CString filename, CTexture **matarray)
 				pr.m_Name = name;
 				pr.m_Texture = texid;
 				pr.m_Type = GL_QUAD_STRIP;
+				pr.m_LODs = LODs;
 				m_Primitives.push_back(pr);
 			}
 			if(lhs == "Polygon")
@@ -111,6 +118,7 @@ bool CEditGraphObj::loadFromFile(CString filename, CTexture **matarray)
 				pr.m_Name = name;
 				pr.m_Texture = texid;
 				pr.m_Type = GL_POLYGON;
+				pr.m_LODs = LODs;
 				m_Primitives.push_back(pr);
 			}
 
@@ -130,6 +138,7 @@ bool CEditGraphObj::loadFromFile(CString filename, CTexture **matarray)
 				pr.m_Name = name;
 				pr.m_Texture = texid;
 				pr.m_Type = GL_QUADS;
+				pr.m_LODs = LODs;
 				m_Primitives.push_back(pr);
 			}
 			if(lhs == "Triangles")
@@ -138,6 +147,7 @@ bool CEditGraphObj::loadFromFile(CString filename, CTexture **matarray)
 				pr.m_Name = name;
 				pr.m_Texture = texid;
 				pr.m_Type = GL_TRIANGLES;
+				pr.m_LODs = LODs;
 				m_Primitives.push_back(pr);
 			}
 			if(lhs == "Trianglestrip")
@@ -146,6 +156,7 @@ bool CEditGraphObj::loadFromFile(CString filename, CTexture **matarray)
 				pr.m_Name = name;
 				pr.m_Texture = texid;
 				pr.m_Type = GL_TRIANGLE_STRIP;
+				pr.m_LODs = LODs;
 				m_Primitives.push_back(pr);
 			}
 			if(lhs == "Quadstrip")
@@ -154,6 +165,7 @@ bool CEditGraphObj::loadFromFile(CString filename, CTexture **matarray)
 				pr.m_Name = name;
 				pr.m_Texture = texid;
 				pr.m_Type = GL_QUAD_STRIP;
+				pr.m_LODs = LODs;
 				m_Primitives.push_back(pr);
 			}
 			if(lhs == "Polygon")
@@ -162,6 +174,7 @@ bool CEditGraphObj::loadFromFile(CString filename, CTexture **matarray)
 				pr.m_Name = name;
 				pr.m_Texture = texid;
 				pr.m_Type = GL_POLYGON;
+				pr.m_LODs = LODs;
 				m_Primitives.push_back(pr);
 			}
 
@@ -194,6 +207,7 @@ bool CEditGraphObj::import_raw(CString filename, CTexture **matarray)
 				pr.m_Name = line;
 				pr.m_Texture = -1;
 				pr.m_Type = GL_TRIANGLES;
+				pr.m_LODs = "1234s";
 				m_Primitives.push_back(pr);
 		}
 		else
@@ -244,6 +258,7 @@ void CEditGraphObj::saveToFile(CString filename)
 		state.tex = CVector(0,0,0);
 	int texid = -1;
 	CString name = "default-name";
+	CString LODs = "1234s";
 
 	for(unsigned int i=0; i<m_Primitives.size(); i++)
 	{
@@ -255,6 +270,11 @@ void CEditGraphObj::saveToFile(CString filename)
 		{
 			name = pr.m_Name;
 			f.writel("#Tedit-name " + name);
+		}
+		if(!(pr.m_LODs == LODs))
+		{
+			LODs = pr.m_LODs;
+			f.writel("Lod " + LODs);
 		}
 		if(!(pr.m_Texture == texid))
 		{

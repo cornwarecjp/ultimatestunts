@@ -143,6 +143,8 @@ bool CCollisionModel::loadFromFile(CFile *f, CString subset, CMaterial **matarra
 		}
 	}
 
+	//printf("Loaded %d faces from %s\n", m_Faces.size(), f->getName().c_str());
+
 	determineOBVs();
 	determinePlaneEquations();
 

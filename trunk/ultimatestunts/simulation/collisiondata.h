@@ -73,6 +73,7 @@ protected:
 	//Object <-> tile collisions
 	void ObjTileTest(int nobj, int xtile, int ztile, int htile);
 	CVector tileRotate(CVector v, int rot);
+	void cullFace(CCollisionFace &theFace, const CCollisionFace &plane);
 
 	//Object <-> track bound collisions
 	void calculateTrackBounds();

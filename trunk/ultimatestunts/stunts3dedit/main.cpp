@@ -21,6 +21,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <GL/gl.h>
 
 //Key configuration:
 enum eKeyconf {
@@ -31,7 +32,10 @@ enum eKeyconf {
 	ePrimitive = 'p',
 	eVertex = 'v',
 
+	eNew = 'n',
 	eChange = 'c',
+	eChangePrimitive = 'C',
+	eDuplicatePrimitive = 'd',
 	eRotate = 'r',
 	eScale = 's',
 	eMirror = 'm',
@@ -70,9 +74,17 @@ int curr_primitive = 0, curr_vertex = 0;
 CString getInput(CString question="")
 {
 	printf("%s", question.c_str());
+	CString out;
 	char input[80];
-	scanf("%s", input);
-	return input;
+	while(true)
+	{
+		scanf("%s", input);
+		out += input;
+		char c = getchar();
+		if(c == '\n') break;
+		out += c;
+	}
+	return out;
 }
 
 bool mainloop()
@@ -130,6 +142,45 @@ bool mainloop()
 		curr_vertex = getInput("Select vertex: ").toInt();
 	}
 
+	if(winsys->wasPressed(eNew))
+	{
+		if(getInput("Do you want to add a new vertex (y/n)? ") == "y")
+		{
+			CVertex vt;
+			vt.pos = getInput("Give position: ").toVector();
+			vt.nor = getInput("Give normal: ").toVector();
+			vt.col = getInput("Give color: ").toVector();
+			vt.tex = getInput("Give texcoord: ").toVector();
+			graphobj->m_Primitives[curr_primitive].m_Vertex.push_back(vt);
+		}
+		else if(getInput("Do you want to add a new primitive (y/n)? ") == "y")
+		{
+			CPrimitive p;
+			p.m_Name = getInput("Enter the name: ");
+			printf("Choose the type:\n"
+				"1: Triangles\n"
+				"2: Quads\n"
+				"3: Trianglestrip\n"
+				"4: Quadstrip\n"
+				"5: Polygon\n"
+			);
+			switch(getInput(": ").toInt())
+			{
+			case 1: p.m_Type = GL_TRIANGLES; break;
+			case 2: p.m_Type = GL_QUADS; break;
+			case 3: p.m_Type = GL_TRIANGLE_STRIP; break;
+			case 4: p.m_Type = GL_QUAD_STRIP; break;
+			case 5: p.m_Type = GL_POLYGON; break;
+			}
+			p.m_Texture = getInput("Which texture should be attached? ").toInt();
+			p.m_LODs = getInput("In which LODs should it be visible? ");
+			graphobj->m_Primitives.push_back(p);
+			curr_primitive = graphobj->m_Primitives.size()-1;
+		}
+
+		graphobj->render();
+	}
+
 	if(winsys->wasPressed(eChange))
 	{
 		CVertex &vt = graphobj->m_Primitives[curr_primitive].m_Vertex[curr_vertex];
@@ -157,17 +208,93 @@ bool mainloop()
 		graphobj->render();
 	}
 
+	if(winsys->wasPressed(eChangePrimitive))
+	{
+		CPrimitive &p = graphobj->m_Primitives[curr_primitive];
+		printf("Name: %s\n", p.m_Name.c_str());
+		printf("Type: ");
+		switch(p.m_Type)
+		{
+		case GL_TRIANGLES: printf("Triangles\n"); break;
+		case GL_QUADS: printf("Quads\n"); break;
+		case GL_TRIANGLE_STRIP: printf("Trianglestrip\n"); break;
+		case GL_QUAD_STRIP: printf("Quadstrip\n"); break;
+		case GL_POLYGON: printf("Polygon\n"); break;
+		}
+		printf("Texture: %d\n", p.m_Texture);
+		printf("LODs: %s\n", p.m_LODs.c_str());
+
+		CString answ = getInput("Enter new name: ");
+		if(answ != "-")
+			p.m_Name = answ;
+
+		printf("Choose the type:\n"
+			"1: Triangles\n"
+			"2: Quads\n"
+			"3: Trianglestrip\n"
+			"4: Quadstrip\n"
+			"5: Polygon\n"
+		);
+		answ = getInput(": ");
+		if(answ != "-")
+			switch(answ.toInt())
+			{
+			case 1: p.m_Type = GL_TRIANGLES; break;
+			case 2: p.m_Type = GL_QUADS; break;
+			case 3: p.m_Type = GL_TRIANGLE_STRIP; break;
+			case 4: p.m_Type = GL_QUAD_STRIP; break;
+			case 5: p.m_Type = GL_POLYGON; break;
+			}
+
+		answ = getInput("Enter new texture: ");
+		if(answ != "-")
+			p.m_Texture = answ.toInt();
+
+		answ = getInput("Enter new LODs: ");
+		if(answ != "-")
+			p.m_LODs = answ;
+
+		graphobj->render();
+	}
+
+	if(winsys->wasPressed(eDuplicatePrimitive))
+	{
+		CPrimitive p = graphobj->m_Primitives[curr_primitive];
+		graphobj->m_Primitives.push_back(p);
+		curr_primitive =graphobj->m_Primitives.size()-1;
+		graphobj->render();
+	}
+
 	if(winsys->wasPressed(eRotate))
 	{
 		bool scene = getInput("Do you want to rotate the entire scene? ") == "y";
-		CVector x = getInput("Enter the new position of the x-axis: ").toVector();
-		CVector y = getInput("Enter the new position of the y-axis: ").toVector();
-		CVector z = getInput("Enter the new position of the z-axis: ").toVector();
 
 		CMatrix m;
-		m.setElement(0,0, x.x); m.setElement(0,1, y.x); m.setElement(0,2, z.x);
-		m.setElement(1,0, x.y); m.setElement(1,1, y.y); m.setElement(1,2, z.y);
-		m.setElement(2,0, x.z); m.setElement(2,1, y.z); m.setElement(2,2, z.z);
+		if(getInput("Do you want to rotate around the x-axis (y/n)? ")=="y")
+		{
+			float angle = getInput("Enter the angle in degrees: ").toFloat() * (3.1415926536/180.0);
+			m.rotX(angle);
+		}
+		else if(getInput("Do you want to rotate around the y-axis (y/n)? ")=="y")
+		{
+			float angle = getInput("Enter the angle in degrees: ").toFloat() * (3.1415926536/180.0);
+			m.rotY(angle);
+		}
+		else if(getInput("Do you want to rotate around the z-axis (y/n)? ")=="y")
+		{
+			float angle = getInput("Enter the angle in degrees: ").toFloat() * (3.1415926536/180.0);
+			m.rotZ(angle);
+		}
+		else
+		{
+			CVector x = getInput("Enter the new position of the x-axis: ").toVector();
+			CVector y = getInput("Enter the new position of the y-axis: ").toVector();
+			CVector z = getInput("Enter the new position of the z-axis: ").toVector();
+
+			m.setElement(0,0, x.x); m.setElement(0,1, y.x); m.setElement(0,2, z.x);
+			m.setElement(1,0, x.y); m.setElement(1,1, y.y); m.setElement(1,2, z.y);
+			m.setElement(2,0, x.z); m.setElement(2,1, y.z); m.setElement(2,2, z.z);
+		}
 
 		if(scene)
 		{
@@ -179,6 +306,7 @@ bool mainloop()
 					CVertex &vt = pr.m_Vertex[j];
 					vt.pos *= m;
 					vt.nor *= m;
+					vt.nor.normalise();
 				}
 			}
 		}
@@ -190,6 +318,7 @@ bool mainloop()
 					CVertex &vt = pr.m_Vertex[j];
 					vt.pos *= m;
 					vt.nor *= m;
+					vt.nor.normalise();
 				}
 		}
 
@@ -198,9 +327,40 @@ bool mainloop()
 
 	if(winsys->wasPressed(eScale))
 	{
-		bool scene = getInput("Do you want to autoscale the entire scene? ") == "y";
+		bool scene = getInput("Do you want to autoscale the entire scene (y/n)? ") == "y";
+		bool cg = getInput("Do you want to scale around 1:the origin or 2:the CG? ") == "2";
 		float maxs = getInput("Enter new size: ").toFloat();
 
+		//determine center
+		CVector center = CVector(0,0,0);
+		if(cg)
+			if(scene)
+			{
+				int num = 0;
+				for(unsigned int i=0; i<graphobj->m_Primitives.size(); i++)
+				{
+					CPrimitive &pr = graphobj->m_Primitives[i];
+					for(unsigned int j=0; j<pr.m_Vertex.size(); j++)
+					{
+						center += pr.m_Vertex[j].pos;
+						num++;
+					}
+				}
+				center /= num;
+			}
+			else
+			{
+				int num = 0;
+				CPrimitive &pr = graphobj->m_Primitives[curr_primitive];
+				for(unsigned int j=0; j<pr.m_Vertex.size(); j++)
+				{
+					center += pr.m_Vertex[j].pos;
+					num++;
+				}
+				center /= num;
+			}
+
+		//determine scalefactor
 		float min = 1.0e10;
 		float max = -min;
 		if(scene)
@@ -210,7 +370,7 @@ bool mainloop()
 				CPrimitive &pr = graphobj->m_Primitives[i];
 				for(unsigned int j=0; j<pr.m_Vertex.size(); j++)
 				{
-					CVector &p = pr.m_Vertex[j].pos;
+					CVector p = pr.m_Vertex[j].pos - center;
 					if(p.x > max) max = p.x;
 					if(p.y > max) max = p.y;
 					if(p.z > max) max = p.z;
@@ -225,7 +385,7 @@ bool mainloop()
 			CPrimitive &pr = graphobj->m_Primitives[curr_primitive];
 			for(unsigned int j=0; j<pr.m_Vertex.size(); j++)
 			{
-				CVector &p = pr.m_Vertex[j].pos;
+				CVector p = pr.m_Vertex[j].pos - center;
 				if(p.x > max) max = p.x;
 				if(p.y > max) max = p.y;
 				if(p.z > max) max = p.z;
@@ -238,20 +398,21 @@ bool mainloop()
 		float sf = maxs / (max-min);
 		printf("Scaling with scalefactor %f\n", sf);
 
+		//Apply scaling
 		if(scene)
 		{
 			for(unsigned int i=0; i<graphobj->m_Primitives.size(); i++)
 			{
 				CPrimitive &pr = graphobj->m_Primitives[i];
 				for(unsigned int j=0; j<pr.m_Vertex.size(); j++)
-					pr.m_Vertex[j].pos *= sf;
+					pr.m_Vertex[j].pos = center + (pr.m_Vertex[j].pos-center)*sf;
 			}
 		}
 		else
 		{
 				CPrimitive &pr = graphobj->m_Primitives[curr_primitive];
 				for(unsigned int j=0; j<pr.m_Vertex.size(); j++)
-					pr.m_Vertex[j].pos *= sf;
+					pr.m_Vertex[j].pos = center + (pr.m_Vertex[j].pos-center)*sf;
 		}
 
 		graphobj->render();
@@ -339,7 +500,10 @@ bool mainloop()
 			"%c: Save\n"
 			"%c: Primitive\n"
 			"%c: Vertex\n"
+			"%c: New primitive or vertex\n"
 			"%c: Change\n"
+			"%c: Change primitive\n"
+			"%c: Duplicate primitive\n"
 			"%c: Rotate\n"
 			"%c: Scale\n"
 			"%c: Mirror\n"
@@ -347,8 +511,10 @@ bool mainloop()
 			"%c: Rotate Texture\n"
 			"%c: Translate Texture\n"
 			"%c: Help\n",
-			eLoad, eSave, ePrimitive, eVertex, eChange, eRotate, eScale,
-			eMirror, eTranslate, eRotateTexture, eTranslateTexture, eHelp
+			eLoad, eSave, ePrimitive, eVertex, eNew, eChange,
+			eChangePrimitive, eDuplicatePrimitive, eRotate, eScale,
+			eMirror, eTranslate, eRotateTexture, eTranslateTexture,
+			eHelp
 		);
 
 	if(winsys->wasPressed(SDLK_END))

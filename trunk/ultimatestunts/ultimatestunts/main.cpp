@@ -102,6 +102,9 @@ bool mainloop()
 	//Next song:
 	if(winsys->wasPressed('n')) soundsystem->playNextSong();
 
+	//Debug messages
+	world->printDebug = winsys->getKeyState()['d'];
+
 	for(unsigned int i=0; i<players.size(); i++)
 		players[i]->update(); //Makes moving decisions
 

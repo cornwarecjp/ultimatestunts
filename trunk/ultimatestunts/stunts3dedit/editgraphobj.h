@@ -36,7 +36,7 @@ public:
 class CPrimitive {
 public:
 	int m_Type, m_Texture;
-	CString m_Name;
+	CString m_Name, m_LODs;
 	vector<CVertex> m_Vertex;
 };
 

@@ -35,8 +35,9 @@ class CMatrix
 		CMatrix inverse() const;
 
 		//Special ways to create the right rotation matrix:
-		void  rotY ( float hoek);
 		void  rotX ( float hoek);
+		void  rotY ( float hoek);
+		void  rotZ ( float hoek);
 		void targetZ(CVector d, bool normalize=true);
 
 		float Element(int i, int j) const;
