@@ -22,6 +22,8 @@
 #include <SDL/SDL.h>
 #include "usmacros.h"
 
+using namespace std;
+
 class CBinBuffer : public vector<Uint8>
 {
   public:

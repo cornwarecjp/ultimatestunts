@@ -121,7 +121,7 @@ CString & CString::toLower()
   return *this;
 }
 
-CString & CString::subStr(const int unsigned pos = 0, const int n = -1) const
+CString & CString::subStr(const int unsigned pos, const int n) const
 {
  CString *res = new CString("");
  if (pos <= this->length()) {
