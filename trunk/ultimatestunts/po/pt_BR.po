@@ -1,0 +1,195 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR CJP
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR Marcelo De Nardin <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Ultimate Stunts 0.5.3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2005-02-03 14:11+0100\n"
+"PO-Revision-Date: 2005-02-03 14:11+0100\n"
+"Last-Translator: Marcelo De Nardin <EMAIL@ADDRESS>\n"
+"Language-Team: Brasilian Portuguese <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-1\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: ultimatestunts/gamegui.cpp:65
+msgid "Main menu"
+msgstr "Menu Principal"
+
+#: ultimatestunts/gamegui.cpp:76
+msgid "Select the game type:"
+msgstr "Selecione o tipo de jogo:"
+
+#: ultimatestunts/gamegui.cpp:87
+msgid "Select a track:"
+msgstr "Selecione uma pista:"
+
+#: ultimatestunts/gamegui.cpp:98
+msgid "Select a car:"
+msgstr "Selecione um carro:"
+
+#: ultimatestunts/gamegui.cpp:109
+msgid "Loading"
+msgstr "Carregando"
+
+#: ultimatestunts/gamegui.cpp:118
+msgid "please wait..."
+msgstr "por favor aguarde..."
+
+#: ultimatestunts/gamegui.cpp:121
+msgid "Hiscore (in future versions)"
+msgstr "Recordes (em versões futuras)"
+
+#: ultimatestunts/gamegui.cpp:152
+msgid "Start playing"
+msgstr "Comece a jogar"
+
+#: ultimatestunts/gamegui.cpp:153
+msgid "Set the game type"
+msgstr "Selecione um tipo de jogo"
+
+#: ultimatestunts/gamegui.cpp:154
+msgid "Select the track"
+msgstr "Selecione uma pista"
+
+#: ultimatestunts/gamegui.cpp:155
+msgid "Select the players"
+msgstr "Selecione os jogadores"
+
+#: ultimatestunts/gamegui.cpp:156
+msgid "Options"
+msgstr "Opções"
+
+#: ultimatestunts/gamegui.cpp:157
+msgid "Exit"
+msgstr "Saída"
+
+#: ultimatestunts/gamegui.cpp:161
+msgid " [Local Game]"
+msgstr " [Jogo Local]"
+
+#: ultimatestunts/gamegui.cpp:166
+#, c-format
+msgid " [Server started on port %d]"
+msgstr " [Servidor iniciado na porta %d]"
+
+#: ultimatestunts/gamegui.cpp:171
+#, c-format
+msgid " [Joining game at %s:%d]"
+msgstr " [Juntando-se ao jogo em %s:%d]"
+
+#: ultimatestunts/gamegui.cpp:172
+msgid " [server will choose one]"
+msgstr " [O servidor escolherá um]"
+
+#: ultimatestunts/gamegui.cpp:177
+#, c-format
+msgid " [%d player selected]"
+msgid_plural " [%d players selected]"
+msgstr[0] " [%d jogador selecionado]"
+msgstr[1] " [%d jogadores selecionados]"
+
+#: ultimatestunts/gamegui.cpp:184
+msgid "Local game"
+msgstr "Jogo local"
+
+#: ultimatestunts/gamegui.cpp:185
+msgid "Join an existing network game"
+msgstr "Juntar-se a um jogo de rede existente"
+
+#: ultimatestunts/gamegui.cpp:186
+msgid "Start a new network game"
+msgstr "Iniciar um novo jogo de rede"
+
+#: ultimatestunts/gamegui.cpp:199
+msgid "Play again"
+msgstr "Jogar novamente"
+
+#: ultimatestunts/gamegui.cpp:200
+msgid "Return to main menu"
+msgstr "Retornar ao menu principal"
+
+#: ultimatestunts/gamegui.cpp:246
+msgid "The track must be selected on the server"
+msgstr "A pista deve ser selecionada no servidor"
+
+#: ultimatestunts/gamegui.cpp:253
+msgid "Please edit ultimatestunts.conf manually"
+msgstr "Por favor, edite ultimatestunts.conf manualmente"
+
+#: ultimatestunts/gamegui.cpp:276
+msgid "Enter the host name:"
+msgstr "Entre com o nome do host:"
+
+#: ultimatestunts/gamegui.cpp:277 ultimatestunts/gamegui.cpp:282
+msgid "Enter the port number:"
+msgstr "Entre com o número da porta:"
+
+#: ultimatestunts/gamegui.cpp:283
+msgid "Maximum number of players:"
+msgstr "Número máximo de jogadores:"
+
+#: ultimatestunts/gamegui.cpp:342
+msgid "Player setup"
+msgstr "Configuração de Jogador"
+
+#: ultimatestunts/gamegui.cpp:347
+msgid "Enter your name:"
+msgstr "Escreva com seu nome:"
+
+#: ultimatestunts/gamegui.cpp:349 ultimatestunts/gamegui.cpp:360
+#, c-format
+msgid "Select a car for %s"
+msgstr "Selecione um carro para %s"
+
+#: ultimatestunts/gamegui.cpp:356
+msgid "Do you want to add another player?"
+msgstr "Você deseja adicionar um novo jogador?"
+
+#: ultimatestunts/gamegui.cpp:358
+msgid "Enter the name:"
+msgstr "Escreva o nome:"
+
+#: ultimatestunts/gamegui.cpp:364
+msgid "Is it an AI player?"
+msgstr "Ele é um jogador de IA?"
+
+#: ultimatestunts/gamegui.cpp:420
+#, c-format
+msgid "Player %s was refused"
+msgstr "Jogador %s foi recusado"
+
+#: ultimatestunts/uscore.cpp:87
+#, c-format
+msgid "Frame rate: %.1f FPS"
+msgstr "Taxa de quadros por segundo: %.1f FPS"
+
+#: ultimatestunts/uscore.cpp:88
+#, c-format
+msgid "Top speed in this session: %.1f km/h"
+msgstr "aior velocidade nesta sessão: %.1f km/h"
+
+#: ultimatestunts/uscore.cpp:101
+#, c-format
+msgid "Car %d velocity %.1f km/h; gear %d; %.1f RPM"
+msgstr "Carro %d velocidade %.1f km/h; marcha %d; %.1f RPM"
+
+#: graphics/messagebox.cpp:115
+msgid "OK"
+msgstr "OK"
+
+#: graphics/messagebox.cpp:128
+msgid "Yes"
+msgstr "Sim"
+
+#: graphics/messagebox.cpp:138
+msgid "No"
+msgstr "Não"
+
+#: shared/hello.cpp:31
+msgid "Hello, world!\n"
+msgstr "Olá, mundo!\n"
