@@ -42,7 +42,7 @@ public:
 
 	virtual bool update(); //true = continue false = leave
 
-	virtual void startGame();
+	virtual void readyAndLoad();
 
 protected:
 	CGameWinSystem *m_WinSys;

@@ -20,6 +20,7 @@
 
 #include "gamewinsystem.h"
 #include "gui.h"
+#include "guipage.h"
 
 #include "uscore.h"
 #include "player.h"
@@ -55,7 +56,6 @@ protected:
 	} m_GameType;
 	CString m_HostName;
 	int m_HostPort;
-	int m_ServerPort;
 	CString m_TrackFile;
 
 	struct SPlayerDescr
@@ -66,8 +66,9 @@ protected:
 	};
 	vector<SPlayerDescr> m_PlayerDescr;
 
+	void updateMenuTexts();
 
-	//The menu's
+	//The menu starters:
 	CString viewMainMenu();
 		CString playGame();
 			void load();
@@ -77,6 +78,14 @@ protected:
 		CString viewPlayerMenu();
 			void addPlayer(CString name, bool human, CString carfile);
 		CString viewHiscore();
+
+	//The menu pages:
+	CGUIPage m_MainPage;
+	CGUIPage m_GameTypePage;
+	CGUIPage m_TrackPage;
+	CGUIPage m_PlayerPage;
+	CGUIPage m_LoadingPage;
+	CGUIPage m_HiscorePage;
 };
 
 #endif

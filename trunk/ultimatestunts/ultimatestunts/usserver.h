@@ -27,10 +27,17 @@
 
 class CUSServer {
 public: 
-	CUSServer(int port, CString trackfile="tracks/default.track");
+	CUSServer(int port, int remoteplayers);
 	~CUSServer();
 
+	void addai(const CString &name, const CString &car);
+	void set(const CString &var, const CString &val);
+	void start();
+	void stop();
 protected:
+	void giveCmd(const CString &cmd);
+
+private:
 	FILE *m_ServerInput;
 };
 

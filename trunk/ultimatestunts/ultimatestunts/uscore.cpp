@@ -59,9 +59,9 @@ bool CUSCore::addCamera(unsigned int objid)
 	return true;
 }
 
-void CUSCore::startGame()
+void CUSCore::readyAndLoad()
 {
-	CGameCore::startGame();
+	CGameCore::readyAndLoad();
 
 	printf("Setting cameras\n");
 	m_Renderer->setCameras(m_Cameras, m_NumCameras);
@@ -120,7 +120,7 @@ bool CUSCore::update()
 	m_Renderer->update();
 	m_Console->draw();
 	m_SoundSystem->update();
-	
+
 	return retval;
 }
 
