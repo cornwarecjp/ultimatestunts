@@ -1,7 +1,7 @@
 /***************************************************************************
-                          gamecamera.h  -  The camera being used in the game
+                          sound.h  -  The basic sound system
                              -------------------
-    begin                : ma feb 3 2003
+    begin                : di feb 25 2003
     copyright            : (C) 2003 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
@@ -15,46 +15,33 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GAMECAMERA_H
-#define GAMECAMERA_H
+#ifndef SOUND_H
+#define SOUND_H
 
-#include "camera.h"
-#include "world.h"
-#include "timer.h"
+#include "gamecamera.h"
+#include "lconfig.h"
 
 /**
   *@author CJP
   */
 
-class CGameCamera : public CCamera  {
+class CSound {
 public: 
-	enum eCameraMode {
-		In=1,
-		Tracking,
-		UserDefined,
-		Top,
-		Television
-	};
+	CSound(const CLConfig &conf, const CWorld *world);
+	~CSound();
 
-	CGameCamera(const CWorld *w);
-	virtual ~CGameCamera();
+	void setCamera(const CCamera *cam)
+		{m_Camera = (CGameCamera *)cam;}
 
-	void setCameraMode(eCameraMode mode);
-	void swithCameraMode();
-	void setTrackedObject(int id);
+	void update();
 
-	const CVector &getVelocity() const {return m_Velocity;}
-
-	virtual void update();
 protected:
-	CVector m_Velocity;
-	CTimer m_Timer;
-
-	eCameraMode m_Mode;
-	int m_Id;
+	const CGameCamera *m_Camera;
 	const CWorld *m_World;
 
-	bool m_Reached;
+#ifdef HAVE_LIBFMOD
+	int m_Driver;
+#endif
 };
 
 #endif

@@ -97,7 +97,7 @@ dnl AC_CHECK_HEADER(linux/joystick.h, AC_DEFINE(LINUX_JOYSTICK_IS_PRESENT))
 dnl ------------------------
 dnl Check fmod audio library
 dnl ------------------------
-AC_CHECK_LIB(fmod, FSOUND_Close,soundlibs="-lfmod $soundlibs")
+AC_CHECK_LIB(fmod, FSOUND_Close,soundlibs="-lfmod $soundlibs";AC_DEFINE(HAVE_LIBFMOD))
 AC_CHECK_HEADER(fmod/fmod.h, AC_DEFINE(FMOD_HEADER))
 
 

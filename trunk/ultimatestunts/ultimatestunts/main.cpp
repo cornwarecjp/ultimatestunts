@@ -19,27 +19,34 @@
 #include <config.h>
 #endif
 
+//Standard includes
 #include <stdlib.h>
 #include <stdio.h>
 #include <vector>
 
+//Frequently used
 #include "cstring.h"
 #include "lconfig.h"
 
+//Simulation stuff
 #include "graphicworld.h"
 #include "simulation.h"
 #include "clientsim.h"
 #include "physics.h"
 
+//Player stuff
 #include "objectchoice.h"
-
 #include "aiplayercar.h"
 #include "humanplayer.h"
 
+//Graphics stuff
 #include "winsystem.h"
 #include "renderer.h"
 #include "gui.h"
 #include "gamecamera.h"
+
+//Sound stuff
+#include "sound.h"
 
 CGraphicWorld *world;
 
@@ -51,6 +58,8 @@ CWinSystem *winsys;
 CRenderer *renderer;
 CGUI *gui;
 CGameCamera *camera;
+
+CSound *soundsystem;
 
 bool mainloop()
 {
@@ -83,7 +92,7 @@ bool mainloop()
 
 	camera->update();
 	renderer->update();
-	//sound->update();
+	soundsystem->update();
 
 	return retval;
 }
@@ -130,7 +139,6 @@ int main(int argc, char *argv[])
 	printf("\nCreating a window\n");
 	winsys = new CWinSystem(conffile);
 
-	printf("\nCreating (graphic) world object\n");
 	world = new CGraphicWorld(conffile);
 
 	printf("\nSetting up the GUI:\n");
@@ -170,6 +178,10 @@ int main(int argc, char *argv[])
 	camera = new CGameCamera(world);
 	renderer->setCamera(camera);
 
+	printf("\nInitialising sound\n");
+	soundsystem = new CSound(conffile, world);
+	soundsystem->setCamera(camera);
+
 	while(!( gui->isPassed("playermenu") )); //waiting for input
 	int num_players = gui->getValue("playermenu", "number").toInt();
 	printf("\nNumber of players to be added: %d\n", num_players);
@@ -190,14 +202,14 @@ int main(int argc, char *argv[])
 	winsys->runLoop(mainloop, true); //true: swap buffers
 	printf("\nLeaving mainloop\n");
 
-	printf("\nDeleting simulation\n");
+	delete soundsystem;
+	delete renderer;
 	delete sim;
 
 	for(unsigned int i=0; i<players.size(); i++)
 		delete players[i];
 	players.clear();
 
-	printf("\nDeleting world\n");
 	delete world;
 
 	printf("\nProgram finished succesfully\n");

@@ -1,7 +1,7 @@
 /***************************************************************************
-                          gamecamera.h  -  The camera being used in the game
+                          sndsample.h  -  description
                              -------------------
-    begin                : ma feb 3 2003
+    begin                : di feb 25 2003
     copyright            : (C) 2003 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
@@ -15,46 +15,33 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GAMECAMERA_H
-#define GAMECAMERA_H
+#ifndef SNDSAMPLE_H
+#define SNDSAMPLE_H
 
-#include "camera.h"
-#include "world.h"
-#include "timer.h"
 
 /**
   *@author CJP
   */
 
-class CGameCamera : public CCamera  {
-public: 
-	enum eCameraMode {
-		In=1,
-		Tracking,
-		UserDefined,
-		Top,
-		Television
-	};
+#define SAMPLE_3D 1
+#define SAMPLE_2D 2
 
-	CGameCamera(const CWorld *w);
-	virtual ~CGameCamera();
+#include "cstring.h"
 
-	void setCameraMode(eCameraMode mode);
-	void swithCameraMode();
-	void setTrackedObject(int id);
+class CSndSample
+{
+  public:
+    CSndSample(int t);
+    ~CSndSample();
 
-	const CVector &getVelocity() const {return m_Velocity;}
+    int loadFromFile(CString filename);
 
-	virtual void update();
-protected:
-	CVector m_Velocity;
-	CTimer m_Timer;
-
-	eCameraMode m_Mode;
-	int m_Id;
-	const CWorld *m_World;
-
-	bool m_Reached;
+    int attachToChannel(int c);
+  protected:
+#ifdef HAVE_LIBFMOD
+    void *m_Sample;
+    int m_Type;
+#endif
 };
 
 #endif

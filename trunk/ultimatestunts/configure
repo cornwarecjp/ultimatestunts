@@ -4914,26 +4914,29 @@ fi
 echo "$as_me:4914: result: $ac_cv_lib_fmod_FSOUND_Close" >&5
 echo "${ECHO_T}$ac_cv_lib_fmod_FSOUND_Close" >&6
 if test $ac_cv_lib_fmod_FSOUND_Close = yes; then
-  soundlibs="-lfmod $soundlibs"
+  soundlibs="-lfmod $soundlibs";cat >>confdefs.h <<\EOF
+#define HAVE_LIBFMOD 1
+EOF
+
 fi
 
-echo "$as_me:4920: checking for fmod/fmod.h" >&5
+echo "$as_me:4923: checking for fmod/fmod.h" >&5
 echo $ECHO_N "checking for fmod/fmod.h... $ECHO_C" >&6
 if test "${ac_cv_header_fmod_fmod_h+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   cat >conftest.$ac_ext <<_ACEOF
-#line 4926 "configure"
+#line 4929 "configure"
 #include "confdefs.h"
 #include <fmod/fmod.h>
 _ACEOF
-if { (eval echo "$as_me:4930: \"$ac_cpp conftest.$ac_ext\"") >&5
+if { (eval echo "$as_me:4933: \"$ac_cpp conftest.$ac_ext\"") >&5
   (eval $ac_cpp conftest.$ac_ext) 2>conftest.er1
   ac_status=$?
   egrep -v '^ *\+' conftest.er1 >conftest.err
   rm -f conftest.er1
   cat conftest.err >&5
-  echo "$as_me:4936: \$? = $ac_status" >&5
+  echo "$as_me:4939: \$? = $ac_status" >&5
   (exit $ac_status); } >/dev/null; then
   if test -s conftest.err; then
     ac_cpp_err=$ac_c_preproc_warn_flag
@@ -4952,7 +4955,7 @@ else
 fi
 rm -f conftest.err conftest.$ac_ext
 fi
-echo "$as_me:4955: result: $ac_cv_header_fmod_fmod_h" >&5
+echo "$as_me:4958: result: $ac_cv_header_fmod_fmod_h" >&5
 echo "${ECHO_T}$ac_cv_header_fmod_fmod_h" >&6
 if test $ac_cv_header_fmod_fmod_h = yes; then
   cat >>confdefs.h <<\EOF
@@ -5088,7 +5091,7 @@ rm -f confdef2opt.sed
 : ${CONFIG_STATUS=./config.status}
 ac_clean_files_save=$ac_clean_files
 ac_clean_files="$ac_clean_files $CONFIG_STATUS"
-{ echo "$as_me:5091: creating $CONFIG_STATUS" >&5
+{ echo "$as_me:5094: creating $CONFIG_STATUS" >&5
 echo "$as_me: creating $CONFIG_STATUS" >&6;}
 cat >$CONFIG_STATUS <<_ACEOF
 #! $SHELL
@@ -5256,7 +5259,7 @@ cat >>$CONFIG_STATUS <<\EOF
     echo "$ac_cs_version"; exit 0 ;;
   --he | --h)
     # Conflict between --help and --header
-    { { echo "$as_me:5259: error: ambiguous option: $1
+    { { echo "$as_me:5262: error: ambiguous option: $1
 Try \`$0 --help' for more information." >&5
 echo "$as_me: error: ambiguous option: $1
 Try \`$0 --help' for more information." >&2;}
@@ -5275,7 +5278,7 @@ Try \`$0 --help' for more information." >&2;}
     ac_need_defaults=false;;
 
   # This is an error.
-  -*) { { echo "$as_me:5278: error: unrecognized option: $1
+  -*) { { echo "$as_me:5281: error: unrecognized option: $1
 Try \`$0 --help' for more information." >&5
 echo "$as_me: error: unrecognized option: $1
 Try \`$0 --help' for more information." >&2;}
@@ -5320,7 +5323,7 @@ do
   "stunts3dedit/Makefile" ) CONFIG_FILES="$CONFIG_FILES stunts3dedit/Makefile" ;;
   "trackedit/Makefile" ) CONFIG_FILES="$CONFIG_FILES trackedit/Makefile" ;;
   "ultimatestunts/Makefile" ) CONFIG_FILES="$CONFIG_FILES ultimatestunts/Makefile" ;;
-  *) { { echo "$as_me:5323: error: invalid argument: $ac_config_target" >&5
+  *) { { echo "$as_me:5326: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}
    { (exit 1); exit 1; }; };;
   esac
@@ -5564,7 +5567,7 @@ done; }
   esac
 
   if test x"$ac_file" != x-; then
-    { echo "$as_me:5567: creating $ac_file" >&5
+    { echo "$as_me:5570: creating $ac_file" >&5
 echo "$as_me: creating $ac_file" >&6;}
     rm -f "$ac_file"
   fi
@@ -5582,7 +5585,7 @@ echo "$as_me: creating $ac_file" >&6;}
       -) echo $tmp/stdin ;;
       [\\/$]*)
          # Absolute (can't be DOS-style, as IFS=:)
-         test -f "$f" || { { echo "$as_me:5585: error: cannot find input file: $f" >&5
+         test -f "$f" || { { echo "$as_me:5588: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          echo $f;;
@@ -5595,7 +5598,7 @@ echo "$as_me: error: cannot find input file: $f" >&2;}
            echo $srcdir/$f
          else
            # /dev/null tree
-           { { echo "$as_me:5598: error: cannot find input file: $f" >&5
+           { { echo "$as_me:5601: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          fi;;
