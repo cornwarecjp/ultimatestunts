@@ -252,7 +252,7 @@ void CCollisionData::ObjObjTest(int n1, int n2)
 			const CBound *b2 = m_World->m_MovObjBounds[o2->m_Bodies[i].m_Body];
 			if(sphereTest(p1, b1, p2, b2))
 			{
-				printf("Collision between %d and %d\n", n1, n2);
+				//printf("Collision between %d and %d\n", n1, n2);
 				CCollision c1, c2;
 
 				c1.nor = p2 - p1;
@@ -384,8 +384,6 @@ void CCollisionData::ObjTileTest(int nobj, int xtile, int ztile, int htile)
 			}
 			if(angle < 6.0 || angle > 6.5) //!= 2*pi: outside face
 			{
-				if(m_World->printDebug)
-					m_DebugFile->writel(CString("  ") + (int)tf + ": Plane & sphere don't collide");
 				//continue;
 			}
 			*/
@@ -416,30 +414,16 @@ void CCollisionData::ObjTileTest(int nobj, int xtile, int ztile, int htile)
 
 			//2.4: skip if no piece left
 			if(theFace.size() < 3)
-			{
 				continue;
-			}
 
 			//2.5: calculate penetration depth
 			float penetr_depth = 0.0;
-			//CVector coll_pos;
-			//int num_collpoints = 0;
 			for(unsigned int p=0; p < b->m_Points.size(); p++)
 			{
 				float depth = theFace.d - b->m_Points[p].dotProduct(theFace.nor);
 				if(depth > penetr_depth)
 					penetr_depth = depth;
-				//if(depth > 0.0)
-				//{
-				//	coll_pos += b->m_Points[p];
-				//	num_collpoints++;
-				//}
 			}
-
-			//for(unsigned int j=0; j < theFace.size(); j++)
-			//	coll_pos += theFace[j];
-
-			//coll_pos *= (1.0 / (num_collpoints + theFace.size()));
 
 			//3: Generate collision info
 			for(unsigned int j=0; j < theFace.size(); j++)
@@ -463,22 +447,33 @@ void CCollisionData::ObjTileTest(int nobj, int xtile, int ztile, int htile)
 				//TODO: move to physics.cpp
 				{
 					CMatrix R1; R1.setCrossProduct(c.pos);
-					CMatrix &Iinv = obj->m_InvMomentInertia;
+					float v_eff = c.nor.dotProduct(-(obj->getVelocity()) + R1 * obj->getAngularVelocity());
+
+					if(v_eff < 0.0)
+						continue; //already moving away from each other
+
+					const CMatrix &Iinv = obj->getActualInvMomentInertia();
 					float minv = obj->m_InvMass;
 					float minv_eff = minv + c.nor.dotProduct((R1*Iinv*R1) * c.nor);
-					float v_eff = c.nor.dotProduct(-(obj->getVelocity()) + R1 * obj->getAngularVelocity());
 					c.p = responsefactor * v_eff / minv_eff;
 
 					c.p *= (1.0 + (R1*(Iinv*(R1*(c.nor*(1.0/minv))))).dotProduct(c.nor));
+					
+					if(m_World->printDebug)
+					{
+						fprintf(stderr, "Added collision: pos = %.3f,%.3f,%.3f; nor = %.3f,%.3f,%.3f; v_eff = %.3f\n",
+							c.pos.x, c.pos.y, c.pos.z, c.nor.x, c.nor.y, c.nor.z, v_eff);
+					}
+
 				}
 
 				m_Events[nobj].push_back(c);
 			}
 
-			m_Events[nobj].isHit = true;
 		} //for tf
 	} //for i
 
+	m_Events[nobj].isHit = m_Events[nobj].size() > 0;
 }
 
 void CCollisionData::tileRotate(CVector &v, int rot)

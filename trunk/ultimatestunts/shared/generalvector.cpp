@@ -18,6 +18,16 @@
 
 #include "generalvector.h"
 
+CGeneralVector::CGeneralVector()
+{
+}
+
+CGeneralVector::CGeneralVector(unsigned int size)
+{
+	for(unsigned int i=0; i < size; i++)
+		push_back(0.0);
+}
+
 float CGeneralVector::norm() const
 {
 	float norm = 0.0;
@@ -52,4 +62,29 @@ float CGeneralVector::abs2() const
 float CGeneralVector::abs() const
 {
 	return sqrt(abs2());
+}
+
+void CGeneralVector::normalise()
+{
+	float s = abs();
+	for(unsigned int i=0; i < size(); i++)
+		(*this)[i] /= s;
+}
+
+CGeneralVector CGeneralVector::operator*(float val) const
+{
+	CGeneralVector ret;
+
+	for(unsigned int i=0; i < size(); i++)
+		ret.push_back((*this)[i] * val);
+
+	return ret;
+}
+
+CGeneralVector &CGeneralVector::operator*=(float val)
+{
+	for(unsigned int i=0; i < size(); i++)
+		(*this)[i] *= val;
+
+	return *this;
 }

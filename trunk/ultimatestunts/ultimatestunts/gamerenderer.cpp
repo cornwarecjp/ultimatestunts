@@ -79,7 +79,7 @@ void CGameRenderer::update()
 
 	const CMatrix &cammat = m_Camera->getOrientation();
 	//glLoadIdentity();
-	glLoadMatrixf(cammat.inverse().gl_mtr());
+	glLoadMatrixf(cammat.transpose().gl_mtr());
 
 	if(m_UseBackground)
 	{

@@ -38,6 +38,7 @@ void CMovingObject::rememberCurrentState()
 
 void CMovingObject::setOrientationVector(CVector v)
 {
+	//Prevent m_OrientationVector from growing too large
 	float vabs = v.abs();
 	if(vabs < DBLPI)
 		{m_OrientationVector = v;}
@@ -48,12 +49,19 @@ void CMovingObject::setOrientationVector(CVector v)
 	}
 
 	m_Orientation.setRotation(m_OrientationVector);
+	updateActualInvMomentInertia();
 }
 
 void CMovingObject::setOrientation(const CMatrix &M)
 {
 	m_Orientation = M;
-	//and something to set m_OrientationVector
+	//TODO: something to set m_OrientationVector
+	updateActualInvMomentInertia();
+}
+
+void CMovingObject::updateActualInvMomentInertia()
+{
+	m_ActualInvMomentInertia = m_Orientation * m_InvMomentInertia * m_Orientation.transpose();
 }
 
 void CMovingObject::simulate(CPhysics &theSimulator)

@@ -67,14 +67,18 @@ class CMovingObject : public CDynamicObject
 		//constant:
 		float m_InvMass;
 		CMatrix m_InvMomentInertia;
+
+		const CMatrix &getActualInvMomentInertia(){return m_ActualInvMomentInertia;}
 	protected:
-		CVector m_Position,
-			m_PreviousPosition,
+		CVector m_Position, m_PreviousPosition,
 			m_Velocity,
 			m_OrientationVector,
 			m_AngularVelocity;
-		CMatrix m_Orientation,
-			m_PreviousOrientation;
+			
+		CMatrix m_Orientation, m_PreviousOrientation,
+			m_ActualInvMomentInertia;
+
+		void updateActualInvMomentInertia();
 };
 
 #endif

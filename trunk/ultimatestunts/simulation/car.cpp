@@ -35,10 +35,14 @@ CCar::CCar()
 	m_FrontWheelNeutral = CVector(0.8, -0.4, -1.75);
 	m_BackWheelNeutral = CVector(0.8, -0.4, 1.1);
 	m_InvMass = 0.001; //kilogram^-1
-	float xs=1.0, ys=0.5, zs=2.5;
-	m_InvMomentInertia.setElement(0,0,m_InvMass/(12*(ys*ys+zs*zs)));
-	m_InvMomentInertia.setElement(1,1,m_InvMass/(12*(xs*xs+zs*zs)));
-	m_InvMomentInertia.setElement(2,2,m_InvMass/(12*(xs*xs+ys*ys)));
+
+	//Just guessing the size of the car
+	//It's better to guess too large than too small,
+	//as large values will result in better stability
+	float xs=2.5, ys=1.5, zs=5.0;
+	m_InvMomentInertia.setElement(0,0,m_InvMass/(ys*ys+zs*zs));
+	m_InvMomentInertia.setElement(1,1,m_InvMass/(xs*xs+zs*zs));
+	m_InvMomentInertia.setElement(2,2,m_InvMass/(xs*xs+ys*ys));
 	m_WheelRadius = 0.35; //meter
 
 	m_WheelVelocity =  m_WheelAngle = 0.0;

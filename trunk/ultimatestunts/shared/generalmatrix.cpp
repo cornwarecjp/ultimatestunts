@@ -19,17 +19,19 @@
 #include <cstdio>
 #include "generalmatrix.h"
 
-CGeneralMatrix::CGeneralMatrix(unsigned int size)
+CGeneralMatrix::CGeneralMatrix(unsigned int rows, unsigned int cols)
 {
 	//Create the matrix
-	for(unsigned int i=0; i < size; i++)
+	m_numRows = rows;
+	m_numCols = cols;
+
+	for(unsigned int i=0; i < rows; i++)
 	{
 		CGeneralVector v;
-		for(unsigned int j=0; j < size; j++)
+		for(unsigned int j=0; j < cols; j++)
 			v.push_back(0.0);
 		m_Matrix.push_back(v);
 	}
-	m_numRows = m_numCols = size;
 
 	m_debug = false;
 }
@@ -361,9 +363,17 @@ int CGeneralMatrix::solveModified()
 
 int CGeneralMatrix::solveInequal()
 {
+	//Find a minumum that satisfies all inequalities
+
+	//Normalise the vectors:
+	for(unsigned int i=0; i < m_numRows; i++)
+	{
+		(*m_Vector)[i] /= m_Matrix[i].abs();
+		m_Matrix[i].normalise();
+	}
+
 	if(m_debug)
 	{
-		fprintf(stderr, "Inequality solving of:\n");
 		fprintf(stderr, "Size: %dx%d\n", m_numRows, m_numCols);
 		for(unsigned int i=0; i < m_numRows; i++)
 		{
@@ -374,77 +384,209 @@ int CGeneralMatrix::solveInequal()
 		}
 	}
 
-	//Find a minumum that satisfies all inequalities
-	//order=0: search the minima of individual equations
-	//order=1: search the minima of pairs of equations
-	//order=m_numRows: find the solution of the matrix equation
-	for(unsigned int order=0; order < m_numRows; order++)
+	//First order:
+	bool found = false;
+	float minval = 0.0;
+	unsigned int mini = 0;
+	for(unsigned int i=0; i < m_numRows; i++)
 	{
+		CGeneralVector smallest = m_Matrix[i];
+		bool restricted = false;
+		for(unsigned int j=0; j < m_numCols; j++)
+			if(smallest[j] < 0.0)
+				{smallest[j] = 0.0; restricted = true;} //restriction
+		if(restricted)
+		{
+			float dotpr = smallest.dotProduct(m_Matrix[i]);
+			if(dotpr < 0.01) continue;
+			smallest *= ((*m_Vector)[i] / dotpr);
+		}
+		else
+		{
+			smallest *= (*m_Vector)[i];
+		}
+		
+		if( satisfiesInequalities(smallest) )
+		{
+			if(m_debug)
+				fprintf(stderr, "Minimum of equation %d satisfies all inequalities\n", i);
+
+			float val = (*m_Vector)[i];
+			if(!found || val < minval)
+			{
+				found = true;
+				minval = val;
+				mini = i;
+			}
+		}
+	}
+
+	if(found)
+	{
+		if(m_debug)
+			fprintf(stderr, "found mini = %d\n", mini);
+
+		CGeneralVector smallest = m_Matrix[mini];
+		bool restricted = false;
+		for(unsigned int j=0; j < m_numCols; j++)
+			if(smallest[j] < 0.0)
+				{smallest[j] = 0.0; restricted = true;} //restriction
+		if(restricted)
+		{
+			float dotpr = smallest.dotProduct(m_Matrix[mini]);
+			smallest *= ((*m_Vector)[mini] / dotpr);
+		}
+		else
+		{
+			smallest *= (*m_Vector)[mini];
+		}
+
+		for(unsigned int j=0; j < m_numRows; j++)
+		{
+			(*m_Vector)[j] = smallest[j];
+
+			if(m_debug)
+				fprintf(stderr, "%.3f\n", (*m_Vector)[j]);
+		}
+		return -1;
+	}
+
+	/*
+	if(m_numRows > 2) //doing order=2,...,N-1 solving
+	for(unsigned int order=2; order < m_numRows; order++)
+	{
+		if(order > 2) break;
+
+		if(m_debug)
+			fprintf(stderr, "%dth order inequality solving\n", order);
+
+		//search variables
 		bool found = false;
 		float minval = 0.0;
-		unsigned int mini = 0;
-		for(unsigned int i=0; i < m_numRows; i++)
+		CGeneralVector minsol(m_numCols);
+		
+		//declaration of equation variables
+		CGeneralMatrix m2(order, m_numCols);
+		CGeneralVector v(order);
+		vector<unsigned int> ia;
+
+		//set ia to first combination
+		for(unsigned int i=0; i < order; i++)
+			ia.push_back(i);
+
+		//try all combinations
+		while(true)
 		{
-			if( satisfiesInequalities(m_Matrix[i], (*m_Vector)[i]) )
+			if(m_debug)
+				fprintf(stderr, "Trying: ");
+
+			//Fill with current combination
+			for(unsigned int i=0; i < order; i++)
 			{
-				if(m_debug)
-					fprintf(stderr, "Minimum of %d satisfies all inequalities\n", i);
+				for(unsigned int j=0; j < m_numCols; j++)
+					m2.setElement(i, j, m_Matrix[ia[i]][j]);
+
+				v[i] = (*m_Vector)[ia[i]];
 				
-				float val = m_Matrix[i].abs2() * (*m_Vector)[i] * (*m_Vector)[i];
-				if(!found || val < minval)
+				if(m_debug)
+					fprintf(stderr, "%d ", ia[i]);
+			}
+			if(m_debug)
+				fprintf(stderr, "\n");
+
+			CGeneralMatrix mt = m2.transpose();
+			CGeneralMatrix mmt = m2 * mt;
+
+			if(m_debug)
+			{
+				fprintf(stderr, "mmt =\n");
+				fprintf(stderr, "Size: %dx%d\n", mmt.getNumRows(), mmt.getNumCols());
+				for(unsigned int i=0; i < mmt.getNumRows(); i++)
 				{
-					found = true;
-					minval = val;
-					mini = i;
+					for(unsigned int j=0; j < mmt.getNumCols(); j++)
+						fprintf(stderr, "% .3f  ", mmt.getElement(i, j));
+
+					fprintf(stderr, "   % .3f\n", v[i]);
 				}
 			}
+
+			if(mmt.solve(&v, GM_GAUSS) == -1) //solving worked, solution is in v
+			{
+				if(m_debug)
+					fprintf(stderr, "solving the matrix equation worked\n");
+
+				CGeneralVector solution = mt * v;
+				
+				if(satisfiesInequalities(solution))
+				{
+					float val = solution.abs2();
+					if(!found || val < minval)
+					{
+						found = true;
+						minval = val;
+						minsol = solution;
+					}
+				}
+			}
+
+			if(m_debug)
+				fprintf(stderr, "Trying to find the next combination\n");
+
+			//try to find a next combination, or break if we've had everything
+			bool changed = false;
+			for(int changing=order-1; changing >= 0; changing--)
+				if(ia[changing] < changing+m_numRows-order) //we can change it
+				{
+					if(m_debug)
+						fprintf(stderr, "changing ia[%d] to %d\n", changing, ia[changing]+1);
+
+					changed = true;
+					ia[changing]++;
+
+					if(changing < (int)order-1)
+						for(unsigned int i=changing+1; i < order; i++)
+							ia[i] = ia[i-1] + 1;
+
+					break;
+				}
+
+			if(!changed) break;
 		}
 
 		if(found)
 		{
-			float t = (*m_Vector)[mini] / m_Matrix[mini].abs2();
 			if(m_debug)
-			{
-				fprintf(stderr, "Using minimum of %d\n", mini);
-				fprintf(stderr, "b[mini] = %.3f\n", (*m_Vector)[mini]);
-				fprintf(stderr, "abs2(m[mini]) = %.3f\n", m_Matrix[mini].abs2());
-				fprintf(stderr, "t = b[mini] / abs2(m[mini]) = %.3f\n", t);
-			}
-		
+				fprintf(stderr, "Found a %dnd-order solution\n", order);
+				
 			for(unsigned int j=0; j < m_numRows; j++)
 			{
-				(*m_Vector)[j] = t * m_Matrix[mini][j];
+				(*m_Vector)[j] = minsol[j];
 			}
-		
-			if(m_debug)
-			{
-				fprintf(stderr, "After calculating this minimum:\n");
-				fprintf(stderr, "Size: %dx%d\n", m_numRows, m_numCols);
-				for(unsigned int i=0; i < m_numRows; i++)
-				{
-					for(unsigned int j=0; j < m_numCols; j++)
-						fprintf(stderr, "% .3f  ", m_Matrix[i][j]);
-
-					fprintf(stderr, "   % .3f\n", (*m_Vector)[i]);
-				}
-			}
-
-		} //for(order)
-
-		return -1;
+			return -1;
+		}
 	}
-		
-	return solveModified();
+	*/
+
+	if(m_debug)
+		fprintf(stderr, "Other order solving failed; doing exact solving\n");
+
+	return 0; //failed
+	return solveGauss();
 }
 
-bool CGeneralMatrix::satisfiesInequalities(const CGeneralVector &m, float b) const
+bool CGeneralMatrix::satisfiesInequalities(const CGeneralVector &m) const
 {
 	bool isvalid = true;
 	for(unsigned int i=0; i < m_numRows; i++)
 	{
-		float dotpr = m.dotProduct(m_Matrix[i]);
-		if(dotpr < ((*m_Vector)[i] / b))
-			{isvalid = false; break;}
+		float dotpr = 1.1 * m.dotProduct(m_Matrix[i]);
+		if(dotpr < (*m_Vector)[i])
+		{
+			if(m_debug)
+				fprintf(stderr, "%.3f < %.3f: does not satisfy inequality %d\n", dotpr, (*m_Vector)[i], i);
+			
+			isvalid = false; break;
+		}
 	}
 
 	return isvalid;
@@ -477,7 +619,7 @@ void CGeneralMatrix::setElement(unsigned int i, unsigned int j, float value)
 	m_Matrix[i][j] = value;
 }
 
-float CGeneralMatrix::getElement(unsigned int i, unsigned int j)
+float CGeneralMatrix::getElement(unsigned int i, unsigned int j) const
 {
 	return m_Matrix[i][j];
 }
@@ -493,26 +635,48 @@ void CGeneralMatrix::removeRowCol(unsigned int n)
 	m_numCols--;
 }
 
-bool CGeneralMatrix::isIvertible()
+CGeneralVector CGeneralMatrix::operator*(const CGeneralVector &val) const
 {
-	//NYI
-	return true;
-}
-
-float CGeneralMatrix::norm()
-{
-	float norm = 0.0;
+	CGeneralVector ret;
 
 	for(unsigned int i=0; i < m_numRows; i++)
 	{
 		float sum = 0.0;
 		for(unsigned int j=0; j < m_numCols; j++)
-			sum += fabs(m_Matrix[i][j]);
+			sum += val[j] * m_Matrix[i][j];
 
-		if(sum > norm) norm = sum;
+		ret.push_back(sum);
 	}
 
-	return norm;
+	return ret;
+}
+
+CGeneralMatrix CGeneralMatrix::operator*(const CGeneralMatrix &val) const
+{
+	CGeneralMatrix ret(m_numRows, val.getNumCols());
+
+	for(unsigned int i=0; i < m_numRows; i++)
+		for(unsigned int j=0; j < val.getNumCols(); j++)
+		{
+			float sum = 0.0;
+			for(unsigned int k=0; k < m_numCols; k++)
+				sum += m_Matrix[i][k] * val.getElement(k, j);
+
+			ret.setElement(i, j, sum);
+		}
+	
+	return ret;
+}
+
+CGeneralMatrix CGeneralMatrix::transpose()
+{
+	CGeneralMatrix ret(m_numCols, m_numRows);
+
+	for(unsigned int i=0; i < m_numCols; i++)
+		for(unsigned int j=0; j < m_numRows; j++)
+			ret.setElement(i, j, m_Matrix[j][i]);
+
+	return ret;
 }
 
 bool CGeneralMatrix::isSmall(float val)

@@ -250,7 +250,7 @@ void CMatrix::setRotation(CVector v)
 	this->operator/=(A);
 }
 
-CMatrix CMatrix::inverse() const
+CMatrix CMatrix::transpose() const
 {
 	CMatrix ret;
 

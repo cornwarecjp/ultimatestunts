@@ -28,11 +28,18 @@ using namespace std;
 
 class CGeneralVector : public vector<float>
 {
-public: 
+public:
+	CGeneralVector();
+	CGeneralVector(unsigned int size);
+
 	float norm() const;
 	float dotProduct(const CGeneralVector &val) const;
 	float abs2() const;
 	float abs() const;
+	void normalise();
+
+	CGeneralVector operator*(float val) const;
+	CGeneralVector &operator*=(float val);
 };
 
 #endif

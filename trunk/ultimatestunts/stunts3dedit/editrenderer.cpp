@@ -37,7 +37,7 @@ void CEditRenderer::update()
 
 	const CMatrix &cammat = m_Camera->getOrientation();
 	//glLoadIdentity();
-	glLoadMatrixf(cammat.inverse().gl_mtr());
+	glLoadMatrixf(cammat.transpose().gl_mtr());
 
 	const CVector &camera = m_Camera->getPosition();
 

@@ -83,20 +83,20 @@ bool CPhysics::update()
 
 			CMatrix R = mo->getOrientation();
 			const float invmass = mo->m_InvMass;
-			const CMatrix &Iinv = mo->m_InvMomentInertia;
+			const CMatrix &Iinv = mo->getActualInvMomentInertia();
 
 			float gas = input->m_Forward;
 			float rem = input->m_Backward;
 
 			//Collision response
-			CMatrix Jinv = mo->m_InvMomentInertia / mo->m_InvMass;
+			CMatrix Jinv = mo->getActualInvMomentInertia() / mo->m_InvMass;
 			if(m_World->m_CollData->m_Events[i].isHit)
 			{
 				const CColEvents &e = m_World->m_CollData->m_Events[i];
 				CVector dp, dL;
 
 				//Set up the matrix as described in usphysics1.pdf
-				CGeneralMatrix M(e.size());
+				CGeneralMatrix M(e.size(), e.size());
 				CGeneralVector a;
 				for(unsigned int j=0; j<e.size(); j++)
 				{
@@ -121,8 +121,14 @@ bool CPhysics::update()
 				
 				if(m_World->printDebug)
 				{
-					CVector p = mo->getVelocity() / mo->m_InvMass;
-					fprintf(stderr, "Current momentum: %.3f, %.3f, %.3f\n", p.x, p.y, p.z);
+					CVector v = mo->getVelocity();
+					CVector p = v / mo->m_InvMass;
+					CVector w = mo->getAngularVelocity();
+					CVector L = w; L /= mo->getActualInvMomentInertia();
+					fprintf(stderr, "v = %.3f, %.3f, %.3f\n", v.x, v.y, v.z);
+					fprintf(stderr, "w = %.3f, %.3f, %.3f\n", w.x, w.y, w.z);
+					fprintf(stderr, "p = %.3f, %.3f, %.3f\n", p.x, p.y, p.z);
+					fprintf(stderr, "L = %.3f, %.3f, %.3f\n", L.x, L.y, L.z);
 				}
 					
 				//Solve it
@@ -137,10 +143,18 @@ bool CPhysics::update()
 					{
 						//Get the smallest:
 						float p;
-						if(a[j] < a_copy[j] && a[j] > 0.0)
+						if(a[j] < a_copy[j] && a[j] > -0.01)
 							{p = a[j];}
-						else
+						else if (a_copy[j] > 0.0)
 							{p = a_copy[j];}
+						else
+							{p = 0.0;}
+
+						if(m_World->printDebug)
+						{
+							fprintf(stderr, "a[%d] = %.3f; p = %.3f\n", j, a[j], p);
+						}
+
 						dp += p * e[j].nor;
 						dL -= p * e[j].pos.crossProduct(e[j].nor);
 					}

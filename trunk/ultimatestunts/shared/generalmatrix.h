@@ -38,19 +38,26 @@
 
 class CGeneralMatrix {
 public:
-	CGeneralMatrix(unsigned int size);
+	CGeneralMatrix(unsigned int rows, unsigned int cols);
 	~CGeneralMatrix();
 
 	int solve(CGeneralVector *b, unsigned int solvemethod=GM_GAUSS);
 	void setElement(unsigned int i, unsigned int j, float value);
-	float getElement(unsigned int i, unsigned int j);
+	float getElement(unsigned int i, unsigned int j) const;
 	void removeRowCol(unsigned int n);
-	bool isIvertible();
-	float norm();
+
+	CGeneralVector operator*(const CGeneralVector &val) const;
+	CGeneralMatrix operator*(const CGeneralMatrix &val) const;
+	CGeneralMatrix transpose();
+
+	unsigned int getNumRows() const {return m_numRows;}
+	unsigned int getNumCols() const {return m_numCols;}
 
 	bool m_debug;
 protected:
 	vector<CGeneralVector> m_Matrix;
+
+	//saved for matrix equation solving:
 	CGeneralVector *m_Vector;
 
 	unsigned int m_numRows, m_numCols;
@@ -59,7 +66,7 @@ protected:
 	int solveModified();
 
 	int solveInequal();
-	bool satisfiesInequalities(const CGeneralVector &m, float b) const;
+	bool satisfiesInequalities(const CGeneralVector &m) const;
 
 	void swaprow(unsigned int i, unsigned int j);
 	void addrow(unsigned int i, float mul, unsigned int j);
