@@ -1039,3 +1039,19 @@ BEGIN
 	1/0/0	1/0/0	1/0/0	1/0/0
 END
 
+
+#Yes, these times are based on REAL data!
+#It really took 20 minutes to finish this
+#track with the f1 car. Of course this could
+#also be calculated based on the speed
+#(384 km/h) and the distance (2*1000*60 meter).
+
+BEGIN
+2,997,0:0
+2,996,0:2
+2,  1,0:596
+1,  1,0:598
+1,998,0:1196
+2,998,0:1198
+2,997,0:1200
+END
