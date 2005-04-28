@@ -7,9 +7,13 @@ Syntax:
 
 
 BEGIN
-4
+8
 textures/grass2.rgb
-textures/concrete2.rgb
-textures/metal.rgb
+textures/road2.rgb
+textures/cornerblocks.rgb
+textures/bricks2.rgb
+textures/wood.rgb
+textures/test.rgb
+textures/test.rgb
 textures/test.rgb
 END
