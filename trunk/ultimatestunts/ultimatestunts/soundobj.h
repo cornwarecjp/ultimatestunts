@@ -34,7 +34,7 @@
 class CSoundObj
 {
 public:
-	CSoundObj(int movingobjectID);
+	CSoundObj(int movingobjectID, bool looping = true);
 	~CSoundObj();
 	int setSample(CSndSample *s);
 
@@ -45,13 +45,19 @@ public:
 	void setFrequency(float f); //1.0 = original sound
 	void setVolume(int v); //0 - 255
 
+	void playOnce(); //for non-looping channels
+
 	int getMovingObjectID()
 		{return m_MovingObjectID;}
+
+	//a hint to CSound about its identity:
+	enum {eEngine, eSkid, eCrash} m_SoundType;
 
 protected:
 	CVector m_Pos;
 	CVector m_Vel;
 	int m_MovingObjectID;
+	bool m_Looping;
 
 #ifdef HAVE_LIBFMOD
 	int m_Channel;

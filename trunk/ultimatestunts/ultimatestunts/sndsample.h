@@ -34,6 +34,7 @@
 #endif
 
 #include "cstring.h"
+#include "vector.h"
 #include "dataobject.h"
 
 class CSndSample : public CDataObject
@@ -45,6 +46,7 @@ public:
 	virtual bool load(const CString &filename, const CParamList &list);
 
 	virtual int attachToChannel(int c);
+
 protected:
 
 #ifdef HAVE_LIBFMOD

@@ -29,21 +29,54 @@
 #include <fmod/fmod_errors.h>
 #endif
 
+#endif
+
+
+#ifdef HAVE_LIBOPENAL
+
+#ifdef OPENAL_HEADER
+#include <AL/al.h>
+#include <AL/alut.h>
+#endif
+
+//Loki Ogg Vorbis function extension
+#define VORBISFUNC "alutLoadVorbis_LOKI"
+#define MP3FUNC "alutLoadMP3_LOKI"
+
+#endif
+
+
 CSndSample::CSndSample(CDataManager *manager) : CDataObject(manager, CDataObject::eSample)
 {
+#ifdef HAVE_LIBFMOD
 	  m_Sample = NULL;
+#endif
+
+#ifdef HAVE_LIBOPENAL
+	m_Buffer = 0;
+#endif
 }
 
 CSndSample::~CSndSample()
 {
-	FSOUND_Sample_Free(m_Sample);
+	if(m_isLoaded)
+	{
+#ifdef HAVE_LIBFMOD
+		FSOUND_Sample_Free(m_Sample);
+#endif
+
+#ifdef HAVE_LIBOPENAL
+		alDeleteBuffers(1, &m_Buffer);
+#endif
+	}
 }
 
 bool CSndSample::load(const CString &filename, const CParamList &list)
 {
 	CDataObject::load(filename, list);
 	CDataFile f(m_Filename);
-	
+
+#ifdef HAVE_LIBFMOD
 	m_Sample = FSOUND_Sample_Load(FSOUND_FREE, f.useExtern().c_str(), FSOUND_HW3D, 0, 0);
 
 	if (!m_Sample)
@@ -55,44 +88,9 @@ bool CSndSample::load(const CString &filename, const CParamList &list)
 	// increasing mindistnace makes it louder in 3d space
 	FSOUND_Sample_SetMinMaxDistance((FSOUND_SAMPLE  *)m_Sample, 4.0f, 1000.0f);
 	FSOUND_Sample_SetMode((FSOUND_SAMPLE  *)m_Sample, FSOUND_LOOP_NORMAL);
-
-	return true;
-}
-
-int CSndSample::attachToChannel(int c)
-{
-	return FSOUND_PlaySoundEx(c, m_Sample, NULL, true);
-}
-
-#elif defined HAVE_LIBOPENAL
-
-#ifdef OPENAL_HEADER
-#include <AL/al.h>
-#include <AL/alut.h>
 #endif
 
-//Loki Ogg Vorbis function extension
-#define VORBISFUNC "alutLoadVorbis_LOKI"
-#define MP3FUNC "alutLoadMP3_LOKI"
-
-CSndSample::CSndSample(CDataManager *manager) : CDataObject(manager, CDataObject::eSample)
-{
-	m_Buffer = 0;
-	m_isLoaded = false;
-}
-
-CSndSample::~CSndSample()
-{
-	if(m_isLoaded)
-	{
-		alDeleteBuffers(1, &m_Buffer);
-	}
-}
-
-bool CSndSample::load(const CString &filename, const CParamList &list)
-{
-	CDataObject::load(filename, list);
-	CDataFile f(m_Filename);
+#ifdef HAVE_LIBOPENAL
 	CString realfile = f.useExtern();
 
 	//data (and default values)
@@ -127,7 +125,7 @@ bool CSndSample::load(const CString &filename, const CParamList &list)
 		FILE *fp = fopen(realfile.c_str(), "r");
 		fread(wave, size, 1, fp);
 		fclose(fp);
-		
+
 		alGenBuffers(1, &m_Buffer);
 		if(alutLoadVorbis(m_Buffer, wave, size) != AL_TRUE)
 			printf("alutLoadVorbis failed\n");
@@ -167,35 +165,21 @@ bool CSndSample::load(const CString &filename, const CParamList &list)
 
 	free(wave);
 	m_isLoaded = true;
+#endif
+
 	return true;
 }
 
 int CSndSample::attachToChannel(int c)
 {
+#ifdef HAVE_LIBFMOD
+	return FSOUND_PlaySoundEx(c, m_Sample, NULL, true);
+#endif
+
+#ifdef HAVE_LIBOPENAL
 	alSourcei((unsigned int)c, AL_BUFFER, m_Buffer);
 	return 0;
+#endif
+
+	return -1;
 }
-
-#else //libfmod and libopenAL
-
-
-CSndSample::CSndSample(CDataManager *manager) : CDataObject(manager, CDataObject::eSample)
-{;}
-
-CSndSample::~CSndSample()
-{;}
-
-bool CSndSample::load(const CString &filename, const CParamList &list)
-{
-	CDataObject::load(filename, list);
-	CDataFile f(m_Filename);
-
-	return true;
-}
-
-int CSndSample::attachToChannel(int c)
-{
-	return -1; //no sound implementation
-}
-
-#endif //libfmod

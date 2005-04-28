@@ -38,6 +38,8 @@ bool CSoundWorld::loadObjects()
 		loadObject(sounds[i]->getFilename(), CParamList(), CDataObject::eSample);
 	}
 
+	unsigned int crashsoundID = loadObject("cars/generic/crash_nonfatal.wav", CParamList(), CDataObject::eSample);
+
 	for(unsigned int i=0; i<m_World->getNumObjects(CDataObject::eMovingObject); i++)
 	{
 		const CMovingObject *mo = m_World->getMovingObject(i);
@@ -46,12 +48,21 @@ bool CSoundWorld::loadObjects()
 			CSoundObj *so = new CSoundObj(i);
 			so->setSample((CSndSample *)getObject(CDataObject::eSample, mo->m_Sounds[0]));
 			so->setPosVel(CVector(0,0,0), CVector(0,0,0));
+			so->m_SoundType = CSoundObj::eEngine;
 			m_Channels.push_back(so);
 		}
 		{ //skid sound
 			CSoundObj *so = new CSoundObj(i);
 			so->setSample((CSndSample *)getObject(CDataObject::eSample, mo->m_Sounds[1]));
 			so->setPosVel(CVector(0,0,0), CVector(0,0,0));
+			so->m_SoundType = CSoundObj::eSkid;
+			m_Channels.push_back(so);
+		}
+		{ //crash sound
+			CSoundObj *so = new CSoundObj(i, false);
+			so->setSample((CSndSample *)getObject(CDataObject::eSample, crashsoundID));
+			so->setPosVel(CVector(0,0,0), CVector(0,0,0));
+			so->m_SoundType = CSoundObj::eCrash;
 			m_Channels.push_back(so);
 		}
 

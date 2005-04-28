@@ -53,9 +53,9 @@ CGameGUI::CGameGUI(const CLConfig &conf, CGameWinSystem *winsys) : CGUI(conf, wi
 	m_TrackFile = "tracks/default.track";
 	m_HostName = "localhost";
 	m_HostPort = 1500;
-	m_MaxNumPlayers = 2;
-	addPlayer("CJP", true, "cars/diablo.conf");
-	addPlayer("AI", false, "cars/f1.conf");
+	m_MaxNumPlayers = 1;
+	addPlayer("CJP", true, "cars/ferrarispider.conf");
+	//addPlayer("AI", false, "cars/f1.conf");
 
 	//Load an initial state
 	m_GameCore->initLocalGame(m_TrackFile);

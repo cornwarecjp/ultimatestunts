@@ -44,6 +44,7 @@ public:
 	void unloadObjects();
 
 	vector<CSoundObj *> m_Channels;
+
 protected:
 	virtual CDataObject *createObject(const CString &filename, const CParamList &plist, CDataObject::eDataType type);
 

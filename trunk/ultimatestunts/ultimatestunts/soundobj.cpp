@@ -37,15 +37,19 @@
 #endif
 
 
-CSoundObj::CSoundObj(int movingobjectID)
+CSoundObj::CSoundObj(int movingobjectID, bool looping)
 {
 	m_MovingObjectID = movingobjectID;
+	m_Looping = looping;
 	m_Pos.x = m_Pos.y = m_Pos.z = 0;
 	m_Vel.x = m_Vel.y = m_Vel.z = 0;
 
 #ifdef HAVE_LIBOPENAL
 	alGenSources(1, &m_Source);
-	alSourcei(m_Source, AL_LOOPING, AL_TRUE);
+	if(looping)
+		{alSourcei(m_Source, AL_LOOPING, AL_TRUE);}
+	else
+		{alSourcei(m_Source, AL_LOOPING, AL_FALSE);}
 #endif
 }
 
@@ -66,13 +70,15 @@ int CSoundObj::setSample(CSndSample *s)
 {
 #ifdef HAVE_LIBFMOD
 	m_Channel = s->attachToChannel(FSOUND_FREE);
-	FSOUND_SetPaused(m_Channel, 0);
 	m_OriginalFrequency = FSOUND_GetFrequency(m_Channel);
+	if(m_Looping)
+		FSOUND_SetPaused(m_Channel, 0);
 #endif
 
 #ifdef HAVE_LIBOPENAL
 	s->attachToChannel(m_Source);
-	alSourcePlay(m_Source);
+	if(m_Looping)
+		alSourcePlay(m_Source);
 #endif
 
 	return 0;
@@ -149,4 +155,14 @@ void CSoundObj::setVolume(int v)
 #endif
 }
 
+void CSoundObj::playOnce()
+{
+#ifdef HAVE_LIBFMOD
+#endif
 
+#ifdef HAVE_LIBOPENAL
+	alSourcePlay(m_Source);
+#endif
+
+	//printf("CSoundObj::playOnce() called\n");
+}

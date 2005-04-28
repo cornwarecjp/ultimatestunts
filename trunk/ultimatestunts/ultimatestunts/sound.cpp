@@ -260,22 +260,42 @@ void CSound::update()
 			CVector v = theCar->m_Velocity;
 			chn->setPosVel(theCar->m_Position, v);
 
-			if(i & 1) //small test to see if it is a skid sound (temporary)
-			{ //skid sound
+			switch(chn->m_SoundType)
+			{
+			case CSoundObj::eSkid:
+			{
 				unsigned int vol = 0;
 				
 				for(unsigned int w=0; w < 4; w++)
 					vol += int(63 * theCar->m_Wheel[i].m_SkidVolume);
 				
 				chn->setVolume((vol * m_SoundVolume) >> 8);
+				break;
 			}
-			else
-			{ //engine sound
+			case CSoundObj::eEngine:
+			{
 				float engineRPS = theCar->m_Engine.m_MainAxisW * theCar->m_Engine.getGearRatio();
 				int vol = 100 + (int)(100 * theCar->m_Engine.m_Gas);
 				if(vol > 255) vol = 255;
 				chn->setFrequency(0.0025 * engineRPS); //correct for sound sample frequency & 2*pi
 				chn->setVolume((vol * m_SoundVolume) >> 8);
+				break;
+			}
+			case CSoundObj::eCrash:
+			{
+				bool doCrash = false;
+				float intensity = 1.0;
+				for(unsigned int j=0; j < o->m_AllCollisions.size(); j++)
+				{
+					doCrash = true;
+					//const CCollisionData &coll = o->m_Collisions[j];
+				}
+				if(doCrash)
+				{
+					chn->playOnce();
+				}
+				break;
+			}
 			}
 		}
 	}
