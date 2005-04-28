@@ -32,8 +32,8 @@ struct STile {
 	int m_Model;
 	int m_Z, m_R; //height, orientation. 0 <= m_R <= 3
 
-	bool m_isStart, m_isFinish;
-	float m_Time;
+	float m_Time; //Fastest possible time to reach this tile, from the start
+	int m_RouteCounter; //0 = start, 1 = next after start, etc.. Negative = not in the track
 };
 
 class CTrack : public CDataObject  {
@@ -46,6 +46,9 @@ public:
 
 	vector<STile> m_Track; //refer to tile model elements in the manager object
 	int m_L, m_W, m_H;
+
+	int m_FinishRouteCounter; //same meaning as in the tile data
+	float m_FinishTime;
 
 	CString m_BackgroundFilename;
 	CString m_EnvMapFilename;

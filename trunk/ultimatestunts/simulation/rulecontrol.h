@@ -19,6 +19,8 @@
 #define RULECONTROL_H
 
 #include "simulation.h"
+#include "car.h"
+
 #include "timer.h"
 #include "vector.h"
 
@@ -38,11 +40,13 @@ protected:
 
 	bool findStartFinish();
 
+	//Car rules:
 	void placeStart();
+	void updateCarRules(CCar *car);
 	bool checkFinished();
 
-	int m_StartX, m_StartY, m_StartH,
-		m_FinishX, m_FinishY, m_FinishH;
+	int m_StartX, m_StartY, m_StartH, m_StartIndex,
+		m_FinishX, m_FinishY, m_FinishH, m_FinishIndex;
 
 	CTimer m_Timer;
 };

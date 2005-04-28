@@ -77,7 +77,10 @@ int CPlayer::setAutomaticGear(float &gas, float &brake)
 		}
 	}
 
-	if(gear == 1 && brake > gas && speed < 1.0) //go to reverse gear
+//Below this speed switching to/from reverse is enabled
+#define MIN_SPEED_THRESHOLD 5.0 //meter per second
+
+	if(gear == 1 && brake > gas && speed < MIN_SPEED_THRESHOLD) //go to reverse gear
 	{
 		float t = gas;
 		gas = brake;
@@ -88,7 +91,7 @@ int CPlayer::setAutomaticGear(float &gas, float &brake)
 
 	if(gear == 0)
 	{
-		if(gas > brake && speed < 1.0) //leave reverse gear
+		if(gas > brake && speed < MIN_SPEED_THRESHOLD) //leave reverse gear
 		{
 			carin->m_Gear = 1;
 			return carin->m_Gear;

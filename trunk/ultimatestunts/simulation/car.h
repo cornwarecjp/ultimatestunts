@@ -46,7 +46,7 @@ public:
 	CCarRuleStatus m_RuleStatus;
 
 	virtual void update(CPhysics *simulator, float dt);
-	virtual void correctCollisions(const vector<CCollisionData> &cols);
+	virtual void correctCollisions();
 
 	//sub objects:
 	CCarEngine m_Engine;

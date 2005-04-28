@@ -38,6 +38,9 @@ public:
 	float penaltyTime;	//penalty time accumulated while playing
 	float finishTime;	//time when it finished racing
 
+	unsigned int currentTile;   //tile where the car currently is in
+	unsigned int lastValidTile; //last tile on a valid route where the car was
+
 	enum
 	{
 		eNotStarted = 0,

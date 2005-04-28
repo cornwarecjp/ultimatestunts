@@ -15,6 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
+#include <cstdio>
+
 #include "carrulestatus.h"
 #include "timer.h"
 
@@ -48,6 +50,17 @@ void CCarRuleStatus::finish()
 {
 	finishTime = CTimer().getTime();	//time when it finished racing
 	state = eFinished;
+
+	printf(
+		"YOU FINISHED!\n"
+		"Driving time: %.2f s\n"
+		"Penalty time: %.2f s\n"
+		"\n"
+		"Total time: %.2f s\n",
+		finishTime - startTime,
+		penaltyTime,
+		finishTime - startTime + penaltyTime
+		);
 }
 
 void CCarRuleStatus::crash()
@@ -64,6 +77,7 @@ void CCarRuleStatus::giveUp()
 
 void CCarRuleStatus::addPenalty(float time)
 {
+	printf("PENALTY TIME: %.2f s\n", time);
 	penaltyTime += time;	//penalty time accumulated while playing
 }
 

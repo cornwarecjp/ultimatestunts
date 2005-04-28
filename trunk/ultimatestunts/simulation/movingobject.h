@@ -46,7 +46,7 @@ public:
 	//physics simulation
 	virtual void update(CPhysics *simulator, float dt);
 	//collision response
-	virtual void correctCollisions(const vector<CCollisionData> &cols);
+	virtual void correctCollisions();
 
 	//For network transfer & other stuff
 	virtual CBinBuffer &getData(CBinBuffer &b) const;             //puts body positions etc. into buffer
@@ -71,6 +71,12 @@ public:
 	//dynamic data:
 	vector<CBody> m_Bodies; //The object bodies
 	CMovObjInput *m_InputData;
+
+	//This one is used in correctCollisions(). Only the collisions of one simulation step.
+	vector<CCollisionData> m_SimCollisions;
+	//This is used in e.g. the sound subsystem
+	vector<CCollisionData> m_AllCollisions;
+
 
 	//State variables:
 	CVector m_Velocity, m_AngularVelocity;

@@ -49,14 +49,15 @@ CPhysics::~CPhysics()
 
 bool CPhysics::update()
 {
-	if(!(theWorld->m_Paused))
-	{
-		float dt = m_Timer.getdt(m_dtMin + 0.0001);
+	float dt = m_Timer.getdt(m_dtMin + 0.0001);
 
 #ifdef DEBUGMSG
-		if(dt > 0.5)
-			{printf("Warning: Low update time detected\n"); dt = 0.5;}
+	if(dt > 0.5)
+		{printf("Warning: Low update time detected\n"); dt = 0.5;}
 #endif
+
+	if(!(theWorld->m_Paused))
+	{
 
 		float dtreal = dt;
 		unsigned int N = 0;
@@ -86,9 +87,14 @@ bool CPhysics::update()
 			}
 		}
 
-		if(N == 0) N = 1; //should not be neccesary
+		if(N == 0) N = 1; //should not be necesary
 
 		vector<CDataObject *> objs = theWorld->getObjectArray(CDataObject::eMovingObject);
+
+		//clear the collision arrays:
+		for(unsigned int i=0; i < objs.size(); i++)
+			((CMovingObject *)objs[i])->m_AllCollisions.clear();
+		
 		for(unsigned int step=0; step < N; step++)
 		{
 			//simulation
@@ -96,13 +102,17 @@ bool CPhysics::update()
 				((CMovingObject *)objs[i])->update(this, dt);
 
 			//collision detection
-			vector<vector<CCollisionData> > collisions;
 			for(unsigned int i=0; i < objs.size(); i++)
-				collisions.push_back(m_Detector->getCollisions((CMovingObject *)objs[i]));
+			{
+				CMovingObject *mo = (CMovingObject *)objs[i];
+				mo->m_SimCollisions = m_Detector->getCollisions(mo);
+				for(unsigned int j=0; j < mo->m_SimCollisions.size(); j++)
+					mo->m_AllCollisions.push_back(mo->m_SimCollisions[j]);
+			}
 
 			//collision response
 			for(unsigned int i=0; i < objs.size(); i++)
-				((CMovingObject *)objs[i])->correctCollisions(collisions[i]);
+				((CMovingObject *)objs[i])->correctCollisions();
 		}
 	}
 	return true;

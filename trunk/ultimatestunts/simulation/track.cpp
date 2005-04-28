@@ -18,6 +18,7 @@
 #include <cstdio>
 #include "track.h"
 #include "datafile.h"
+#include "world.h"
 
 CTrack::CTrack(CDataManager *manager) : CDataObject(manager, CDataObject::eTrack)
 {
@@ -151,13 +152,16 @@ bool CTrack::load(const CString &filename, const CParamList &list)
 				int tp = line.inStr('\t');
 				line = line.mid(tp+1, line.length());
 
-				STile t;
+				STile &t = m_Track[n];
 				t.m_Model = line.toInt();
 				line = line.mid(line.inStr('/')+1, line.length());
 				t.m_R = line.toInt();
 				line = line.mid(line.inStr('/')+1, line.length());
 				t.m_Z = line.toInt();
-				m_Track[n] = t;
+
+				//default values for rule data:
+				t.m_Time = 0.0;
+				t.m_RouteCounter = -1;
 			}
        }
 
@@ -170,6 +174,45 @@ bool CTrack::load(const CString &filename, const CParamList &list)
 
 	int s = m_Track.size();
 	printf("   Loaded the track: total %d tiles\n", s);
+
+	//Fourth: loading the possible routes
+	unsigned int counter = 0; //counts how many tiles we've had
+	while(tfile.readl() != "BEGIN"); //begin of routes section
+	while(true)
+	{
+		line = tfile.readl();
+		if(line == "END") break;
+
+		int pos = line.inStr(':');
+		if(pos > 0)
+		{
+			CVector p = line.mid(0, pos).toVector();
+			float time = line.mid(pos+1).toFloat();
+
+			int x = (unsigned int)(p.x+0.1),
+				y = (unsigned int)(p.z+0.1),
+				z = (unsigned int)(p.y+0.1);
+			STile &t = m_Track[y + m_H * (z+m_W*x)];
+
+			//printf("%d,%d,%d: Counter[%d] = %d\n", x,y,z, y + m_H * (z+m_W*x), counter);
+
+			if(t.m_RouteCounter < 0)
+			{
+				t.m_RouteCounter = counter;
+				t.m_Time = time;
+			}
+			else
+			{
+				if(theWorld->getTileModel(t.m_Model)->m_isFinish) //it is a finish tile
+				{
+					m_FinishRouteCounter = counter;
+					m_FinishTime = time;
+				}
+			}
+
+			counter++;
+		}
+	}
 
 	return true;
 }

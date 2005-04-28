@@ -105,7 +105,7 @@ bool CCar::load(const CString &filename, const CParamList &list)
 	m_Engine.m_GearRatios.push_back(cfile.getValue("engine", "gear6").toFloat());
 	m_Engine.m_DifferentialRatio = cfile.getValue("engine", "differentialratio").toFloat();
 
-	//Two sounds:
+	//The sounds:
 	m_Sounds.push_back(theWorld->loadObject(cfile.getValue("sound", "engine"), CParamList(), CDataObject::eSample));
 	m_Sounds.push_back(theWorld->loadObject(cfile.getValue("sound", "skid"), CParamList(), CDataObject::eSample));
 
@@ -558,11 +558,11 @@ void CCar::update(CPhysics *simulator, float dt)
 	CMovingObject::update(simulator, dt);
 }
 
-void CCar::correctCollisions(const vector<CCollisionData> &cols)
+void CCar::correctCollisions()
 {
-	for(unsigned int c=0; c < cols.size(); c++)
+	for(unsigned int c=0; c < m_SimCollisions.size(); c++)
 	{
-		CCollisionData col = cols[c];
+		CCollisionData col = m_SimCollisions[c];
 
 		//printf("depth = %.3f\n", col.depth);
 		CVector dr = col.nor * col.depth;

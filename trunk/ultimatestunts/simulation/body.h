@@ -22,8 +22,6 @@
 namespace std {}
 using namespace std;
 
-#include "collisionmodel.h"
-#include "collisiondata.h"
 #include "vector.h"
 #include "matrix.h"
 
@@ -39,9 +37,6 @@ public:
 	CMatrix m_OrientationMatrix;
 
 	int m_Body; //refers to geometry model
-
-	//Other data:
-	vector<CCollisionData> m_Collisions; //for usage in the sound subsystem, dust graphics etc.
 };
 
 #endif

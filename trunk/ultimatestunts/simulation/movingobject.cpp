@@ -107,11 +107,11 @@ void CMovingObject::update(CPhysics *simulator, float dt)
 	m_Mtot = CVector (0,0,0);
 }
 
-void CMovingObject::correctCollisions(const vector<CCollisionData> &cols)
+void CMovingObject::correctCollisions()
 {
-	for(unsigned int c=0; c < cols.size(); c++)
+	for(unsigned int c=0; c < m_SimCollisions.size(); c++)
 	{
-		CCollisionData col = cols[c];
+		CCollisionData col = m_SimCollisions[c];
 
 		//printf("depth = %.3f\n", col.depth);
 		CVector dr = col.nor * col.depth;
