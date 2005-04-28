@@ -21,6 +21,7 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <cmath>
 
 //Common files
 #include "lconfig.h"
@@ -48,13 +49,13 @@ enum eKeyconf {
 	eNew = 'n',
 	eChange = 'c',
 	eChangePrimitive = 'C',
-	eConvertToArray = 'a',
 	eDuplicatePrimitive = 'd',
 	eSetCollision = 'l',
 
 	eRotate = 'r',
 	eScale = 's',
 	eMirror = 'm',
+	eClamp = 'a',
 	eTranslate = 't',
 
 	eRotateTexture = 'R',
@@ -131,6 +132,8 @@ bool mainloop()
 		scaleFunc();
 	if(winsys->wasPressed(eMirror))
 		mirrorFunc();
+	if(winsys->wasPressed(eClamp))
+		clampFunc();
 	if(winsys->wasPressed(eTranslate))
 		translateFunc();
 	if(winsys->wasPressed(eRotateTexture))

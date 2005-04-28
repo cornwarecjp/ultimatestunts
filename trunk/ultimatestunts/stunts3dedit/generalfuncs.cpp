@@ -108,13 +108,14 @@ void helpFunc()
 		"%c: Rotate\n"
 		"%c: Scale\n"
 		"%c: Mirror\n"
+		"%c: Clamp\n"
 		"%c: Translate\n"
 		"%c: Rotate Texture\n"
 		"%c: Translate Texture\n"
 		"%c: Help\n",
 		eLoad, eSave, eSettings, ePrimitive, eVertex, eNew, eChange,
 		eChangePrimitive, eDuplicatePrimitive, eSetCollision, eRotate, eScale,
-		eMirror, eTranslate, eRotateTexture, eTranslateTexture,
+		eMirror, eClamp, eTranslate, eRotateTexture, eTranslateTexture,
 		eHelp
 	);
 }

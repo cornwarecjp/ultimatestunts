@@ -19,16 +19,6 @@ void changePrimitiveFunc()
 {
 	CPrimitive &p = graphobj->m_Primitives[curr_primitive];
 	printf("Name: %s\n", p.m_Name.c_str());
-	printf("Type: ");
-	switch(p.m_Type)
-	{
-	case CPrimitive::Triangles: printf("Triangles\n"); break;
-	case CPrimitive::Quads: printf("Quads\n"); break;
-	case CPrimitive::TriangleStrip: printf("Trianglestrip\n"); break;
-	case CPrimitive::QuadStrip: printf("Quadstrip\n"); break;
-	case CPrimitive::Polygon: printf("Polygon\n"); break;
-	case CPrimitive::VertexArray: printf("Vertex array\n"); break;
-	}
 	printf("Texture: %d\n", p.m_Texture);
 	printf("LODs: %s\n", p.m_LODs.c_str());
 	printf("Modulation color: %s\n", CString(p.m_ModulationColor).c_str());
@@ -194,12 +184,12 @@ void mirrorFunc()
 
 	if(vertices)
 	{
-		unsigned int size =pr.m_Vertex.size();
-		for(unsigned int j=0; j<size/2; j++)
+		unsigned int size =pr.m_Index.size();
+		for(unsigned int j=0; j<size; j+=3)
 		{
-			CVertex vt = pr.m_Vertex[j];  //swapping the vertices; putting in reverse order
-			pr.m_Vertex[j] = pr.m_Vertex[size-j-1];
-			pr.m_Vertex[size-j-1] = vt;
+			unsigned int t = pr.m_Index[j];  //swapping the vertices; putting in reverse order
+			pr.m_Index[j] = pr.m_Index[j+2];
+			pr.m_Index[j+2] = t;
 		}
 	}
 
@@ -261,5 +251,31 @@ void setCollisionFunc()
 		p3 += dpos;
 	}
 
+	graphobj->render(VisibleLODs);
+}
+
+void clampFunc()
+{
+	float in = getInput("Clamp in value:").toFloat();
+	float out = getInput("Clamp out value:").toFloat();
+
+	for(unsigned int i=0; i<graphobj->m_Primitives.size(); i++)
+	{
+		CPrimitive &pr = graphobj->m_Primitives[i];
+		for(unsigned int j=0; j<pr.m_Vertex.size(); j++)
+		{
+			CVector p = pr.m_Vertex[j].pos;
+
+			if(fabs(p.x) > in - 0.01 && fabs(p.x) < in + 0.01)
+				p.x = copysign(out, p.x);
+			if(fabs(p.y) > in - 0.01 && fabs(p.y) < in + 0.01)
+				p.y = copysign(out, p.y);
+			if(fabs(p.z) > in - 0.01 && fabs(p.z) < in + 0.01)
+				p.z = copysign(out, p.z);
+
+			pr.m_Vertex[j].pos = p;
+		}
+	}
+	
 	graphobj->render(VisibleLODs);
 }
