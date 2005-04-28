@@ -80,6 +80,8 @@ bool CGLBFile::load(const CString &filename)
 			Uint32 numVertices = dataheader.getUint32(pos);
 			Uint32 numIndices = dataheader.getUint32(pos);
 
+			//printf("Object %s: %d vertices, %d indices\n", pr.Name.c_str(), numVertices, numIndices);
+
 			//Material
 			CBinBuffer matbuf = f.readBytes(materialsize);
 			pos = 0;
@@ -136,7 +138,18 @@ bool CGLBFile::load(const CString &filename)
 			}
 			pos = 0;
 			for(unsigned int i=0; i < numIndices; i++)
-				pr.index.push_back(indices.getUint32(pos));
+			{
+				unsigned int index = indices.getUint32(pos);
+				if(index >= pr.vertex.size())
+				{
+					printf("Index %d exceeds vertex array size %d in %s\n",
+						index, pr.vertex.size(), pr.Name.c_str());
+					
+					return false;
+				}
+				
+				pr.index.push_back(index);
+			}
 
 			break;
 		}
