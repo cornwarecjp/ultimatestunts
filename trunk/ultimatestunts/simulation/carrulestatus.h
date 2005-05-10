@@ -28,18 +28,21 @@ public:
 	CCarRuleStatus();
 	~CCarRuleStatus();
 
-	void start();
-	void finish();
-	void crash();
-	void giveUp();
-	void addPenalty(float time);
+	//return false when it's invalid, e.g.
+	//finishing when already finished
+	bool start();
+	bool finish();
+	bool crash();
+	bool giveUp();
+	bool addPenalty(float time);
 
 	float startTime;	//time when it started racing
 	float penaltyTime;	//penalty time accumulated while playing
 	float finishTime;	//time when it finished racing
 
-	unsigned int currentTile;   //tile where the car currently is in
-	unsigned int lastValidTile; //last tile on a valid route where the car was
+	unsigned int currentTile;	//tile where the car currently is in (not counting tiles outside routes)
+	unsigned int lastValidTile;	//last tile on a valid route where the car was
+	float maxTileTime;			//maximum reached tile time
 
 	enum
 	{

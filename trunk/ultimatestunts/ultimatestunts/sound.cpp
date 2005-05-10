@@ -292,6 +292,7 @@ void CSound::update()
 				}
 				if(doCrash)
 				{
+					chn->setVolume(int(255*intensity));
 					chn->playOnce();
 				}
 				break;

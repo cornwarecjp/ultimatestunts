@@ -94,41 +94,62 @@ void CRuleControl::updateCarRules(CCar *car)
 
 	bool prevIsFinish = theWorld->getTileModel(track.m_Track[prevIndex].m_Model)->m_isFinish;
 
-	if(currentIndex != prevIndex && currentCounter >= 0)
+	if(currentIndex != prevIndex && currentCounter >= 0) //we're on a route, and not on the start
 	{
 		printf("\nvalid, prev, current = %d, %d, %d\n", validCounter, prevCounter, currentCounter);
-		printf("counter = %d\n", currentCounter);
+		printf("maxTileTime = %.2f s\n", status.maxTileTime);
 
 		if(prevCounter>=0 && currentCounter == prevCounter+1) //we're following a certain route
 		{
+			float t1 = track.m_Track[validIndex].m_Time;
+			float t2 = track.m_Track[prevIndex].m_Time;
+
 			if(prevIndex != validIndex) //a gap in the route
 			{
-				float t1 = track.m_Track[validIndex].m_Time;
-
-				if(prevIsFinish)
+				if(prevIsFinish) //start and finish on the same place causes a gap
 				{
-					float t2 = track.m_FinishTime;
+					t2 = track.m_FinishTime;
 					int finishCounter = track.m_FinishRouteCounter;
 
-					if(finishCounter > validCounter+1 && t2-t1 > 0)
-						status.addPenalty(penaltyMultiplier * (t2-t1));
+					if(finishCounter > validCounter+1 && t2-t1 > 0 && status.maxTileTime < t2)
+						addPenaltytime(car, penaltyMultiplier * (t2-t1));
 				}
 				else
 				{
-					float t2 = track.m_Track[prevIndex].m_Time;
-					if(t2-t1 > 0)
-						status.addPenalty(penaltyMultiplier * (t2-t1));
+					if(t2-t1 > 0 && status.maxTileTime < t2)
+						addPenaltytime(car, penaltyMultiplier * (t2-t1));
 				}
+
 			}
 
 			if(prevIsFinish && validCounter > 0) //finished and driven some route
-				status.finish();
-			
-			validIndex = currentIndex;
-			status.lastValidTile = validIndex;
+				finish(car);
+
+			if(status.maxTileTime < t2) status.maxTileTime = t2;
+			status.lastValidTile = currentIndex;
 		}
 
 		status.currentTile = currentIndex;
+	}
+}
+
+void CRuleControl::addPenaltytime(CCar *car, float t)
+{
+	if(car->m_RuleStatus.addPenalty(t))
+	{
+		CChatMessage m;
+		m.m_Message = CString("Penalty time: ") + (CString().fromTime(t));
+		car->m_IncomingMessages.push_back(m);
+	}
+}
+
+void CRuleControl::finish(CCar *car)
+{
+	if(car->m_RuleStatus.finish())
+	{
+		CChatMessage m;
+		m.m_Message = CString("You finished (waiting for other players)");
+		car->m_IncomingMessages.push_back(m);
 	}
 }
 
@@ -204,6 +225,7 @@ void CRuleControl::placeStart()
 
 		CCarRuleStatus &status = ((CCar *)mo)->m_RuleStatus;
 		status.lastValidTile = status.currentTile = m_StartIndex;
+		status.start();
 	}
 }
 

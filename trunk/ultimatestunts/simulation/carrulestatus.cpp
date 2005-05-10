@@ -19,6 +19,7 @@
 
 #include "carrulestatus.h"
 #include "timer.h"
+#include "cstring.h"
 
 CCarRuleStatus::CCarRuleStatus()
 {
@@ -28,6 +29,9 @@ CCarRuleStatus::CCarRuleStatus()
 	penaltyTime = 0.0;	//penalty time accumulated while playing
 	finishTime = t;		//time when it finished racing
 
+	maxTileTime = 0.0;
+
+
 	state = eNotStarted;
 }
 
@@ -35,7 +39,7 @@ CCarRuleStatus::~CCarRuleStatus()
 {
 }
 
-void CCarRuleStatus::start()
+bool CCarRuleStatus::start()
 {
 	float t = CTimer().getTime();
 
@@ -43,41 +47,70 @@ void CCarRuleStatus::start()
 	penaltyTime = 0.0;	//penalty time accumulated while playing
 	finishTime = t;		//time when it finished racing
 
+	maxTileTime = 0.0;
+
 	state = eRacing;
+
+	return true;
 }
 
-void CCarRuleStatus::finish()
+bool CCarRuleStatus::finish()
 {
-	finishTime = CTimer().getTime();	//time when it finished racing
-	state = eFinished;
+	if(state == eRacing)
+	{
+		finishTime = CTimer().getTime();	//time when it finished racing
+		state = eFinished;
 
-	printf(
-		"YOU FINISHED!\n"
-		"Driving time: %.2f s\n"
-		"Penalty time: %.2f s\n"
-		"\n"
-		"Total time: %.2f s\n",
-		finishTime - startTime,
-		penaltyTime,
-		finishTime - startTime + penaltyTime
-		);
+		printf(
+			"YOU FINISHED!\n"
+			"Driving time: %s\n"
+			"Penalty time: %s\n"
+			"\n"
+			"Total time:   %s\n",
+			CString().fromTime(finishTime - startTime).c_str(),
+			CString().fromTime(penaltyTime).c_str(),
+			CString().fromTime(finishTime - startTime + penaltyTime).c_str()
+			);
+
+		return true;
+	}
+
+	return false;
 }
 
-void CCarRuleStatus::crash()
+bool CCarRuleStatus::crash()
 {
-	finishTime = CTimer().getTime();	//time when it finished racing
-	state = eCrashed;
+	if(state == eRacing)
+	{
+		finishTime = CTimer().getTime();	//time when it finished racing
+		state = eCrashed;
+		return true;
+	}
+
+	return false;
 }
 
-void CCarRuleStatus::giveUp()
+bool CCarRuleStatus::giveUp()
 {
-	finishTime = CTimer().getTime();	//time when it finished racing
-	state = eGivenUp;
+	if(state != eGivenUp && state != eFinished)
+	{
+		finishTime = CTimer().getTime();	//time when it finished racing
+		state = eGivenUp;
+		return true;
+	}
+
+	return false;
 }
 
-void CCarRuleStatus::addPenalty(float time)
+bool CCarRuleStatus::addPenalty(float time)
 {
-	printf("PENALTY TIME: %.2f s\n", time);
-	penaltyTime += time;	//penalty time accumulated while playing
+	if(state == eRacing)
+	{
+		printf("PENALTY TIME: %.2f s\n", time);
+		penaltyTime += time;	//penalty time accumulated while playing
+		return true;
+	}
+
+	return false;
 }
 

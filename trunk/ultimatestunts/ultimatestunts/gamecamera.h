@@ -19,7 +19,6 @@
 #define GAMECAMERA_H
 
 #include "camera.h"
-#include "world.h"
 #include "timer.h"
 
 /**
@@ -36,13 +35,15 @@ public:
 		Television
 	};
 
-	CGameCamera(const CWorld *w);
+	CGameCamera();
 	virtual ~CGameCamera();
 
 	void setCameraMode(eCameraMode mode);
 	void swithCameraMode();
 	void setTrackedObject(int id);
 	void switchTrackedObject();
+
+	unsigned int m_PrimaryTarget; //e.g. for the dashboard
 
 	const CVector &getVelocity() const {return m_Velocity;}
 
@@ -53,7 +54,6 @@ protected:
 
 	eCameraMode m_Mode;
 	int m_Id;
-	const CWorld *m_World;
 
 	bool m_Reached;
 	bool m_First;

@@ -56,8 +56,9 @@ bool CUSCore::addCamera(unsigned int objid)
 {
 	if(m_NumCameras > 3) return false; //max 4 cameras
 
-	CGameCamera *theCam = new CGameCamera(theWorld);
+	CGameCamera *theCam = new CGameCamera;
 	theCam->setTrackedObject(objid);
+	theCam->m_PrimaryTarget = objid;
 	*(m_Cameras + m_NumCameras) = theCam;
 	m_NumCameras++;
 
@@ -77,35 +78,6 @@ void CUSCore::readyAndLoad()
 
 bool CUSCore::update()
 {
-	//FPS:
-	float dt = m_Timer.getdt(0.00001);
-	float fpsnu = 1.0 / dt;
-	m_FPS = 0.9 * m_FPS + 0.1 * fpsnu;
-	
-	//Debugging 'display'
-	m_Console->clear();
-	static float topspeed = 0.0;
-
-	m_Console->print(CString().format( _("Frame rate: %.1f FPS"), 80, m_FPS ));
-	m_Console->print(CString().format( _("Top speed in this session: %.1f km/h"), 80,
-		(float)(topspeed*3.6) ));
-	for(unsigned int i=0; i<m_World->getNumObjects(CDataObject::eMovingObject); i++)
-	{
-		CMovingObject *mo = m_World->getMovingObject(i);
-		if(mo->getType() == CMessageBuffer::car)
-		{
-			CCar * theCar = (CCar *)mo;
-			float vel = theCar->m_Velocity.abs();
-			if(vel > topspeed) topspeed = vel;
-			float wEngine = theCar->m_Engine.getGearRatio() * theCar->m_Engine.m_MainAxisW;
-				
-			m_Console->print(
-				CString().format( _("Car %d velocity %.1f km/h; gear %d; %.1f RPM"), 100,
-					(int)i, (float)(vel * 3.6), (int)(theCar->m_Engine.m_Gear),
-					(float)(60.0 * wEngine / 6.28) ));
-		}
-	}
-
 	bool retval = true;
 
 	//Escape:
@@ -130,6 +102,41 @@ bool CUSCore::update()
 	for(unsigned int i=0; i < m_NumCameras; i++)
 		m_Cameras[i]->update();
 
+
+	//FPS:
+	float dt = m_Timer.getdt(0.00001);
+	float fpsnu = 1.0 / dt;
+	m_FPS = 0.9 * m_FPS + 0.1 * fpsnu;
+
+	static float topspeed = 0.0;
+
+
+	//Debugging and text output display:
+	m_Console->clear();
+	m_Console->print(CString().format( _("Frame rate: %.1f FPS"), 80, m_FPS ));
+	m_Console->print(CString().format( _("Top speed in this session: %.1f km/h"), 80,
+		(float)(topspeed*3.6) ));
+	for(unsigned int i=0; i<m_World->getNumObjects(CDataObject::eMovingObject); i++)
+	{
+		CMovingObject *mo = m_World->getMovingObject(i);
+		if(mo->getType() == CMessageBuffer::car)
+		{
+			CCar * theCar = (CCar *)mo;
+			float vel = theCar->m_Velocity.abs();
+			if(vel > topspeed) topspeed = vel;
+			float wEngine = theCar->m_Engine.getGearRatio() * theCar->m_Engine.m_MainAxisW;
+
+			m_Console->print(
+				CString().format( _("Car %d velocity %.1f km/h; gear %d; %.1f RPM"), 100,
+					(int)i, (float)(vel * 3.6), (int)(theCar->m_Engine.m_Gear),
+					(float)(60.0 * wEngine / 6.28) ));
+
+			//m_Console->setMessage("test", 2.0);
+		}
+	}
+
+	
+	//Update the output:
 	m_Renderer->update();
 	m_Console->draw();
 	m_SoundSystem->update();

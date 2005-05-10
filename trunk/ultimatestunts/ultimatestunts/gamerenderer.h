@@ -19,6 +19,7 @@
 #define GAMERENDERER_H
 
 #include "renderer.h"
+#include "gamecamera.h"
 
 #include "graphicworld.h"
 #include "movingobject.h"
@@ -38,12 +39,12 @@ public:
 	void unloadObjData();
 
 	//DON't use setCamera with CGameRenderer, use this instead!
-	void setCameras(CCamera **cams, unsigned int num);
+	void setCameras(CGameCamera **cams, unsigned int num);
 
 	virtual void update();
 
 protected:
-	CCamera **m_Cameras;
+	CGameCamera **m_Cameras;
 	unsigned int m_NumCameras;
 	unsigned int m_CurrentCamera;
 	int camx, camy, camz;
@@ -51,11 +52,13 @@ protected:
 
 	void clearScreen();
 	void updateReflections();
-	void selectCamera(unsigned int n);
+	void selectCamera(unsigned int n, bool threed = true);
 	void renderScene();
 
 	void viewBackground();
 	void viewMovObj(unsigned int n);
+
+	void viewDashboard(unsigned int n);
 
 	void viewTrack_normal();
 	void viewTrack_displaylist();
@@ -73,6 +76,8 @@ protected:
 	vector<CReflection> m_MovingObjectReflections;
 
 	int m_UpdateBodyReflection;
+
+	int m_ViewportW, m_ViewportH; //pixel size of the current viewport
 };
 
 #endif

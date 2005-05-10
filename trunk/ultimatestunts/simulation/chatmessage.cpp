@@ -16,8 +16,14 @@
  ***************************************************************************/
 
 #include "chatmessage.h"
+#include "timer.h"
+#include "world.h"
 
-CChatMessage::CChatMessage(){
+CChatMessage::CChatMessage()
+{
+	m_SendTime = CTimer().getTime() - theWorld->m_GameStartTime;
 }
-CChatMessage::~CChatMessage(){
+
+CChatMessage::~CChatMessage()
+{
 }

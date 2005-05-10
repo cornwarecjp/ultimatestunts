@@ -50,7 +50,7 @@ protected:
 	CGameRenderer *m_Renderer;
 	CConsole *m_Console;
 
-	CCamera *m_Cameras[4]; //max. 4 cameras should be enough
+	CGameCamera *m_Cameras[4]; //max. 4 cameras should be enough
 	unsigned int m_NumCameras;
 
 	CSound *m_SoundSystem;

@@ -21,14 +21,16 @@
 
 #include "gamecamera.h"
 #include "usmacros.h"
+#include "world.h"
 
-CGameCamera::CGameCamera(const CWorld *w)
+CGameCamera::CGameCamera()
 {
 	m_Velocity = CVector(0,0,0);
 
 	m_Mode = In;
 	m_Id = -1;
-	m_World = w;
+
+	m_PrimaryTarget = 0;
 
 	m_Reached = true;
 	m_First = true;
@@ -73,7 +75,7 @@ void CGameCamera::setTrackedObject(int id)
 void CGameCamera::switchTrackedObject()
 {
 	unsigned int i = m_Id + 1;
-	if(i >= m_World->getNumObjects(CDataObject::eMovingObject)) i = 0;
+	if(i >= theWorld->getNumObjects(CDataObject::eMovingObject)) i = 0;
 	setTrackedObject(i);
 }
 
@@ -83,7 +85,7 @@ void CGameCamera::update()
 
 	if(m_Id < 0) return;
 
-	const CMovingObject *to = m_World->getMovingObject(m_Id); //tracked object
+	const CMovingObject *to = theWorld->getMovingObject(m_Id); //tracked object
 	CVector tv; //target velocity
 	CVector tp; //target position
 	CMatrix tm; //target orientation

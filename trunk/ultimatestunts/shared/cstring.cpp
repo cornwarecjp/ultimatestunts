@@ -215,6 +215,27 @@ CString::CString(float val)
 	assign(c);
 }
 
+CString &CString::fromTime(float t)
+{
+	int minutes = int(t / 60);
+	t -= 60*minutes;
+	int seconds = int(t);
+	t -= seconds;
+	int hundreds = int(100*t);
+
+	CString secS = CString(seconds);
+	CString hunS = CString(hundreds);
+	if(secS.length() == 1) secS = CString("0") + secS;
+	if(hunS.length() == 1) hunS = CString("0") + hunS;
+
+	(*this) = secS + "." + hunS;
+
+	if(minutes > 0)
+		(*this) = CString(minutes) + ":" + (*this);
+
+	return *this;
+}
+
 CString CString::operator+(CString const &val)
 {
 	CString ret(*this);

@@ -22,6 +22,9 @@ END
 BEGIN
 environment/sky3.rgb
 environment/spheremap.rgb
+-0.69,-0.7,-0.2
+1.0,1.0,0.8
+0.0,0.0,0.0
 END
 
 BEGIN

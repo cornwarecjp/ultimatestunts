@@ -23,6 +23,7 @@ namespace std {}
 using namespace std;
 
 #include "cstring.h"
+#include "timer.h"
 #include "winsystem.h"
 #include "font.h"
 
@@ -33,14 +34,14 @@ using namespace std;
 class CConsole {
 public: 
 	CConsole(CWinSystem *winsys);
-	virtual ~CConsole();
+	~CConsole();
 
-	virtual void print(const CString &str);
-	virtual void clear();
-	virtual void draw();
+	void print(const CString &str);
+	void clear();
+	void draw();
 
-	virtual void enterWriteMode();
-	virtual void leaveWriteMode();
+	void enterWriteMode();
+	void leaveWriteMode();
 
 protected:
 	CWinSystem *m_WinSystem;

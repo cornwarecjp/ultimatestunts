@@ -31,6 +31,8 @@ public:
 
 	virtual CMessageBuffer::eMessageType getType() const
 		{return CMessageBuffer::chat;}
+
+	float m_SendTime; //moment of creation (relative to start of the game)
 };
 
 #endif

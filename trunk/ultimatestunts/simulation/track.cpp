@@ -49,7 +49,12 @@ bool CTrack::load(const CString &filename, const CParamList &list)
 	m_H = tfile.readl().toInt();
 
 	//First: load materials/textures
-	while(tfile.readl() != "BEGIN"); //begin of textures section
+	//Find "BEGIN"
+	if(!findBeginTag(tfile))
+	{
+		printf("Error: could not find the textures section in the track file\n");
+		return false;
+	}
 	while(true)
 	{
 		line = tfile.readl();
@@ -91,12 +96,25 @@ bool CTrack::load(const CString &filename, const CParamList &list)
 	}
 	printf("\n   Loaded %d materials\n\n", m_DataManager->getNumObjects(CDataObject::eMaterial));
 
-	while(tfile.readl() != "BEGIN"); //Begin of background section
+	//Find "BEGIN"
+	if(!findBeginTag(tfile))
+	{
+		printf("Error: could not find the environment section in the track file\n");
+		return false;
+	}
 	m_BackgroundFilename = tfile.readl();
 	m_EnvMapFilename = tfile.readl();
+	m_LightDirection = tfile.readl().toVector();
+	m_LightColor = tfile.readl().toVector();
+	m_AmbientColor = tfile.readl().toVector();
 
 	//Second: loading collision (and graphics) data
-	while(tfile.readl() != "BEGIN"); //begin of tiles section
+	//Find "BEGIN"
+	if(!findBeginTag(tfile))
+	{
+		printf("Error: could not find the tiles section in the track file\n");
+		return false;
+	}
 	while(true)
 	{
 		line = tfile.readl();
@@ -140,7 +158,12 @@ bool CTrack::load(const CString &filename, const CParamList &list)
 	m_Track.resize(m_L * m_W * m_H);
 	for(int y=0; y<m_H; y++)
 	{
-		while(tfile.readl() != "BEGIN"); //begin of track layer section
+		//Find "BEGIN"
+		if(!findBeginTag(tfile))
+		{
+			printf("Error: could not find track layer %d section in the track file\n", y);
+			return false;
+		}
 
 		for(int z=0; z<m_W; z++)
 		{
@@ -176,8 +199,19 @@ bool CTrack::load(const CString &filename, const CParamList &list)
 	printf("   Loaded the track: total %d tiles\n", s);
 
 	//Fourth: loading the possible routes
+	
 	unsigned int counter = 0; //counts how many tiles we've had
-	while(tfile.readl() != "BEGIN"); //begin of routes section
+	bool isAlternative = false; //Are we tracking an alternative (not fastest) route?
+	float timeOffset = 0.0; //this is added to tile times
+
+
+	//Find "BEGIN"
+	if(!findBeginTag(tfile))
+	{
+		printf("Error: could not find the route section in the track file\n");
+		return false;
+	}
+
 	while(true)
 	{
 		line = tfile.readl();
@@ -194,19 +228,34 @@ bool CTrack::load(const CString &filename, const CParamList &list)
 				z = (unsigned int)(p.y+0.1);
 			STile &t = m_Track[y + m_H * (z+m_W*x)];
 
-			//printf("%d,%d,%d: Counter[%d] = %d\n", x,y,z, y + m_H * (z+m_W*x), counter);
+			bool isFinish = theWorld->getTileModel(t.m_Model)->m_isFinish;
 
-			if(t.m_RouteCounter < 0)
+			if(isFinish && counter > 0) //The finish counter and time
+			{
+				m_FinishRouteCounter = counter;
+				m_FinishTime = timeOffset + time;
+			}
+
+			if(t.m_RouteCounter < 0) //Normal new piece of track
 			{
 				t.m_RouteCounter = counter;
-				t.m_Time = time;
+				t.m_Time = timeOffset + time;
+				printf("%d,%d,%d: Counter = %d\n", x,y,z, counter);
 			}
-			else
+			else //we've already been here: start or end of alternative route, or a loop finish
 			{
-				if(theWorld->getTileModel(t.m_Model)->m_isFinish) //it is a finish tile
+				if(!isFinish)
 				{
-					m_FinishRouteCounter = counter;
-					m_FinishTime = time;
+					if(isAlternative) //end of alternative route
+					{
+						isAlternative = false;
+					}
+					else //start of alternative route
+					{
+						counter = t.m_RouteCounter;
+						timeOffset = t.m_Time;
+						isAlternative = true;
+					}
 				}
 			}
 
@@ -223,4 +272,14 @@ void CTrack::unload()
 	m_Track.clear();
 
 	CDataObject::unload();
+}
+
+bool CTrack::findBeginTag(CDataFile &f)
+{
+	while(true)
+	{
+		CString line = f.readl();
+		if(line == "BEGIN") return true;
+		if(line == "\n") return false; //EOF
+	}
 }

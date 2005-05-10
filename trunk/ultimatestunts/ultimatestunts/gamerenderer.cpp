@@ -16,10 +16,12 @@
  ***************************************************************************/
 #include <GL/gl.h>
 #include <cstdio>
+
 #include "gamerenderer.h"
+#include "console.h"
+#include "timer.h"
 
 //TODO: remove this when not debugging
-#include "timer.h"
 CTimer _DebugTimer;
 
 CGameRenderer::CGameRenderer(const CWinSystem *winsys) : CRenderer(winsys)
@@ -72,7 +74,7 @@ void CGameRenderer::unloadObjData()
 	//TODO
 }
 
-void CGameRenderer::setCameras(CCamera **cams, unsigned int num)
+void CGameRenderer::setCameras(CGameCamera **cams, unsigned int num)
 {
 	m_Cameras = cams;
 	m_NumCameras = num;
@@ -97,8 +99,14 @@ void CGameRenderer::update()
 		{
 			//float tcam = _DebugTimer.getTime();
 			m_CurrentCamera = i;
+
+			//3D part
 			selectCamera(i);
 			renderScene();
+
+			//2D part
+			selectCamera(i, false);
+			viewDashboard(i);
 			//fprintf(stderr, "Viewport output: %.5f\n\n\n", _DebugTimer.getTime() - tcam);
 		}
 
@@ -202,7 +210,7 @@ void CGameRenderer::updateReflections()
 	m_UpdateBodyReflection = -1;
 }
 
-void CGameRenderer::selectCamera(unsigned int n)
+void CGameRenderer::selectCamera(unsigned int n, bool threed)
 {
 	unsigned int sw = m_WinSys->getWidth();
 	unsigned int sh = m_WinSys->getHeight();
@@ -234,10 +242,20 @@ void CGameRenderer::selectCamera(unsigned int n)
 	GLfloat ys = 1.0*hor_mul;
 
 	glViewport( x, y, w, h );
+	m_ViewportW = w;
+	m_ViewportH = h;
 
 	glMatrixMode( GL_PROJECTION );
 	glLoadIdentity();
-	glFrustum( -xs, xs, -ys, ys, near, far );
+
+	if(threed)
+	{
+		glFrustum( -xs, xs, -ys, ys, near, far );
+	}
+	else
+	{
+		glOrtho(0, w, 0, h, -1, 1);
+	}
 
 	glMatrixMode( GL_MODELVIEW );
 	glLoadIdentity();
@@ -263,11 +281,18 @@ void CGameRenderer::renderScene()
 	//fprintf(stderr, "renderTrack start: %.3f\n", _DebugTimer.getTime());
 
 	//Lighting:
-	GLfloat sun_diffuse[] = {1.0, 1.0, 0.8, 1.0};  /* Yellow 'sun' diffuse light. */
-	GLfloat sun_position[] = {0.69, 0.7, 0.2, 0.0};  /* Infinite light location. */
+	CTrack *theTrack = theWorld->getTrack();
+	CVector lightDir = theTrack->m_LightDirection;
+	CVector lightCol = theTrack->m_LightColor;
+	CVector ambCol = theTrack->m_AmbientColor;
+	
+	GLfloat light_color[] = {lightCol.x, lightCol.y, lightCol.z, 1.0};
+	GLfloat light_direction[] = {-lightDir.x, -lightDir.y, -lightDir.z, 0.0};
+	GLfloat ambient_color[] = {ambCol.x, ambCol.y, ambCol.z, 1.0};
 
-	glLightfv(GL_LIGHT0, GL_POSITION, sun_position);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, sun_diffuse);
+	glLightfv(GL_LIGHT0, GL_POSITION, light_direction);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_color);
+	glLightfv(GL_LIGHT0, GL_AMBIENT, ambient_color);
 
 	const CVector &camera = m_Camera->getPosition();
 
@@ -562,4 +587,86 @@ void CGameRenderer::viewMovObj(unsigned int n)
 
 		glPopMatrix();
 	}
+}
+
+void CGameRenderer::viewDashboard(unsigned int n)
+{
+	//The object:
+	CMovingObject *theObj = theWorld->getMovingObject( ((CGameCamera *)(m_Cameras[n]))->m_PrimaryTarget );
+
+	int w = m_ViewportW;
+	int h = m_ViewportH;
+
+	glMatrixMode( GL_MODELVIEW );
+	glLoadIdentity();
+
+	if(m_Settings.m_ZBuffer) glDisable(GL_DEPTH_TEST);
+	if(m_Settings.m_FogMode >= 0) glDisable(GL_FOG);
+	glDisable(GL_LIGHTING);
+	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
+
+
+	theConsoleFont->enable();
+
+	//The message in the middle:
+	CString message;
+	float msgAlpha = 1.0;
+	if(theObj->m_IncomingMessages.size() > 0)
+	{
+		//remove all messages but the last:
+		if(theObj->m_IncomingMessages.size() > 1)
+		{
+			theObj->m_IncomingMessages[0] = theObj->m_IncomingMessages.back();
+			theObj->m_IncomingMessages.resize(1); //delete all messages except the last
+		}
+
+		float racingTime = CTimer().getTime() - theWorld->m_GameStartTime;
+		float msgAge = racingTime - theObj->m_IncomingMessages[0].m_SendTime;
+		float maxAge = 3.0;
+		float fadeAge = 1.0;
+
+		if(msgAge < maxAge)
+		{
+			message = theObj->m_IncomingMessages[0].m_Message;
+
+			msgAge = msgAge - maxAge + fadeAge;
+			if(msgAge > 0.0)
+			{
+				msgAlpha = 1.0 - msgAge / fadeAge;
+			}
+		}
+		else
+		{
+			theObj->m_IncomingMessages.clear(); //also delete the last message
+		}
+	}
+
+	if(message.length() > 0)
+	{
+		glPushMatrix();
+		glTranslatef(
+			0.5*(w - message.length() * theConsoleFont->getFontW()),
+			0.5*(h + theConsoleFont->getFontH()),
+			0);
+		glScalef(2,2,2);
+		glColor4f(1,1,1,msgAlpha);
+		theConsoleFont->drawString(message);
+		glColor4f(1,1,1,1);
+		glPopMatrix();
+	}
+
+	theConsoleFont->disable();
+	
+	glBegin(GL_LINE_LOOP);
+	glVertex2f(0.1*w,0.1*h);
+	glVertex2f(0.9*w,0.1*h);
+	glVertex2f(0.9*w,0.9*h);
+	glVertex2f(0.1*w,0.9*h);
+	glEnd();
+
+
+	glEnable(GL_LIGHTING);
+	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+	if(m_Settings.m_ZBuffer) glEnable(GL_DEPTH_TEST);
+	if(m_Settings.m_FogMode >= 0) glEnable(GL_FOG);
 }

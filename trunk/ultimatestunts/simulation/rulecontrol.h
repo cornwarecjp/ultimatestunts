@@ -43,6 +43,8 @@ protected:
 	//Car rules:
 	void placeStart();
 	void updateCarRules(CCar *car);
+	void addPenaltytime(CCar *car, float t);
+	void finish(CCar *car);
 	bool checkFinished();
 
 	int m_StartX, m_StartY, m_StartH, m_StartIndex,

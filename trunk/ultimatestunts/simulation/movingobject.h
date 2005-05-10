@@ -22,9 +22,15 @@
 /**
   *@author CJP
   */
+
+#include <vector>
+namespace std {}
+using namespace std;
+
 #include "message.h"
 #include "movobjinput.h"
 #include "dataobject.h"
+#include "chatmessage.h"
 
 #include "collisiondata.h"
 
@@ -71,6 +77,9 @@ public:
 	//dynamic data:
 	vector<CBody> m_Bodies; //The object bodies
 	CMovObjInput *m_InputData;
+
+	//Messages to player:
+	vector<CChatMessage> m_IncomingMessages;
 
 	//This one is used in correctCollisions(). Only the collisions of one simulation step.
 	vector<CCollisionData> m_SimCollisions;

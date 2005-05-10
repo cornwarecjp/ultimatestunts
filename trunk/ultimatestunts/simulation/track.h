@@ -23,6 +23,8 @@ namespace std {}
 using namespace std;
 
 #include "dataobject.h"
+#include "datafile.h"
+#include "vector.h"
 
 /**
   *@author CJP
@@ -52,6 +54,12 @@ public:
 
 	CString m_BackgroundFilename;
 	CString m_EnvMapFilename;
+	CVector m_LightDirection;
+	CVector m_LightColor;
+	CVector m_AmbientColor;
+
+private:
+	bool findBeginTag(CDataFile &f);
 };
 
 #endif
