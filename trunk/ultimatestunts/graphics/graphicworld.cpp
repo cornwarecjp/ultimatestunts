@@ -32,14 +32,16 @@ CGraphicWorld::CGraphicWorld()
 	if(cnf != "")
 		m_TexMaxSize = cnf.toInt();
 
-	m_Background = new CBackground(this);
-	m_EnvMap = new CTexture(this);
 	cnf = theMainConfig->getValue("graphics", "background_size");
 	if(cnf != "")
 		m_BackgroundSize = cnf.toInt();
 
 	cnf = theMainConfig->getValue("graphics", "texture_smooth");
 	m_TexSmooth = (cnf != "false");
+
+	//Create objects:
+	m_Background = new CBackground(this);
+	m_EnvMap = new CStaticReflection(m_TexSmooth, this);
 }
 
 CGraphicWorld::~CGraphicWorld()

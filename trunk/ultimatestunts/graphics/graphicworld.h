@@ -23,7 +23,7 @@
 #include "background.h"
 #include "world.h"
 #include "lconfig.h"
-#include "reflection.h"
+#include "staticreflection.h"
 #include "datamanager.h"
 
 /**
@@ -46,7 +46,7 @@ public:
 		{return (CGraphObj *)getObject(CDataObject::eBound, n);}
 
 	CBackground *m_Background;
-	CTexture *m_EnvMap;
+	CStaticReflection *m_EnvMap;
 protected:
 	virtual CDataObject *createObject(const CString &filename, const CParamList &plist, CDataObject::eDataType type);
 

@@ -1,8 +1,8 @@
 /***************************************************************************
-                          reflection.h  -  A dynamic reflection map
+                          staticreflection.h  -  description
                              -------------------
-    begin                : ma sep 20 2004
-    copyright            : (C) 2004 by CJP
+    begin                : za mei 14 2005
+    copyright            : (C) 2005 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
 
@@ -15,32 +15,22 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef REFLECTION_H
-#define REFLECTION_H
+#ifndef STATICREFLECTION_H
+#define STATICREFLECTION_H
 
-#include "renderer.h"
-#include "graphicsettings.h"
+#include "reflection.h"
+#include "texture.h"
 
 /**
   *@author CJP
   */
 
-//ONLY USE DERIVED CLASSES (CStaticReflection and CDynamicReflection)
-class CReflection  {
+class CStaticReflection : public CReflection , public CTexture {
 public: 
-	CReflection(bool smooth);
-	~CReflection();
+	CStaticReflection(bool smooth, CDataManager *manager);
+	~CStaticReflection();
 
-	void enable(const SGraphicSettings *settings);
-	void disable();
-
-protected:
-	unsigned int m_Texture; //spheremap texture
-
-	bool m_TexSmooth;
-	const SGraphicSettings *m_CurrentSettings;
-
-	float oldambient[4]; //temporary place to put the ambient color
+	bool load(const CString &filename, const CParamList &list);
 };
 
 #endif
