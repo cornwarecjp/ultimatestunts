@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Ultimate Stunts 0.5.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-02-28 22:55+0100\n"
+"POT-Creation-Date: 2005-05-14 22:10+0200\n"
 "PO-Revision-Date: 2005-02-03 14:11+0100\n"
 "Last-Translator: Borbola Balazs <EMAIL@ADDRESS>\n"
 "Language-Team: Hungarian <LL@li.org>\n"
@@ -162,17 +162,17 @@ msgstr "Ez egy számítógép által vezérelt játékos?"
 msgid "Player %s was refused"
 msgstr "Játékos visszautasítva: %s"
 
-#: ultimatestunts/uscore.cpp:89
+#: ultimatestunts/uscore.cpp:116
 #, c-format
 msgid "Frame rate: %.1f FPS"
 msgstr "Képkocka/másodperc: %.1f FPS"
 
-#: ultimatestunts/uscore.cpp:90
+#: ultimatestunts/uscore.cpp:117
 #, c-format
 msgid "Top speed in this session: %.1f km/h"
 msgstr "Csúcssebesség ebben a szakaszban: %.1f km/h"
 
-#: ultimatestunts/uscore.cpp:103
+#: ultimatestunts/uscore.cpp:130
 #, c-format
 msgid "Car %d velocity %.1f km/h; gear %d; %.1f RPM"
 msgstr ""
@@ -193,3 +193,23 @@ msgstr "Nem"
 #: shared/hello.cpp:31
 msgid "Hello, world!\n"
 msgstr "Helló világ!\n"
+
+#: simulation/rulecontrol.cpp:67
+msgid "GO!"
+msgstr ""
+
+#: simulation/rulecontrol.cpp:166
+msgid "Penalty time: "
+msgstr ""
+
+#: simulation/rulecontrol.cpp:176
+msgid "You finished (waiting for other players)"
+msgstr ""
+
+#: simulation/rulecontrol.cpp:198
+msgid "Error: more than one start in the track\n"
+msgstr ""
+
+#: simulation/rulecontrol.cpp:208
+msgid "Error: more than one finish in the track\n"
+msgstr ""

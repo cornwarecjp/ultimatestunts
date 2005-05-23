@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-02-28 22:55+0100\n"
+"POT-Creation-Date: 2005-05-14 22:10+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -164,17 +164,17 @@ msgstr ""
 msgid "Player %s was refused"
 msgstr ""
 
-#: ultimatestunts/uscore.cpp:89
+#: ultimatestunts/uscore.cpp:116
 #, c-format
 msgid "Frame rate: %.1f FPS"
 msgstr ""
 
-#: ultimatestunts/uscore.cpp:90
+#: ultimatestunts/uscore.cpp:117
 #, c-format
 msgid "Top speed in this session: %.1f km/h"
 msgstr ""
 
-#: ultimatestunts/uscore.cpp:103
+#: ultimatestunts/uscore.cpp:130
 #, c-format
 msgid "Car %d velocity %.1f km/h; gear %d; %.1f RPM"
 msgstr ""
@@ -193,4 +193,24 @@ msgstr ""
 
 #: shared/hello.cpp:31
 msgid "Hello, world!\n"
+msgstr ""
+
+#: simulation/rulecontrol.cpp:67
+msgid "GO!"
+msgstr ""
+
+#: simulation/rulecontrol.cpp:166
+msgid "Penalty time: "
+msgstr ""
+
+#: simulation/rulecontrol.cpp:176
+msgid "You finished (waiting for other players)"
+msgstr ""
+
+#: simulation/rulecontrol.cpp:198
+msgid "Error: more than one start in the track\n"
+msgstr ""
+
+#: simulation/rulecontrol.cpp:208
+msgid "Error: more than one finish in the track\n"
 msgstr ""

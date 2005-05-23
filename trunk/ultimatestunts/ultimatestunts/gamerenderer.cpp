@@ -141,7 +141,7 @@ void CGameRenderer::updateReflections()
 	if(numPresent < numRequired)
 		for(unsigned int i=0; i< (numRequired - numPresent); i++)
 		{
-			CReflection r(m_Settings.m_TexSmooth, m_Settings.m_ReflectionSize);
+			CDynamicReflection r(m_Settings.m_TexSmooth, m_Settings.m_ReflectionSize);
 			m_MovingObjectReflections.push_back(r);
 		}
 
@@ -515,8 +515,8 @@ void CGameRenderer::viewPilaar(int x, int y, int cur_zpos)
 							rnu = rstrax;
 						}
 
-						//tekenen
-						m_GraphicWorld->getTile(temp.m_Model)->draw(&m_Settings, NULL, lod);
+						//draw the model
+						m_GraphicWorld->getTile(temp.m_Model)->draw(&m_Settings, m_GraphicWorld->m_EnvMap, lod);
 					}
 				}
 				break;
@@ -534,7 +534,7 @@ void CGameRenderer::viewPilaar(int x, int y, int cur_zpos)
 			}
 
 			//tekenen
-			m_GraphicWorld->getTile(temp.m_Model)->draw(&m_Settings, NULL, lod);
+			m_GraphicWorld->getTile(temp.m_Model)->draw(&m_Settings, m_GraphicWorld->m_EnvMap, lod);
 		}
 
 	glPopMatrix();
@@ -622,7 +622,7 @@ void CGameRenderer::viewDashboard(unsigned int n)
 
 		float racingTime = CTimer().getTime() - theWorld->m_GameStartTime;
 		float msgAge = racingTime - theObj->m_IncomingMessages[0].m_SendTime;
-		float maxAge = 3.0;
+		float maxAge = 1.0 + 0.1 * theObj->m_IncomingMessages[0].m_Message.length();
 		float fadeAge = 1.0;
 
 		if(msgAge < maxAge)
@@ -643,12 +643,13 @@ void CGameRenderer::viewDashboard(unsigned int n)
 
 	if(message.length() > 0)
 	{
+		float size = 2.0; //character size
 		glPushMatrix();
 		glTranslatef(
-			0.5*(w - message.length() * theConsoleFont->getFontW()),
+			0.5*(w - message.length() * size * theConsoleFont->getFontW()),
 			0.5*(h + theConsoleFont->getFontH()),
 			0);
-		glScalef(2,2,2);
+		glScalef(size,size,size);
 		glColor4f(1,1,1,msgAlpha);
 		theConsoleFont->drawString(message);
 		glColor4f(1,1,1,1);
@@ -657,14 +658,6 @@ void CGameRenderer::viewDashboard(unsigned int n)
 
 	theConsoleFont->disable();
 	
-	glBegin(GL_LINE_LOOP);
-	glVertex2f(0.1*w,0.1*h);
-	glVertex2f(0.9*w,0.1*h);
-	glVertex2f(0.9*w,0.9*h);
-	glVertex2f(0.1*w,0.9*h);
-	glEnd();
-
-
 	glEnable(GL_LIGHTING);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 	if(m_Settings.m_ZBuffer) glEnable(GL_DEPTH_TEST);

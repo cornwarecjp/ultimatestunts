@@ -84,7 +84,7 @@ protected:
 	float m_PositionAboveGround;
 
 	//wheels
-	float m_FrontBrakeMax, m_RearBrakeMax, m_FrontSteerMax, m_RearSteerMax;
+	float m_FrontSteerMax, m_RearSteerMax;
 	float m_FrontDownforce, m_RearDownforce;
 };
 

@@ -9,11 +9,11 @@ Syntax:
 BEGIN
 8
 textures/grass2.rgb
-textures/road2.rgb
+textures/water1.rgb
+textures/sand1.rgb
+textures/road1.rgb
+textures/bricks1.rgb
 textures/cornerblocks.rgb
-textures/bricks2.rgb
 textures/wood.rgb
-textures/test.rgb
-textures/test.rgb
 textures/test.rgb
 END

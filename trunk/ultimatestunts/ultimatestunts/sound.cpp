@@ -230,21 +230,21 @@ void CSound::update()
 #ifdef HAVE_LIBOPENAL
 	//Arguments: pos, vel, front x,y,z, top x,y,z
 	float ori_arr[] =
-		{-ori.Element(0,2), ori.Element(1,2), ori.Element(2,2),
-		-ori.Element(0,1), ori.Element(1,1), ori.Element(2,1)};
+		{-ori.Element(0,2), -ori.Element(1,2), -ori.Element(2,2),
+		  ori.Element(0,1),  ori.Element(1,1),  ori.Element(2,1)};
 	alListener3f(AL_POSITION, p.x/10, p.y/10, p.z/10);
 	alListener3f(AL_VELOCITY, v.x/10, v.y/10, v.z/10);
 	alListenerfv(AL_ORIENTATION, ori_arr);
 #endif
 
 #ifdef HAVE_LIBFMOD
-	float pos[] = {p.x/10, p.y/10, p.z/10};
-	float vel[] = {v.x/10, v.y/10, v.z/10};
+	float pos[] = {p.x/10, p.y/10, -p.z/10};
+	float vel[] = {v.x/10, v.y/10, -v.z/10};
 	//Arguments: pos, vel, front x,y,z, top x,y,z
 	FSOUND_3D_Listener_SetAttributes(
 		&pos[0], &vel[0],
-		-ori.Element(0,2), ori.Element(1,2), ori.Element(2,2),
-		-ori.Element(0,1), ori.Element(1,1), ori.Element(2,1)
+		-ori.Element(0,2), -ori.Element(1,2),  ori.Element(2,2),
+		 ori.Element(0,1),  ori.Element(1,1), -ori.Element(2,1)
 	);
 #endif
 

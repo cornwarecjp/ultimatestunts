@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Ultimate Stunts 0.5.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-02-28 22:55+0100\n"
+"POT-Creation-Date: 2005-05-14 22:10+0200\n"
 "PO-Revision-Date: 2002-02-02 19:28+0100\n"
 "Last-Translator: CJP <cornware-cjp@users.sourceforge.net>\n"
 "Language-Team: Dutch <cornware-cjp@users.sourceforge.net>\n"
@@ -163,17 +163,17 @@ msgstr "Is het een AI speler?"
 msgid "Player %s was refused"
 msgstr "Speler %s was geweigerd"
 
-#: ultimatestunts/uscore.cpp:89
+#: ultimatestunts/uscore.cpp:116
 #, c-format
 msgid "Frame rate: %.1f FPS"
 msgstr "Frame rate: %.1f FPS"
 
-#: ultimatestunts/uscore.cpp:90
+#: ultimatestunts/uscore.cpp:117
 #, c-format
 msgid "Top speed in this session: %.1f km/h"
 msgstr "max snelheid in deze sessie: %.1f km/h"
 
-#: ultimatestunts/uscore.cpp:103
+#: ultimatestunts/uscore.cpp:130
 #, c-format
 msgid "Car %d velocity %.1f km/h; gear %d; %.1f RPM"
 msgstr "Auto %d snelheid %.1f km/h; versnelling %d; %.1f RPM"
@@ -193,3 +193,23 @@ msgstr "Nee"
 #: shared/hello.cpp:31
 msgid "Hello, world!\n"
 msgstr "Hallo, wereld!\n"
+
+#: simulation/rulecontrol.cpp:67
+msgid "GO!"
+msgstr "GO!"
+
+#: simulation/rulecontrol.cpp:166
+msgid "Penalty time: "
+msgstr "Penalty tijd: "
+
+#: simulation/rulecontrol.cpp:176
+msgid "You finished (waiting for other players)"
+msgstr "U bent gefinished (wacht op andere spelers)"
+
+#: simulation/rulecontrol.cpp:198
+msgid "Error: more than one start in the track\n"
+msgstr "Error: meer dan één start in de track\n"
+
+#: simulation/rulecontrol.cpp:208
+msgid "Error: more than one finish in the track\n"
+msgstr "Error: meer dan één finish in de track\n"

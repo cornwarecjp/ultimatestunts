@@ -25,7 +25,8 @@
   */
 
 class CChatMessage : public CTextMessage  {
-public: 
+public:
+	CChatMessage(const CString &str);
 	CChatMessage();
 	virtual ~CChatMessage();
 

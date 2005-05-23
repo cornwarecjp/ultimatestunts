@@ -122,7 +122,7 @@ sub_dirs=
 type=static_library
 
 [graphics/Makefile.am]
-files=graphics/winsystem.cpp,graphics/winsystem.h,graphics/graphobj.cpp,graphics/graphobj.h,graphics/image.c,graphics/image.h,graphics/texture.cpp,graphics/texture.h,graphics/renderer.cpp,graphics/renderer.h,graphics/graphicworld.cpp,graphics/graphicworld.h,graphics/gui.cpp,graphics/gui.h,graphics/camera.h,graphics/background.cpp,graphics/background.h,graphics/reflection.cpp,graphics/reflection.h,graphics/console.cpp,graphics/console.h,graphics/font.cpp,graphics/font.h,graphics/lodtexture.cpp,graphics/lodtexture.h,graphics/widget.h,graphics/guipage.cpp,graphics/guipage.h,graphics/menu.cpp,graphics/menu.h,graphics/widget.cpp,graphics/inputbox.cpp,graphics/inputbox.h,graphics/messagebox.cpp,graphics/messagebox.h,graphics/glextensions.cpp,graphics/glextensions.h,graphics/graphicsettings.h
+files=graphics/winsystem.cpp,graphics/winsystem.h,graphics/graphobj.cpp,graphics/graphobj.h,graphics/image.c,graphics/image.h,graphics/texture.cpp,graphics/texture.h,graphics/renderer.cpp,graphics/renderer.h,graphics/graphicworld.cpp,graphics/graphicworld.h,graphics/gui.cpp,graphics/gui.h,graphics/camera.h,graphics/background.cpp,graphics/background.h,graphics/reflection.cpp,graphics/reflection.h,graphics/console.cpp,graphics/console.h,graphics/font.cpp,graphics/font.h,graphics/lodtexture.cpp,graphics/lodtexture.h,graphics/widget.h,graphics/guipage.cpp,graphics/guipage.h,graphics/menu.cpp,graphics/menu.h,graphics/widget.cpp,graphics/inputbox.cpp,graphics/inputbox.h,graphics/messagebox.cpp,graphics/messagebox.h,graphics/glextensions.cpp,graphics/glextensions.h,graphics/graphicsettings.h,graphics/staticreflection.cpp,graphics/staticreflection.h,graphics/dynamicreflection.cpp,graphics/dynamicreflection.h
 sub_dirs=
 type=static_library
 
@@ -151,6 +151,18 @@ install_location=
 type=SOURCE
 
 [graphics/console.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[graphics/dynamicreflection.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[graphics/dynamicreflection.h]
 dist=true
 install=false
 install_location=
@@ -313,6 +325,18 @@ install_location=
 type=SOURCE
 
 [graphics/renderer.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[graphics/staticreflection.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[graphics/staticreflection.h]
 dist=true
 install=false
 install_location=

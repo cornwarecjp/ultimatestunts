@@ -4,5 +4,6 @@ ultimatestunts/gamegui.cpp
 ultimatestunts/uscore.cpp
 graphics/messagebox.cpp
 shared/hello.cpp
+simulation/rulecontrol.cpp
 
 # end of file POTFILE.in

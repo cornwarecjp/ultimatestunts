@@ -56,6 +56,7 @@ enum eKeyconf {
 	eScale = 's',
 	eMirror = 'm',
 	eClamp = 'a',
+	eGenerate = 'g',
 	eTranslate = 't',
 
 	eRotateTexture = 'R',
@@ -134,6 +135,8 @@ bool mainloop()
 		mirrorFunc();
 	if(winsys->wasPressed(eClamp))
 		clampFunc();
+	if(winsys->wasPressed(eGenerate))
+		generateFunc();
 	if(winsys->wasPressed(eTranslate))
 		translateFunc();
 	if(winsys->wasPressed(eRotateTexture))

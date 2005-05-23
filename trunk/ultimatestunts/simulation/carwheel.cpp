@@ -31,11 +31,16 @@ CCarWheel::CCarWheel()
 	m_w = 0.0;
 	m_M = 0.0;
 	m_Z = CVector(0.0,0.0,1.0);
+
 	m_DesiredSt = 0.0;
 	m_SkidVolume = 0.0;
 
 	m_Radius = 0.35;
 	m_Iinv_eff = 1.0 / (5.0 * m_Radius * m_Radius); //assume the mass to be 5.0 to 10.0 kg
+	m_suspk = 100000.0;
+	m_tractionStiffness = 0.25;
+	m_cornerStiffness = 1.0;
+	m_BrakeMax = 100.0;
 }
 
 CCarWheel::~CCarWheel(){
@@ -114,4 +119,36 @@ CVector CCarWheel::getGroundForce(float &groundM, float vlong, float vlat, float
 	staticlimit(contactMu, Fhor, m_SkidVolume);
 
 	return m_Fnormal * (Fhor + CVector(0.0, 1.0, 0.0));
+}
+
+/*
+The following function defines the behaviour of the brakes.
+
+parameters:
+brakeFactor : a value between 0 and 1 that describes how hard we brake
+
+return value:
+The torque of the brakes. Should be positive for a forward driving car.
+
+You can use m_w, the angular velocity of the wheel around its axis.
+*/
+float CCarWheel::getBrakeTorque(float brakeFactor)
+{
+	/*
+	                |  /---------------
+	                | /
+	                |/
+	----------------+-------------------
+	               /|
+	              / |
+	-------------/  |
+
+	The maximum value is m_BrakeMax
+	The slope is m_BrakeMax
+	The critical speed is 1 rad/s
+	*/
+	float M = brakeFactor * m_BrakeMax * m_w;
+	if(M >  m_BrakeMax) M =  m_BrakeMax;
+	if(M < -m_BrakeMax) M = -m_BrakeMax;
+	return M;
 }

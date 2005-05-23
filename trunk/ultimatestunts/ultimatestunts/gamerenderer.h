@@ -23,6 +23,7 @@
 
 #include "graphicworld.h"
 #include "movingobject.h"
+#include "dynamicreflection.h"
 
 /**
   *@author CJP
@@ -73,7 +74,7 @@ protected:
 	const CWorld *m_World;
 	CGraphicWorld *m_GraphicWorld;
 
-	vector<CReflection> m_MovingObjectReflections;
+	vector<CDynamicReflection> m_MovingObjectReflections;
 
 	int m_UpdateBodyReflection;
 

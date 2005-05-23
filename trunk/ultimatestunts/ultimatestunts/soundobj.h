@@ -59,6 +59,8 @@ protected:
 	int m_MovingObjectID;
 	bool m_Looping;
 
+	CSndSample *m_CurrentSample;
+
 #ifdef HAVE_LIBFMOD
 	int m_Channel;
 

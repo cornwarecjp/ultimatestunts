@@ -173,7 +173,7 @@ bool CSndSample::load(const CString &filename, const CParamList &list)
 int CSndSample::attachToChannel(int c)
 {
 #ifdef HAVE_LIBFMOD
-	return FSOUND_PlaySoundEx(c, m_Sample, NULL, true);
+	return FSOUND_PlaySoundEx(c, m_Sample, NULL, 1);
 #endif
 
 #ifdef HAVE_LIBOPENAL

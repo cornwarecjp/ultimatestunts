@@ -42,14 +42,14 @@ bool CFile::open(CString filename, bool write)
 
 	if(write)
 	{
-		fp = fopen(fn,"w");
+		fp = fopen(fn,"wb");
 
 		if(fp==NULL)
 		{printf("Error: could not write to %s\n", fn); return false;}
 	}
 	else
 	{
-		fp = fopen(fn,"r");
+		fp = fopen(fn,"rb");
 
 		if(fp==NULL)
 			{printf("Error: could not read from %s\n", fn); return false;}

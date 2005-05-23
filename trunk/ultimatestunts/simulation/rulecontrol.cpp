@@ -17,6 +17,10 @@
 
 #include <cstdio> //debugging
 
+#include <libintl.h>
+#define _(String) gettext (String)
+#define N_(String1, String2, n) ngettext ((String1), (String2), (n))
+
 #include "rulecontrol.h"
 #include "usmacros.h"
 
@@ -33,7 +37,7 @@ bool CRuleControl::update()
 	if(firstUpdate)
 	{
 		firstUpdate = false;
-		theWorld->m_GameStartTime = m_Timer.getTime() + 3.0;
+		theWorld->m_GameStartTime = m_Timer.getTime() + 3.01;
 
 		if(!findStartFinish()) //error with starts/finishes
 			return false; //stop
@@ -42,10 +46,31 @@ bool CRuleControl::update()
 		theWorld->m_Paused = true;
 	}
 
-	if(theWorld->m_Paused && m_Timer.getTime() > theWorld->m_GameStartTime)
-		theWorld->m_Paused = false;
+	if(theWorld->m_Paused)
+	{
+		float t = m_Timer.getTime();
 
-	if(!(theWorld->m_Paused))
+		if(t > theWorld->m_GameStartTime)
+			theWorld->m_Paused = false;
+
+		static int timedif = 4;
+
+		int difnow = int(1.0 + theWorld->m_GameStartTime - t);
+		if(difnow != timedif)
+		{
+			timedif = difnow;
+
+			CChatMessage msg;
+			if(timedif > 0)
+				{msg.m_Message = CString(timedif);}
+			else
+				{msg.m_Message = _("GO!");}
+
+			for(unsigned int i=0; i < theWorld->getNumObjects(CDataObject::eMovingObject); i++)
+				theWorld->getMovingObject(i)->m_IncomingMessages.push_back(msg);
+		}
+	}
+	else
 	{
 		vector<CDataObject *> objs = theWorld->getObjectArray(CDataObject::eMovingObject);
 		for(unsigned int i=0; i < objs.size(); i++)
@@ -138,7 +163,7 @@ void CRuleControl::addPenaltytime(CCar *car, float t)
 	if(car->m_RuleStatus.addPenalty(t))
 	{
 		CChatMessage m;
-		m.m_Message = CString("Penalty time: ") + (CString().fromTime(t));
+		m.m_Message = CString(_("Penalty time: ")) + (CString().fromTime(t));
 		car->m_IncomingMessages.push_back(m);
 	}
 }
@@ -148,7 +173,7 @@ void CRuleControl::finish(CCar *car)
 	if(car->m_RuleStatus.finish())
 	{
 		CChatMessage m;
-		m.m_Message = CString("You finished (waiting for other players)");
+		m.m_Message = CString(_("You finished (waiting for other players)"));
 		car->m_IncomingMessages.push_back(m);
 	}
 }
@@ -170,7 +195,7 @@ bool CRuleControl::findStartFinish()
 				if(theWorld->getTileModel(tile.m_Model)->m_isStart)
 
 					if(founds) //more than 1 start position
-						{printf(">1 start\n"); return false;}
+						{printf(_("Error: more than one start in the track\n")); return false;}
 					else
 					{
 						founds = true;
@@ -180,7 +205,7 @@ bool CRuleControl::findStartFinish()
 				if(theWorld->getTileModel(tile.m_Model)->m_isFinish)
 
 					if(foundf) //more than 1 finish position
-						{printf(">1 finish\n"); return false;}
+						{printf(_("Error: more than one finish in the track\n")); return false;}
 					else
 					{
 						foundf = true;

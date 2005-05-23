@@ -83,8 +83,8 @@ bool CCar::load(const CString &filename, const CParamList &list)
 	float RearWheelcornerstiffness = cfile.getValue("rearwheels", "cornerstiffness").toFloat();
 	CVector FrontWheelNeutral = cfile.getValue("frontwheels", "position").toVector();
 	CVector RearWheelNeutral = cfile.getValue("rearwheels", "position").toVector();
-	m_FrontBrakeMax = cfile.getValue("frontwheels", "brakemax").toFloat();
-	m_RearBrakeMax = cfile.getValue("rearwheels", "brakemax").toFloat();
+	float FrontBrakeMax = cfile.getValue("frontwheels", "brakemax").toFloat();
+	float RearBrakeMax = cfile.getValue("rearwheels", "brakemax").toFloat();
 	m_FrontSteerMax = cfile.getValue("frontwheels", "steermax").toFloat();
 	m_RearSteerMax = -cfile.getValue("rearwheels", "steermax").toFloat();
 	m_Engine.m_FrontTraction = cfile.getValue("frontwheels", "traction").toFloat();
@@ -96,13 +96,21 @@ bool CCar::load(const CString &filename, const CParamList &list)
 	m_Engine.m_EngineM = cfile.getValue("engine", "enginetorque").toFloat();
 	m_Engine.m_MaxEngineW = cfile.getValue("engine", "maxenginespeed").toFloat();
 	m_Engine.m_dMdw = 5*m_Engine.m_EngineM / m_Engine.m_MaxEngineW;
-	m_Engine.m_GearRatios.push_back(cfile.getValue("engine", "gear0").toFloat());
-	m_Engine.m_GearRatios.push_back(cfile.getValue("engine", "gear1").toFloat());
-	m_Engine.m_GearRatios.push_back(cfile.getValue("engine", "gear2").toFloat());
-	m_Engine.m_GearRatios.push_back(cfile.getValue("engine", "gear3").toFloat());
-	m_Engine.m_GearRatios.push_back(cfile.getValue("engine", "gear4").toFloat());
-	m_Engine.m_GearRatios.push_back(cfile.getValue("engine", "gear5").toFloat());
-	m_Engine.m_GearRatios.push_back(cfile.getValue("engine", "gear6").toFloat());
+	float gear0 = cfile.getValue("engine", "gear0").toFloat();
+	float gear1 = cfile.getValue("engine", "gear1").toFloat();
+	float gear2 = cfile.getValue("engine", "gear2").toFloat();
+	float gear3 = cfile.getValue("engine", "gear3").toFloat();
+	float gear4 = cfile.getValue("engine", "gear4").toFloat();
+	float gear5 = cfile.getValue("engine", "gear5").toFloat();
+	float gear6 = cfile.getValue("engine", "gear6").toFloat();
+	m_Engine.m_GearRatios.push_back(gear0);
+	m_Engine.m_GearRatios.push_back(gear1);
+	if(gear2 > 0.00001) m_Engine.m_GearRatios.push_back(gear2);
+	if(gear3 > 0.00001) m_Engine.m_GearRatios.push_back(gear3);
+	if(gear4 > 0.00001) m_Engine.m_GearRatios.push_back(gear4);
+	if(gear5 > 0.00001) m_Engine.m_GearRatios.push_back(gear5);
+	if(gear6 > 0.00001) m_Engine.m_GearRatios.push_back(gear6);
+
 	m_Engine.m_DifferentialRatio = cfile.getValue("engine", "differentialratio").toFloat();
 
 	//The sounds:
@@ -188,6 +196,10 @@ bool CCar::load(const CString &filename, const CParamList &list)
 	m_Wheel[1].m_cornerStiffness = FrontWheelcornerstiffness;
 	m_Wheel[2].m_cornerStiffness = RearWheelcornerstiffness;
 	m_Wheel[3].m_cornerStiffness = RearWheelcornerstiffness;
+	m_Wheel[0].m_BrakeMax = FrontBrakeMax;
+	m_Wheel[1].m_BrakeMax = FrontBrakeMax;
+	m_Wheel[2].m_BrakeMax = RearBrakeMax;
+	m_Wheel[3].m_BrakeMax = RearBrakeMax;
 
 	//Setting the initial positions
 	resetBodyPositions(CVector(0,0,0), CMatrix());
@@ -682,11 +694,31 @@ void CCar::doSteering(float dt)
 	CCarInput *input = (CCarInput *)m_InputData;
 	float steer = input->m_Right;
 
+	//the speed of steering
+	float steerspeed = 0.25 / (1.0 + 0.01 * m_Velocity.abs()); //faster velocity -> slower steering
+
+	if((m_DesiredSteering < 0.0 && steer > m_DesiredSteering) ||
+		(m_DesiredSteering > 0.0 && steer < m_DesiredSteering)) 
+		steerspeed *= 10.0; //steer back to neutral is faster
+
+	//New linear function:
+	float steerchange = copysign(steerspeed * dt, steer - m_DesiredSteering);
+	m_DesiredSteering += steerchange;
+	if(m_DesiredSteering < -1.0) m_DesiredSteering = -1.0;
+	if(m_DesiredSteering >  1.0) m_DesiredSteering =  1.0;
+
+	//fixing straight road driving:
+	if(fabsf(steer) < 0.05 && fabsf(m_DesiredSteering) < 0.05)
+		m_DesiredSteering = 0.0;
+
+	/*
+	//Old exponential function:
 	float factor = exp(-0.5*dt);
 	if(fabsf(steer) < fabsf(m_DesiredSteering))
 		factor = exp(-25.0*dt);
 
 	m_DesiredSteering = factor * m_DesiredSteering + (1.0-factor) * steer;
+	*/
 
 	//if the wheels were in the middle of the car
 	float desiredfront = m_FrontSteerMax * m_DesiredSteering;
@@ -745,13 +777,11 @@ void CCar::updateWheelOrientation()
 void CCar::updateWheelTorques()      //engine + brakes
 {
 	CCarInput *input = (CCarInput *)m_InputData;
-	float frontbrake = m_FrontBrakeMax * input->m_Backward;
-	float rearbrake = m_RearBrakeMax * input->m_Backward;
 
-	m_Wheel[0].m_M = 0.5 * (m_Engine.getWheelM(0) - frontbrake * m_Wheel[0].m_w);
-	m_Wheel[1].m_M = 0.5 * (m_Engine.getWheelM(1) - frontbrake * m_Wheel[1].m_w);
-	m_Wheel[2].m_M = 0.5 * (m_Engine.getWheelM(2) - rearbrake * m_Wheel[2].m_w);
-	m_Wheel[3].m_M = 0.5 * (m_Engine.getWheelM(3) - rearbrake * m_Wheel[3].m_w);
+	m_Wheel[0].m_M = 0.5 * (m_Engine.getWheelM(0) - m_Wheel[0].getBrakeTorque(input->m_Backward));
+	m_Wheel[1].m_M = 0.5 * (m_Engine.getWheelM(1) - m_Wheel[1].getBrakeTorque(input->m_Backward));
+	m_Wheel[2].m_M = 0.5 * (m_Engine.getWheelM(2) - m_Wheel[2].getBrakeTorque(input->m_Backward));
+	m_Wheel[3].m_M = 0.5 * (m_Engine.getWheelM(3) - m_Wheel[3].getBrakeTorque(input->m_Backward));
 
 	//adding the opposite torques to the body
 	for(unsigned int i=0; i < 3; i++)

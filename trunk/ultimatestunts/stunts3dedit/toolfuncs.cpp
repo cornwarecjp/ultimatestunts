@@ -58,6 +58,8 @@ void changePrimitiveFunc()
 	if(answ != "-")
 		p.m_Reflectance = answ.toFloat();
 
+	//Not yet used:
+	/*
 	answ = getInput("Emissivity: ");
 	if(answ != "-")
 		p.m_Emissivity = answ.toFloat();
@@ -69,6 +71,7 @@ void changePrimitiveFunc()
 	answ = getInput("Dynamic friction coefficient: ");
 	if(answ != "-")
 		p.m_DynamicFriction = answ.toFloat();
+	*/
 
 	graphobj->render(VisibleLODs);
 }
@@ -277,5 +280,48 @@ void clampFunc()
 		}
 	}
 	
+	graphobj->render(VisibleLODs);
+}
+
+void generateFunc()
+{
+	CPrimitive &pr = graphobj->m_Primitives[curr_primitive];
+	if(getInput("Generate normal vectors for this primitive (y/n)? ") == "y")
+	{
+		//for every vertex
+		for(unsigned int v=0; v<pr.m_Vertex.size(); v++)
+		{
+			vector<CVector> foundNormals;
+
+			//for every triangle
+			for(unsigned int i=0; i<pr.m_Index.size(); i+= 3)
+			{
+				unsigned int i1 = pr.m_Index[i], //the vertex indices
+					i2 = pr.m_Index[i+1],
+					i3 = pr.m_Index[i+2];
+
+				if(i1 == v || i2 == v || i3 == v) //the vertex is in this triangle
+				{
+					CVector p1 = pr.m_Vertex[i1].pos, //the vertex positions
+						p2 = pr.m_Vertex[i2].pos,
+						p3 = pr.m_Vertex[i3].pos;
+
+					CVector normal = (p2-p1).crossProduct(p3-p1).normal();
+					foundNormals.push_back(normal);
+				}
+			}
+
+			if(foundNormals.size() > 0) //else: keep it unchanged
+			{
+				CVector normal;
+				for(unsigned int i=0; i < foundNormals.size(); i++)
+					normal += foundNormals[i];
+
+				normal.normalise();
+				pr.m_Vertex[v].nor = normal;
+			}
+		}
+	}
+
 	graphobj->render(VisibleLODs);
 }

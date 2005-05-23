@@ -44,6 +44,8 @@ CSoundObj::CSoundObj(int movingobjectID, bool looping)
 	m_Pos.x = m_Pos.y = m_Pos.z = 0;
 	m_Vel.x = m_Vel.y = m_Vel.z = 0;
 
+	m_CurrentSample = NULL;
+
 #ifdef HAVE_LIBOPENAL
 	alGenSources(1, &m_Source);
 	if(looping)
@@ -68,11 +70,22 @@ CSoundObj::~CSoundObj()
 
 int CSoundObj::setSample(CSndSample *s)
 {
+	m_CurrentSample = s;
+
 #ifdef HAVE_LIBFMOD
 	m_Channel = s->attachToChannel(FSOUND_FREE);
 	m_OriginalFrequency = FSOUND_GetFrequency(m_Channel);
 	if(m_Looping)
+	{
+		FSOUND_SetLoopMode(m_Channel, FSOUND_LOOP_NORMAL);
+		setVolume(0); //initial volume
 		FSOUND_SetPaused(m_Channel, 0);
+	}
+	else
+	{
+		FSOUND_SetLoopMode(m_Channel, FSOUND_LOOP_OFF);
+		FSOUND_SetPaused(m_Channel, 1);
+	}
 #endif
 
 #ifdef HAVE_LIBOPENAL
@@ -88,8 +101,8 @@ void CSoundObj::setPos(CVector p)
 {
 	m_Pos = p;
 #ifdef HAVE_LIBFMOD
-	float parr[] = {m_Pos.x/10, m_Pos.y/10, m_Pos.z/10};
-	float varr[] = {m_Vel.x/10, m_Vel.y/10, m_Vel.z/10};
+	float parr[] = {m_Pos.x/10, m_Pos.y/10, -m_Pos.z/10};
+	float varr[] = {m_Vel.x/10, m_Vel.y/10, -m_Vel.z/10};
 	//printf("Setting sound pos to (%f,%f,%f)\n", p.x, p.y, p.z);
 	FSOUND_3D_SetAttributes(m_Channel, parr, varr);
 #endif
@@ -103,8 +116,8 @@ void CSoundObj::setVel(CVector v)
 {
 	m_Vel = v;
 #ifdef HAVE_LIBFMOD
-	float parr[] = {m_Pos.x/10, m_Pos.y/10, m_Pos.z/10};
-	float varr[] = {m_Vel.x/10, m_Vel.y/10, m_Vel.z/10};
+	float parr[] = {m_Pos.x/10, m_Pos.y/10, -m_Pos.z/10};
+	float varr[] = {m_Vel.x/10, m_Vel.y/10, -m_Vel.z/10};
 	FSOUND_3D_SetAttributes(m_Channel, parr, varr);
 #endif
 
@@ -118,8 +131,8 @@ void CSoundObj::setPosVel(CVector p, CVector v)
 	m_Pos = p;
 	m_Vel = v;
 #ifdef HAVE_LIBFMOD
-	float parr[] = {m_Pos.x/10, m_Pos.y/10, m_Pos.z/10};
-	float varr[] = {m_Vel.x/10, m_Vel.y/10, m_Vel.z/10};
+	float parr[] = {m_Pos.x/10, m_Pos.y/10, -m_Pos.z/10};
+	float varr[] = {m_Vel.x/10, m_Vel.y/10, -m_Vel.z/10};
 	FSOUND_3D_SetAttributes(m_Channel, parr, varr);
 #endif
 
@@ -158,6 +171,11 @@ void CSoundObj::setVolume(int v)
 void CSoundObj::playOnce()
 {
 #ifdef HAVE_LIBFMOD
+	if(m_CurrentSample == NULL) return;
+	m_CurrentSample->attachToChannel(m_Channel);
+	FSOUND_SetCurrentPosition(m_Channel, 0);
+	FSOUND_SetLoopMode(m_Channel, FSOUND_LOOP_OFF);
+	FSOUND_SetPaused(m_Channel, 0);
 #endif
 
 #ifdef HAVE_LIBOPENAL

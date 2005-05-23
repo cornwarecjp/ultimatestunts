@@ -44,7 +44,7 @@ int CPlayer::setAutomaticGear(float &gas, float &brake)
 	CCarInput *carin = (CCarInput *)theCar->m_InputData;
 
 	int gear = theCar->m_Engine.m_Gear;
-	int maxgear = 6;
+	int maxgear = theCar->m_Engine.m_GearRatios.size() - 1;
 	float r = theCar->m_Engine.getGearRatio();
 	float w = theCar->m_Engine.m_MainAxisW * r;
 	float M = theCar->m_Engine.getEngineM(w) * r;
