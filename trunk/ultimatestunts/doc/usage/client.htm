@@ -1,0 +1,58 @@
+<html><body>
+<h1>Using the Ultimate Stunts version 0.5.x graphical client program</h1>
+
+<h3>Configuration</h3>
+Ultimatestunts can be configured by editing the file "ultimatestunts.conf".
+This file should currently be placed in the directory from which the program
+is started. Future versions will also look on different places, like
+"$HOME/.ultimatestunts/".
+In "ultimatestunts.conf" data is stored in the same syntax as windows
+.ini-files:
+<pre>
+#Comment
+[sectionname]
+..
+option_name = value
+..
+</pre>
+In the supplied ultimatestunts.conf files, options are explained with
+comment lines.
+<p>
+An option that needs special attention is the datadir-option. This option
+(default value: ".") should point to the directory where you placed your
+data files. E.g. if you placed your data files in /usr/share/stunts,
+then the datadir option should be:
+<pre>
+[files]
+datadir=/usr/share/stunts
+</pre>
+Windows users, using the binary programs compiled by cygwin, should be aware
+that it is not (yet) possible to fill in the usual windows pathname. E.g.
+if your data are stored in "C:\programs\ultimatestunts", then you can't
+just fill in that. Instead, you should write
+<pre>
+datadir=/cygdrive/c/programs/ultimatestunts
+</pre>
+Spaces in file names possibly give problems, but it's also possible that
+it just works (I didn't check it). Using relative path names is allowed,
+e.g. "." is the current directory.
+
+<h3>Usage</h3>
+When the ultimatestunts program is started, music playback starts, and a
+menu interface appears. You can start
+playing immediately, or first select cars/players and the track.
+<p>
+When you choose to start playing, the data files are loaded. Depending on
+your hardware, this might take some time. When all data is loaded, the game
+starts. The controls of the game (keys, joystick etc.) can be set in
+ultimatestunts.conf. This is the default for one player:
+<ul>
+	<li>Arrow keys: accelerate, brake and steer</li>
+	<li>right shift/right ctrl: Gear up/down, including the reverse gear</li>
+	<li>Esc: exit the program</li>
+	<li>right alt: change camera mode</li>
+	<li>/: change camera target car</li>
+	<li>F1: play the next song in the playlist</li>
+</ul>
+</body></html>
+

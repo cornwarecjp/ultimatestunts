@@ -1,0 +1,92 @@
+<html>
+<body>
+<h1>
+Compilation of Ultimate Stunts 0.5.x
+</h1>
+<h3>
+Requirements
+</h3>
+<p>
+To compile UltimateStunts, you'll need a UNIX-compatible
+environment with a c/c++ compiler. You'll also need the
+program 'make', and a shell-program able to execute the
+configure-script. For Linux- and other UNIX-like users, this
+should be no problem. Windows-users can download
+<a href="http://www.cygwin.com">
+Cygwin
+</a>
+to meet those requirements. UltimateStunts will be kept portable 
+with Cygwin during it's development.
+<p>
+Of course you should also have the right library's and development-packages
+installed. The programs that use graphics need the openGL and SDL libraries
+(and things needed by openGL and SDL). The non-graphical programs (such as the
+server) can also use SDL, but it may be possible to compile them without SDL.
+Sound support using the FMOD or the openAL library is optional: if you don't
+have FMOD or openAL, Ultimate Stunts will compile without sound support. if you
+have both, Ultimate Stunts will use openAL by default.<br>
+<p>
+You can find the necessary libraries here:
+<ul>
+	<li><a href="http://www.fmod.org/ifmoddownload.html">FMOD</a></li>
+	<li><a href="http://www.openal.org/downloads.html">openAL</a></li>
+	<li><a href="http://www.libsdl.org/download-1.2.php">SDL</a></li>
+</ul>
+
+<h3>Libraries for Cygwin</h3>
+Because getting the libraries for Cygwin can be difficult, I
+decided to help you by providing Cygwin-packages for
+<a href="../nolanguage/sdlcygwin.tgz">SDL</a>,
+<a href="../nolanguage/fmod-3.73-cygwin.tgz">FMOD</a>.
+They should be extracted in the Cygwin root directory, and then they will be
+ready to be used by Ultimate Stunts.
+
+<h3>FMOD header files</h3>
+Ultimate Stunts assumes that the FMOD header files can be found in a
+subdirectory "fmod" somewhere in the default include search path. A good place
+to put fmod.h etc. would be /usr/include/fmod. The FMOD shared object file can
+be placed e.g. in /usr/lib. Ultimate Stunts expects libfmod.so to be present,
+so maybe you need to create a symlink (like "ln -s libfmod-371.so libfmod.so").
+
+<h3>Compiling</h3>
+Problems during compilation can be very difficult to solve if you are not a
+developer, but as long as it doesn't give any problems, compiling is simple.
+<p>
+First of all you should have downloaded the source package, and
+have it extracted in a directory. Then, Ultimate Stunts should
+be configured for compiling on your system. So, run the configure-
+script:
+<pre>
+./configure
+</pre>
+If everything has worked well, the configure-script has made some
+files with the name "Makefile". This enables "make" to do the
+compiling automatically for you. Start make with the following
+command:
+<pre>
+make
+</pre>
+Make will first compile all code that is shared between the different
+programs. Then it will compile program-specific code and link it all
+together to form the program binaries. The resulting binaries are located
+in the program-specific directories.
+<pre>
+make install
+</pre>
+You must run this command as super-user (root), because it will install the
+compiled binaries and the data files. The default location for this is
+/usr/local/games/ultimatestunts. After this, users can start Ultimate Stunts
+with the command ultimatestunts.sh (it is located in /usr/local/bin, which is
+usually in the PATH variable of users).
+
+<h3>DLL files</h3>
+<p>
+Windows users who want to start their binary's from the explorer,
+from the start menu or any other usual way, should know that all
+cygwin programs need cygwin1.dll. The ultimatestunts binary also
+needs SDL.dll. Find those files, and place them e.g. in the same
+directory as the binaries.
+</p>
+</body>
+</html>
+

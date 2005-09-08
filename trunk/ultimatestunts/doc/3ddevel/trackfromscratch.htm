@@ -1,0 +1,401 @@
+<html>
+<head>
+<title>Tutorial: Creating an Ultimate Stunts track from scratch</title>
+</head>
+<body>
+
+<h1>Creating an Ultimate Stunts track from scratch</h1>
+An essential part of the Stunts gameplay was that players had the ability to
+create their own tracks with a track editor. As Ultimate Stunts is not yet
+finished, the Ultimate Stunts track editor is not yet available. For those
+people who really want to create their own tracks, here is a tutorial on how to
+do that without a track editor.
+<p>
+Track files in Ultimate Stunts are simple text files with the extension .track,
+and they are usually located in the tracks subdirectory of the data files. You
+can simply open them in your favourite text editor, modify and save them. Note
+that the tracks that are provided with the standard data files are UNIX-style
+text files, which means that opening them in windows notepad might give
+problems. Windows users can open them with wordpad. Saving as DOS-style text is
+not a problem, as Ultimate Stunts can read both types of text files. I don't
+think it can read Mac-style text files, so Macintosh-users should save either
+in UNIX-style or in DOS-style.
+
+<h3>File format basics</h3>
+A detailed description of the track file format is available
+<a href="fileformats.htm#track">here</a>. You will need all that information,
+so I reccomend reading it.
+
+<h1>Some tiles and textures we're going to use</h1>
+A track is built of tiles, which use textures (images that are mapped on the
+3D geometry). We need to define which tiles and textures will be used. There
+are some tiles and textures available in the standard data files, and we'll use
+some of them. These have dutch names for historical reasons: when I started
+Ultimate Stunts, I didn't plan to release it on the internet. With the
+international group of users I have now, english would be a better choice. I'll
+change the names to english in the future, but for now, I'll just explain
+the content of the files that we're going to use. First of all the textures:
+<ul>
+	<li>textures/gras2.rgb: Grass texture</li>
+	<li>textures/weg2-berm.rgb: Road texture</li>
+	<li>textures/beton1.rgb: Concrete texture</li>
+	<li>textures/startfinish.rgb: Start/Finish flag</li>
+</ul>
+Next, the tiles:
+<ul>
+	<li>tiles/leeg.gl: Empty tile</li>
+	<li>tiles/vlak.gl: Horizontal plane without roads</li>
+	<li>tiles/bocht.gl: Sharp corner</li>
+	<li>tiles/wegvlak.gl: Straight road</li>
+	<li>tiles/startfinish.gl: Start/Finish tile</li>
+</ul>
+
+<h1>A simple track</h1>
+I'll describe a simple track file here. It is available in the data files as
+tracks/small.track. Let's start at the top of the file:
+<pre>
+TRACKFILE
+4
+5
+1
+</pre>
+The first four lines of the file should always look like this. The TRACKFILE
+text is used to check if the loaded file really is an Ultimate Stunts track. The
+next three lines define the length, width and height of the track. These numbers
+should always be consistent with the track description in the rest of the file.
+If you change the sizes of the track, then you should also change these numbers
+to match the new size.
+<pre>
+#properties:
+length
+width
+heigth
+</pre>
+This is just a comment, it is ignored by the track loader. Actually, you could
+write anything here, because the loader will ignore anything until it reads
+BEGIN.
+<pre>
+BEGIN
+textures/gras2.rgb
+textures/weg2-berm.rgb
+textures/beton1.rgb
+textures/startfinish.rgb
+END
+</pre>
+This section describes which textures are loaded. Textures shouls always be of
+SGI's .rgb format, and their sizes should always be powers of 2 (4, 8, 16 etc.)
+<pre>
+BEGIN
+environment/sky3.rgb
+environment/spheremap.rgb
+END
+</pre>
+In this section, the background picture and the environment map picture are
+loaded. This section should only contain two lines: one background and one
+environment map.
+<pre>
+BEGIN
+tiles/leeg.gl 0
+tiles/vlak.gl 0
+tiles/bocht.gl 0 1
+tiles/wegvlak.gl 0 1
+tiles/startfinish.gl:sf 0 1 2 3
+END
+</pre>
+Here, the tiles are loaded. Every line consists of the tile filename and a list
+of numbers. These numbers refer to the textures that should be used by the
+tile. 0 is the first texture, 1 the second etc.. For example, the horizontal
+plane tiles/vlak.gl is loaded with the grass texture on it. The straight road
+tile tiles/wegvlak.gl is loaded with a grass and a road texture. The order in
+which you refer to the textures does matter. For instance, if you change
+"tiles/wegvlak.gl 0 1" to "tiles/wegvlak.gl 1 0", then it would become a
+completely asphalted tile with a band of grass in the middle of it.
+<p>
+Be aware that if you point to too few textures for a tile, that a memory access
+fault, or a segmentation fault, can occur. The same thing can happen if you
+point to a texture that does not exist, for example if you point to nr 10 while
+you only loaded 5 textures.
+<p>
+The last line of this section shows something interesting: after the tile
+filename, it says ":sf". This means that this tile is used as a start/finish
+tile.
+<pre>
+#tile_id/rotation/heigth
+</pre>
+Just another comment. As you can see, you can write comments between END and
+BEGIN. Now the most important section begins:
+<pre>
+BEGIN
+	1/0/0	1/0/0	1/0/0	1/0/0
+	1/0/0	2/3/0	2/2/0	1/0/0
+	1/0/0	3/0/0	4/0/0	1/0/0
+	1/0/0	2/0/0	2/1/0	1/0/0
+	1/0/0	1/0/0	1/0/0	1/0/0
+END
+</pre>
+Here the track itself is described. Every tile location is described by a set
+of three numbers. The whole section is a "top-view" of the map. As you can see,
+this track has 5 lines of 4 tiles, which is exactly the size mentioned at the
+begin of the file. It is important that before each tile there is whitespace
+consisting of exactly one <i>tab</i>. Anything else, like spaces, is wrong.
+You should check if your text editor converts tabs to spaces, and disable that
+feature if possible.
+<p>
+The first of the three numbers refers to one of the loaded tiles. 0 refers to
+the first tile, 1 to the second etc.. As you can see, the tiles at the edges of
+the track all have a 1, which is the horizontal plane without roads. In the
+middle 3x2 tiles you can see four times a 2, which is the sharp corner tile,
+one time a 3 (straight road) and a 4 (start/finish). Now you should have an
+idea of what the track looks like.
+<p>
+The second number defines the rotation. 0 is a non-rotated tile, 1 means a 90
+degree counterclockwise rotation, 2 a 180 degree rotation, and 3 is a 270
+degree counterclockwise rotation, which of course equals 90 degree clockwise.
+As you can see, the straight road and the start/finish tile have their original
+orientation. The corner tiles each have another orientation of course. Sometimes
+trial and error is the quickest way to find the correct orientation.
+<p>
+The third number is the vertical position of the tile. As this is a simple
+track, every tile is located at the same height.
+
+<h1>Extending the track</h1>
+The described track file is a completely valid track file, but it is quite
+silly, so let's extend it a little. First of all, let's make it a little longer,
+by modifying the last section:
+<pre>
+BEGIN
+	1/0/0	1/0/0	1/0/0	1/0/0
+	1/0/0	2/3/0	2/2/0	1/0/0
+	1/0/0	3/0/0	3/0/0	1/0/0
+	1/0/0	3/0/0	3/0/0	1/0/0
+	1/0/0	3/0/0	3/0/0	1/0/0
+	1/0/0	3/0/0	3/0/0	1/0/0
+	1/0/0	3/0/0	3/0/0	1/0/0
+	1/0/0	3/0/0	4/0/0	1/0/0
+	1/0/0	2/0/0	2/1/0	1/0/0
+	1/0/0	1/0/0	1/0/0	1/0/0
+END
+</pre>
+Now you should also alter the numbers at the beginning of the file to:
+<pre>
+TRACKFILE
+4
+10
+1
+</pre>
+This adds some straight road tiles. That should not be too difficult to
+understand. Now we advance to the next level:
+
+<h3>Creating height differences</h3>
+We're going to create a hill. In order to do that, we need some new tile types
+for the slopes. Change the tile section to this:
+<pre>
+BEGIN
+tiles/leeg.gl 0
+tiles/vlak.gl 0
+tiles/bocht.gl 0 1
+tiles/wegvlak.gl 0 1
+tiles/startfinish.gl:sf 0 1 2 3
+tiles/diag2.gl 0
+tiles/wegdiag.gl 0 1
+END
+</pre>
+diag2.gl is a slope without a road, and wegdiag.gl is a slope with a road on it.
+Now we can change the track section to:
+<pre>
+BEGIN
+	1/0/0	1/0/0	1/0/0	1/0/0
+	1/0/0	2/3/0	2/2/0	1/0/0
+	1/0/0	3/0/0	3/0/0	1/0/0
+	5/2/0	6/2/0	6/2/0	5/2/0
+	1/0/1	3/0/1	3/0/1	1/0/1
+	5/0/0	6/0/0	6/0/0	5/0/0
+	1/0/0	3/0/0	3/0/0	1/0/0
+	1/0/0	3/0/0	4/0/0	1/0/0
+	1/0/0	2/0/0	2/1/0	1/0/0
+	1/0/0	1/0/0	1/0/0	1/0/0
+END
+</pre>
+This has a lot of changes compared to the previous example, so I'll try to
+explain it here. First of all, the tile ID numbers. The new numbers 5 and 6
+refer to the new tiles diag2.gl and wegdiag.gl. You can see that I replaced
+the 1's with 5's and the 3's with 6's to get the slopes. Next, the rotation
+number. The "south" slope has rotation 0, because the slope tiles just happen
+to have the right orientation for that slope. The "north" slope has exactly the
+opposite orientation, so the 180 degree rotation is used.
+<p>
+Last, but not least, I'd like to explain the height number. Although the slopes
+are higher than the ground, they still have a height number of 0. That's
+because height 0 means that the tile geometry is between 0 and 12 meter above
+the ground, and height 1 means between 12 and 24 meter, and so on. The slope is
+in the range 0..12 meter, so its height number is 0. The height number
+<i>does</i> change for the tiles in the middle of the hill. As the ground level
+of these tiles is at the bottom of the tile, it needs to be lifted 1 tile unit
+(12 meter) in order to match the top height of the slopes. Try setting it to 0,
+if you don't understand me. You'll see what happens.
+
+<h1>Multiple layers</h1>
+So far so good. But what if you want to place multiple tiles on top of each
+other? You'll want to do that many times in Ultimate Stunts, because tiles have
+a height limitation. Also, this will give you the flexibility to build
+bridges on top of each other, and to build tunnels below other roads. The
+possibility to place tiles on top of each other is one of the advantages of
+Ultimate Stunts over the original Stunts game.
+<p>
+So, how is it done? The basic idea is to define more than one track section.
+This is an example:
+<pre>
+TRACKFILE
+4
+10
+2
+
+#properties:
+length
+width
+heigth
+
+BEGIN
+textures/gras2.rgb
+textures/weg2-berm.rgb
+textures/beton1.rgb
+textures/startfinish.rgb
+END
+
+BEGIN
+environment/sky3.rgb
+environment/spheremap.rgb
+END
+
+BEGIN
+tiles/leeg.gl 0
+tiles/vlak.gl 0
+tiles/bocht.gl 0 1
+tiles/wegvlak.gl 0 1
+tiles/startfinish.gl:sf 0 1 2 3
+END
+
+#tile_id/rotation/heigth
+
+BEGIN
+	1/0/0	1/0/0	1/0/0	1/0/0
+	1/0/0	2/3/0	2/2/0	1/0/0
+	1/0/0	3/0/0	3/0/0	1/0/0
+	1/0/0	3/0/0	3/0/0	1/0/0
+	1/0/0	3/0/0	3/0/0	1/0/0
+	1/0/0	3/0/0	3/0/0	1/0/0
+	1/0/0	3/0/0	3/0/0	1/0/0
+	1/0/0	3/0/0	4/0/0	1/0/0
+	1/0/0	2/0/0	2/1/0	1/0/0
+	1/0/0	1/0/0	1/0/0	1/0/0
+END
+
+BEGIN
+	0/0/10	0/0/10	0/0/10	0/0/10
+	0/0/10	0/0/10	0/0/10	0/0/10
+	0/0/10	0/0/10	0/0/10	0/0/10
+	0/0/10	0/0/10	0/0/10	0/0/10
+	0/0/10	0/0/10	0/0/10	0/0/10
+	0/0/10	0/0/10	0/0/10	0/0/10
+	0/0/10	0/0/10	0/0/10	0/0/10
+	0/0/10	0/0/10	0/0/10	0/0/10
+	0/0/10	0/0/10	0/0/10	0/0/10
+	0/0/10	0/0/10	0/0/10	0/0/10
+END
+</pre>
+First of all, take a look at the height number at the start of the file. It is
+now 2, because we have 2 layers. In your own tracks, you can use any number of
+layers, as long as it matches the number at the beginning of the file.
+<p>
+As you can see, I've filled the second layer with empty tiles (0 referring to
+tiles/leeg.gl). When you work with multiple layers, you will use the empty tile
+many times, because you'll only need the extra layers at some locations.
+Recent Ultimate Stunts versions have an optimalisation that stops rendering once
+a tile ID of 0 is found. This means that the track builder needs to take care
+of two things:
+<ul>
+	<li>Tile ID 0 (the first tile) <u>always</u> needs to be the empty
+		tile</li>
+	<li>If not all layers are used at a certain location, then only the
+		<u>bottom</u> layers should be used, and the top layers should
+		conatin the empty tiles.</li>
+</ul>
+Ultimate Stunts assumes that the first layer contains the lowest tiles, the
+second layer contains tiles placed on top of them, etc.. So the height number
+of a tile in the second layer should always be greater than the height number
+of the same location in the first layer. Ultimate Stunts does not yet check
+this, so you might get (rendering) errors if you don't follow this rule.
+<p>
+We will use this knowledge to build a tunnel. But before we can do that, we need
+to load a texture for the walls of the tunnel, and the tunnel tiles themselves:
+<pre>
+BEGIN
+textures/gras2.rgb
+textures/weg2-berm.rgb
+textures/beton1.rgb
+textures/startfinish.rgb
+textures/steen1.rgb
+textures/weg2.rgb
+END
+
+BEGIN
+environment/sky3.rgb
+environment/spheremap.rgb
+END
+
+BEGIN
+tiles/leeg.gl 0
+tiles/vlak.gl 0
+tiles/bocht.gl 0 1
+tiles/wegvlak.gl 0 1
+tiles/startfinish.gl:sf 0 1 2 3
+tiles/tunnelin1.gl 0 5 4 2
+tiles/tunnelvlak.gl 5 4 2
+tiles/diag2.gl 0
+END
+</pre>
+We've loaded an extra texture for the walls (steen1.rgb), and one for the road
+inside the tunnel (weg2.rgb), which is slightly different from the one used
+outside the tunnel. The new tiles are tunnelin1.gl, which is the tunnel entrance
+tile, tunnelvlak.gl, which is a normal straight tunnel tile, and diag2.gl,
+which we already know. Now we can define the first layer:
+<pre>
+BEGIN
+	1/0/0	1/0/0	1/0/0	1/0/0
+	1/0/0	2/3/0	2/2/0	1/0/0
+	1/0/0	3/0/0	3/0/0	1/0/0
+	7/2/0	5/2/0	5/2/0	7/2/0
+	1/0/1	6/0/0	6/0/0	1/0/1
+	7/0/0	5/0/0	5/0/0	7/0/0
+	1/0/0	3/0/0	3/0/0	1/0/0
+	1/0/0	3/0/0	4/0/0	1/0/0
+	1/0/0	2/0/0	2/1/0	1/0/0
+	1/0/0	1/0/0	1/0/0	1/0/0
+END
+</pre>
+We've made two slopes with tunnel entrances, and the tunnel inside. We've also
+added the horizontal plane ground on top of the hill, on the left and the right.
+Now you can see why we need two layers: we also want grass above the tunnels.
+That's done in the second layer:
+<pre>
+BEGIN
+	0/0/10	0/0/10	0/0/10	0/0/10
+	0/0/10	0/0/10	0/0/10	0/0/10
+	0/0/10	0/0/10	0/0/10	0/0/10
+	0/0/10	0/0/10	0/0/10	0/0/10
+	0/0/10	1/0/1	1/0/1	0/0/10
+	0/0/10	0/0/10	0/0/10	0/0/10
+	0/0/10	0/0/10	0/0/10	0/0/10
+	0/0/10	0/0/10	0/0/10	0/0/10
+	0/0/10	0/0/10	0/0/10	0/0/10
+	0/0/10	0/0/10	0/0/10	0/0/10
+END
+</pre>
+That's the trick! Now you can create viaducts, loopings, and all other sorts of
+things that require multiple layers. The only thing you need to find out now
+is what sorts of tiles are available. It might help to take a look inside
+default.track. Default.track is used as a "test-site" for new tiles, so all
+tiles are used in that track.
+</body>
+</html>
+
