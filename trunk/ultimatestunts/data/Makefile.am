@@ -1,7 +1,8 @@
-stuntsdir=@stuntsdir@
+usdatadir=@usdatadir@
 
 install:
-	$(mkinstalldirs) ${stuntsdir}/data
-	cp -r * ${stuntsdir}/data
-	chmod 644 ${stuntsdir}/data/*/*.*
-	chmod 644 ${stuntsdir}/data/*/*/*.*
+	$(mkinstalldirs) ${usdatadir}
+	cp -r cars environment lang misc music textures textures.dat tiles tracks ${usdatadir}
+	chmod 644 ${usdatadir}/*.*
+	chmod 644 ${usdatadir}/*/*.*
+	chmod 644 ${usdatadir}/*/*/*.*

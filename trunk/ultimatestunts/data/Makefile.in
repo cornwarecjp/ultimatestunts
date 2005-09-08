@@ -155,7 +155,6 @@ sbindir = @sbindir@
 sdllibs = @sdllibs@
 sharedstatedir = @sharedstatedir@
 soundlibs = @soundlibs@
-stuntsdir = @stuntsdir@
 sysconfdir = @sysconfdir@
 target = @target@
 target_alias = @target_alias@
@@ -300,10 +299,11 @@ uninstall-am: uninstall-info-am
 
 
 install:
-	$(mkinstalldirs) ${stuntsdir}/data
-	cp -r * ${stuntsdir}/data
-	chmod 644 ${stuntsdir}/data/*/*.*
-	chmod 644 ${stuntsdir}/data/*/*/*.*
+	$(mkinstalldirs) ${usdatadir}
+	cp -r cars environment lang misc music textures textures.dat tiles tracks ${usdatadir}
+	chmod 644 ${usdatadir}/*.*
+	chmod 644 ${usdatadir}/*/*.*
+	chmod 644 ${usdatadir}/*/*/*.*
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

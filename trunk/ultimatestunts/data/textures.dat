@@ -1,0 +1,16 @@
+TEDITFILE
+
+Syntax:
+
+-number of textures
+-texture files
+
+
+BEGIN
+5
+textures/grass2.rgb
+textures/road1.rgb
+textures/bricks1.rgb
+textures/wood.rgb
+textures/pine.rgba
+END
