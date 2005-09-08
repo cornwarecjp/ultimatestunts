@@ -360,3 +360,15 @@ CVector CString::toVector()
 	float z = sub.toFloat();
 	return CVector(x,y,z);
 }
+
+CString CString::forceLength(unsigned int l) const
+{
+	if(l <= length())
+		return mid(0, l);
+
+	CString ret = *this;
+	for(unsigned int i=0; i<l-length(); i++)
+		ret += ' ';
+
+	return ret;
+}

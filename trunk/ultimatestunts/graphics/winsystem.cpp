@@ -273,6 +273,9 @@ bool CWinSystem::runLoop(CWidget *widget)
 		}
 	}
 
+	if(widgetmessages & WIDGET_CANCELLED)
+		return false;
+
 	return true;
 }
 

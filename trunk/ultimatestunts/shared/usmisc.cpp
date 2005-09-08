@@ -18,6 +18,8 @@
 #include <cstdio>
 #include <cstdlib>
 
+#include <vector>
+
 //internationalisation:
 #include <locale.h>
 #include <libintl.h>
@@ -29,30 +31,128 @@
 #include "cstring.h"
 #include "lconfig.h"
 #include "filecontrol.h"
+#include "cfile.h"
 
+
+bool copyConfiguration(CString &conffile)
+{
+	printf("File %s not found. Searching on alternative locations...\n", conffile.c_str());
+
+	CString prefixdir = PREFIXDIR;
+	printf("prefix = %s\n", prefixdir.c_str());
+
+	std::vector<CString> locations;
+	locations.push_back(prefixdir + "/etc/ultimatestunts.conf");
+	locations.push_back("/etc/ultimatestunts.conf");
+	locations.push_back("/usr/local/etc/ultimatestunts.conf");
+	locations.push_back("./ultimatestunts.conf");
+
+	CString sourceConffile;
+	for(unsigned int i=0; i < locations.size(); i++)
+	{
+		CString &loc = locations[i];
+
+		printf("Trying %s...", loc.c_str());
+		if(fileExists(loc))
+		{
+			printf("found\n");
+			sourceConffile = loc;
+			break;
+		}
+		else
+		{
+			printf("not found\n");
+		}
+	}
+
+	if(sourceConffile == "")
+	{
+		printf("WARNING: no configuration file found!\n");
+		return false;
+	}
+
+	printf("Copying %s to %s\n", sourceConffile.c_str(), conffile.c_str());
+	if(!copyFile(sourceConffile, conffile))
+	{
+		printf("  copying FAILED! (maybe we don't have the right permissions)\n");
+		return false;
+	}
+
+	return true;
+}
 
 void shared_main(int argc, char *argv[])
 {
-	theMainConfig = new CLConfig(argc, argv);
-	if(!theMainConfig->setFilename("ultimatestunts.conf"))
+	//the default directory of the configuration file
+	CString confdir;
+#ifdef UNIX_TREE
+	CString homedir = getenv("HOME");
+	confdir = homedir + "/.ultimatestunts/";
+#else
+	confdir = "./";
+#endif
+
+	//exceptions for the development environment:
+	bool inDevelopment = fileExists("./execselect.sh");
+
+	if(inDevelopment)
 	{
-		printf("Error: could not read ultimatestunts.conf\n");
-		//TODO: create a default one
-	}
-	else
-	{
-		printf("Using ultimatestunts.conf\n");
+		printf(
+			"execselect.sh detected:\n"
+			"  We are probably in the Ultimate Stunts SOURCE TREE\n"
+			"EXECUTED FROM THE SOURCE TREE:\n"
+			"  Using the conf file in the source tree\n"
+			);
+		confdir = "./";
 	}
 
-	//The data dir
-	//Default:
-	CString DataDir = ""; //try in default directories, like "./"
+	//make sure that the directory exists
+	makeDir(confdir);
+
+	//make sure that the conf file exists
+	CString conffile = confdir + "ultimatestunts.conf";
+	if(!fileExists(conffile))
+		copyConfiguration(conffile);
+	
+	printf("Using configuration file %s\n", conffile.c_str());
+
+	theMainConfig = new CLConfig(argc, argv);
+	if(!theMainConfig->setFilename(conffile))
+	{
+		printf("Error: could not read configuration file\n");
+		//TODO: create a default one
+	}
+
+	//The data dir and the save dir
+	CString DataDir, SaveDir;
 
 	CString cnf = theMainConfig->getValue("files", "datadir");
 	if(cnf != "")
 	{
 		if(cnf[cnf.length()-1] != '/') cnf += '/';
 		DataDir = cnf;
+	}
+
+	cnf = theMainConfig->getValue("files", "savedir");
+	if(cnf != "")
+	{
+		if(cnf[cnf.length()-1] != '/') cnf += '/';
+		SaveDir = cnf;
+	}
+
+#ifdef UNIX_TREE
+	//fill in home dir for "~/"
+	if(DataDir.mid(0, 2) == "~/")
+		DataDir = homedir + DataDir.mid(1);
+	if(SaveDir.mid(0, 2) == "~/")
+		SaveDir = homedir + SaveDir.mid(1);
+#endif
+
+	if(inDevelopment)
+	{
+		printf("EXECUTED FROM THE SOURCE TREE:\n  Using the data dirs in the source tree\n");
+		DataDir = "./data/";
+		SaveDir = "./saveddata/";
 	}
 
 	//find the absolute path
@@ -64,10 +164,10 @@ void shared_main(int argc, char *argv[])
 		absdir = CString(datadirbuffer) + "/";
 	}
 	printf("DataDir is \"%s\"\n", DataDir.c_str());
-
-	printf("Setting up the data dir\n");
+	printf("SaveDir is \"%s\"\n", SaveDir.c_str());
 	CFileControl *fctl = new CFileControl; //TODO: find a way to delete this object
 	fctl->setDataDir(DataDir);
+	fctl->setSaveDir(SaveDir);
 
 	printf("Enabling localisation\n");
 

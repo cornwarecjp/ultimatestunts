@@ -73,7 +73,7 @@ bool CGraphObj::load(const CString &filename, const CParamList &list)
 		{
 			CLODTexture *tex = (CLODTexture *)matarray[pr1.Texture];
 
-			for(unsigned int lod=0; lod < 3; lod++)
+			for(unsigned int lod=0; lod < 4; lod++)
 			{
 				if(tex->getSizeX(lod+1) <=4 || tex->getSizeY(lod+1) <= 4)
 				{

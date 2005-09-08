@@ -155,7 +155,6 @@ sbindir = @sbindir@
 sdllibs = @sdllibs@
 sharedstatedir = @sharedstatedir@
 soundlibs = @soundlibs@
-stuntsdir = @stuntsdir@
 sysconfdir = @sysconfdir@
 target = @target@
 target_alias = @target_alias@
@@ -163,42 +162,45 @@ target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
 usdatadir = @usdatadir@
+bin_PROGRAMS = ustuntstrackedit
+ustuntstrackedit_SOURCES = edittrack.cpp main.cpp tecamera.cpp temanager.cpp terenderer.cpp
+ustuntstrackedit_LDADD = ../graphics/libgraphics.a ../simulation/libsimulation.a ../shared/libshared.a @sdllibs@ @graphlibs@ @LIBINTL@
 
-stunts_PROGRAMS = trackedit
-trackedit_SOURCES = main.cpp
-trackedit_LDADD = ../shared/libshared.a ../graphics/libgraphics.a @sdllibs@ @graphlibs@ @LIBINTL@
-
-EXTRA_DIST = main.cpp 
+EXTRA_DIST = edittrack.cpp edittrack.h main.cpp tecamera.cpp tecamera.h temanager.cpp temanager.h terenderer.cpp terenderer.h
 
 # set the include path found by configure
-INCLUDES = $(all_includes) -I../intl -I../shared -I../graphics
+INCLUDES = $(all_includes) -I../intl -I../shared -I../simulation -I../graphics
 
 # the library search path.
-trackedit_LDFLAGS = $(all_libraries) 
+ustuntstrackedit_LDFLAGS = $(all_libraries) 
 subdir = trackedit
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
-stunts_PROGRAMS = trackedit$(EXEEXT)
-PROGRAMS = $(stunts_PROGRAMS)
+bin_PROGRAMS = ustuntstrackedit$(EXEEXT)
+PROGRAMS = $(bin_PROGRAMS)
 
-am_trackedit_OBJECTS = main.$(OBJEXT)
-trackedit_OBJECTS = $(am_trackedit_OBJECTS)
-trackedit_DEPENDENCIES = ../shared/libshared.a ../graphics/libgraphics.a
+am_ustuntstrackedit_OBJECTS = edittrack.$(OBJEXT) main.$(OBJEXT) \
+	tecamera.$(OBJEXT) temanager.$(OBJEXT) terenderer.$(OBJEXT)
+ustuntstrackedit_OBJECTS = $(am_ustuntstrackedit_OBJECTS)
+ustuntstrackedit_DEPENDENCIES = ../graphics/libgraphics.a \
+	../simulation/libsimulation.a ../shared/libshared.a
 
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/main.Po
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/edittrack.Po ./$(DEPDIR)/main.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/tecamera.Po ./$(DEPDIR)/temanager.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/terenderer.Po
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 CXXLD = $(CXX)
 CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
-DIST_SOURCES = $(trackedit_SOURCES)
+DIST_SOURCES = $(ustuntstrackedit_SOURCES)
 DIST_COMMON = Makefile.am Makefile.in
-SOURCES = $(trackedit_SOURCES)
+SOURCES = $(ustuntstrackedit_SOURCES)
 
 all: all-am
 
@@ -209,33 +211,33 @@ $(srcdir)/Makefile.in:  Makefile.am  $(top_srcdir)/configure.ac $(ACLOCAL_M4)
 	  $(AUTOMAKE) --gnu  trackedit/Makefile
 Makefile:  $(srcdir)/Makefile.in  $(top_builddir)/config.status
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)
-stuntsPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
-install-stuntsPROGRAMS: $(stunts_PROGRAMS)
+binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
+install-binPROGRAMS: $(bin_PROGRAMS)
 	@$(NORMAL_INSTALL)
-	$(mkinstalldirs) $(DESTDIR)$(stuntsdir)
-	@list='$(stunts_PROGRAMS)'; for p in $$list; do \
+	$(mkinstalldirs) $(DESTDIR)$(bindir)
+	@list='$(bin_PROGRAMS)'; for p in $$list; do \
 	  p1=`echo $$p|sed 's/$(EXEEXT)$$//'`; \
 	  if test -f $$p \
 	  ; then \
 	    f=`echo "$$p1" | sed 's,^.*/,,;$(transform);s/$$/$(EXEEXT)/'`; \
-	   echo " $(INSTALL_PROGRAM_ENV) $(stuntsPROGRAMS_INSTALL) $$p $(DESTDIR)$(stuntsdir)/$$f"; \
-	   $(INSTALL_PROGRAM_ENV) $(stuntsPROGRAMS_INSTALL) $$p $(DESTDIR)$(stuntsdir)/$$f || exit 1; \
+	   echo " $(INSTALL_PROGRAM_ENV) $(binPROGRAMS_INSTALL) $$p $(DESTDIR)$(bindir)/$$f"; \
+	   $(INSTALL_PROGRAM_ENV) $(binPROGRAMS_INSTALL) $$p $(DESTDIR)$(bindir)/$$f || exit 1; \
 	  else :; fi; \
 	done
 
-uninstall-stuntsPROGRAMS:
+uninstall-binPROGRAMS:
 	@$(NORMAL_UNINSTALL)
-	@list='$(stunts_PROGRAMS)'; for p in $$list; do \
+	@list='$(bin_PROGRAMS)'; for p in $$list; do \
 	  f=`echo "$$p" | sed 's,^.*/,,;s/$(EXEEXT)$$//;$(transform);s/$$/$(EXEEXT)/'`; \
-	  echo " rm -f $(DESTDIR)$(stuntsdir)/$$f"; \
-	  rm -f $(DESTDIR)$(stuntsdir)/$$f; \
+	  echo " rm -f $(DESTDIR)$(bindir)/$$f"; \
+	  rm -f $(DESTDIR)$(bindir)/$$f; \
 	done
 
-clean-stuntsPROGRAMS:
-	-test -z "$(stunts_PROGRAMS)" || rm -f $(stunts_PROGRAMS)
-trackedit$(EXEEXT): $(trackedit_OBJECTS) $(trackedit_DEPENDENCIES) 
-	@rm -f trackedit$(EXEEXT)
-	$(CXXLINK) $(trackedit_LDFLAGS) $(trackedit_OBJECTS) $(trackedit_LDADD) $(LIBS)
+clean-binPROGRAMS:
+	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
+ustuntstrackedit$(EXEEXT): $(ustuntstrackedit_OBJECTS) $(ustuntstrackedit_DEPENDENCIES) 
+	@rm -f ustuntstrackedit$(EXEEXT)
+	$(CXXLINK) $(ustuntstrackedit_LDFLAGS) $(ustuntstrackedit_OBJECTS) $(ustuntstrackedit_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT) core *.core
@@ -243,7 +245,11 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/edittrack.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tecamera.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/temanager.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/terenderer.Po@am__quote@
 
 distclean-depend:
 	-rm -rf ./$(DEPDIR)
@@ -361,7 +367,7 @@ check: check-am
 all-am: Makefile $(PROGRAMS)
 
 installdirs:
-	$(mkinstalldirs) $(DESTDIR)$(stuntsdir)
+	$(mkinstalldirs) $(DESTDIR)$(bindir)
 install: install-am
 install-exec: install-exec-am
 install-data: install-data-am
@@ -388,7 +394,7 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic clean-stuntsPROGRAMS mostlyclean-am
+clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
 
@@ -403,9 +409,9 @@ info: info-am
 
 info-am:
 
-install-data-am: install-stuntsPROGRAMS
+install-data-am:
 
-install-exec-am:
+install-exec-am: install-binPROGRAMS
 
 install-info: install-info-am
 
@@ -429,19 +435,18 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-info-am uninstall-stuntsPROGRAMS
+uninstall-am: uninstall-binPROGRAMS uninstall-info-am
 
-.PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
-	clean-stuntsPROGRAMS ctags distclean distclean-compile \
+.PHONY: CTAGS GTAGS all all-am check check-am clean clean-binPROGRAMS \
+	clean-generic ctags distclean distclean-compile \
 	distclean-depend distclean-generic distclean-tags distdir dvi \
-	dvi-am info info-am install install-am install-data \
-	install-data-am install-exec install-exec-am install-info \
-	install-info-am install-man install-strip \
-	install-stuntsPROGRAMS installcheck installcheck-am installdirs \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-compile mostlyclean-generic pdf pdf-am ps ps-am \
-	tags uninstall uninstall-am uninstall-info-am \
-	uninstall-stuntsPROGRAMS
+	dvi-am info info-am install install-am install-binPROGRAMS \
+	install-data install-data-am install-exec install-exec-am \
+	install-info install-info-am install-man install-strip \
+	installcheck installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-compile \
+	mostlyclean-generic pdf pdf-am ps ps-am tags uninstall \
+	uninstall-am uninstall-binPROGRAMS uninstall-info-am
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

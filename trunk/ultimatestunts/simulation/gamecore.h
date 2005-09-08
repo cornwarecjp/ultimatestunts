@@ -25,7 +25,6 @@ using namespace std;
 //Frequently used
 #include "cstring.h"
 #include "lconfig.h"
-#include "filecontrol.h"
 #include "usmacros.h"
 
 //Simulation stuff
@@ -37,6 +36,10 @@ using namespace std;
 //Player stuff
 #include "objectchoice.h"
 #include "player.h"
+
+//Other things
+#include "filecontrol.h"
+#include "hiscorefile.h"
 
 /**
   *@author CJP
@@ -53,7 +56,7 @@ public:
 	void initClientGame(const CString &host, unsigned int port);
 
 	//step 2: add players
-	bool addPlayer(CPlayer *p, CString name, CObjectChoice choice);
+	bool addPlayer(CPlayer *p, CObjectChoice choice);
 
 	//step 3: wait for the start signal and load everything
 	virtual void readyAndLoad();
@@ -61,18 +64,18 @@ public:
 	//step 3: Play
 	virtual bool update(); //true = continue false = leave
 
-	//step 4: unload game (go back to step 1 or 2)
+	//step 4: Get hiscore+replay data and stop game (go back to step 1 or 2)
 	//this does not undo step 1
 	//to stop a network connection, init a local game
-	void resetGame();
+	void stopGame();
 
+	//step 5: Get result information of last game (hiscore, replay)
+	vector<SHiscoreEntry> getHiscore();
 
 	//some tools
 	//TODO: place these e.g. in CWorld
 	bool isLocalPlayer(unsigned int ID);
 protected:
-	void unloadGame();
-	
 	CWorld *m_World;
 	vector<CPlayer *> m_Players;
 	CPlayerControl *m_PCtrl;
@@ -80,8 +83,15 @@ protected:
 	CClientNet *m_ClientNet;
 	CString m_TrackFile;
 
+	vector<SHiscoreEntry> m_LastHiscores;
+
 	virtual void loadTrackData();
 	virtual void loadMovObjData();
+
+	void collectHiscoreData();
+
+	void resetGame();
+	void unloadGame();
 	virtual void unloadData();
 };
 

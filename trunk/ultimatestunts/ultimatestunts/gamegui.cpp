@@ -23,6 +23,8 @@
 #define _(String) gettext (String)
 #define N_(String1, String2, n) ngettext ((String1), (String2), (n))
 
+#include "lconfig.h"
+
 #include "gamegui.h"
 #include "menu.h"
 
@@ -48,14 +50,38 @@ CGameGUI::CGameGUI(const CLConfig &conf, CGameWinSystem *winsys) : CGUI(conf, wi
 
 	m_ChildWidget = &m_MainPage;
 
+	//Car file cache:
+	vector<CString> theCarFiles = getDirContents("cars", ".conf");
+	for(unsigned int i=0; i < theCarFiles.size(); i++)
+	{
+		SCarFile cf;
+		cf.filename = "cars/" + theCarFiles[i];
+		CDataFile dfile(cf.filename);
+		CLConfig carconf(dfile.useExtern());
+		cf.fullname = carconf.getValue("description", "fullname");
+		//printf("file %s name %s\n", cf.filename.c_str(), cf.fullname.c_str());
+		m_CarFiles.push_back(cf);
+	}
+
 	//default values:
 	m_GameType = LocalGame;
 	m_TrackFile = "tracks/default.track";
 	m_HostName = "localhost";
 	m_HostPort = 1500;
 	m_MaxNumPlayers = 2;
-	addPlayer("CJP", true, "cars/ferrarispider.conf");
-	//addPlayer("AI", false, "cars/f1.conf");
+
+	//Default players:
+	SPlayerDescr pd;
+	pd.name = "CJP";
+	pd.isHuman = true;
+	for(unsigned int i=0; i < m_CarFiles.size(); i++)
+		if(m_CarFiles[i].filename == "cars/ferrarispider.conf")
+		{
+			pd.carIndex = i;
+			break;
+		}
+	m_PlayerDescr.push_back(pd);
+	m_SelectedPlayer = 0;
 
 	//Load an initial state
 	m_GameCore->initLocalGame(m_TrackFile);
@@ -94,14 +120,36 @@ CGameGUI::CGameGUI(const CLConfig &conf, CGameWinSystem *winsys) : CGUI(conf, wi
 	menu->m_Selected = 0;
 	menu->m_AlignLeft = false;
 
+	//PLAYERS MENU
+	m_PlayersPage.m_Title = _("Players menu:");
+	menu = new CMenu;
+	menu->m_Xrel = 0.1;
+	menu->m_Yrel = 0.2;
+	menu->m_Wrel = 0.8;
+	menu->m_Hrel = 0.6;
+	m_PlayersPage.m_Widgets.push_back(menu);
+	menu->m_Selected = 0;
+	menu->m_AlignLeft = true;
+
 	//PLAYER MENU
-	m_PlayerPage.m_Title = _("Select a car:");
+	m_PlayerPage.m_Title = _("Configure Player:");
 	menu = new CMenu;
 	menu->m_Xrel = 0.1;
 	menu->m_Yrel = 0.2;
 	menu->m_Wrel = 0.8;
 	menu->m_Hrel = 0.6;
 	m_PlayerPage.m_Widgets.push_back(menu);
+	menu->m_Selected = 0;
+	menu->m_AlignLeft = true;
+
+	//CAR MENU
+	m_CarPage.m_Title = "Select a car:";
+	menu = new CMenu;
+	menu->m_Xrel = 0.1;
+	menu->m_Yrel = 0.2;
+	menu->m_Wrel = 0.8;
+	menu->m_Hrel = 0.6;
+	m_CarPage.m_Widgets.push_back(menu);
 	menu->m_Selected = 0;
 	menu->m_AlignLeft = false;
 
@@ -118,15 +166,42 @@ CGameGUI::CGameGUI(const CLConfig &conf, CGameWinSystem *winsys) : CGUI(conf, wi
 	menu->m_Lines.push_back(_("please wait..."));
 
 	//HISCORE MENU
-	m_HiscorePage.m_Title = _("Hiscore (in future versions)");
+	menu = new CMenu;
+	menu->m_Xrel = 0.05;
+	menu->m_Yrel = 0.2;
+	menu->m_Wrel = 0.3;
+	menu->m_Hrel = 0.6;
+	menu->m_Selected = 21;
+	menu->m_AlignLeft = true;
+	m_HiscorePage.m_Widgets.push_back(menu);
+
+	menu = new CMenu;
+	menu->m_Xrel = 0.35;
+	menu->m_Yrel = 0.2;
+	menu->m_Wrel = 0.3;
+	menu->m_Hrel = 0.6;
+	menu->m_Selected = 21;
+	menu->m_AlignLeft = true;
+	m_HiscorePage.m_Widgets.push_back(menu);
+
+	menu = new CMenu;
+	menu->m_Xrel = 0.65;
+	menu->m_Yrel = 0.2;
+	menu->m_Wrel = 0.3;
+	menu->m_Hrel = 0.6;
+	menu->m_Selected = 21;
+	menu->m_AlignLeft = true;
+	m_HiscorePage.m_Widgets.push_back(menu);
+
+	m_HiscorePage.m_Title = _("Hiscore");
 	menu = new CMenu;
 	menu->m_Xrel = 0.1;
-	menu->m_Yrel = 0.2;
+	menu->m_Yrel = 0.1;
 	menu->m_Wrel = 0.8;
-	menu->m_Hrel = 0.6;
-	m_HiscorePage.m_Widgets.push_back(menu);
+	menu->m_Hrel = 0.1;
 	menu->m_Selected = 0;
 	menu->m_AlignLeft = false;
+	m_HiscorePage.m_Widgets.push_back(menu);
 
 	updateMenuTexts();
 }
@@ -145,11 +220,16 @@ CGameGUI::~CGameGUI()
 
 void CGameGUI::updateMenuTexts()
 {
+	//some texts that are used more than one time:
+	CString txtPlayertype[2];
+	txtPlayertype[0] = _("Computer");
+	txtPlayertype[1] = _("Human   ");
+
 	//setting up the menus:
 	//MAIN MENU
 	CMenu *menu = (CMenu *)(m_MainPage.m_Widgets[0]);
 	menu->m_Lines.clear();
-	menu->m_Lines.push_back(_("Start playing"));
+	menu->m_Lines.push_back(_("Drive!"));
 	menu->m_Lines.push_back(_("Set the game type"));
 	menu->m_Lines.push_back(_("Select the track"));
 	menu->m_Lines.push_back(_("Select the players"));
@@ -189,12 +269,40 @@ void CGameGUI::updateMenuTexts()
 	menu = (CMenu *)(m_TrackPage.m_Widgets[0]);
 	menu->m_Lines = getDirContents("tracks", ".track");
 
+	//PLAYERS MENU
+	menu = (CMenu *)(m_PlayersPage.m_Widgets[0]);
+	menu->m_Lines.clear();
+	for(unsigned int i=0; i < m_PlayerDescr.size(); i++)
+	{
+		CString type;
+		CString entry =
+			CString(i+1) + ": (" +
+			txtPlayertype[m_PlayerDescr[i].isHuman] + ") " +
+			m_PlayerDescr[i].name.forceLength(20) + ": " +
+			m_CarFiles[m_PlayerDescr[i].carIndex].fullname;
+		menu->m_Lines.push_back(entry);
+	}
+	menu->m_Lines.push_back(_("Add a player"));
+	menu->m_Lines.push_back(_("Return to main menu"));
+
 	//PLAYER MENU
 	menu = (CMenu *)(m_PlayerPage.m_Widgets[0]);
-	menu->m_Lines = getDirContents("cars", ".conf");
+	menu->m_Lines.clear();
+	menu->m_Lines.push_back(_("Player type: ") + txtPlayertype[m_PlayerDescr[m_SelectedPlayer].isHuman]);
+	menu->m_Lines.push_back(_("Name       : ") + m_PlayerDescr[m_SelectedPlayer].name);
+	menu->m_Lines.push_back(_("Car        : ") + m_CarFiles[m_PlayerDescr[m_SelectedPlayer].carIndex].fullname);
+	menu->m_Lines.push_back(_("Delete this player"));
+	menu->m_Lines.push_back(_("Ready"));
+
+	//CAR MENU
+	m_CarPage.m_Title.format(_("Select a car for %s:"), 256, m_PlayerDescr[m_SelectedPlayer].name.c_str());
+	menu = (CMenu *)(m_CarPage.m_Widgets[0]);
+	menu->m_Lines.clear();
+	for(unsigned int i=0; i < m_CarFiles.size(); i++)
+		menu->m_Lines.push_back(m_CarFiles[i].fullname);
 
 	//HISCORE MENU
-	menu = (CMenu *)(m_HiscorePage.m_Widgets[0]);
+	menu = (CMenu *)(m_HiscorePage.m_Widgets[3]);
 	menu->m_Lines.clear();
 	menu->m_Lines.push_back(_("Play again"));
 	menu->m_Lines.push_back(_("Return to main menu"));
@@ -205,7 +313,7 @@ void CGameGUI::start()
 	enter2DMode();
 
 	CString section = "mainmenu";
-	while(section != "" && section != "exit")
+	while(true)
 	{
 		updateMenuTexts();
 
@@ -215,14 +323,24 @@ void CGameGUI::start()
 			section = viewGameTypeMenu();
 		else if(section=="trackmenu")
 			section = viewTrackMenu();
+		else if(section=="playersmenu")
+			section = viewPlayersMenu();
 		else if(section=="playermenu")
 			section = viewPlayerMenu();
+		else if(section=="carmenu")
+			section = viewCarMenu();
 		else if(section=="playgame")
 			section = playGame();
 		else if(section=="hiscore")
 			section = viewHiscore();
 		else
 			{printf("Error: unknown menu\n");}
+
+		if(section == "exit" || section == "")
+			if(showYNMessageBox(_("Do you really want to quit?")) )
+				{break;}
+			else
+				{section = "mainmenu";}
 	}
 
 	leave2DMode();
@@ -231,7 +349,10 @@ void CGameGUI::start()
 CString CGameGUI::viewMainMenu()
 {
 	m_ChildWidget = &m_MainPage;
-	m_WinSys->runLoop(this);
+	if(!m_WinSys->runLoop(this))
+		return "exit";
+
+
 	CMenu *menu = (CMenu *)(m_MainPage.m_Widgets[0]);
 
 	switch(menu->m_Selected)
@@ -248,7 +369,7 @@ CString CGameGUI::viewMainMenu()
 			}
 			return "trackmenu";
 		case 3:
-			return "playermenu";
+			return "playersmenu";
 		case 4:
 			showMessageBox(_("Please edit ultimatestunts.conf manually"));
 			return "mainmenu";
@@ -262,7 +383,10 @@ CString CGameGUI::viewMainMenu()
 CString CGameGUI::viewGameTypeMenu()
 {
 	m_ChildWidget = &m_GameTypePage;
-	m_WinSys->runLoop(this);
+	if(!m_WinSys->runLoop(this))
+		return "mainmenu";
+
+
 	CMenu *menu = (CMenu *)(m_GameTypePage.m_Widgets[0]);
 
 	switch(menu->m_Selected)
@@ -320,7 +444,10 @@ CString CGameGUI::viewGameTypeMenu()
 CString CGameGUI::viewTrackMenu()
 {
 	m_ChildWidget = &m_TrackPage;
-	m_WinSys->runLoop(this);
+	if(!m_WinSys->runLoop(this))
+		return "mainmenu";
+
+
 	CMenu *menu = (CMenu *)(m_TrackPage.m_Widgets[0]);
 
 	m_TrackFile = CString("tracks/") + menu->m_Lines[menu->m_Selected];
@@ -337,44 +464,86 @@ CString CGameGUI::viewTrackMenu()
 	return "mainmenu";
 }
 
-CString CGameGUI::viewPlayerMenu()
+CString CGameGUI::viewPlayersMenu()
 {
-	m_PlayerPage.m_Title = _("Player setup");
-	m_ChildWidget = &m_PlayerPage;
-	CMenu *menu = (CMenu *)(m_PlayerPage.m_Widgets[0]);
+	m_ChildWidget = &m_PlayersPage;
+	if(!m_WinSys->runLoop(this)) //cancelling gives false
+		return "mainmenu";
 
-	m_PlayerDescr.clear();
-	CString name = showInputBox(_("Enter your name:"));
+	//The rest is executed when not cancelling
 
-	m_PlayerPage.m_Title = CString().format(_("Select a car for %s"), 80, name.c_str());
-	m_WinSys->runLoop(this);
-	CString carfile = CString("cars/") + menu->m_Lines[menu->m_Selected];
-	addPlayer(name, true, carfile);
+	CMenu *menu = (CMenu *)(m_PlayersPage.m_Widgets[0]);
 
-	while(true)
+	//menu->m_Lines[menu->m_Selected]
+	unsigned int tomain = menu->m_Lines.size()-1;
+	unsigned int addplayer = menu->m_Lines.size()-2;
+	unsigned int selected = menu->m_Selected;
+
+	if(selected == tomain) return "mainmenu";
+
+	if(selected == addplayer)
 	{
-		if(!showYNMessageBox(_("Do you want to add another player?"))) break;
-
-		name = showInputBox(_("Enter the name:"));
-
-		m_PlayerPage.m_Title = CString().format(_("Select a car for %s"), 80, name.c_str());
-		m_WinSys->runLoop(this);
-		carfile = CString("cars/") + menu->m_Lines[menu->m_Selected];
-
-		bool isHuman = !showYNMessageBox(_("Is it an AI player?")); 
-		addPlayer(name, isHuman, carfile);
+		SPlayerDescr newpl;
+		newpl.name = "AI Player";
+		newpl.isHuman = false;
+		for(unsigned int i=0; i < m_CarFiles.size(); i++)
+			if(m_CarFiles[i].filename == "cars/ferrarispider.conf")
+			{
+				newpl.carIndex = i;
+				break;
+			}
+		m_PlayerDescr.push_back(newpl);
 	}
 
-	return "mainmenu";
+	m_SelectedPlayer = selected;
+	return "playermenu";
 }
 
-void CGameGUI::addPlayer(CString name, bool human, CString carfile)
+CString CGameGUI::viewPlayerMenu()
 {
-	SPlayerDescr pd;
-	pd.name = name;
-	pd.isHuman = human;
-	pd.carFile = carfile;
-	m_PlayerDescr.push_back(pd);
+	m_ChildWidget = &m_PlayerPage;
+	if(!m_WinSys->runLoop(this)) //cancelling returns false
+		return "playersmenu";
+
+	//the rest is done when there is no cancelling
+
+	CMenu *menu = (CMenu *)(m_PlayerPage.m_Widgets[0]);
+
+	switch(menu->m_Selected)
+	{
+	case 0: //Player type
+		m_PlayerDescr[m_SelectedPlayer].isHuman = !showYNMessageBox(_("Is this player an AI computer player?"));
+		return "playermenu";
+	case 1: //name
+		m_PlayerDescr[m_SelectedPlayer].name = showInputBox(_("Enter the name:"));
+		return "playermenu";
+	case 2: //car
+		return "carmenu";
+	case 3: //delete
+		if(showYNMessageBox(_("Delete this player?")) )
+		{
+			m_PlayerDescr.erase(m_PlayerDescr.begin() + m_SelectedPlayer);
+			m_SelectedPlayer = 0;
+			return "playersmenu";
+		}
+		return "playermenu";
+	case 4: //return
+		return "playersmenu";
+	}
+
+	return "playersmenu";
+}
+
+CString CGameGUI::viewCarMenu()
+{
+	m_ChildWidget = &m_CarPage;
+	if(m_WinSys->runLoop(this))
+	{
+		CMenu *menu = (CMenu *)(m_CarPage.m_Widgets[0]);
+		m_PlayerDescr[m_SelectedPlayer].carIndex = menu->m_Selected;
+	}
+
+	return "playermenu";
 }
 
 CString CGameGUI::playGame()
@@ -405,16 +574,18 @@ void CGameGUI::load()
 		if(m_GameType == NewNetwork && !(m_PlayerDescr[i].isHuman))
 			continue; //AI players will be added on the server side
 
+		//TODO: maybe use CObjectChoice class for m_PlayerDescr array
 		CPlayer *p;
 		CObjectChoice choice;
-		choice.m_Filename = m_PlayerDescr[i].carFile;
+		choice.m_Filename = m_CarFiles[m_PlayerDescr[i].carIndex].filename;
+		choice.m_PlayerName = m_PlayerDescr[i].name;
 
 		if(m_PlayerDescr[i].isHuman)
 			p = new CHumanPlayer((CGameWinSystem *)m_WinSys, numHumanPlayers);
 		else
 			p = new CAIPlayerCar();
 
-		if(!m_GameCore->addPlayer(p, m_PlayerDescr[i].name, choice))
+		if(!m_GameCore->addPlayer(p, choice))
 		{
 			showMessageBox(
 				CString().format(_("Player %s was refused"), 80,
@@ -444,7 +615,7 @@ void CGameGUI::load()
 		//In a new network game, place the AI's on the server side
 		for(unsigned int i=0; i < m_PlayerDescr.size(); i++)
 			if(!(m_PlayerDescr[i].isHuman))
-				m_Server->addai(m_PlayerDescr[i].name, m_PlayerDescr[i].carFile);
+				m_Server->addai(m_PlayerDescr[i].name, m_CarFiles[m_PlayerDescr[i].carIndex].filename);
 
 		sleep(1); //To give messages some time to arive on server (TODO: remove when no longer needed)
 
@@ -457,7 +628,7 @@ void CGameGUI::load()
 
 void CGameGUI::unload()
 {
-	m_GameCore->resetGame();
+	m_GameCore->stopGame();
 
 	if(m_Server != NULL)
 		m_Server->stop();
@@ -477,9 +648,36 @@ void CGameGUI::unload()
 
 CString CGameGUI::viewHiscore()
 {
+	vector<SHiscoreEntry> hiscore = m_GameCore->getHiscore();
+
+	//add hiscore data to the menu
+	CMenu *names = (CMenu *)m_HiscorePage.m_Widgets[0];
+	CMenu *cars = (CMenu *)m_HiscorePage.m_Widgets[1];
+	CMenu *times = (CMenu *)m_HiscorePage.m_Widgets[2];
+	names->m_Lines.clear();
+	cars->m_Lines.clear();
+	times->m_Lines.clear();
+	for(unsigned int i=0; i < hiscore.size(); i++)
+	{
+		CString name =
+			CString().format("%d ", 8, i+1) +
+			hiscore[i].name + "  ....................";
+		CString car = CString(" ") + hiscore[i].carname + "  ....................";
+		CString time = CString().fromTime(hiscore[i].time);
+
+		if(hiscore[i].isNew) time += _("  (this race)");
+
+		names->m_Lines.push_back(name);
+		cars->m_Lines.push_back(car);
+		times->m_Lines.push_back(time);
+	}
+
 	m_ChildWidget = &m_HiscorePage;
-	m_WinSys->runLoop(this);
-	CMenu *menu = (CMenu *)m_HiscorePage.m_Widgets[0];
+	if(!m_WinSys->runLoop(this))
+		return "mainmenu";
+
+
+	CMenu *menu = (CMenu *)m_HiscorePage.m_Widgets[3];
 
 	switch(menu->m_Selected)
 	{

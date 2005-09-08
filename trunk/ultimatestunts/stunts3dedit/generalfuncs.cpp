@@ -109,7 +109,7 @@ void helpFunc()
 		"%c: Scale\n"
 		"%c: Mirror\n"
 		"%c: Clamp\n"
-		"%c: Generate normals or texture coordinates\n"
+		"%c: Generate normals, texture replacement colors or texture coordinates\n"
 		"%c: Translate\n"
 		"%c: Rotate Texture\n"
 		"%c: Translate Texture\n"

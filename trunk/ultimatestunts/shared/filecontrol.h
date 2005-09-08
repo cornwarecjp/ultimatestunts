@@ -23,10 +23,18 @@
 class CFileControl
 {
 public:
-	CFileControl();
-	~CFileControl();
+	CFileControl(bool takeover = true);
+	virtual ~CFileControl();
 
 	void setDataDir(const CString &dir);
+	void setSaveDir(const CString &dir);
+
+	virtual CString getLongFilename(const CString &shortName); //for reading only!
+
+	CString filecontroldatadir;
+	CString filecontrolsavedir;
 };
+
+extern CFileControl *theFileControl;
 
 #endif

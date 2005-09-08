@@ -57,6 +57,9 @@ bool CCar::load(const CString &filename, const CParamList &list)
 	//TODO: make a way to find out if this file exists
 	//and return false if it doesn't
 
+	//Description
+	m_CarName = cfile.getValue("description", "fullname");
+
 	//Mass
 	m_InvMass = 1.0 / cfile.getValue("body", "mass").toFloat();
 	m_BodySize = cfile.getValue("body", "size").toVector();

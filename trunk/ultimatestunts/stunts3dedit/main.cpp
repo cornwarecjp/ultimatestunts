@@ -200,5 +200,5 @@ int main(int argc, char *argv[])
 
 	printf("\nProgram finished succesfully\n");
 
-  return EXIT_SUCCESS;
+	return EXIT_SUCCESS;
 }

@@ -1,8 +1,6 @@
-stuntsdir=@stuntsdir@
-
-stunts_PROGRAMS = stuntsserver
-stuntsserver_SOURCES = consolethread.cpp gamecorethread.cpp main.cpp networkthread.cpp
-stuntsserver_LDADD   = ../simulation/libsimulation.a ../shared/libshared.a @sdllibs@ @netlibs@ @LIBINTL@
+bin_PROGRAMS = ustuntsserver
+ustuntsserver_SOURCES = consolethread.cpp gamecorethread.cpp main.cpp networkthread.cpp
+ustuntsserver_LDADD   = ../simulation/libsimulation.a ../shared/libshared.a @sdllibs@ @netlibs@ @LIBINTL@
 
 
 EXTRA_DIST = consolethread.cpp consolethread.h gamecorethread.cpp gamecorethread.h main.cpp networkthread.cpp networkthread.h
@@ -11,4 +9,4 @@ EXTRA_DIST = consolethread.cpp consolethread.h gamecorethread.cpp gamecorethread
 INCLUDES= $(all_includes) -I../intl -I../shared -I../simulation
 
 # the library search path.
-stuntsserver_LDFLAGS = $(all_libraries) 
+ustuntsserver_LDFLAGS = $(all_libraries) 

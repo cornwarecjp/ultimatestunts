@@ -22,7 +22,7 @@ CUSServer::CUSServer(int port, int maxRequests)
 {
 	printf("Starting a server process\n");
 
-	CString cmd = CString("stuntsserver")
+	CString cmd = CString("ustuntsserver")
 		+ " port=" + port
 		+ " maxRequests=" + maxRequests
 		+ " > server-stdout.txt 2> server-stderr.txt";

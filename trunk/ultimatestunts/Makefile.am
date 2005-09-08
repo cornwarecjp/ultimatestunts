@@ -1,8 +1,5 @@
-stuntsdir=@stuntsdir@
-
-bin_SCRIPTS = ultimatestunts.sh
-stunts_DATA = ultimatestunts.conf textures.dat
-EXTRA_DIST = ultimatestunts.conf textures.dat ultimatestunts.kdevprj AUTHORS COPYING ChangeLog INSTALL README TODO ultimatestunts.lsm 
+sysconf_DATA = ultimatestunts.conf
+EXTRA_DIST = ultimatestunts.conf ultimatestunts.kdevprj AUTHORS COPYING ChangeLog INSTALL README TODO
 
 CFLAGS=-Wall
 

@@ -49,4 +49,10 @@ class CFile
 		bool m_Write;
 };
 
+bool fileExists(const CString &filename);
+bool dirExists(const CString &dirname);
+bool makeDir(const CString &dirname);
+bool makeFile(const CString &filename); //also makes top directories
+bool copyFile(const CString &src, const CString &dest);
+
 #endif

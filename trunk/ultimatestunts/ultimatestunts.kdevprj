@@ -63,7 +63,7 @@ User Interface=*.ui,*.kdevdlg,*.rc,
 groups=Headers,Sources,GNU,Translations,User Interface,Others
 
 [Makefile.am]
-files=ultimatestunts.kdevprj,AUTHORS,COPYING,INSTALL,ChangeLog,README,TODO,acinclude.m4,aclocal.m4,install-sh,missing,mkinstalldirs,execselect.sh,execselect.x,restore-am,textures.dat,configure.ac,ultimatestunts.conf.in,ultimatestunts.sh.in,update-pot.sh,update-translations.sh
+files=ultimatestunts.kdevprj,AUTHORS,COPYING,INSTALL,ChangeLog,README,TODO,acinclude.m4,aclocal.m4,install-sh,missing,mkinstalldirs,execselect.sh,execselect.x,restore-am,configure.ac,ultimatestunts.conf.in,ultimatestunts.sh.in,update-pot.sh,update-translations.sh,config.h.in
 sub_dirs=ultimatestunts,shared,filetransfer,graphics,simulation,stuntsai,stuntsserver,tileedit,trackedit,stunts3dedit,__test,data,po
 type=normal
 
@@ -98,7 +98,22 @@ install=false
 install_location=
 type=DATA
 
+[config.h.in]
+dist=true
+install=false
+install_location=
+type=DATA
+
 [configure.ac]
+dist=true
+install=false
+install_location=
+type=DATA
+
+[data/Makefile.am]
+files=data/textures.dat
+
+[data/textures.dat]
 dist=true
 install=false
 install_location=
@@ -647,7 +662,7 @@ install_location=
 type=HEADER
 
 [simulation/Makefile.am]
-files=simulation/physics.cpp,simulation/physics.h,simulation/simulation.cpp,simulation/simulation.h,simulation/player.cpp,simulation/player.h,simulation/world.cpp,simulation/world.h,simulation/movingobject.cpp,simulation/movingobject.h,simulation/car.cpp,simulation/car.h,simulation/message.cpp,simulation/message.h,simulation/messagebuffer.cpp,simulation/messagebuffer.h,simulation/objectchoice.cpp,simulation/objectchoice.h,simulation/carinput.cpp,simulation/carinput.h,simulation/movobjinput.cpp,simulation/movobjinput.h,simulation/aiplayercar.cpp,simulation/aiplayercar.h,simulation/clientsim.cpp,simulation/clientsim.h,simulation/bound.cpp,simulation/bound.h,simulation/material.h,simulation/clientnet.cpp,simulation/clientnet.h,simulation/rulecontrol.cpp,simulation/rulecontrol.h,simulation/playercontrol.cpp,simulation/playercontrol.h,simulation/clientplayercontrol.cpp,simulation/clientplayercontrol.h,simulation/collisionmodel.cpp,simulation/collisionmodel.h,simulation/tilemodel.cpp,simulation/tilemodel.h,simulation/body.h,simulation/collisionface.cpp,simulation/collisionface.h,simulation/collision.h,simulation/collisiondetector.cpp,simulation/collisiondetector.h,simulation/collisiondata.cpp,simulation/collisiondata.h,simulation/gamecore.cpp,simulation/gamecore.h,simulation/material.cpp,simulation/track.cpp,simulation/track.h,simulation/stuntsnet.cpp,simulation/stuntsnet.h,simulation/chatmessage.cpp,simulation/chatmessage.h,simulation/textmessage.cpp,simulation/textmessage.h,simulation/confirmation.h,simulation/udpnet.cpp,simulation/udpnet.h,simulation/carengine.cpp,simulation/carengine.h,simulation/carwheel.cpp,simulation/carwheel.h,simulation/carrulestatus.cpp,simulation/carrulestatus.h
+files=simulation/physics.cpp,simulation/physics.h,simulation/simulation.cpp,simulation/simulation.h,simulation/player.cpp,simulation/player.h,simulation/world.cpp,simulation/world.h,simulation/movingobject.cpp,simulation/movingobject.h,simulation/car.cpp,simulation/car.h,simulation/message.cpp,simulation/message.h,simulation/messagebuffer.cpp,simulation/messagebuffer.h,simulation/objectchoice.cpp,simulation/objectchoice.h,simulation/carinput.cpp,simulation/carinput.h,simulation/movobjinput.cpp,simulation/movobjinput.h,simulation/aiplayercar.cpp,simulation/aiplayercar.h,simulation/clientsim.cpp,simulation/clientsim.h,simulation/bound.cpp,simulation/bound.h,simulation/material.h,simulation/clientnet.cpp,simulation/clientnet.h,simulation/rulecontrol.cpp,simulation/rulecontrol.h,simulation/playercontrol.cpp,simulation/playercontrol.h,simulation/clientplayercontrol.cpp,simulation/clientplayercontrol.h,simulation/collisionmodel.cpp,simulation/collisionmodel.h,simulation/tilemodel.cpp,simulation/tilemodel.h,simulation/body.h,simulation/collisionface.cpp,simulation/collisionface.h,simulation/collision.h,simulation/collisiondetector.cpp,simulation/collisiondetector.h,simulation/collisiondata.cpp,simulation/collisiondata.h,simulation/gamecore.cpp,simulation/gamecore.h,simulation/material.cpp,simulation/track.cpp,simulation/track.h,simulation/stuntsnet.cpp,simulation/stuntsnet.h,simulation/chatmessage.cpp,simulation/chatmessage.h,simulation/textmessage.cpp,simulation/textmessage.h,simulation/confirmation.h,simulation/udpnet.cpp,simulation/udpnet.h,simulation/carengine.cpp,simulation/carengine.h,simulation/carwheel.cpp,simulation/carwheel.h,simulation/carrulestatus.cpp,simulation/carrulestatus.h,simulation/netfilecontrol.cpp,simulation/netfilecontrol.h,simulation/hiscorefile.cpp,simulation/hiscorefile.h
 sub_dirs=
 type=static_library
 
@@ -861,6 +876,18 @@ install=false
 install_location=
 type=HEADER
 
+[simulation/hiscorefile.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[simulation/hiscorefile.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
 [simulation/material.cpp]
 dist=true
 install=false
@@ -916,6 +943,18 @@ install_location=
 type=SOURCE
 
 [simulation/movobjinput.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[simulation/netfilecontrol.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[simulation/netfilecontrol.h]
 dist=true
 install=false
 install_location=
@@ -1230,12 +1269,6 @@ install=false
 install_location=
 type=HEADER
 
-[textures.dat]
-dist=true
-install=false
-install_location=
-type=DATA
-
 [tileedit/Makefile.am]
 files=tileedit/main.cpp,
 sub_dirs=
@@ -1248,15 +1281,63 @@ install_location=
 type=SOURCE
 
 [trackedit/Makefile.am]
-files=trackedit/main.cpp,
+files=trackedit/main.cpp,trackedit/edittrack.cpp,trackedit/edittrack.h,trackedit/temanager.cpp,trackedit/temanager.h,trackedit/tecamera.cpp,trackedit/tecamera.h,trackedit/terenderer.cpp,trackedit/terenderer.h
 sub_dirs=
 type=static_library
+
+[trackedit/edittrack.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[trackedit/edittrack.h]
+dist=true
+install=false
+install_location=
+type=HEADER
 
 [trackedit/main.cpp]
 dist=true
 install=false
 install_location=
 type=SOURCE
+
+[trackedit/tecamera.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[trackedit/tecamera.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[trackedit/temanager.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[trackedit/temanager.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[trackedit/terenderer.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[trackedit/terenderer.h]
+dist=true
+install=false
+install_location=
+type=HEADER
 
 [ultimatestunts.conf.in]
 dist=true

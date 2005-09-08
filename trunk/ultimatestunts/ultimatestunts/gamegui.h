@@ -63,9 +63,18 @@ protected:
 	{
 		CString name;
 		bool isHuman;
-		CString carFile;
+		unsigned int carIndex; //refers to m_CarFile
 	};
 	vector<SPlayerDescr> m_PlayerDescr;
+	unsigned int m_SelectedPlayer; //for player menus
+
+	//A cache for names of the cars, loaded by constructor
+	struct SCarFile
+	{
+		CString filename;
+		CString fullname;
+	};
+	vector<SCarFile> m_CarFiles;
 
 	void updateMenuTexts();
 
@@ -76,15 +85,18 @@ protected:
 			void unload();
 		CString viewGameTypeMenu();
 		CString viewTrackMenu();
+		CString viewPlayersMenu();
 		CString viewPlayerMenu();
-			void addPlayer(CString name, bool human, CString carfile);
+		CString viewCarMenu();
 		CString viewHiscore();
 
 	//The menu pages:
 	CGUIPage m_MainPage;
 	CGUIPage m_GameTypePage;
 	CGUIPage m_TrackPage;
+	CGUIPage m_PlayersPage;
 	CGUIPage m_PlayerPage;
+	CGUIPage m_CarPage;
 	CGUIPage m_LoadingPage;
 	CGUIPage m_HiscorePage;
 };

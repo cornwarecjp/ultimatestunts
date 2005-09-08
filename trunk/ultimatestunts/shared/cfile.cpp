@@ -17,6 +17,8 @@
 #include "cfile.h"
 #include <cstdio>
 #include <cstdlib>
+#include <dirent.h>
+#include <sys/stat.h>
 
 CFile::CFile(CString filename, bool write)
 {
@@ -127,4 +129,111 @@ void CFile::writeBytes(const CBinBuffer &b)
 		buffer[i] = b[i];
 
 	fwrite(buffer, 1, b.size(), fp);
+}
+
+bool fileExists(const CString &filename)
+{
+	//try to open it with fopen
+	FILE *fp = fopen(filename.c_str(), "r");
+
+	if(fp == NULL) return false;
+
+	fclose(fp);
+	return true;
+}
+
+bool dirExists(const CString &dirname)
+{
+	DIR *theDir = opendir(dirname.c_str());
+
+	if(theDir == NULL) return false;
+
+	closedir(theDir);
+	return true;
+}
+
+bool makeDir(const CString &dirname)
+{
+	//printf("makeDir(\"%s\");\n", dirname.c_str());
+	if(!dirExists(dirname))
+	{
+		int i = 1;
+
+		while(true)
+		{
+			int nextSlash = dirname.mid(i+1).inStr('/');
+
+			CString subdir;
+			if(nextSlash < 0)
+			{
+				nextSlash = dirname.length()-1;
+				subdir = dirname;
+			}
+			else
+			{
+				nextSlash += i+1;
+				subdir = dirname.mid(0, nextSlash);
+			}
+
+			if(!dirExists(subdir))
+			{
+				printf("Making dir %s\n", subdir.c_str());
+				mkdir(subdir.c_str(), 00700);
+			}
+
+			i = nextSlash;
+			if(i == int(dirname.length())-1) break;
+		}
+	}
+
+	if(!dirExists(dirname)) return false;
+
+	return true;
+}
+
+bool makeFile(const CString &filename)
+{
+	//find the last slash
+	int pos = 0;
+	while(true)
+	{
+		int nextSlash = filename.mid(pos+1).inStr('/');
+		if(nextSlash < 0) break;
+
+		nextSlash += pos+1;
+
+		pos = nextSlash;
+	}
+
+	if(!makeDir(filename.mid(0, pos)) ) return false;
+
+	FILE *fp = fopen(filename.c_str(), "w");
+	if(fp == NULL) return false;
+	fclose(fp);
+
+	return true;
+}
+
+bool copyFile(const CString &src, const CString &dest)
+{
+	FILE *fp1 = fopen(src.c_str(), "r");
+	if(fp1 == NULL) return false;
+
+	FILE *fp2 = fopen(dest.c_str(), "w");
+	if(fp2 == NULL)
+	{
+		fclose(fp1);
+		return false;
+	}
+
+	while(true)
+	{
+		int c = fgetc(fp1);
+		if(c == EOF) break;
+		fputc(c, fp2);
+	}
+
+	fclose(fp1);
+	fclose(fp2);
+	return true;
 }

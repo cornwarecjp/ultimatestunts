@@ -1,8 +1,6 @@
-stuntsdir=@stuntsdir@
-
-stunts_PROGRAMS = stuntsai
-stuntsai_SOURCES = main.cpp
-stuntsai_LDADD   = ../shared/libshared.a ../simulation/libsimulation.a @sdllibs@ @netlibs@ @LIBINTL@
+bin_PROGRAMS = ustuntsai
+ustuntsai_SOURCES = main.cpp
+ustuntsai_LDADD   = ../shared/libshared.a ../simulation/libsimulation.a @sdllibs@ @netlibs@ @LIBINTL@
 
 
 EXTRA_DIST = main.cpp 
@@ -11,4 +9,4 @@ EXTRA_DIST = main.cpp
 INCLUDES= $(all_includes) -I../intl -I../shared -I../simulation
 
 # the library search path.
-stuntsai_LDFLAGS = $(all_libraries) 
+ustuntsai_LDFLAGS = $(all_libraries) 

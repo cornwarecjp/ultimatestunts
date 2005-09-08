@@ -155,7 +155,6 @@ sbindir = @sbindir@
 sdllibs = @sdllibs@
 sharedstatedir = @sharedstatedir@
 soundlibs = @soundlibs@
-stuntsdir = @stuntsdir@
 sysconfdir = @sysconfdir@
 target = @target@
 target_alias = @target_alias@
@@ -163,32 +162,31 @@ target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
 usdatadir = @usdatadir@
-
-stunts_PROGRAMS = ultimatestunts
-ultimatestunts_SOURCES = main.cpp gamecamera.cpp gamegui.cpp gamerenderer.cpp gamewinsystem.cpp humanplayer.cpp music.cpp sndsample.cpp sound.cpp soundobj.cpp soundworld.cpp uscore.cpp usserver.cpp
-ultimatestunts_LDADD = ../graphics/libgraphics.a ../simulation/libsimulation.a ../shared/libshared.a @sdllibs@ @graphlibs@ @soundlibs@ @netlibs@ @LIBINTL@
+bin_PROGRAMS = ustunts
+ustunts_SOURCES = main.cpp gamecamera.cpp gamegui.cpp gamerenderer.cpp gamewinsystem.cpp humanplayer.cpp music.cpp sndsample.cpp sound.cpp soundobj.cpp soundworld.cpp uscore.cpp usserver.cpp
+ustunts_LDADD = ../graphics/libgraphics.a ../simulation/libsimulation.a ../shared/libshared.a @sdllibs@ @graphlibs@ @soundlibs@ @netlibs@ @LIBINTL@
 
 EXTRA_DIST = main.cpp gamecamera.cpp gamecamera.h gamegui.cpp gamegui.h gamerenderer.cpp gamerenderer.h gamewinsystem.cpp gamewinsystem.h humanplayer.cpp humanplayer.h music.cpp music.h sndsample.cpp sndsample.h sound.cpp sound.h soundobj.cpp soundobj.h soundworld.cpp soundworld.h uscore.cpp uscore.h usserver.cpp usserver.h
 # set the include path found by configure
 INCLUDES = $(all_includes) -I../intl -I../shared -I../simulation -I../graphics
 
 # the library search path.
-ultimatestunts_LDFLAGS = $(all_libraries) 
+ustunts_LDFLAGS = $(all_libraries) 
 subdir = ultimatestunts
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
-stunts_PROGRAMS = ultimatestunts$(EXEEXT)
-PROGRAMS = $(stunts_PROGRAMS)
+bin_PROGRAMS = ustunts$(EXEEXT)
+PROGRAMS = $(bin_PROGRAMS)
 
-am_ultimatestunts_OBJECTS = main.$(OBJEXT) gamecamera.$(OBJEXT) \
+am_ustunts_OBJECTS = main.$(OBJEXT) gamecamera.$(OBJEXT) \
 	gamegui.$(OBJEXT) gamerenderer.$(OBJEXT) \
 	gamewinsystem.$(OBJEXT) humanplayer.$(OBJEXT) music.$(OBJEXT) \
 	sndsample.$(OBJEXT) sound.$(OBJEXT) soundobj.$(OBJEXT) \
 	soundworld.$(OBJEXT) uscore.$(OBJEXT) usserver.$(OBJEXT)
-ultimatestunts_OBJECTS = $(am_ultimatestunts_OBJECTS)
-ultimatestunts_DEPENDENCIES = ../graphics/libgraphics.a \
+ustunts_OBJECTS = $(am_ustunts_OBJECTS)
+ustunts_DEPENDENCIES = ../graphics/libgraphics.a \
 	../simulation/libsimulation.a ../shared/libshared.a
 
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)
@@ -207,9 +205,9 @@ CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 CXXLD = $(CXX)
 CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
-DIST_SOURCES = $(ultimatestunts_SOURCES)
+DIST_SOURCES = $(ustunts_SOURCES)
 DIST_COMMON = Makefile.am Makefile.in
-SOURCES = $(ultimatestunts_SOURCES)
+SOURCES = $(ustunts_SOURCES)
 
 all: all-am
 
@@ -220,33 +218,33 @@ $(srcdir)/Makefile.in:  Makefile.am  $(top_srcdir)/configure.ac $(ACLOCAL_M4)
 	  $(AUTOMAKE) --gnu  ultimatestunts/Makefile
 Makefile:  $(srcdir)/Makefile.in  $(top_builddir)/config.status
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)
-stuntsPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
-install-stuntsPROGRAMS: $(stunts_PROGRAMS)
+binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
+install-binPROGRAMS: $(bin_PROGRAMS)
 	@$(NORMAL_INSTALL)
-	$(mkinstalldirs) $(DESTDIR)$(stuntsdir)
-	@list='$(stunts_PROGRAMS)'; for p in $$list; do \
+	$(mkinstalldirs) $(DESTDIR)$(bindir)
+	@list='$(bin_PROGRAMS)'; for p in $$list; do \
 	  p1=`echo $$p|sed 's/$(EXEEXT)$$//'`; \
 	  if test -f $$p \
 	  ; then \
 	    f=`echo "$$p1" | sed 's,^.*/,,;$(transform);s/$$/$(EXEEXT)/'`; \
-	   echo " $(INSTALL_PROGRAM_ENV) $(stuntsPROGRAMS_INSTALL) $$p $(DESTDIR)$(stuntsdir)/$$f"; \
-	   $(INSTALL_PROGRAM_ENV) $(stuntsPROGRAMS_INSTALL) $$p $(DESTDIR)$(stuntsdir)/$$f || exit 1; \
+	   echo " $(INSTALL_PROGRAM_ENV) $(binPROGRAMS_INSTALL) $$p $(DESTDIR)$(bindir)/$$f"; \
+	   $(INSTALL_PROGRAM_ENV) $(binPROGRAMS_INSTALL) $$p $(DESTDIR)$(bindir)/$$f || exit 1; \
 	  else :; fi; \
 	done
 
-uninstall-stuntsPROGRAMS:
+uninstall-binPROGRAMS:
 	@$(NORMAL_UNINSTALL)
-	@list='$(stunts_PROGRAMS)'; for p in $$list; do \
+	@list='$(bin_PROGRAMS)'; for p in $$list; do \
 	  f=`echo "$$p" | sed 's,^.*/,,;s/$(EXEEXT)$$//;$(transform);s/$$/$(EXEEXT)/'`; \
-	  echo " rm -f $(DESTDIR)$(stuntsdir)/$$f"; \
-	  rm -f $(DESTDIR)$(stuntsdir)/$$f; \
+	  echo " rm -f $(DESTDIR)$(bindir)/$$f"; \
+	  rm -f $(DESTDIR)$(bindir)/$$f; \
 	done
 
-clean-stuntsPROGRAMS:
-	-test -z "$(stunts_PROGRAMS)" || rm -f $(stunts_PROGRAMS)
-ultimatestunts$(EXEEXT): $(ultimatestunts_OBJECTS) $(ultimatestunts_DEPENDENCIES) 
-	@rm -f ultimatestunts$(EXEEXT)
-	$(CXXLINK) $(ultimatestunts_LDFLAGS) $(ultimatestunts_OBJECTS) $(ultimatestunts_LDADD) $(LIBS)
+clean-binPROGRAMS:
+	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
+ustunts$(EXEEXT): $(ustunts_OBJECTS) $(ustunts_DEPENDENCIES) 
+	@rm -f ustunts$(EXEEXT)
+	$(CXXLINK) $(ustunts_LDFLAGS) $(ustunts_OBJECTS) $(ustunts_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT) core *.core
@@ -384,7 +382,7 @@ check: check-am
 all-am: Makefile $(PROGRAMS)
 
 installdirs:
-	$(mkinstalldirs) $(DESTDIR)$(stuntsdir)
+	$(mkinstalldirs) $(DESTDIR)$(bindir)
 install: install-am
 install-exec: install-exec-am
 install-data: install-data-am
@@ -411,7 +409,7 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic clean-stuntsPROGRAMS mostlyclean-am
+clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
 
@@ -426,9 +424,9 @@ info: info-am
 
 info-am:
 
-install-data-am: install-stuntsPROGRAMS
+install-data-am:
 
-install-exec-am:
+install-exec-am: install-binPROGRAMS
 
 install-info: install-info-am
 
@@ -452,19 +450,18 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-info-am uninstall-stuntsPROGRAMS
+uninstall-am: uninstall-binPROGRAMS uninstall-info-am
 
-.PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
-	clean-stuntsPROGRAMS ctags distclean distclean-compile \
+.PHONY: CTAGS GTAGS all all-am check check-am clean clean-binPROGRAMS \
+	clean-generic ctags distclean distclean-compile \
 	distclean-depend distclean-generic distclean-tags distdir dvi \
-	dvi-am info info-am install install-am install-data \
-	install-data-am install-exec install-exec-am install-info \
-	install-info-am install-man install-strip \
-	install-stuntsPROGRAMS installcheck installcheck-am installdirs \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-compile mostlyclean-generic pdf pdf-am ps ps-am \
-	tags uninstall uninstall-am uninstall-info-am \
-	uninstall-stuntsPROGRAMS
+	dvi-am info info-am install install-am install-binPROGRAMS \
+	install-data install-data-am install-exec install-exec-am \
+	install-info install-info-am install-man install-strip \
+	installcheck installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-compile \
+	mostlyclean-generic pdf pdf-am ps ps-am tags uninstall \
+	uninstall-am uninstall-binPROGRAMS uninstall-info-am
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

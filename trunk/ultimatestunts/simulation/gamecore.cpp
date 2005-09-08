@@ -20,6 +20,7 @@
 
 #include "clientsim.h"
 #include "physics.h"
+#include "car.h"
 
 #include "gamecore.h"
 
@@ -49,7 +50,7 @@ void CGameCore::initLocalGame(const CString &trackfile)
 	if(m_ClientNet!=NULL)
 		delete m_ClientNet;
 	m_ClientNet = NULL;
-	resetGame();
+	stopGame();
 	m_TrackFile = trackfile;
 }
 
@@ -71,7 +72,7 @@ void CGameCore::initClientGame(const CString &host, unsigned int port)
 	resetGame();
 }
 
-bool CGameCore::addPlayer(CPlayer *p, CString name, CObjectChoice choice)
+bool CGameCore::addPlayer(CPlayer *p, CObjectChoice choice)
 {
 	if(m_PCtrl == NULL) return false;
 
@@ -81,6 +82,10 @@ bool CGameCore::addPlayer(CPlayer *p, CString name, CObjectChoice choice)
 	if(id < 0)
 		return false; //sim doesn't accept player
 
+	//here the player's name is set
+	p->m_Name = choice.m_PlayerName;
+
+	//ad it to the player array
 	m_Players.push_back(p);
 	return true;
 }
@@ -126,6 +131,16 @@ bool CGameCore::update() //true = continue false = leave
 	}
 
 	return retval;
+}
+
+void CGameCore::stopGame()
+{
+	//first make a backup of the hiscore data
+	if(theWorld->getNumObjects(CDataObject::eMovingObject) > 0)
+		collectHiscoreData();
+
+	//then, unload the game
+	resetGame();
 }
 
 void CGameCore::resetGame()
@@ -187,4 +202,43 @@ bool CGameCore::isLocalPlayer(unsigned int ID)
 		if(m_Players[i]->m_MovingObjectId == (int)ID) return true;
 
 	return false;
+}
+
+void CGameCore::collectHiscoreData()
+{
+	m_LastHiscores.clear();
+
+	if(m_ClientNet == NULL) //local game
+	{
+		for(unsigned int i=0; i < m_Players.size(); i++)
+		{
+			unsigned int carID = m_Players[i]->m_MovingObjectId;
+			CCar *theCar = (CCar *)theWorld->getMovingObject(carID);
+			CCarRuleStatus status = theCar->m_RuleStatus;
+
+			float time = status.finishTime - status.startTime + status.penaltyTime;
+			if(status.state != CCarRuleStatus::eFinished) time = -1.0;
+
+			SHiscoreEntry e;
+			e.name = m_Players[i]->m_Name;
+			e.carname = theCar->m_CarName;
+			e.time = time;
+			e.isNew = true;
+			m_LastHiscores.push_back(e);
+		}
+	}
+	else
+	{
+		//TODO: get hiscore from the server
+	}
+
+	//merge with existing hiscore file:
+	CHiscoreFile hf(m_TrackFile);
+	hf.addEntries(m_LastHiscores);
+	m_LastHiscores = hf.getEntries();
+}
+
+vector<SHiscoreEntry> CGameCore::getHiscore()
+{
+	return m_LastHiscores;
 }

@@ -23,6 +23,7 @@ CObjectChoice::CObjectChoice()
 {
 	m_ObjType = CMessageBuffer::movingObject;
 	m_Filename = "not_a_file.conf";
+	m_PlayerName = "Someone";
 }
 
 CObjectChoice::~CObjectChoice()
@@ -33,6 +34,7 @@ CBinBuffer &CObjectChoice::getData(CBinBuffer &b) const
 {
 	b += (Uint8)m_ObjType;
 	b += m_Filename;
+	b += m_PlayerName;
 	return b;
 }
 
@@ -40,6 +42,7 @@ bool CObjectChoice::setData(const CBinBuffer & b, unsigned int &pos)
 {
 	m_ObjType = (CMessageBuffer::eMessageType)b.getUint8(pos);
 	m_Filename = b.getCString(pos);
+	m_PlayerName = b.getCString(pos);
 	return true;
 }
 

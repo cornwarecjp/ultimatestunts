@@ -39,7 +39,7 @@ CTextureLoader::CTextureLoader(const CLConfig &conf, CString texdatfile)
 	cnf = conf.getValue("graphics", "texture_smooth");
 	m_TexSmooth = (cnf != "false");
 
-	CFile f(texdatfile);
+	CDataFile f(texdatfile);
 
 	CString line = f.readl();
 	if(!(line == "TEDITFILE"))

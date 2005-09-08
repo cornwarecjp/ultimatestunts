@@ -8,7 +8,9 @@
 #define PACKAGE "ultimatestunts"
 
 /* Version number of package */
-#define VERSION "0.5.5"
+#define VERSION "0.5.6"
+
+#define PREFIXDIR "/usr/local"
 
 #define HAVE_GLEXT_H 1
 

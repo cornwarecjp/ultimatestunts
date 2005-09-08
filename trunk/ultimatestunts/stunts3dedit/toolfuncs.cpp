@@ -323,5 +323,23 @@ void generateFunc()
 		}
 	}
 
+	if(getInput("Generate texture replacement colors for all primitives (y/n)? ") == "y")
+	{
+		//for every primitive
+		for(unsigned int p=0; p<graphobj->m_Primitives.size(); p++)
+		{
+			CPrimitive &thePrimitive = graphobj->m_Primitives[p];
+			if(thePrimitive.m_Texture >= 0)
+			{
+				CLODTexture *texture = graphobj->m_MatArray[thePrimitive.m_Texture];
+				thePrimitive.m_ReplacementColor = texture->getColor();
+			}
+			else
+			{
+				thePrimitive.m_ReplacementColor = CVector(1,1,1);
+			}
+		}
+	}
+
 	graphobj->render(VisibleLODs);
 }

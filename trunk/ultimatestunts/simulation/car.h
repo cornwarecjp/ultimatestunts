@@ -45,6 +45,8 @@ public:
 
 	CCarRuleStatus m_RuleStatus;
 
+	CString m_CarName; //is loaded from car file
+
 	virtual void update(CPhysics *simulator, float dt);
 	virtual void correctCollisions();
 

@@ -20,6 +20,7 @@
 
 #include "world.h"
 #include "message.h"
+#include "cstring.h"
 
 /**
   *@author CJP
@@ -36,6 +37,7 @@ public:
 	int m_MovingObjectId;
 	int m_PlayerId;
 
+	CString m_Name;
 protected:
 	const CWorld *m_World;
 

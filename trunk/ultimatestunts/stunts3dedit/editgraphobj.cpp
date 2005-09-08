@@ -913,53 +913,45 @@ void CEditGraphObj::render(const CString &visibleLODs)
 			if(visibleLODs.inStr( (LODs[j]) ) >= 0)
 				{doit = true; break;}
 		if(!doit) continue;
-		
+
+		//Standard colors
+		m_OpacityState = pr.m_Opacity;
+		m_ColorState = pr.m_ModulationColor;
+
+		//Apply texture
 		if(pr.m_Texture < 0)
-			{glDisable(GL_TEXTURE_2D);}
+		{ //no texture
+			glDisable(GL_TEXTURE_2D); 
+		}
+		else if(m_MatArray[pr.m_Texture]->getSizeX(1) <= 4 || m_MatArray[pr.m_Texture]->getSizeY(1) <= 4)
+		{ //too small texture
+			glDisable(GL_TEXTURE_2D);
+			m_ColorState.x *= pr.m_ReplacementColor.x;
+			m_ColorState.y *= pr.m_ReplacementColor.y;
+			m_ColorState.z *= pr.m_ReplacementColor.z;
+		}
 		else
-		{
+		{ //a good texture
 			glEnable(GL_TEXTURE_2D);
 			m_MatArray[pr.m_Texture]->draw(1);
 		}
 
-		if(pr.m_Type == CPrimitive::VertexArray)
-		{
-			m_OpacityState = pr.m_Opacity;
-			m_ColorState = pr.m_ModulationColor;
-			setMaterialColor();
+		//Set the color
+		setMaterialColor();
 
-			glBegin(GL_TRIANGLES);
-			for(unsigned int k=0; k<pr.m_Index.size(); k++)
-			{
-				unsigned int j = pr.m_Index[k];
-				CVertex &vt = pr.m_Vertex[j];
-				CVector &nor = vt.nor;
-				glNormal3f(nor.x, nor.y, nor.z);
-				CVector &tex = vt.tex;
-				glTexCoord2f(tex.x, tex.y);
-				CVector &pos = vt.pos;
-				glVertex3f(pos.x, pos.y, pos.z);
-			}
-			glEnd();
-		}
-		else
+		glBegin(GL_TRIANGLES);
+		for(unsigned int k=0; k<pr.m_Index.size(); k++)
 		{
-			glBegin(pr.m_Type);
-			for(unsigned int j=0; j<pr.m_Vertex.size(); j++)
-			{
-				CVertex &vt = pr.m_Vertex[j];
-				CVector &nor = vt.nor;
-				glNormal3f(nor.x, nor.y, nor.z);
-				m_OpacityState = vt.opacity;
-				m_ColorState = vt.col;
-				setMaterialColor();
-				CVector &tex = vt.tex;
-				glTexCoord2f(tex.x, tex.y);
-				CVector &pos = vt.pos;
-				glVertex3f(pos.x, pos.y, pos.z);
-			}
-			glEnd();
+			unsigned int j = pr.m_Index[k];
+			CVertex &vt = pr.m_Vertex[j];
+			CVector &nor = vt.nor;
+			glNormal3f(nor.x, nor.y, nor.z);
+			CVector &tex = vt.tex;
+			glTexCoord2f(tex.x, tex.y);
+			CVector &pos = vt.pos;
+			glVertex3f(pos.x, pos.y, pos.z);
 		}
+		glEnd();
 	}
 
 	glEndList();

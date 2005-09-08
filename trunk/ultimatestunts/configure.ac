@@ -1,11 +1,17 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT([Ultimate Stunts], [0.5.5], [cornware-cjp@users.sourceforge.net], [ultimatestunts])
+AC_INIT([Ultimate Stunts], [0.5.6], [cornware-cjp@users.sourceforge.net], [ultimatestunts])
 AC_CONFIG_SRCDIR([ultimatestunts/main.cpp])
 AC_CONFIG_HEADER(config.h)
 AC_CANONICAL_TARGET
 
 AM_INIT_AUTOMAKE
+
+dnl Set prefix dir explicitly if not already done by user
+if test "x$prefix" = "xNONE" ; then
+  prefix="/usr/local"
+fi
+
 
 dnl Checks for programs.
 AC_PROG_CC
@@ -43,6 +49,9 @@ if test "x$ac_cv_header_windows_h" != "xyes" ; then
 
   x_suffix="$X_LIBS $X_PRE_LIBS -lX11 -lXi -lXext -lXmu $X_EXTRA_LIBS -lm"
   graphlibs=$x_suffix
+
+  CFLAGS="$CFLAGS $X_CFLAGS"
+  CXXFLAGS="$CXXFLAGS $X_CFLAGS"
 
   dnl Reasonable stuff non-windoze variants ... :-)
 
@@ -174,9 +183,20 @@ AM_GNU_GETTEXT
 dnl ------------------
 dnl The directory locations
 dnl ------------------
-dnl TODO: set this with some intelligent script
-usdatadir="./data/"
-stuntsdir='${prefix}/games/ultimatestunts'
+usdatadir="${prefix}/share/ultimatestunts/"
+
+AC_DEFINE_UNQUOTED(PREFIXDIR, "$prefix")
+
+AC_SUBST(netlibs)
+AC_SUBST(soundlibs)
+AC_SUBST(graphlibs)
+AC_SUBST(sdllibs)
+
+AC_SUBST(PACKAGE_VERSION)
+AC_SUBST(usdatadir)
+
+AC_CONFIG_FILES([ultimatestunts.conf ultimatestunts.sh Makefile intl/Makefile po/Makefile.in data/Makefile shared/Makefile simulation/Makefile graphics/Makefile stuntsserver/Makefile stuntsai/Makefile stunts3dedit/Makefile trackedit/Makefile ultimatestunts/Makefile])
+AC_OUTPUT
 
 dnl ------
 dnl Output
@@ -187,8 +207,8 @@ echo "Network libraries: \"$netlibs\""
 echo "Sound libraries: \"$soundlibs\""
 echo "Graphics libraries: \"$graphlibs\""
 echo "SDL libraries: \"$sdllibs\""
+echo "Prefix dir: \"$prefix\""
 echo "usdatadir: \"$usdatadir\""
-echo "stuntsdir: \"$stuntsdir\""
 
 dnl -------------
 dnl Some warnings
@@ -212,15 +232,3 @@ if test "x$sdllibs" = "x"; then
 fi
 
 echo ""
-
-AC_SUBST(netlibs)
-AC_SUBST(soundlibs)
-AC_SUBST(graphlibs)
-AC_SUBST(sdllibs)
-
-AC_SUBST(PACKAGE_VERSION)
-AC_SUBST(usdatadir)
-AC_SUBST(stuntsdir)
-
-AC_CONFIG_FILES([ultimatestunts.conf ultimatestunts.sh Makefile intl/Makefile po/Makefile.in data/Makefile shared/Makefile simulation/Makefile graphics/Makefile stuntsserver/Makefile stuntsai/Makefile stunts3dedit/Makefile trackedit/Makefile ultimatestunts/Makefile])
-AC_OUTPUT

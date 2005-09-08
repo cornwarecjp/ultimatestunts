@@ -6,9 +6,10 @@
 
 
 PATH="./ultimatestunts:./stuntsserver:./stuntsai:./stunts3dedit:./trackedit:$PATH"
-#stuntsserver
-#stunts3dedit
-ultimatestunts 2> debuglog.txt
+#ustuntsserver
+#ustuntstrackedit
+#ustunts3dedit
+ustunts 2> debuglog.txt
 
 echo "Program stopped. Press Enter."
 read

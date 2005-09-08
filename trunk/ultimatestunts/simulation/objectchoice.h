@@ -41,6 +41,8 @@ public:
 	//Additional: (car) settings
 	//Additional: selected skin / color
 
+	CString m_PlayerName;
+
 	virtual CMessageBuffer::eMessageType getType() const {return CMessageBuffer::objectChoice;}
 };
 

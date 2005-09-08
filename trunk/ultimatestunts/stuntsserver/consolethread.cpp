@@ -122,16 +122,14 @@ void CConsoleThread::addRemotePlayers()
 	//add them
 	for(unsigned int i=0; i < Clients.playerRequests.size(); i++)
 	{
-		CString name = CString("Remote player ") + int(i); //TODO
-
 		m_RemotePlayers.push_back(new CPlayer);
 		CPlayer *p = m_RemotePlayers.back();
 
 		CObjectChoice &choice = Clients.playerRequests[i];
 
-		if(!gamecorethread.m_GameCore->addPlayer(p, name, choice))
+		if(!gamecorethread.m_GameCore->addPlayer(p, choice))
 		{
-			printf("Sim doesn't accept remote player %s\n", name.c_str());
+			printf("Sim doesn't accept remote player %s\n", choice.m_PlayerName.c_str());
 			delete p;
 			m_RemotePlayers.erase(m_RemotePlayers.end());
 			continue;
@@ -169,8 +167,9 @@ void CConsoleThread::addAIPlayers()
 
 		CObjectChoice choice;
 		choice.m_Filename = car;
+		choice.m_PlayerName = name;
 
-		if(!gamecorethread.m_GameCore->addPlayer(p, name, choice))
+		if(!gamecorethread.m_GameCore->addPlayer(p, choice))
 		{
 			printf("Sim doesn't accept AI player %s\n", name.c_str());
 			delete p;

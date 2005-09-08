@@ -122,6 +122,7 @@ void CRuleControl::updateCarRules(CCar *car)
 	if(currentIndex != prevIndex && currentCounter >= 0) //we're on a route, and not on the start
 	{
 		printf("\nvalid, prev, current = %d, %d, %d\n", validCounter, prevCounter, currentCounter);
+		printf("curTileTime = %.2f s\n", track.m_Track[currentIndex].m_Time);
 		printf("maxTileTime = %.2f s\n", status.maxTileTime);
 
 		if(prevCounter>=0 && currentCounter == prevCounter+1) //we're following a certain route

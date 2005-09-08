@@ -9,6 +9,8 @@
 /* Version number of package */
 #undef VERSION
 
+#undef PREFIXDIR
+
 #undef HAVE_GLEXT_H
 
 #undef FMOD_HEADER

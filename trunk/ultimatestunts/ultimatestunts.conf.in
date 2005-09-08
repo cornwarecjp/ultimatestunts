@@ -101,6 +101,7 @@ compiledvertexarray = true
 #Files section
 [files]
 datadir = @usdatadir@
+savedir = ~/.ultimatestunts/saveddata/
 
 #Sound section
 [sound]

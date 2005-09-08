@@ -21,12 +21,13 @@
 #include "cstring.h"
 #include "stuntsnet.h"
 #include "ipnumber.h"
+#include "netfilecontrol.h"
 
 /**
   *@author CJP
   */
 
-class CClientNet : public CStuntsNet { //TODO: derive from CFileCtrl
+class CClientNet : public CStuntsNet {
 public: 
 	CClientNet(CString host="localhost", int port=1500);
 	virtual ~CClientNet();
@@ -47,6 +48,8 @@ protected:
 	CIPNumber m_ServerIP;
 	int m_ServerPort;
 
+private:
+	CNetFileControl m_FileCtl;
 };
 
 #endif

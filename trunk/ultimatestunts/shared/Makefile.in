@@ -155,7 +155,6 @@ sbindir = @sbindir@
 sdllibs = @sdllibs@
 sharedstatedir = @sharedstatedir@
 soundlibs = @soundlibs@
-stuntsdir = @stuntsdir@
 sysconfdir = @sysconfdir@
 target = @target@
 target_alias = @target_alias@

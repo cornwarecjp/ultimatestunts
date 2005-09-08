@@ -196,7 +196,7 @@ bool CTrack::load(const CString &filename, const CParamList &list)
 	}
 
 	int s = m_Track.size();
-	printf("   Loaded the track: total %d tiles\n", s);
+	printf("   Loaded track aray: total %d tiles\n", s);
 
 	//Fourth: loading the possible routes
 	
@@ -228,7 +228,11 @@ bool CTrack::load(const CString &filename, const CParamList &list)
 				z = (unsigned int)(p.y+0.1);
 			STile &t = m_Track[y + m_H * (z+m_W*x)];
 
-			bool isFinish = theWorld->getTileModel(t.m_Model)->m_isFinish;
+			//This doesn't work with the track editor:
+			//bool isFinish = theWorld->getTileModel(t.m_Model)->m_isFinish;
+			
+			CDataObject *tmodel = m_DataManager->getObject(CDataObject::eTileModel, t.m_Model);
+			bool isFinish = tmodel->getParamList().getValue("flags", "").inStr('f') >= 0;
 
 			if(isFinish && counter > 0) //The finish counter and time
 			{
@@ -240,7 +244,7 @@ bool CTrack::load(const CString &filename, const CParamList &list)
 			{
 				t.m_RouteCounter = counter;
 				t.m_Time = timeOffset + time;
-				printf("%d,%d,%d: Counter = %d\n", x,y,z, counter);
+				printf("%d,%d,%d: time = %.2f Counter = %d\n", x,y,z, t.m_Time, t.m_RouteCounter);
 			}
 			else //we've already been here: start or end of alternative route, or a loop finish
 			{
@@ -255,6 +259,7 @@ bool CTrack::load(const CString &filename, const CParamList &list)
 						counter = t.m_RouteCounter;
 						timeOffset = t.m_Time;
 						isAlternative = true;
+						//printf("New alternative counter=%d\n", counter);
 					}
 				}
 			}
@@ -263,6 +268,7 @@ bool CTrack::load(const CString &filename, const CParamList &list)
 		}
 	}
 
+	printf("   Succesfully loaded the track\n");
 	return true;
 }
 

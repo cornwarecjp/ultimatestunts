@@ -1,14 +1,12 @@
-stuntsdir=@stuntsdir@
-
-stunts_PROGRAMS = trackedit
-trackedit_SOURCES = main.cpp
-trackedit_LDADD   = ../shared/libshared.a ../graphics/libgraphics.a @sdllibs@ @graphlibs@ @LIBINTL@
+bin_PROGRAMS = ustuntstrackedit
+ustuntstrackedit_SOURCES = edittrack.cpp main.cpp tecamera.cpp temanager.cpp terenderer.cpp
+ustuntstrackedit_LDADD   = ../graphics/libgraphics.a ../simulation/libsimulation.a ../shared/libshared.a @sdllibs@ @graphlibs@ @LIBINTL@
 
 
-EXTRA_DIST = main.cpp 
+EXTRA_DIST = edittrack.cpp edittrack.h main.cpp tecamera.cpp tecamera.h temanager.cpp temanager.h terenderer.cpp terenderer.h
 
 # set the include path found by configure
-INCLUDES= $(all_includes) -I../intl -I../shared -I../graphics
+INCLUDES= $(all_includes) -I../intl -I../shared -I../simulation -I../graphics
 
 # the library search path.
-trackedit_LDFLAGS = $(all_libraries) 
+ustuntstrackedit_LDFLAGS = $(all_libraries) 
