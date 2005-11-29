@@ -73,6 +73,9 @@ CDataFile::CDataFile(CString filename, bool write)
 	open(filename, write);
 }
 
+CDataFile::CDataFile() : CFile()
+{}
+
 CDataFile::~CDataFile()
 {
 	//I gues it's already being closed by CFile
@@ -148,7 +151,16 @@ vector<CString> getDirContents(const CString &dir, const CString &ext)
 			CString entname = entry->d_name;
 			//file extension check:
 			if(ext == "" || (entname.inStr(ext) >= 0 && entname.inStr(ext) == (int)(entname.length() - ext.length()) ))
-				ret.push_back(entname);
+			{
+				//extra: make sure that we don't duplicate an existing entry
+				bool duplicate = false;
+				for(unsigned int i=0; i < ret.size(); i++)
+					if(ret[i] == entname)
+						{duplicate = true; break;}
+
+				if(!duplicate)
+					ret.push_back(entname);
+			}
 		}
 
 		closedir(dir2);

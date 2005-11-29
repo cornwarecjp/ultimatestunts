@@ -662,7 +662,7 @@ install_location=
 type=HEADER
 
 [simulation/Makefile.am]
-files=simulation/physics.cpp,simulation/physics.h,simulation/simulation.cpp,simulation/simulation.h,simulation/player.cpp,simulation/player.h,simulation/world.cpp,simulation/world.h,simulation/movingobject.cpp,simulation/movingobject.h,simulation/car.cpp,simulation/car.h,simulation/message.cpp,simulation/message.h,simulation/messagebuffer.cpp,simulation/messagebuffer.h,simulation/objectchoice.cpp,simulation/objectchoice.h,simulation/carinput.cpp,simulation/carinput.h,simulation/movobjinput.cpp,simulation/movobjinput.h,simulation/aiplayercar.cpp,simulation/aiplayercar.h,simulation/clientsim.cpp,simulation/clientsim.h,simulation/bound.cpp,simulation/bound.h,simulation/material.h,simulation/clientnet.cpp,simulation/clientnet.h,simulation/rulecontrol.cpp,simulation/rulecontrol.h,simulation/playercontrol.cpp,simulation/playercontrol.h,simulation/clientplayercontrol.cpp,simulation/clientplayercontrol.h,simulation/collisionmodel.cpp,simulation/collisionmodel.h,simulation/tilemodel.cpp,simulation/tilemodel.h,simulation/body.h,simulation/collisionface.cpp,simulation/collisionface.h,simulation/collision.h,simulation/collisiondetector.cpp,simulation/collisiondetector.h,simulation/collisiondata.cpp,simulation/collisiondata.h,simulation/gamecore.cpp,simulation/gamecore.h,simulation/material.cpp,simulation/track.cpp,simulation/track.h,simulation/stuntsnet.cpp,simulation/stuntsnet.h,simulation/chatmessage.cpp,simulation/chatmessage.h,simulation/textmessage.cpp,simulation/textmessage.h,simulation/confirmation.h,simulation/udpnet.cpp,simulation/udpnet.h,simulation/carengine.cpp,simulation/carengine.h,simulation/carwheel.cpp,simulation/carwheel.h,simulation/carrulestatus.cpp,simulation/carrulestatus.h,simulation/netfilecontrol.cpp,simulation/netfilecontrol.h,simulation/hiscorefile.cpp,simulation/hiscorefile.h
+files=simulation/physics.cpp,simulation/physics.h,simulation/simulation.cpp,simulation/simulation.h,simulation/player.cpp,simulation/player.h,simulation/world.cpp,simulation/world.h,simulation/movingobject.cpp,simulation/movingobject.h,simulation/car.cpp,simulation/car.h,simulation/message.cpp,simulation/message.h,simulation/messagebuffer.cpp,simulation/messagebuffer.h,simulation/objectchoice.cpp,simulation/objectchoice.h,simulation/carinput.cpp,simulation/carinput.h,simulation/movobjinput.cpp,simulation/movobjinput.h,simulation/aiplayercar.cpp,simulation/aiplayercar.h,simulation/clientsim.cpp,simulation/clientsim.h,simulation/bound.cpp,simulation/bound.h,simulation/material.h,simulation/clientnet.cpp,simulation/clientnet.h,simulation/rulecontrol.cpp,simulation/rulecontrol.h,simulation/playercontrol.cpp,simulation/playercontrol.h,simulation/clientplayercontrol.cpp,simulation/clientplayercontrol.h,simulation/collisionmodel.cpp,simulation/collisionmodel.h,simulation/tilemodel.cpp,simulation/tilemodel.h,simulation/body.h,simulation/collisionface.cpp,simulation/collisionface.h,simulation/collision.h,simulation/collisiondetector.cpp,simulation/collisiondetector.h,simulation/collisiondata.cpp,simulation/collisiondata.h,simulation/gamecore.cpp,simulation/gamecore.h,simulation/material.cpp,simulation/track.cpp,simulation/track.h,simulation/stuntsnet.cpp,simulation/stuntsnet.h,simulation/chatmessage.cpp,simulation/chatmessage.h,simulation/textmessage.cpp,simulation/textmessage.h,simulation/confirmation.h,simulation/udpnet.cpp,simulation/udpnet.h,simulation/carengine.cpp,simulation/carengine.h,simulation/carwheel.cpp,simulation/carwheel.h,simulation/carrulestatus.cpp,simulation/carrulestatus.h,simulation/netfilecontrol.cpp,simulation/netfilecontrol.h,simulation/hiscorefile.cpp,simulation/hiscorefile.h,simulation/hiscore.cpp,simulation/hiscore.h,simulation/chatsystem.cpp,simulation/chatsystem.h,simulation/filechunk.h
 sub_dirs=
 type=static_library
 
@@ -768,6 +768,18 @@ install=false
 install_location=
 type=HEADER
 
+[simulation/chatsystem.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[simulation/chatsystem.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
 [simulation/clientnet.cpp]
 dist=true
 install=false
@@ -864,6 +876,12 @@ install=false
 install_location=
 type=HEADER
 
+[simulation/filechunk.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
 [simulation/gamecore.cpp]
 dist=true
 install=false
@@ -871,6 +889,18 @@ install_location=
 type=SOURCE
 
 [simulation/gamecore.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[simulation/hiscore.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[simulation/hiscore.h]
 dist=true
 install=false
 install_location=
@@ -1117,7 +1147,7 @@ install_location=
 type=HEADER
 
 [stunts3dedit/Makefile.am]
-files=stunts3dedit/main.cpp,stunts3dedit/editrenderer.cpp,stunts3dedit/editrenderer.h,stunts3dedit/editcamera.cpp,stunts3dedit/editcamera.h,stunts3dedit/textureloader.cpp,stunts3dedit/textureloader.h,stunts3dedit/editgraphobj.cpp,stunts3dedit/editgraphobj.h,stunts3dedit/generalfuncs.cpp,stunts3dedit/toolfuncs.cpp,stunts3dedit/transformfuncs.cpp,stunts3dedit/editfuncs.cpp,stunts3dedit/3ds.h,stunts3dedit/3ds.cpp
+files=stunts3dedit/main.cpp,stunts3dedit/editrenderer.cpp,stunts3dedit/editrenderer.h,stunts3dedit/editcamera.cpp,stunts3dedit/editcamera.h,stunts3dedit/textureloader.cpp,stunts3dedit/textureloader.h,stunts3dedit/editgraphobj.cpp,stunts3dedit/editgraphobj.h,stunts3dedit/generalfuncs.cpp,stunts3dedit/toolfuncs.cpp,stunts3dedit/transformfuncs.cpp,stunts3dedit/editfuncs.cpp,stunts3dedit/3ds.h,stunts3dedit/3ds.cpp,stunts3dedit/lw.c,stunts3dedit/lw.h
 sub_dirs=
 type=static_library
 
@@ -1169,6 +1199,18 @@ install=false
 install_location=
 type=SOURCE
 
+[stunts3dedit/lw.c]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[stunts3dedit/lw.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
 [stunts3dedit/main.cpp]
 dist=true
 install=false
@@ -1211,7 +1253,7 @@ install_location=
 type=SOURCE
 
 [stuntsserver/Makefile.am]
-files=stuntsserver/main.cpp,stuntsserver/gamecorethread.cpp,stuntsserver/gamecorethread.h,stuntsserver/networkthread.cpp,stuntsserver/networkthread.h,stuntsserver/client.h,stuntsserver/main.h,stuntsserver/consolethread.cpp,stuntsserver/consolethread.h
+files=stuntsserver/main.cpp,stuntsserver/gamecorethread.cpp,stuntsserver/gamecorethread.h,stuntsserver/networkthread.cpp,stuntsserver/networkthread.h,stuntsserver/client.h,stuntsserver/main.h,stuntsserver/consolethread.cpp,stuntsserver/consolethread.h,stuntsserver/uploadmanager.cpp,stuntsserver/uploadmanager.h
 sub_dirs=
 type=static_library
 
@@ -1264,6 +1306,18 @@ install_location=
 type=SOURCE
 
 [stuntsserver/networkthread.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[stuntsserver/uploadmanager.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[stuntsserver/uploadmanager.h]
 dist=true
 install=false
 install_location=

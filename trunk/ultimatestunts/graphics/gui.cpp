@@ -140,12 +140,8 @@ CString CGUI::showInputBox(const CString &title, const CString &deflt)
 bool CGUI::showYNMessageBox(const CString &title)
 {
 	CMessageBox *messagebox = new CMessageBox;
-	messagebox->m_Title = title;
+	messagebox->setTitle(title);
 	messagebox->m_Type = CMessageBox::eYesNo;
-	//determine maximum size
-	//unsigned int s = 25;
-	//if(title.length() > s) s = title.length();
-	//if(deflt.length() > s) s = deflt.length();
 
 	messagebox->m_Wrel = 0.5;
 	messagebox->m_Hrel = 0.4;
@@ -163,12 +159,8 @@ bool CGUI::showYNMessageBox(const CString &title)
 void CGUI::showMessageBox(const CString &title)
 {
 	CMessageBox *messagebox = new CMessageBox;
-	messagebox->m_Title = title;
+	messagebox->setTitle(title);
 	messagebox->m_Type = CMessageBox::eOK;
-	//determine maximum size
-	//unsigned int s = 25;
-	//if(title.length() > s) s = title.length();
-	//if(deflt.length() > s) s = deflt.length();
 
 	messagebox->m_Wrel = 0.5;
 	messagebox->m_Hrel = 0.4;

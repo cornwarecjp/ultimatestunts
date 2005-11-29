@@ -14,6 +14,9 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
+
+#include <cstdio>
+ 
 #include <cmath>
 #ifndef M_PI
 #define M_PI 3.141592653
@@ -91,6 +94,7 @@ void CGameCamera::update()
 	CMatrix tm; //target orientation
 	float reach_thr = 1.0;
 	bool autotarget = false; //default: use tm
+	CVector autotargetOffset; //default: 0,0,0
 
 	switch(m_Mode)
 	{
@@ -109,9 +113,10 @@ void CGameCamera::update()
 				const CMatrix &rmat = to->m_OrientationMatrix;
 				tp = CVector(rmat.Element(2,0), 0.0, rmat.Element(2,2));
 				tp.normalise();
-				tp *= 0.5 * vabs + 15.0; //further away when going faster
-				tp.y = 0.01 * vabs + 3.0;
+				tp *= (0.1 * vabs + 10.0); //further away when going faster
+				tp.y += (0.02 * vabs + 2.0);
 				tp += to->m_Position;
+				autotargetOffset = CVector(0,1.5,0);
 				autotarget = true; //point the camera to the object
 				m_Reached = false; //always have "smooth" camera movement
 			}
@@ -121,7 +126,11 @@ void CGameCamera::update()
 				reach_thr = 5.0;
 				tv = to->m_Velocity;
 				float vabs = tv.abs();
-				tp = to->m_Position + CVector(0.0, 20.0 + 5.0*vabs, 0.0);
+				tp = CVector(tv.x, 0.0, tv.z);
+				tp.normalise();
+				tp *= 0.25 * vabs; //further away when going faster
+				tp += CVector(0.0, 20.0 + 1.0*vabs, 0.0); //higher when going faster
+				tp += to->m_Position;
 				if(m_Reached)
 				{
 					CMatrix m;
@@ -165,21 +174,59 @@ void CGameCamera::update()
 		CVector vrel = m_Velocity - tv;
 
 		//"damper" + "spring" model
-		//spring oscillation frequency: 1.0 sec.
 		//damper is needed to prevent real oscillations
-		//critical damping occurs at sqrt(4*FREQ*FREQ) = 2.0
-#define FREQ 1.0
-#define DAMPC 1.5 // a little oscillation
-		CVector a = -DAMPC*vrel - FREQ*FREQ*prel;
-		m_Velocity += a * dt;
-		m_Position += m_Velocity * dt;
+		//spring oscillation frequency is sqrt(SPRC) / (2*M_PI)
+		//critical damping occurs at DAMPC = sqrt(4*SPRC)
+#define SPRC  15.7 //frequency is 2.5 Hz
+#define DAMPC (sqrt(4*SPRC)) //critical damping
+
+		//we use the analytical solution to compensate for low framerates
+		//find the 3D solution x(t) = A * exp(-lambda*t) * cos(omega*t + phi)
+		//where A and phi can be different per coordinate
+		float omega = sqrt(SPRC);
+		float lambda = DAMPC/2;
+
+		CVector Acosphi = prel;
+		CVector Asinphi = (lambda * prel + vrel) / omega;
+		CVector A(
+			sqrt(Acosphi.x*Acosphi.x + Asinphi.x*Asinphi.x),
+			sqrt(Acosphi.y*Acosphi.y + Asinphi.y*Asinphi.y),
+			sqrt(Acosphi.z*Acosphi.z + Asinphi.z*Asinphi.z)
+			);
+		CVector phi(
+			atan2f(Asinphi.x / A.x,Acosphi.x / A.x),
+			atan2f(Asinphi.y / A.y,Acosphi.y / A.y),
+			atan2f(Asinphi.z / A.z,Acosphi.z / A.z)
+			);
+
+		//correct for division by zero
+		if(fabsf(A.x) < 0.001) phi.x = 0.0;
+		if(fabsf(A.y) < 0.001) phi.y = 0.0;
+		if(fabsf(A.z) < 0.001) phi.z = 0.0;
+
+		CVector prelnew(
+			A.x * exp(-lambda*dt) * cos(omega*dt+phi.x),
+			A.y * exp(-lambda*dt) * cos(omega*dt+phi.y),
+			A.z * exp(-lambda*dt) * cos(omega*dt+phi.z)
+			);
+
+		CVector vrelnew(
+			A.x * exp(-lambda*dt) * (-lambda*cos(omega*dt+phi.x) + omega*sin(omega*dt+phi.x)),
+			A.y * exp(-lambda*dt) * (-lambda*cos(omega*dt+phi.y) + omega*sin(omega*dt+phi.y)),
+			A.z * exp(-lambda*dt) * (-lambda*cos(omega*dt+phi.z) + omega*sin(omega*dt+phi.z))
+			);
+
+		//fprintf(stderr, "prel = %s phi = %s\n", CString(prel).c_str(), CString(phi).c_str());
+		//CVector a = -DAMPC*vrel - SPRC*prel;
+		m_Velocity += (vrelnew - vrel); //a * dt;
+		m_Position += (prelnew - prel); //m_Velocity * dt;
 
 		if(prel.abs() < reach_thr || (m_Timer.getTime() - m_SwitchTime) > 2.0)
 			m_Reached = true;
 	}
 
 	if(autotarget)
-		{m_Orientation.targetZ(m_Position - to->m_Position, true);}
+		{m_Orientation.targetZ(m_Position - to->m_Position - autotargetOffset, true);}
 	else
 		{m_Orientation = tm;}
 }

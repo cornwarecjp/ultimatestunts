@@ -625,6 +625,12 @@ void CGameRenderer::viewDashboard(unsigned int n)
 		float maxAge = 1.0 + 0.1 * theObj->m_IncomingMessages[0].m_Message.length();
 		float fadeAge = 1.0;
 
+		/*
+		printf("msg \"%s\" age = %.2f - %.2f = %.2f\n",
+			theObj->m_IncomingMessages[0].m_Message.c_str(),
+			racingTime, theObj->m_IncomingMessages[0].m_SendTime, msgAge);
+		*/
+
 		if(msgAge < maxAge)
 		{
 			message = theObj->m_IncomingMessages[0].m_Message;

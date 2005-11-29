@@ -54,6 +54,8 @@ int CMenu::onKeyPress(int key)
 
 int CMenu::getdy()
 {
+	if(m_Lines.size() == 0) return 1;
+
 	int dy_resizable = m_H / m_Lines.size();
 
 	if(dy_resizable > int(theConsoleFont->getFontH())) return int(theConsoleFont->getFontH());
@@ -92,6 +94,8 @@ int CMenu::onMouseClick(int x, int y, unsigned int buttons)
 int CMenu::onRedraw()
 {
 	CWidget::onRedraw();
+
+	if(m_Lines.size() == 0) return 0; //we're ready then
 
 	theConsoleFont->enable();
 

@@ -173,7 +173,7 @@ subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = config.h
-CONFIG_CLEAN_FILES = ultimatestunts.conf ultimatestunts.sh intl/Makefile
+CONFIG_CLEAN_FILES = ultimatestunts.conf intl/Makefile
 DIST_SOURCES =
 DATA = $(sysconf_DATA)
 
@@ -186,8 +186,7 @@ RECURSIVE_TARGETS = info-recursive dvi-recursive pdf-recursive \
 DIST_COMMON = README AUTHORS COPYING ChangeLog INSTALL Makefile.am \
 	Makefile.in TODO acinclude.m4 aclocal.m4 config.guess \
 	config.h.in config.sub configure configure.ac depcomp \
-	install-sh missing mkinstalldirs ultimatestunts.conf.in \
-	ultimatestunts.sh.in
+	install-sh missing mkinstalldirs ultimatestunts.conf.in
 DIST_SUBDIRS = $(SUBDIRS)
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
@@ -227,8 +226,6 @@ $(srcdir)/config.h.in:  $(top_srcdir)/configure.ac $(ACLOCAL_M4)
 distclean-hdr:
 	-rm -f config.h stamp-h1
 ultimatestunts.conf: $(top_builddir)/config.status ultimatestunts.conf.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-ultimatestunts.sh: $(top_builddir)/config.status ultimatestunts.sh.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 intl/Makefile: $(top_builddir)/config.status $(top_srcdir)/intl/Makefile.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@

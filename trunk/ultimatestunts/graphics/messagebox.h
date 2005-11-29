@@ -18,6 +18,10 @@
 #ifndef MESSAGEBOX_H
 #define MESSAGEBOX_H
 
+#include <vector>
+namespace std {}
+using namespace std;
+
 #include "widget.h"
 #include "cstring.h"
 
@@ -32,12 +36,20 @@ public:
 
 	virtual int onKeyPress(int key);
 	virtual int onRedraw();
+	virtual int onResize(int x, int y, int w, int h);
 	virtual int onMouseMove(int x, int y);
 	virtual int onMouseClick(int x, int y, unsigned int buttons);
 
+	void setTitle(const CString &title);
+
 	enum {eYesNo, eOK} m_Type;
-	CString m_Title;
 	unsigned int m_Selected;
+
+protected:
+	CString m_Title; //the total text
+	vector<CString> m_Lines; //the text divided into lines
+
+	void updateLines();
 };
 
 #endif

@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT([Ultimate Stunts], [0.5.6], [cornware-cjp@users.sourceforge.net], [ultimatestunts])
+AC_INIT([Ultimate Stunts], [0.6.0], [cornware-cjp@users.sourceforge.net], [ultimatestunts])
 AC_CONFIG_SRCDIR([ultimatestunts/main.cpp])
 AC_CONFIG_HEADER(config.h)
 AC_CANONICAL_TARGET
@@ -195,7 +195,7 @@ AC_SUBST(sdllibs)
 AC_SUBST(PACKAGE_VERSION)
 AC_SUBST(usdatadir)
 
-AC_CONFIG_FILES([ultimatestunts.conf ultimatestunts.sh Makefile intl/Makefile po/Makefile.in data/Makefile shared/Makefile simulation/Makefile graphics/Makefile stuntsserver/Makefile stuntsai/Makefile stunts3dedit/Makefile trackedit/Makefile ultimatestunts/Makefile])
+AC_CONFIG_FILES([ultimatestunts.conf Makefile intl/Makefile po/Makefile.in data/Makefile shared/Makefile simulation/Makefile graphics/Makefile stuntsserver/Makefile stuntsai/Makefile stunts3dedit/Makefile trackedit/Makefile ultimatestunts/Makefile])
 AC_OUTPUT
 
 dnl ------

@@ -414,16 +414,14 @@ CString CGameGUI::viewGameTypeMenu()
 		{
 			//start server if needed
 			m_Server = new CUSServer(m_HostPort, m_MaxNumPlayers);
-			m_Server->set("track", m_TrackFile);
 			sleep(1); //give the server some time to start
 		}
-		else
-		{
-			//update server settings
-			m_Server->set("port", m_HostPort);
-			m_Server->set("maxRequests", m_MaxNumPlayers);
-			m_Server->set("track", m_TrackFile);
-		}
+
+		//update server settings
+		m_Server->set("port", m_HostPort);
+		m_Server->set("maxRequests", m_MaxNumPlayers);
+		m_Server->set("track", m_TrackFile);
+		m_Server->set("saveHiscore", "false"); //else, they would be saved twice on this computer
 	}
 	else
 	{
@@ -520,6 +518,11 @@ CString CGameGUI::viewPlayerMenu()
 	case 2: //car
 		return "carmenu";
 	case 3: //delete
+		if(m_SelectedPlayer == 0)
+		{
+			showMessageBox(_("Can't delete: there needs to be at least one player"));
+			return "playermenu";
+		}
 		if(showYNMessageBox(_("Delete this player?")) )
 		{
 			m_PlayerDescr.erase(m_PlayerDescr.begin() + m_SelectedPlayer);
@@ -607,6 +610,12 @@ void CGameGUI::load()
 		m_Players.push_back(p);
 	}
 
+	//add a camera for an AI player if there are no human players:
+	if(numHumanPlayers == 0)
+	{
+		m_GameCore->addCamera(0); //ASSUMES that 0 is the first ID (which is the case)
+	}
+
 	if(m_GameType == NewNetwork)
 	{
 		//clear the AI list
@@ -624,6 +633,7 @@ void CGameGUI::load()
 	}
 
 	m_GameCore->readyAndLoad();
+	m_GameCore->setStartTime();
 }
 
 void CGameGUI::unload()
@@ -648,7 +658,7 @@ void CGameGUI::unload()
 
 CString CGameGUI::viewHiscore()
 {
-	vector<SHiscoreEntry> hiscore = m_GameCore->getHiscore();
+	CHiscore hiscore = m_GameCore->getHiscore();
 
 	//add hiscore data to the menu
 	CMenu *names = (CMenu *)m_HiscorePage.m_Widgets[0];

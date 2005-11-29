@@ -103,11 +103,6 @@ bool CUSCore::update()
 		m_Cameras[i]->update();
 
 
-	//FPS:
-	float dt = m_Timer.getdt(0.00001);
-	float fpsnu = 1.0 / dt;
-	m_FPS = 0.9 * m_FPS + 0.1 * fpsnu;
-
 	static float topspeed = 0.0;
 
 

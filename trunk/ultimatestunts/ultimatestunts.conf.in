@@ -134,10 +134,10 @@ playlist = music/playlist.txt
 [simulation]
 
 #Minimum time per simulation step
-dtmin = 0.005
+dtmin = 0.001
 
 #Maximum simulation steps per graphics frame
-Nmax = 10
+Nmax = 100
 
 
 [misc]
@@ -147,7 +147,7 @@ Nmax = 10
 #If the language is not supported, then english is
 #used. Hint: use the following format:
 #language_country
-#for intance: fr_FR, hu_HU, nl_NL, pt_BR
+#for intance: de_DE, fr_FR, hu_HU, nl_NL, pt_BR
 language = system
 
 

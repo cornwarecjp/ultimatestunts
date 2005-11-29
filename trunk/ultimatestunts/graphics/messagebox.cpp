@@ -15,6 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
+#include <cstdio>
+
 #include "SDL.h"
 #include <GL/gl.h>
 
@@ -34,6 +36,60 @@ CMessageBox::CMessageBox()
 }
 
 CMessageBox::~CMessageBox(){
+}
+
+void CMessageBox::setTitle(const CString &title)
+{
+	m_Title = title;
+	updateLines();
+}
+
+void CMessageBox::updateLines()
+{
+	int maxChars = int(m_W / theConsoleFont->getFontW());
+	if(maxChars == 0) maxChars = 1;
+
+	//Splitting the title up into separate lines
+	m_Lines.clear();
+	CString theRest = m_Title;
+	while(true)
+	{
+		//quit when there is no need to break
+		if(int(theRest.length()) <= maxChars)
+		{
+			m_Lines.push_back(theRest);
+			break;
+		}
+
+		//find the last space before the break pos
+		int breakpos = -1;
+		for(int i=0; i < maxChars; i++)
+		{
+			if(theRest[i] == ' ') breakpos = i;
+		}
+
+		CString lhs;
+		if(breakpos < 0) //if there was no space
+		{
+			lhs = theRest.mid(0, maxChars);
+			theRest = theRest.mid(maxChars);
+		}
+		else //we found a space
+		{
+			lhs = theRest.mid(0, breakpos);
+			theRest = theRest.mid(breakpos+1); //skip the space character
+		}
+
+		//printf("%d: \"%s\"\n", m_Lines.size(), lhs.c_str());
+		m_Lines.push_back(lhs);
+	}
+}
+
+int CMessageBox::onResize(int x, int y, int w, int h)
+{
+	int ret = CWidget::onResize(x, y, w, h);
+	updateLines();
+	return ret;
 }
 
 int CMessageBox::onKeyPress(int key)
@@ -142,12 +198,18 @@ int CMessageBox::onRedraw()
 
 	glPopMatrix();
 
-	glTranslatef(-0.5*theConsoleFont->getFontW()*m_Title.size(), 0.3*m_H, 0);
-
-	//the title
-	glColor3f(1,1,1);
+	glTranslatef(0.0, 0.3*m_H, 0);
 	theConsoleFont->enable();
-	theConsoleFont->drawString(m_Title);
+	for(unsigned int i=0; i < m_Lines.size(); i++)
+	{
+		glPushMatrix();
+		glTranslatef(-0.5*theConsoleFont->getFontW()*m_Lines[i].size(), -theConsoleFont->getFontH()*i, 0);
+
+		//the title
+		glColor3f(1,1,1);
+		theConsoleFont->drawString(m_Lines[i]);
+		glPopMatrix();
+	}
 	theConsoleFont->disable();
 
 	return 0;

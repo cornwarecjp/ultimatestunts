@@ -20,6 +20,11 @@
 #include <arpa/inet.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+/*
+Watch out with netinet/in.h: it contains definitions of
+ntohl etc., and it should, but they conflict with other
+declarations in system headers on some systems.
+*/
 #include <netinet/in.h>
 #include <netdb.h>
 

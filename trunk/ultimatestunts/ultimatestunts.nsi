@@ -44,19 +44,20 @@ Section "Ultimate Stunts (required)"
   SectionIn RO
   
   ; Set output path to the installation directory.
+
   SetOutPath $INSTDIR
   
   ; Put file there
-  File stunts3dedit.exe
-  File stuntsserver.exe
-  File ultimatestunts.bat
+  File ustunts3dedit.exe
+  File ustuntsserver.exe
+  File ustunts.bat
   File *.dll
   File *.ico
   File *.conf
-  File *.dat
   File *.txt
   File copying
   File /r data
+  File /r doc
   File /r bin
   
   ; Write the installation path into the registry
@@ -76,7 +77,7 @@ Section "Start Menu Shortcuts"
 
   CreateDirectory "$SMPROGRAMS\Ultimate Stunts"
   CreateShortCut "$SMPROGRAMS\Ultimate Stunts\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
-  CreateShortCut "$SMPROGRAMS\Ultimate Stunts\Ultimate Stunts.lnk" "$INSTDIR\ultimatestunts.bat" "" "$INSTDIR\ultimatestunts.ico" 0
+  CreateShortCut "$SMPROGRAMS\Ultimate Stunts\Ultimate Stunts.lnk" "$INSTDIR\ustunts.bat" "" "$INSTDIR\ultimatestunts.ico" 0
   
 SectionEnd
 

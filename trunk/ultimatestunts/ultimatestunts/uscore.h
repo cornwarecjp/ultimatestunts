@@ -55,9 +55,6 @@ protected:
 
 	CSound *m_SoundSystem;
 
-	CTimer m_Timer; //for the FPS counter
-	float m_FPS;
-
 	virtual void loadTrackData();
 	virtual void loadMovObjData();
 	virtual void unloadData();

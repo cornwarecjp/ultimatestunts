@@ -31,7 +31,7 @@ void (CALLBACKFUN *_endCallbackFunc)();
 bool _true = true;
 bool _false = false;
 
-signed char endCallback(FSOUND_STREAM *stream, void *buff, int len, void *param)
+F_CALLBACKAPI signed char endCallback(FSOUND_STREAM *stream, void *buff, int len, void *param)
 {
 	//printf("endCallback:\n");
 

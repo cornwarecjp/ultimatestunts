@@ -8,7 +8,7 @@
 #define PACKAGE "ultimatestunts"
 
 /* Version number of package */
-#define VERSION "0.5.6"
+#define VERSION "0.6.0"
 
 #define PREFIXDIR "/usr/local"
 
