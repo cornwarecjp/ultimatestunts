@@ -1,13 +1,13 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR CJP
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR BBalazs <EMAIL@ADDRESS>, 2005
+# FIRST AUTHOR BBalazs <bbalazsmail@freemail.hu>, 2005
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Ultimate Stunts 0.5.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-09-07 13:52+0200\n"
+"POT-Creation-Date: 2005-10-20 17:29+0200\n"
 "PO-Revision-Date: 2005-02-03 14:11+0100\n"
 "Last-Translator: Borbola Balazs <bbalazsmail@freemail.hu>\n"
 "Language-Team: Hungarian <LL@li.org>\n"
@@ -29,7 +29,6 @@ msgid "Select a track:"
 msgstr "Válassza ki a pályát:"
 
 #: ultimatestunts/gamegui.cpp:124
-#, fuzzy
 msgid "Players menu:"
 msgstr "Játékos menü:"
 
@@ -126,7 +125,6 @@ msgid "Return to main menu"
 msgstr "Vissza a fõmenübe"
 
 #: ultimatestunts/gamegui.cpp:291
-#, fuzzy
 msgid "Player type: "
 msgstr "Játékos tipusa"
 
@@ -139,7 +137,6 @@ msgid "Car        : "
 msgstr "Autó        :"
 
 #: ultimatestunts/gamegui.cpp:294
-#, fuzzy
 msgid "Delete this player"
 msgstr "A játékosok kiválasztása"
 
@@ -148,7 +145,7 @@ msgid "Ready"
 msgstr "Kész"
 
 #: ultimatestunts/gamegui.cpp:298
-#, fuzzy, c-format
+#, c-format
 msgid "Select a car for %s:"
 msgstr "Válasszon autót %s számára"
 
@@ -181,7 +178,6 @@ msgid "Maximum number of players:"
 msgstr "Maximum játékosok száma:"
 
 #: ultimatestunts/gamegui.cpp:515
-#, fuzzy
 msgid "Is this player an AI computer player?"
 msgstr "Ez egy számítógép által vezérelt játékos?"
 
@@ -189,17 +185,20 @@ msgstr "Ez egy számítógép által vezérelt játékos?"
 msgid "Enter the name:"
 msgstr "Írja be a nevet:"
 
-#: ultimatestunts/gamegui.cpp:523
-#, fuzzy
+#: ultimatestunts/gamegui.cpp:525
+msgid "Can't delete: there needs to be at least one player"
+msgstr ""
+
+#: ultimatestunts/gamegui.cpp:528
 msgid "Delete this player?"
 msgstr "A játékosok kiválasztása"
 
-#: ultimatestunts/gamegui.cpp:591
+#: ultimatestunts/gamegui.cpp:596
 #, c-format
 msgid "Player %s was refused"
 msgstr "Játékos visszautasítva: %s"
 
-#: ultimatestunts/gamegui.cpp:668
+#: ultimatestunts/gamegui.cpp:679
 msgid "  (this race)"
 msgstr "  (ez a verseny)"
 
@@ -235,23 +234,23 @@ msgstr "Nem"
 msgid "Hello, world!\n"
 msgstr "Helló világ!\n"
 
-#: simulation/rulecontrol.cpp:67
+#: simulation/rulecontrol.cpp:76
 msgid "GO!"
 msgstr "Rajt!"
 
-#: simulation/rulecontrol.cpp:167
+#: simulation/rulecontrol.cpp:202
 msgid "Penalty time: "
 msgstr "Büntetés: "
 
-#: simulation/rulecontrol.cpp:177
+#: simulation/rulecontrol.cpp:212
 msgid "You finished (waiting for other players)"
 msgstr "Célba értél (várjuk a többi játékost)"
 
-#: simulation/rulecontrol.cpp:199
+#: simulation/rulecontrol.cpp:234
 msgid "Error: more than one start in the track\n"
 msgstr "Hiba: több, mint egy rajt van a pályán\n"
 
-#: simulation/rulecontrol.cpp:209
+#: simulation/rulecontrol.cpp:245
 msgid "Error: more than one finish in the track\n"
 msgstr "Hiba: több, mint egy cél van a pályán\n"
 

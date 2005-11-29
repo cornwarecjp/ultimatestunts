@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-09-07 13:52+0200\n"
+"POT-Creation-Date: 2005-10-20 17:29+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -187,16 +187,20 @@ msgstr ""
 msgid "Enter the name:"
 msgstr ""
 
-#: ultimatestunts/gamegui.cpp:523
+#: ultimatestunts/gamegui.cpp:525
+msgid "Can't delete: there needs to be at least one player"
+msgstr ""
+
+#: ultimatestunts/gamegui.cpp:528
 msgid "Delete this player?"
 msgstr ""
 
-#: ultimatestunts/gamegui.cpp:591
+#: ultimatestunts/gamegui.cpp:596
 #, c-format
 msgid "Player %s was refused"
 msgstr ""
 
-#: ultimatestunts/gamegui.cpp:668
+#: ultimatestunts/gamegui.cpp:679
 msgid "  (this race)"
 msgstr ""
 
@@ -231,22 +235,22 @@ msgstr ""
 msgid "Hello, world!\n"
 msgstr ""
 
-#: simulation/rulecontrol.cpp:67
+#: simulation/rulecontrol.cpp:76
 msgid "GO!"
 msgstr ""
 
-#: simulation/rulecontrol.cpp:167
+#: simulation/rulecontrol.cpp:202
 msgid "Penalty time: "
 msgstr ""
 
-#: simulation/rulecontrol.cpp:177
+#: simulation/rulecontrol.cpp:212
 msgid "You finished (waiting for other players)"
 msgstr ""
 
-#: simulation/rulecontrol.cpp:199
+#: simulation/rulecontrol.cpp:234
 msgid "Error: more than one start in the track\n"
 msgstr ""
 
-#: simulation/rulecontrol.cpp:209
+#: simulation/rulecontrol.cpp:245
 msgid "Error: more than one finish in the track\n"
 msgstr ""

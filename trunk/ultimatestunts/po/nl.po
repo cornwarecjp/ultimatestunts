@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Ultimate Stunts 0.5.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-09-07 13:52+0200\n"
+"POT-Creation-Date: 2005-10-20 17:29+0200\n"
 "PO-Revision-Date: 2002-02-02 19:28+0100\n"
 "Last-Translator: CJP <cornware-cjp@users.sourceforge.net>\n"
 "Language-Team: Dutch <cornware-cjp@users.sourceforge.net>\n"
@@ -139,7 +139,7 @@ msgstr "Auto       : "
 
 #: ultimatestunts/gamegui.cpp:294
 msgid "Delete this player"
-msgstr "Wis deze speler"
+msgstr "Verwijder deze speler"
 
 #: ultimatestunts/gamegui.cpp:295
 msgid "Ready"
@@ -186,16 +186,20 @@ msgstr "Is deze speler een AI computer speler?"
 msgid "Enter the name:"
 msgstr "Vul de naam in:"
 
-#: ultimatestunts/gamegui.cpp:523
-msgid "Delete this player?"
-msgstr "Wis deze speler?"
+#: ultimatestunts/gamegui.cpp:525
+msgid "Can't delete: there needs to be at least one player"
+msgstr "Kan niet verwijderen: er moet minimaal één speler zijn"
 
-#: ultimatestunts/gamegui.cpp:591
+#: ultimatestunts/gamegui.cpp:528
+msgid "Delete this player?"
+msgstr "Verwijder deze speler?"
+
+#: ultimatestunts/gamegui.cpp:596
 #, c-format
 msgid "Player %s was refused"
 msgstr "Speler %s was geweigerd"
 
-#: ultimatestunts/gamegui.cpp:668
+#: ultimatestunts/gamegui.cpp:679
 msgid "  (this race)"
 msgstr "  (deze race)"
 
@@ -230,23 +234,23 @@ msgstr "Nee"
 msgid "Hello, world!\n"
 msgstr "Hallo, wereld!\n"
 
-#: simulation/rulecontrol.cpp:67
+#: simulation/rulecontrol.cpp:76
 msgid "GO!"
 msgstr "GO!"
 
-#: simulation/rulecontrol.cpp:167
+#: simulation/rulecontrol.cpp:202
 msgid "Penalty time: "
 msgstr "Penalty tijd: "
 
-#: simulation/rulecontrol.cpp:177
+#: simulation/rulecontrol.cpp:212
 msgid "You finished (waiting for other players)"
 msgstr "U bent gefinished (wacht op andere spelers)"
 
-#: simulation/rulecontrol.cpp:199
+#: simulation/rulecontrol.cpp:234
 msgid "Error: more than one start in the track\n"
 msgstr "Error: meer dan één start in de track\n"
 
-#: simulation/rulecontrol.cpp:209
+#: simulation/rulecontrol.cpp:245
 msgid "Error: more than one finish in the track\n"
 msgstr "Error: meer dan één finish in de track\n"
 

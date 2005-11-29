@@ -1,16 +1,16 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR CJP
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR Marcelo De Nardin <EMAIL@ADDRESS>, YEAR.
+# FIRST AUTHOR Marcelo De Nardin , 2005.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Ultimate Stunts 0.5.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-09-07 13:52+0200\n"
+"POT-Creation-Date: 2005-10-20 17:29+0200\n"
 "PO-Revision-Date: 2005-02-03 14:11+0100\n"
-"Last-Translator: Marcelo De Nardin <EMAIL@ADDRESS>\n"
-"Language-Team: Brasilian Portuguese <LL@li.org>\n"
+"Last-Translator: Marcelo De Nardin \n"
+"Language-Team: Brazilian Portuguese \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ISO-8859-1\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -29,13 +29,12 @@ msgid "Select a track:"
 msgstr "Selecione uma pista:"
 
 #: ultimatestunts/gamegui.cpp:124
-#, fuzzy
 msgid "Players menu:"
-msgstr "Configuração de Jogador"
+msgstr "Menu de jogadores"
 
 #: ultimatestunts/gamegui.cpp:135
 msgid "Configure Player:"
-msgstr ""
+msgstr "Configuração de Jogador"
 
 #: ultimatestunts/gamegui.cpp:157
 msgid "Loading"
@@ -51,15 +50,15 @@ msgstr "Recordes"
 
 #: ultimatestunts/gamegui.cpp:225
 msgid "Computer"
-msgstr ""
+msgstr "Computador"
 
 #: ultimatestunts/gamegui.cpp:226
 msgid "Human   "
-msgstr ""
+msgstr "Humano"
 
 #: ultimatestunts/gamegui.cpp:232
 msgid "Drive!"
-msgstr ""
+msgstr "Dirija!"
 
 #: ultimatestunts/gamegui.cpp:233
 msgid "Set the game type"
@@ -120,36 +119,34 @@ msgstr "Iniciar um novo jogo de rede"
 
 #: ultimatestunts/gamegui.cpp:285
 msgid "Add a player"
-msgstr ""
+msgstr "Adicionar um jogador"
 
 #: ultimatestunts/gamegui.cpp:286 ultimatestunts/gamegui.cpp:308
 msgid "Return to main menu"
 msgstr "Retornar ao menu principal"
 
 #: ultimatestunts/gamegui.cpp:291
-#, fuzzy
 msgid "Player type: "
-msgstr "Configuração de Jogador"
+msgstr "Configuração de Jogador: "
 
 #: ultimatestunts/gamegui.cpp:292
 msgid "Name       : "
-msgstr ""
+msgstr "Nome                   : "
 
 #: ultimatestunts/gamegui.cpp:293
 msgid "Car        : "
-msgstr ""
+msgstr "Carro                  : "
 
 #: ultimatestunts/gamegui.cpp:294
-#, fuzzy
 msgid "Delete this player"
-msgstr "Selecione os jogadores"
+msgstr "Apaga este jogador"
 
 #: ultimatestunts/gamegui.cpp:295
 msgid "Ready"
-msgstr ""
+msgstr "Pronto"
 
 #: ultimatestunts/gamegui.cpp:298
-#, fuzzy, c-format
+#, c-format
 msgid "Select a car for %s:"
 msgstr "Selecione um carro para %s"
 
@@ -159,7 +156,7 @@ msgstr "Jogar novamente"
 
 #: ultimatestunts/gamegui.cpp:340
 msgid "Do you really want to quit?"
-msgstr ""
+msgstr "Você realmente quer sair?"
 
 #: ultimatestunts/gamegui.cpp:367
 msgid "The track must be selected on the server"
@@ -175,14 +172,13 @@ msgstr "Entre com o nome do host:"
 
 #: ultimatestunts/gamegui.cpp:401 ultimatestunts/gamegui.cpp:406
 msgid "Enter the port number:"
-msgstr "Entre com o número da porta:"
+msgstr "Digite o número da porta:"
 
 #: ultimatestunts/gamegui.cpp:407
 msgid "Maximum number of players:"
 msgstr "Número máximo de jogadores:"
 
 #: ultimatestunts/gamegui.cpp:515
-#, fuzzy
 msgid "Is this player an AI computer player?"
 msgstr "Ele é um jogador de IA?"
 
@@ -190,19 +186,23 @@ msgstr "Ele é um jogador de IA?"
 msgid "Enter the name:"
 msgstr "Escreva o nome:"
 
-#: ultimatestunts/gamegui.cpp:523
+#: ultimatestunts/gamegui.cpp:525
+msgid "Can't delete: there needs to be at least one player"
+msgstr ""
+
+#: ultimatestunts/gamegui.cpp:528
 #, fuzzy
 msgid "Delete this player?"
-msgstr "Selecione os jogadores"
+msgstr "Deletar este jogador?"
 
-#: ultimatestunts/gamegui.cpp:591
+#: ultimatestunts/gamegui.cpp:596
 #, c-format
 msgid "Player %s was refused"
 msgstr "Jogador %s foi recusado"
 
-#: ultimatestunts/gamegui.cpp:668
+#: ultimatestunts/gamegui.cpp:679
 msgid "  (this race)"
-msgstr ""
+msgstr " (esta corrida)"
 
 #: ultimatestunts/uscore.cpp:116
 #, c-format
@@ -235,23 +235,23 @@ msgstr "Não"
 msgid "Hello, world!\n"
 msgstr "Olá, mundo!\n"
 
-#: simulation/rulecontrol.cpp:67
+#: simulation/rulecontrol.cpp:76
 msgid "GO!"
 msgstr "VAI!"
 
-#: simulation/rulecontrol.cpp:167
+#: simulation/rulecontrol.cpp:202
 msgid "Penalty time: "
 msgstr "Tempo de penalidade: "
 
-#: simulation/rulecontrol.cpp:177
+#: simulation/rulecontrol.cpp:212
 msgid "You finished (waiting for other players)"
 msgstr "Você terminou (aguardando pelos demais jogadores)"
 
-#: simulation/rulecontrol.cpp:199
+#: simulation/rulecontrol.cpp:234
 msgid "Error: more than one start in the track\n"
 msgstr "Erro: mais de uma largada na pista\n"
 
-#: simulation/rulecontrol.cpp:209
+#: simulation/rulecontrol.cpp:245
 msgid "Error: more than one finish in the track\n"
 msgstr "Erro: mais de uma chegada na pista\n"
 
@@ -262,7 +262,7 @@ msgstr "Erro: mais de uma chegada na pista\n"
 #~ msgstr "Selecione um carro:"
 
 #~ msgid "Enter your name:"
-#~ msgstr "Escreva com seu nome:"
+#~ msgstr "Escreva seu nome:"
 
 #~ msgid "Do you want to add another player?"
 #~ msgstr "Você deseja adicionar um novo jogador?"
