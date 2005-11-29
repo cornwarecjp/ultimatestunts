@@ -164,10 +164,10 @@ target_vendor = @target_vendor@
 usdatadir = @usdatadir@
 noinst_LIBRARIES = libsimulation.a
 
-libsimulation_a_SOURCES = aiplayercar.cpp bound.cpp car.cpp carengine.cpp carinput.cpp carrulestatus.cpp carwheel.cpp chatmessage.cpp clientnet.cpp clientplayercontrol.cpp clientsim.cpp collisiondata.cpp collisiondetector.cpp collisionface.cpp collisionmodel.cpp gamecore.cpp hiscorefile.cpp material.cpp message.cpp messagebuffer.cpp movingobject.cpp movobjinput.cpp netfilecontrol.cpp objectchoice.cpp physics.cpp player.cpp playercontrol.cpp rulecontrol.cpp simulation.cpp stuntsnet.cpp textmessage.cpp tilemodel.cpp track.cpp udpnet.cpp world.cpp
+libsimulation_a_SOURCES = aiplayercar.cpp bound.cpp car.cpp carengine.cpp carinput.cpp carrulestatus.cpp carwheel.cpp chatmessage.cpp chatsystem.cpp clientnet.cpp clientplayercontrol.cpp clientsim.cpp collisiondata.cpp collisiondetector.cpp collisionface.cpp collisionmodel.cpp gamecore.cpp hiscore.cpp hiscorefile.cpp material.cpp message.cpp messagebuffer.cpp movingobject.cpp movobjinput.cpp netfilecontrol.cpp objectchoice.cpp physics.cpp player.cpp playercontrol.cpp rulecontrol.cpp simulation.cpp stuntsnet.cpp textmessage.cpp tilemodel.cpp track.cpp udpnet.cpp world.cpp
 INCLUDES = $(all_includes) -I../intl -I../shared
 
-EXTRA_DIST = aiplayercar.cpp aiplayercar.h body.h bound.cpp bound.h car.cpp car.h carengine.cpp carenine.h carinput.cpp carinput.h carrulestatus.cpp carrulestatus.h carwheel.cpp carwheel.h chatmessage.cpp chatmessage.h clientnet.cpp clientnet.h clientplayercontrol.cpp clientplayercontrol.h clientsim.cpp clientsim.h collisiondata.cpp collisiondata.h collisiondetector.cpp collisiondetector.h collisionface.cpp collisionface.h collisionmodel.cpp collisionmodel.h dynamicobject.cpp gamecore.cpp gamecore.h hiscorefile.cpp hiscorefile.h material.cpp material.h message.cpp message.h messagebuffer.cpp messagebuffer.h movingobject.cpp movingobject.h movobjinput.cpp movobjinput.h netfilecontrol.cpp netfilecontrol.h objectchoice.cpp objectchoice.h physics.cpp physics.h player.cpp player.h playercontrol.cpp playercontrol.h rulecontrol.cpp rulecontrol.h simulation.cpp simulation.h stuntsnet.cpp stuntsnet.h textmessage.cpp textmessage.h tilemodel.cpp tilemodel.h track.cpp track.h udpnet.cpp udpnet.h world.cpp world.h
+EXTRA_DIST = aiplayercar.cpp aiplayercar.h body.h bound.cpp bound.h car.cpp car.h carengine.cpp carenine.h carinput.cpp carinput.h carrulestatus.cpp carrulestatus.h carwheel.cpp carwheel.h chatmessage.cpp chatmessage.h chatsystem.cpp chatsystem.h clientnet.cpp clientnet.h clientplayercontrol.cpp clientplayercontrol.h clientsim.cpp clientsim.h collisiondata.cpp collisiondata.h collisiondetector.cpp collisiondetector.h collisionface.cpp collisionface.h collisionmodel.cpp collisionmodel.h dynamicobject.cpp gamecore.cpp gamecore.h hiscore.cpp hiscore.h hiscorefile.cpp hiscorefile.h material.cpp material.h message.cpp message.h messagebuffer.cpp messagebuffer.h movingobject.cpp movingobject.h movobjinput.cpp movobjinput.h netfilecontrol.cpp netfilecontrol.h objectchoice.cpp objectchoice.h physics.cpp physics.h player.cpp player.h playercontrol.cpp playercontrol.h rulecontrol.cpp rulecontrol.h simulation.cpp simulation.h stuntsnet.cpp stuntsnet.h textmessage.cpp textmessage.h tilemodel.cpp tilemodel.h track.cpp track.h udpnet.cpp udpnet.h world.cpp world.h
 subdir = simulation
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -180,12 +180,12 @@ libsimulation_a_LIBADD =
 am_libsimulation_a_OBJECTS = aiplayercar.$(OBJEXT) bound.$(OBJEXT) \
 	car.$(OBJEXT) carengine.$(OBJEXT) carinput.$(OBJEXT) \
 	carrulestatus.$(OBJEXT) carwheel.$(OBJEXT) \
-	chatmessage.$(OBJEXT) clientnet.$(OBJEXT) \
+	chatmessage.$(OBJEXT) chatsystem.$(OBJEXT) clientnet.$(OBJEXT) \
 	clientplayercontrol.$(OBJEXT) clientsim.$(OBJEXT) \
 	collisiondata.$(OBJEXT) collisiondetector.$(OBJEXT) \
 	collisionface.$(OBJEXT) collisionmodel.$(OBJEXT) \
-	gamecore.$(OBJEXT) hiscorefile.$(OBJEXT) material.$(OBJEXT) \
-	message.$(OBJEXT) messagebuffer.$(OBJEXT) \
+	gamecore.$(OBJEXT) hiscore.$(OBJEXT) hiscorefile.$(OBJEXT) \
+	material.$(OBJEXT) message.$(OBJEXT) messagebuffer.$(OBJEXT) \
 	movingobject.$(OBJEXT) movobjinput.$(OBJEXT) \
 	netfilecontrol.$(OBJEXT) objectchoice.$(OBJEXT) \
 	physics.$(OBJEXT) player.$(OBJEXT) playercontrol.$(OBJEXT) \
@@ -202,16 +202,16 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/carinput.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/carrulestatus.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/carwheel.Po ./$(DEPDIR)/chatmessage.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/clientnet.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/chatsystem.Po ./$(DEPDIR)/clientnet.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/clientplayercontrol.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/clientsim.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/collisiondata.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/collisiondetector.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/collisionface.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/collisionmodel.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/gamecore.Po ./$(DEPDIR)/hiscorefile.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/material.Po ./$(DEPDIR)/message.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/messagebuffer.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/gamecore.Po ./$(DEPDIR)/hiscore.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/hiscorefile.Po ./$(DEPDIR)/material.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/message.Po ./$(DEPDIR)/messagebuffer.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/movingobject.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/movobjinput.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/netfilecontrol.Po \
@@ -264,6 +264,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/carrulestatus.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/carwheel.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/chatmessage.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/chatsystem.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/clientnet.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/clientplayercontrol.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/clientsim.Po@am__quote@
@@ -272,6 +273,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/collisionface.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/collisionmodel.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gamecore.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hiscore.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hiscorefile.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/material.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/message.Po@am__quote@

@@ -1,7 +1,7 @@
 /***************************************************************************
-                          confirmation.h  -  Confirming that a package has arrived
+                          filechunk.h  -  A file chunk message
                              -------------------
-    begin                : ma jan 17 2005
+    begin                : ma nov 28 2005
     copyright            : (C) 2005 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
@@ -15,39 +15,52 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef CONFIRMATION_H
-#define CONFIRMATION_H
+#ifndef FILECHUNK_H
+#define FILECHUNK_H
 
 #include "message.h"
+#include "cstring.h"
 
 /**
   *@author CJP
   */
 
-class CConfirmation : public CMessage
+#define FILECHUNK_SIZE 1024
+  
+class CFileChunk : public CMessage
 {
 public:
-	CMessageBuffer::eMessageType m_MessageType;
-	Uint16 m_Counter;
-	Uint8 m_ReturnValue;
+	CString m_Filename;
+	Uint32 m_ChunkID, m_FileSize;
+	CBinBuffer m_Data;
 
 	virtual bool setData(const CBinBuffer &b, unsigned int &pos)
 	{
-		m_MessageType = (CMessageBuffer::eMessageType)b.getUint8(pos);
-		m_Counter = b.getUint16(pos);
-		m_ReturnValue = b.getUint8(pos);
+		m_Filename = b.getCString(pos);
+		m_ChunkID = b.getUint32(pos);
+		m_FileSize = b.getUint32(pos);
+
+		//All other bytes:
+		m_Data.clear();
+		for(unsigned int i=pos; i < b.size(); i++)
+			m_Data.push_back(b.getUint8(pos));
+
 		return true;
 	}
-	
+
 	virtual CBinBuffer &getData(CBinBuffer &b) const
 	{
-		b += (Uint8)m_MessageType;
-		b += m_Counter;
-		b += m_ReturnValue;
+		b += m_Filename;
+		b += m_ChunkID;
+		b += m_FileSize;
+
+		for(unsigned int i=0; i < m_Data.size(); i++)
+			b += m_Data[i];
+
 		return b;
 	}
 
-	virtual CMessageBuffer::eMessageType getType() const {return CMessageBuffer::confirmation;}
+	virtual CMessageBuffer::eMessageType getType() const {return CMessageBuffer::fileChunk;}
 };
 
 #endif

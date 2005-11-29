@@ -25,6 +25,8 @@ CClientNet::CClientNet(CString host, int port) : CStuntsNet(0)
 	m_Hostname = host;
 
 	sendTextMessage("JOIN");
+
+	m_FileCtl.setNetwork(this);
 }
 
 CClientNet::~CClientNet()

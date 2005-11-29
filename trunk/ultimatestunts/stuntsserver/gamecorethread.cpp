@@ -22,8 +22,11 @@
 #include "main.h"
 #include "movobjinput.h"
 
-CGamecoreThread::CGamecoreThread(){
+CGamecoreThread::CGamecoreThread()
+{
+	m_SaveHiscore = true;
 }
+
 CGamecoreThread::~CGamecoreThread(){
 }
 
@@ -46,13 +49,32 @@ void CGamecoreThread::threadFunc()
 		vector<CDataObject *> objs = theWorld->getObjectArray(CDataObject::eMovingObject);
 		for(unsigned int i=0; i < objs.size(); i++)
 		{
+			//send object state
 			CMovingObject *mo = (CMovingObject *)objs[i];
 			networkthread.sendToAll(mo->getBuffer());
+
+			//send messages
+			for(unsigned int j=0; j < mo->m_IncomingMessages.size(); j++)
+			{
+				CChatMessage &msg = mo->m_IncomingMessages[j];
+				msg.m_ToMovingObject = mo->getMovObjID(); //prevents multiplication of "to all" messages
+				CMessageBuffer b = msg.getBuffer();
+				b.setAC(1); //reliable
+				networkthread.sendToAll(b);
+			}
+			mo->m_IncomingMessages.clear();
 		}
 
 		//sleep for some time (give some CPU time to e.g. a client)
 		usleep(10000); //< 100 fps
 	}
+
+	m_GameCore->stopGame(m_SaveHiscore);
+
+	//now the game has ended, send the hiscore
+	CMessageBuffer b = m_GameCore->getHiscore(true).getBuffer(); //true: only hiscore entries of this game
+	b.setAC(1);
+	networkthread.sendToAll(b);
 }
 
 void CGamecoreThread::processInputQueue()
@@ -92,7 +114,7 @@ void CGamecoreThread::processInputQueue()
 
 			if(mo == NULL)
 			{
-				consolethread.write("Unidentified Input Message (IUM)");
+				consolethread.write("Unidentified Input Message (UIM)");
 				continue; //not found
 			}
 

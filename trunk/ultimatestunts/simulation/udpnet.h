@@ -18,10 +18,6 @@
 #ifndef UDPNET_H
 #define UDPNET_H
 
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-
 #include <vector>
 namespace std {}
 using namespace std;
@@ -45,10 +41,7 @@ public:
 
 private:
 	unsigned int m_SendCounter;
-
 	int m_Socket;
-
-	struct sockaddr_in m_MyAddress;
 };
 
 #endif

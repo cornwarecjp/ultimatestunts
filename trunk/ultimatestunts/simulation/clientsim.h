@@ -22,6 +22,7 @@
 #include "clientnet.h"
 #include "gamecore.h"
 #include "timer.h"
+#include "hiscore.h"
 
 /**
   *@author CJP
@@ -35,6 +36,10 @@ public:
 	CString getTrackname();
 
 	virtual bool update();
+
+	CHiscore getHiscore()
+		{return m_Hiscore;}
+
 protected:
 	CClientNet *m_Net;
 
@@ -42,6 +47,8 @@ protected:
 
 	CTimer m_Timer;
 	float m_PreviousTime;
+
+	CHiscore m_Hiscore;
 };
 
 #endif

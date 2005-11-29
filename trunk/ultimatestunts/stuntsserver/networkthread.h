@@ -22,6 +22,7 @@
 #include "stuntsnet.h"
 #include "client.h"
 #include "criticalvector.h"
+#include "uploadmanager.h"
 
 //Message types:
 #include "chatmessage.h"
@@ -51,9 +52,12 @@ public:
 	void sendToPlayer(const CString &s, unsigned int ID);
 	void sendToAll(const CString &s);
 
+	float getFPS(){return m_FPS;}
 protected:
 	unsigned int m_Port;
 	CStuntsNet *m_Net;
+
+	CUploadManager m_UploadManager;
 
 	CCriticalVector<CMessageBuffer> m_OutputBuffer;
 
@@ -63,6 +67,9 @@ protected:
 
 	Uint8 processMessage(const CMessageBuffer &buffer);
 	Uint8 processMessage(int ID, const CString &message);
+
+	CTimer m_Timer; //for the FPS counter
+	float m_FPS;
 };
 
 #endif

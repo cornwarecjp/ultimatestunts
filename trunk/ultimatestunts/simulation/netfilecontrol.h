@@ -24,15 +24,21 @@
   *@author CJP
   */
 
+class CClientNet;
+  
 class CNetFileControl : protected CFileControl  {
 public: 
 	CNetFileControl();
 	~CNetFileControl();
 
+	void setNetwork(CClientNet *net);
+
 	CString getLongFilename(const CString &shortName); //for reading only!
 
 private:
 	CFileControl *m_OriginalFileControl;
+
+	CClientNet *m_Network;
 };
 
 #endif

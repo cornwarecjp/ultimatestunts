@@ -31,6 +31,7 @@ using namespace std;
 #include "movingobject.h"
 #include "objectchoice.h"
 #include "collision.h"
+#include "chatsystem.h"
 
 #include "datamanager.h"
 
@@ -64,6 +65,9 @@ public:
 
 	//Rule data
 	float m_GameStartTime;
+
+	//Interface for sending and receiving messages
+	CChatSystem m_ChatSystem;
 
 	//debug
 	bool printDebug;

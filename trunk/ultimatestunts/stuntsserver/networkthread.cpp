@@ -118,12 +118,28 @@ void CNetworkThread::threadFunc()
 	{
 		usleep(10000); //< 100 fps
 
+		//FPS:
+		float dt = m_Timer.getdt(0.00001);
+		float fpsnu = 1.0 / dt;
+		m_FPS = 0.9 * m_FPS + 0.1 * fpsnu;
+
+		//File transfer:
+		if(m_Net->getReliableQueueSize() < 128)
+			for(unsigned int i=0; i < 8; i++)
+				m_UploadManager.sendNextChunk();
+
 		//send data
 		m_OutputBuffer.enter();
 		for(unsigned int i=0; i < m_OutputBuffer.size(); i++)
-			m_Net->sendData(m_OutputBuffer[i]); //TODO: reliable if necessary
+			if(m_OutputBuffer[i].getAC() != 0)
+				{m_Net->sendDataReliable(m_OutputBuffer[i], false);} //reliable, but don't wait
+			else
+				{m_Net->sendData(m_OutputBuffer[i]);} //unreliable
 		m_OutputBuffer.clear();
 		m_OutputBuffer.leave();
+
+		//Resending reliable data, if necessary
+		m_Net->resendUnconfirmed();
 
 		//receive data
 		if(m_Net->receiveData())
@@ -169,12 +185,14 @@ Uint8 CNetworkThread::processMessage(const CMessageBuffer &buffer)
 	switch(buffer.getType())
 	{
 		/*
+		Unsupported:
 		badMessage
 		dummyMessage
 		movingObject
 		movObjInput
 		car
 		confirmation
+		fileChunk
 		*/
 		case CMessageBuffer::movObjInput:
 			gamecorethread.processInput(buffer);
@@ -273,6 +291,11 @@ Uint8 CNetworkThread::processMessage(int ID, const CString &message)
 		ender.m_ObjType = CMessageBuffer::badMessage;
 		CMessageBuffer b = ender.getBuffer();
 		sendToClient(b, ID); //puts on the queue
+	}
+	else if(message.mid(0, 4) == "GET ")
+	{
+		CString filename = message.mid(4);
+		return m_UploadManager.addFileRequest(ID, filename); //return: do we have the file?
 	}
 	else
 	{

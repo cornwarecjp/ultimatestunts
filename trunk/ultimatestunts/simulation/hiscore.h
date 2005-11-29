@@ -1,7 +1,7 @@
 /***************************************************************************
-                          confirmation.h  -  Confirming that a package has arrived
+                          hiscore.h  -  Hiscore of a race, or a track
                              -------------------
-    begin                : ma jan 17 2005
+    begin                : do nov 24 2005
     copyright            : (C) 2005 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
@@ -15,8 +15,12 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef CONFIRMATION_H
-#define CONFIRMATION_H
+#ifndef HISCORE_H
+#define HISCORE_H
+
+#include <vector>
+namespace std {}
+using namespace std;
 
 #include "message.h"
 
@@ -24,31 +28,22 @@
   *@author CJP
   */
 
-class CConfirmation : public CMessage
+struct SHiscoreEntry
 {
-public:
-	CMessageBuffer::eMessageType m_MessageType;
-	Uint16 m_Counter;
-	Uint8 m_ReturnValue;
+	CString name;
+	CString carname;
+	float time;
+	bool isNew; //is it from this race or not? (not saved in file of course)
+};
 
-	virtual bool setData(const CBinBuffer &b, unsigned int &pos)
-	{
-		m_MessageType = (CMessageBuffer::eMessageType)b.getUint8(pos);
-		m_Counter = b.getUint16(pos);
-		m_ReturnValue = b.getUint8(pos);
-		return true;
-	}
-	
-	virtual CBinBuffer &getData(CBinBuffer &b) const
-	{
-		b += (Uint8)m_MessageType;
-		b += m_Counter;
-		b += m_ReturnValue;
-		return b;
-	}
+class CHiscore : public CMessage, public vector<SHiscoreEntry> {
+public: 
+	CHiscore();
+	virtual ~CHiscore();
 
-	virtual CMessageBuffer::eMessageType getType() const {return CMessageBuffer::confirmation;}
+	virtual CBinBuffer &getData(CBinBuffer &b) const;
+	virtual bool setData(const CBinBuffer &b, unsigned int &pos);
+	virtual CMessageBuffer::eMessageType getType() const {return CMessageBuffer::hiscore;}
 };
 
 #endif
-

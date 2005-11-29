@@ -207,8 +207,9 @@ void CConsoleThread::cmd_start()
 	wait4ReadyPlayers();
 	unReadyPlayers();
 
-	//Then tell everybody to start the game
+	//Then tell everybody to start the game, and start it here at the same time
 	networkthread.sendToAll("READY");
+	gamecorethread.m_GameCore->setStartTime();
 
 	printf("Starting gamecore thread\n");
 	if(!gamecorethread.start())
@@ -274,6 +275,8 @@ void CConsoleThread::cmd_set(const CString &args)
 				Clients.maxRequests = val.toInt();
 				Clients.leave();
 			}
+		else if(var=="saveHiscore")
+			{gamecorethread.m_SaveHiscore = (val == "true");}
 		else
 		{
 			printf("Unknown variable \'%s\'. Try \'help\'\n", var.c_str());
@@ -290,6 +293,7 @@ void CConsoleThread::cmd_show()
 	printf("  track = %s\n", m_Trackfile.c_str());
 	printf("  port = %d\n", networkthread.getPort());
 	printf("  maxRequests = %d\n", Clients.maxRequests);
+	printf("  saveHiscore = %s\n", CString(gamecorethread.m_SaveHiscore).c_str());
 
 	printf("\nRemote clients:\n");
 	for(unsigned int i=0; i < Clients.size(); i++)
@@ -330,6 +334,13 @@ void CConsoleThread::cmd_show()
 
 	ObjectChoices.leave();
 	Clients.leave();
+
+	//A small violation of thread safety
+	//we're only reading: shouldn't give too much trouble
+	float sfps = gamecorethread.m_GameCore->getFPS();
+	float nfps = networkthread.getFPS();
+	printf("\nCurrent simulation frame rate: %.1f FPS\n", sfps);
+	printf("\nCurrent network    frame rate: %.1f FPS\n", nfps);
 }
 
 void CConsoleThread::cmd_write(const CString &args)
@@ -359,6 +370,7 @@ bool CConsoleThread::executeCommand(const CString &cmd)
 			"  track                Track file\n"
 			"  port                 Port where the server should listen\n"
 			"  maxRequests          Maximum number of remote players\n"
+			"  saveHiscore          Should the server save to the hiscore?\n"
 			);
 	}
 	else if(cmd == "exit" || cmd == "quit")

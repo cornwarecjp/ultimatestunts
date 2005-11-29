@@ -15,17 +15,22 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "udpnet.h"
-
 #include <cstdio>
 #include <cstdlib>
 
+/*
+Watch out with netinet/in.h: it contains definitions of
+ntohl etc., and it should, but they conflict with other
+declarations in system headers on some systems.
+*/
 #include <netinet/in.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/poll.h>
 #include <fcntl.h>
 #include <unistd.h>
+
+#include "udpnet.h"
 
 CUDPNet::CUDPNet(unsigned int port)
 {
@@ -38,11 +43,12 @@ CUDPNet::CUDPNet(unsigned int port)
 	}
 
 	// bind to port
-	m_MyAddress.sin_family = AF_INET;
-	m_MyAddress.sin_addr.s_addr = htonl(INADDR_ANY);
-	m_MyAddress.sin_port = htons(port);
+	struct sockaddr_in MyAddress;
+	MyAddress.sin_family = AF_INET;
+	MyAddress.sin_addr.s_addr = htonl(INADDR_ANY);
+	MyAddress.sin_port = htons(port);
 
-	int rc = bind (m_Socket, (struct sockaddr *) &m_MyAddress, sizeof(m_MyAddress));
+	int rc = bind (m_Socket, (struct sockaddr *) &MyAddress, sizeof(MyAddress));
 	if(rc < 0)
 	{
 		printf("cannot bind port number %d \n", port);

@@ -30,10 +30,15 @@ public:
 	CChatMessage();
 	virtual ~CChatMessage();
 
+	//For network transfer & other stuff
+	virtual CBinBuffer &getData(CBinBuffer &b) const;            // returns class data as binbuffer
+	virtual bool setData(const CBinBuffer &b, unsigned int &pos);// rebuild class data from binbuffer
+
 	virtual CMessageBuffer::eMessageType getType() const
 		{return CMessageBuffer::chat;}
 
 	float m_SendTime; //moment of creation (relative to start of the game)
+	int m_ToMovingObject; //who should receive it, -1 = all
 };
 
 #endif

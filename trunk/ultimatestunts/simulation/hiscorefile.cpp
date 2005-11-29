@@ -35,7 +35,7 @@ CHiscoreFile::~CHiscoreFile()
 {
 }
 
-void CHiscoreFile::addEntries(const vector<SHiscoreEntry> &entries)
+void CHiscoreFile::addEntries(const CHiscore &entries)
 {
 	for(unsigned int newe=0; newe < entries.size(); newe++)
 	{

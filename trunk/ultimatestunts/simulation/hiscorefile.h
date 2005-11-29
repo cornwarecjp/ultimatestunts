@@ -23,33 +23,22 @@
   *@author CJP
   */
 
-#include <vector>
-namespace std {}
-using namespace std;
-
 #include "cstring.h"
-
-struct SHiscoreEntry
-{
-	CString name;
-	CString carname;
-	float time;
-	bool isNew; //is it from this race or not? (not saved in file of course)
-};
+#include "hiscore.h"
 
 class CHiscoreFile {
 public: 
 	CHiscoreFile(const CString &trackfile);
 	~CHiscoreFile();
 
-	void addEntries(const vector<SHiscoreEntry> &entries);
+	void addEntries(const CHiscore &entries);
 
-	vector<SHiscoreEntry> getEntries()
+	CHiscore getEntries()
 		{return m_Entries;}
 
 protected:
 	CString m_HiscoreFile;
-	vector<SHiscoreEntry> m_Entries;
+	CHiscore m_Entries;
 
 	bool load();
 	bool save();

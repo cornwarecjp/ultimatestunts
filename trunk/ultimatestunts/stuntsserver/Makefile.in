@@ -163,10 +163,10 @@ target_os = @target_os@
 target_vendor = @target_vendor@
 usdatadir = @usdatadir@
 bin_PROGRAMS = ustuntsserver
-ustuntsserver_SOURCES = consolethread.cpp gamecorethread.cpp main.cpp networkthread.cpp
+ustuntsserver_SOURCES = consolethread.cpp gamecorethread.cpp main.cpp networkthread.cpp uploadmanager.cpp
 ustuntsserver_LDADD = ../simulation/libsimulation.a ../shared/libshared.a @sdllibs@ @netlibs@ @LIBINTL@
 
-EXTRA_DIST = consolethread.cpp consolethread.h gamecorethread.cpp gamecorethread.h main.cpp networkthread.cpp networkthread.h
+EXTRA_DIST = consolethread.cpp consolethread.h gamecorethread.cpp gamecorethread.h main.cpp networkthread.cpp networkthread.h uploadmanager.cpp uploadmanager.h
 
 # set the include path found by configure
 INCLUDES = $(all_includes) -I../intl -I../shared -I../simulation
@@ -182,7 +182,8 @@ bin_PROGRAMS = ustuntsserver$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS)
 
 am_ustuntsserver_OBJECTS = consolethread.$(OBJEXT) \
-	gamecorethread.$(OBJEXT) main.$(OBJEXT) networkthread.$(OBJEXT)
+	gamecorethread.$(OBJEXT) main.$(OBJEXT) networkthread.$(OBJEXT) \
+	uploadmanager.$(OBJEXT)
 ustuntsserver_OBJECTS = $(am_ustuntsserver_OBJECTS)
 ustuntsserver_DEPENDENCIES = ../simulation/libsimulation.a \
 	../shared/libshared.a
@@ -192,7 +193,8 @@ depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/consolethread.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/gamecorethread.Po ./$(DEPDIR)/main.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/networkthread.Po
+@AMDEP_TRUE@	./$(DEPDIR)/networkthread.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/uploadmanager.Po
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 CXXLD = $(CXX)
@@ -249,6 +251,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gamecorethread.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/networkthread.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/uploadmanager.Po@am__quote@
 
 distclean-depend:
 	-rm -rf ./$(DEPDIR)

@@ -38,6 +38,7 @@ public:
 	//gamecore data:
 	CGameCore *m_GameCore;
 
+	bool m_SaveHiscore;
 protected:
 
 	CCriticalVector<CMessageBuffer> m_InputQueue;

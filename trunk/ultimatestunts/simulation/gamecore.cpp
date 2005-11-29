@@ -109,10 +109,22 @@ void CGameCore::readyAndLoad()
 		printf("Wait until everybody is ready\n");
 		m_ClientNet->wait4Ready();
 	}
+
+}
+
+void CGameCore::setStartTime(float offset)
+{
+	//TODO: some time synchronisation between server and client
+	theWorld->m_GameStartTime = m_Timer.getTime() + 3.01 + offset;
 }
 
 bool CGameCore::update() //true = continue false = leave
 {
+	//FPS:
+	float dt = m_Timer.getdt(0.00001);
+	float fpsnu = 1.0 / dt;
+	m_FPS = 0.9 * m_FPS + 0.1 * fpsnu;
+
 	if(m_ClientNet != NULL)
 	{
 		usleep(10000); //< 100 fps. Just to give a server process some CPU time
@@ -130,14 +142,34 @@ bool CGameCore::update() //true = continue false = leave
 		retval = retval && m_Simulations[i]->update(); //Modifies world object
 	}
 
+	//Do the chatsystem message delivery
+	if(m_ClientNet==NULL)
+	{
+		theWorld->m_ChatSystem.loopBack(); //local delivery
+	}
+	else
+	{
+		//send the entire outgoing queue. Receiving is done by CClientSim
+		//false = don't wait for the confirmation
+		for(unsigned int i=0; i < theWorld->m_ChatSystem.m_OutQueue.size(); i++)
+		{
+			CMessageBuffer b = theWorld->m_ChatSystem.m_OutQueue[i].getBuffer();
+			m_ClientNet->sendDataReliable(b, false);
+		}
+
+		theWorld->m_ChatSystem.m_OutQueue.clear();
+	}
+
+	theWorld->m_ChatSystem.deliverMessages();
+
 	return retval;
 }
 
-void CGameCore::stopGame()
+void CGameCore::stopGame(bool saveHiscore)
 {
 	//first make a backup of the hiscore data
 	if(theWorld->getNumObjects(CDataObject::eMovingObject) > 0)
-		collectHiscoreData();
+		collectHiscoreData(saveHiscore);
 
 	//then, unload the game
 	resetGame();
@@ -204,9 +236,9 @@ bool CGameCore::isLocalPlayer(unsigned int ID)
 	return false;
 }
 
-void CGameCore::collectHiscoreData()
+void CGameCore::collectHiscoreData(bool saveHiscore)
 {
-	m_LastHiscores.clear();
+	m_LastHiscoresThisGame.clear();
 
 	if(m_ClientNet == NULL) //local game
 	{
@@ -224,21 +256,27 @@ void CGameCore::collectHiscoreData()
 			e.carname = theCar->m_CarName;
 			e.time = time;
 			e.isNew = true;
-			m_LastHiscores.push_back(e);
+			m_LastHiscoresThisGame.push_back(e);
 		}
 	}
 	else
 	{
-		//TODO: get hiscore from the server
+		//TODO: special cases for other ways of exiting (e.g. Esc key)
+
+		m_LastHiscoresThisGame = ((CClientSim *)(m_Simulations[0]))->getHiscore();
 	}
 
 	//merge with existing hiscore file:
 	CHiscoreFile hf(m_TrackFile);
-	hf.addEntries(m_LastHiscores);
+	if(saveHiscore)
+		hf.addEntries(m_LastHiscoresThisGame);
 	m_LastHiscores = hf.getEntries();
 }
 
-vector<SHiscoreEntry> CGameCore::getHiscore()
+CHiscore CGameCore::getHiscore(bool onlyThisGame)
 {
+	if(onlyThisGame)
+		return m_LastHiscoresThisGame;
+
 	return m_LastHiscores;
 }

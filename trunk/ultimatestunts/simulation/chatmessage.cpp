@@ -33,3 +33,21 @@ CChatMessage::CChatMessage()
 CChatMessage::~CChatMessage()
 {
 }
+
+CBinBuffer &CChatMessage::getData(CBinBuffer &b) const
+{
+	CTextMessage::getData(b);
+	b.addFloat32(m_SendTime, 0.005);
+	b += (Uint8)(m_ToMovingObject + 1); //lets -1 fall into the unsigned range
+
+	return b;
+}
+
+bool CChatMessage::setData(const CBinBuffer &b, unsigned int &pos)
+{
+	if(!CTextMessage::setData(b, pos)) return false;
+	m_SendTime = b.getFloat32(pos, 0.005);
+	m_ToMovingObject = b.getUint8(pos) - 1; //lets -1 fall into the unsigned range
+
+	return true;
+}

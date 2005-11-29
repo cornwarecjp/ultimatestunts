@@ -240,11 +240,12 @@ bool CTrack::load(const CString &filename, const CParamList &list)
 				m_FinishTime = timeOffset + time;
 			}
 
+			printf("%d,%d,%d: ", x,y,z);
 			if(t.m_RouteCounter < 0) //Normal new piece of track
 			{
 				t.m_RouteCounter = counter;
 				t.m_Time = timeOffset + time;
-				printf("%d,%d,%d: time = %.2f Counter = %d\n", x,y,z, t.m_Time, t.m_RouteCounter);
+				printf("time = %.2f Counter = %d\n", t.m_Time, t.m_RouteCounter);
 			}
 			else //we've already been here: start or end of alternative route, or a loop finish
 			{
@@ -252,6 +253,7 @@ bool CTrack::load(const CString &filename, const CParamList &list)
 				{
 					if(isAlternative) //end of alternative route
 					{
+						printf("End of alternative route\n");
 						isAlternative = false;
 					}
 					else //start of alternative route
@@ -259,7 +261,7 @@ bool CTrack::load(const CString &filename, const CParamList &list)
 						counter = t.m_RouteCounter;
 						timeOffset = t.m_Time;
 						isAlternative = true;
-						//printf("New alternative counter=%d\n", counter);
+						printf("New alternative counter=%d\n", counter);
 					}
 				}
 			}

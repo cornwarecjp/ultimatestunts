@@ -45,10 +45,11 @@ public:
 		movingObject = 3,
 		movObjInput = 4,
 		car = 5,
-		UNUSED_1 = 6,
+		hiscore = 6,
 		chat = 7,
 		textMessage = 8,
-		confirmation = 9
+		confirmation = 9,
+		fileChunk = 10
 	};
 
 	CMessageBuffer(const CMessageBuffer::eMessageType & t);

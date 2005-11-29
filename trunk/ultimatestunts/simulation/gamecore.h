@@ -61,20 +61,26 @@ public:
 	//step 3: wait for the start signal and load everything
 	virtual void readyAndLoad();
 
-	//step 3: Play
+	//step 4: start the game time counter
+	void setStartTime(float offset = 0.0);
+
+	//step 5: Play
 	virtual bool update(); //true = continue false = leave
 
-	//step 4: Get hiscore+replay data and stop game (go back to step 1 or 2)
+	//step 6: Get hiscore+replay data and stop game (go back to step 1 or 2)
 	//this does not undo step 1
 	//to stop a network connection, init a local game
-	void stopGame();
+	void stopGame(bool saveHiscore = true);
 
-	//step 5: Get result information of last game (hiscore, replay)
-	vector<SHiscoreEntry> getHiscore();
+	//step 7: Get result information of last game (hiscore, replay)
+	CHiscore getHiscore(bool onlyThisGame = false);
 
 	//some tools
 	//TODO: place these e.g. in CWorld
 	bool isLocalPlayer(unsigned int ID);
+
+	float getFPS(){return m_FPS;}
+
 protected:
 	CWorld *m_World;
 	vector<CPlayer *> m_Players;
@@ -83,12 +89,16 @@ protected:
 	CClientNet *m_ClientNet;
 	CString m_TrackFile;
 
-	vector<SHiscoreEntry> m_LastHiscores;
+	CHiscore m_LastHiscores;
+	CHiscore m_LastHiscoresThisGame;
+
+	CTimer m_Timer; //for the FPS counter
+	float m_FPS;
 
 	virtual void loadTrackData();
 	virtual void loadMovObjData();
 
-	void collectHiscoreData();
+	void collectHiscoreData(bool saveHiscore);
 
 	void resetGame();
 	void unloadGame();

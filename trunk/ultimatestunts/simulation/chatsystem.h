@@ -1,7 +1,7 @@
 /***************************************************************************
-                          confirmation.h  -  Confirming that a package has arrived
+                          chatsystem.h  -  The "mail delivery office" of Ultimate Stunts
                              -------------------
-    begin                : ma jan 17 2005
+    begin                : do nov 24 2005
     copyright            : (C) 2005 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
@@ -15,40 +15,31 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef CONFIRMATION_H
-#define CONFIRMATION_H
+#ifndef CHATSYSTEM_H
+#define CHATSYSTEM_H
 
-#include "message.h"
+#include <vector> //STL vector template
+namespace std {}
+using namespace std;
+
+#include "chatmessage.h"
+#include "clientnet.h"
 
 /**
   *@author CJP
   */
 
-class CConfirmation : public CMessage
-{
-public:
-	CMessageBuffer::eMessageType m_MessageType;
-	Uint16 m_Counter;
-	Uint8 m_ReturnValue;
+class CChatSystem {
+public: 
+	CChatSystem();
+	~CChatSystem();
 
-	virtual bool setData(const CBinBuffer &b, unsigned int &pos)
-	{
-		m_MessageType = (CMessageBuffer::eMessageType)b.getUint8(pos);
-		m_Counter = b.getUint16(pos);
-		m_ReturnValue = b.getUint8(pos);
-		return true;
-	}
-	
-	virtual CBinBuffer &getData(CBinBuffer &b) const
-	{
-		b += (Uint8)m_MessageType;
-		b += m_Counter;
-		b += m_ReturnValue;
-		return b;
-	}
+	void sendMessage(CChatMessage &msg); //adds it to the outgoing queue
 
-	virtual CMessageBuffer::eMessageType getType() const {return CMessageBuffer::confirmation;}
+	void loopBack(); //only for local delivery
+	void deliverMessages(); //delivers inqueue to moving objects
+
+	vector<CChatMessage> m_InQueue, m_OutQueue; //public access for network code
 };
 
 #endif
-

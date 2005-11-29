@@ -47,8 +47,8 @@ protected:
 	void finish(CCar *car);
 	bool checkFinished();
 
-	int m_StartX, m_StartY, m_StartH, m_StartIndex,
-		m_FinishX, m_FinishY, m_FinishH, m_FinishIndex;
+	int  m_StartX,  m_StartY,  m_StartH,  m_StartRot,  m_StartIndex,
+		m_FinishX, m_FinishY, m_FinishH, m_FinishRot, m_FinishIndex;
 
 	CTimer m_Timer;
 };

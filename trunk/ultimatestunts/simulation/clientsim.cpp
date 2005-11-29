@@ -86,6 +86,11 @@ bool CClientSim::update()
 	for(unsigned int i=0; i < m_Net->m_ReceiveBuffer.size(); i++)
 	{
 		CMessageBuffer &buf = m_Net->m_ReceiveBuffer[i];
+
+		//Tell the server that we received it (in cases when needed)
+		if(buf.getAC() != 0)
+			m_Net->sendConfirmation(buf, 0);
+
 		switch(buf.getType())
 		{
 		case CMessageBuffer::car:
@@ -118,9 +123,25 @@ bool CClientSim::update()
 			mo->setBuffer(buf);
 		}
 			break;
+
+		case CMessageBuffer::hiscore:
+			m_Hiscore.setBuffer(buf);
+			return false; //ending the game: we received a hiscore
+			break;
+
+		case CMessageBuffer::chat:
+		{
+			CChatMessage msg;
+			msg.setBuffer(buf);
+			theWorld->m_ChatSystem.m_InQueue.push_back(msg); //chat message received from server
+			//printf("Chat message received: %s\n", msg.m_Message.c_str());
+		}
+			break;
+
 		default:
 			break;
 		}
+
 		//TODO: maybe delete the used messages (maybe not necessary)
 	}
 

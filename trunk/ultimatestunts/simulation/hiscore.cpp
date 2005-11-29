@@ -1,7 +1,7 @@
 /***************************************************************************
-                          confirmation.h  -  Confirming that a package has arrived
+                          hiscore.cpp  -  Hiscore of a race, or a track
                              -------------------
-    begin                : ma jan 17 2005
+    begin                : do nov 24 2005
     copyright            : (C) 2005 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
@@ -15,40 +15,48 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef CONFIRMATION_H
-#define CONFIRMATION_H
+#include "hiscore.h"
 
-#include "message.h"
+CHiscore::CHiscore(){
+}
+CHiscore::~CHiscore(){
+}
 
-/**
-  *@author CJP
-  */
-
-class CConfirmation : public CMessage
+CBinBuffer &CHiscore::getData(CBinBuffer &b) const
 {
-public:
-	CMessageBuffer::eMessageType m_MessageType;
-	Uint16 m_Counter;
-	Uint8 m_ReturnValue;
+	b += (Uint8)size();
 
-	virtual bool setData(const CBinBuffer &b, unsigned int &pos)
+	for(unsigned int i=0; i < size(); i++)
 	{
-		m_MessageType = (CMessageBuffer::eMessageType)b.getUint8(pos);
-		m_Counter = b.getUint16(pos);
-		m_ReturnValue = b.getUint8(pos);
-		return true;
-	}
-	
-	virtual CBinBuffer &getData(CBinBuffer &b) const
-	{
-		b += (Uint8)m_MessageType;
-		b += m_Counter;
-		b += m_ReturnValue;
-		return b;
+		SHiscoreEntry ent = operator[](i);
+
+		b += ent.name;
+		b += ent.carname;
+		//b += (Uint8)(ent.isNew); //when sent over a network, they're always new
+		b.addFloat32(ent.time, 0.005); //more accurate than 1/100 sec
 	}
 
-	virtual CMessageBuffer::eMessageType getType() const {return CMessageBuffer::confirmation;}
-};
+	return b;
+}
 
-#endif
+bool CHiscore::setData(const CBinBuffer &b, unsigned int &pos)
+{
+	clear();
+
+	unsigned int s = b.getUint8(pos);
+
+	for(unsigned int i=0; i < s; i++)
+	{
+		SHiscoreEntry ent;
+
+		ent.name = b.getCString(pos);
+		ent.carname = b.getCString(pos);
+		ent.isNew = true; //bool(b.getUint8(pos)); //when sent over a network, they're always new
+		ent.time = b.getFloat32(pos, 0.005);
+
+		push_back(ent);
+	}
+
+	return true;
+}
 

@@ -16,12 +16,18 @@
  ***************************************************************************/
 
 #include <cstdio> //debugging
+#include <cmath>
+
+#ifndef M_PI
+#define M_PI 3.1415926536
+#endif
 
 #include <libintl.h>
 #define _(String) gettext (String)
 #define N_(String1, String2, n) ngettext ((String1), (String2), (n))
 
 #include "rulecontrol.h"
+#include "bound.h"
 #include "usmacros.h"
 
 CRuleControl::CRuleControl()
@@ -34,10 +40,10 @@ CRuleControl::~CRuleControl(){
 
 bool CRuleControl::update()
 {
+	//Place everybody at the start (only the first update of course)
 	if(firstUpdate)
 	{
 		firstUpdate = false;
-		theWorld->m_GameStartTime = m_Timer.getTime() + 3.01;
 
 		if(!findStartFinish()) //error with starts/finishes
 			return false; //stop
@@ -48,6 +54,8 @@ bool CRuleControl::update()
 
 	if(theWorld->m_Paused)
 	{
+		//Pause state before the start of the game
+
 		float t = m_Timer.getTime();
 
 		if(t > theWorld->m_GameStartTime)
@@ -66,12 +74,13 @@ bool CRuleControl::update()
 			else
 				{msg.m_Message = _("GO!");}
 
-			for(unsigned int i=0; i < theWorld->getNumObjects(CDataObject::eMovingObject); i++)
-				theWorld->getMovingObject(i)->m_IncomingMessages.push_back(msg);
+			msg.m_ToMovingObject = -1;
+			theWorld->m_ChatSystem.sendMessage(msg);
 		}
 	}
 	else
 	{
+		//Normal racing rule update
 		vector<CDataObject *> objs = theWorld->getObjectArray(CDataObject::eMovingObject);
 		for(unsigned int i=0; i < objs.size(); i++)
 		{
@@ -117,14 +126,27 @@ void CRuleControl::updateCarRules(CCar *car)
 		prevCounter = track.m_Track[prevIndex].m_RouteCounter,
 		currentCounter = track.m_Track[currentIndex].m_RouteCounter;
 
-	bool prevIsFinish = theWorld->getTileModel(track.m_Track[prevIndex].m_Model)->m_isFinish;
+	//are we inside the finish tile?
+	bool currentIsFinish = theWorld->getTileModel(track.m_Track[currentIndex].m_Model)->m_isFinish;
 
+	//Route tracking:
 	if(currentIndex != prevIndex && currentCounter >= 0) //we're on a route, and not on the start
 	{
 		printf("\nvalid, prev, current = %d, %d, %d\n", validCounter, prevCounter, currentCounter);
 		printf("curTileTime = %.2f s\n", track.m_Track[currentIndex].m_Time);
 		printf("maxTileTime = %.2f s\n", status.maxTileTime);
 
+		//special case for finish penalty time
+		if(currentIsFinish)
+		{
+			float t1 = track.m_Track[validIndex].m_Time;
+			float t2 = track.m_FinishTime;
+			int finishCounter = track.m_FinishRouteCounter;
+
+			if(finishCounter > validCounter+1 && t2-t1 > 0 && status.maxTileTime < t2)
+				addPenaltytime(car, penaltyMultiplier * (t2-t1));
+		}
+		
 		if(prevCounter>=0 && currentCounter == prevCounter+1) //we're following a certain route
 		{
 			float t1 = track.m_Track[validIndex].m_Time;
@@ -132,30 +154,42 @@ void CRuleControl::updateCarRules(CCar *car)
 
 			if(prevIndex != validIndex) //a gap in the route
 			{
-				if(prevIsFinish) //start and finish on the same place causes a gap
-				{
-					t2 = track.m_FinishTime;
-					int finishCounter = track.m_FinishRouteCounter;
-
-					if(finishCounter > validCounter+1 && t2-t1 > 0 && status.maxTileTime < t2)
-						addPenaltytime(car, penaltyMultiplier * (t2-t1));
-				}
-				else
-				{
-					if(t2-t1 > 0 && status.maxTileTime < t2)
-						addPenaltytime(car, penaltyMultiplier * (t2-t1));
-				}
-
+				if(t2-t1 > 0 && status.maxTileTime < t2)
+					addPenaltytime(car, penaltyMultiplier * (t2-t1));
 			}
-
-			if(prevIsFinish && validCounter > 0) //finished and driven some route
-				finish(car);
 
 			if(status.maxTileTime < t2) status.maxTileTime = t2;
 			status.lastValidTile = currentIndex;
 		}
 
 		status.currentTile = currentIndex;
+	}
+
+	//Finish checking:
+	//If we are inside the finish tile, and we have already done some part of the track:
+	if(currentIsFinish && validCounter > 0)
+	{
+		const CBound *b = (CBound *)theWorld->getObject(CDataObject::eBound, car->m_Bodies[0].m_Body);
+		float r = b->m_BSphere_r;
+
+		CVector relpos = pos - CVector(TILESIZE*x, VERTSIZE*y, TILESIZE*z);
+
+		float dist = TILESIZE; //default: too great distance
+		switch(m_FinishRot)
+		{
+		case 0:
+		case 2:
+			dist = fabsf(relpos.z);
+			break;
+		case 1:
+		case 3:
+			dist = fabsf(relpos.x);
+			break;
+		}
+
+		//if we have partially crossed the finish plane with the bounding sphere:
+		if(dist < r)
+			finish(car);
 	}
 }
 
@@ -165,7 +199,8 @@ void CRuleControl::addPenaltytime(CCar *car, float t)
 	{
 		CChatMessage m;
 		m.m_Message = CString(_("Penalty time: ")) + (CString().fromTime(t));
-		car->m_IncomingMessages.push_back(m);
+		m.m_ToMovingObject = car->getMovObjID();
+		theWorld->m_ChatSystem.sendMessage(m);
 	}
 }
 
@@ -175,7 +210,8 @@ void CRuleControl::finish(CCar *car)
 	{
 		CChatMessage m;
 		m.m_Message = CString(_("You finished (waiting for other players)"));
-		car->m_IncomingMessages.push_back(m);
+		m.m_ToMovingObject = car->getMovObjID();
+		theWorld->m_ChatSystem.sendMessage(m);
 	}
 }
 
@@ -200,7 +236,8 @@ bool CRuleControl::findStartFinish()
 					else
 					{
 						founds = true;
-						m_StartX = x; m_StartY = y; m_StartH = tile.m_Z; m_StartIndex = index;
+						m_StartX = x; m_StartY = y; m_StartH = tile.m_Z; m_StartRot = tile.m_R;
+						m_StartIndex = index;
 					}
 
 				if(theWorld->getTileModel(tile.m_Model)->m_isFinish)
@@ -210,7 +247,8 @@ bool CRuleControl::findStartFinish()
 					else
 					{
 						foundf = true;
-						m_FinishX = x; m_FinishY = y; m_FinishH = tile.m_Z; m_FinishIndex = index;
+						m_FinishX = x; m_FinishY = y; m_FinishH = tile.m_Z; m_FinishRot = tile.m_R;
+						m_FinishIndex = index;
 					}
 			}
 
@@ -227,6 +265,9 @@ void CRuleControl::placeStart()
 		VERTSIZE * m_StartH,
 		TILESIZE * m_StartY
 	);
+
+	CMatrix tileOri;
+	tileOri.rotY(m_StartRot * -0.5 * M_PI);
 
 	/*
 	Starting positions:
@@ -247,7 +288,7 @@ void CRuleControl::placeStart()
 
 		CMovingObject *mo = theWorld->getMovingObject(i);
 		
-		mo->resetBodyPositions(tilePos + carPos, CMatrix());
+		mo->resetBodyPositions(tilePos + tileOri * carPos, tileOri);
 
 		CCarRuleStatus &status = ((CCar *)mo)->m_RuleStatus;
 		status.lastValidTile = status.currentTile = m_StartIndex;
@@ -269,6 +310,13 @@ bool CRuleControl::checkFinished()
 			if(status.state == CCarRuleStatus::eNotStarted || status.state == CCarRuleStatus::eRacing)
 			{
 				ret = false;  //some want to race -> continue
+				break;
+			}
+
+			if(status.state == CCarRuleStatus::eFinished &&
+				m_Timer.getTime() - status.finishTime < 3.0)
+			{
+				ret = false;  //wait some time after everybody is finished
 				break;
 			}
 		}
