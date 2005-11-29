@@ -26,7 +26,8 @@ void loadFunc()
 			"1: *.glt / *.gl file\n"
 			"2: *.glb file\n"
 			"3: 3dto3d smooth *.raw file\n"
-			"4: 3D Studio *.3ds file\n");
+			"4: *.lwo file\n"
+			"5: 3D Studio *.3ds file\n");
 		switch(getInput("Your choice: ").toInt())
 		{
 			case 1:
@@ -36,6 +37,8 @@ void loadFunc()
 			case 3:
 				obj2.loadRAWFile(getInput("Enter filename: ")); break;
 			case 4:
+				obj2.loadLWOFile(getInput("Enter filename: ")); break;
+			case 5:
 				obj2.load3DSFile(getInput("Enter filename: ")); break;
 			default:
 				printf("Please choose between 1, 2, 3 and 4\n");
@@ -48,7 +51,8 @@ void loadFunc()
 			"1: *.glt / *.gl file\n"
 			"2: *.glb file\n"
 			"3: 3dto3d smooth *.raw file\n"
-			"4: 3D Studio *.3ds file\n");
+			"4: *.lwo file\n"
+			"5: 3D Studio *.3ds file\n");
 		switch(getInput("Your choice: ").toInt())
 		{
 			case 1:
@@ -58,6 +62,8 @@ void loadFunc()
 			case 3:
 				graphobj->loadRAWFile(getInput("Enter filename: ")); break;
 			case 4:
+				graphobj->loadLWOFile(getInput("Enter filename: ")); break;
+			case 5:
 				graphobj->load3DSFile(getInput("Enter filename: ")); break;
 			default:
 				printf("Please choose between 1, 2, 3 and 4\n");

@@ -20,6 +20,7 @@
 #include <cmath> //for fabs
 
 #include "3ds.h"
+#include "lw.h"
 #include "glbfile.h"
 
 #include "editgraphobj.h"
@@ -457,6 +458,91 @@ bool CEditGraphObj::load3DSFile(CString filename)
 		m_Primitives.push_back(pr);
 	}
 
+	return true;
+}
+
+bool CEditGraphObj::loadLWOFile(CString filename)
+{
+	CDataFile f(filename);
+	CString fn2 = f.useExtern();
+
+	if(!lw_is_lwobject(fn2.c_str())) return false;
+
+	clear();
+
+	lwObject *lwo = lw_object_read(fn2.c_str());
+	if(lwo == NULL) return false;
+
+	printf("Loaded all data from LWO file\n");
+	
+	//first, create a primitive for every material
+	for(int i=0; i < lwo->material_cnt; i++)
+	{
+		m_Primitives.push_back(CPrimitive());
+		CPrimitive &pr = m_Primitives.back();
+
+		pr.m_Name = lwo->material[i].name;
+		pr.m_Type = CPrimitive::VertexArray;
+		pr.m_LODs = "1234c";
+		pr.m_Emissivity = 0.0;
+		pr.m_Opacity = 1.0;
+		pr.m_Reflectance = 0.0;
+		pr.m_ModulationColor = CVector(
+			lwo->material[i].r,
+			lwo->material[i].g,
+			lwo->material[i].b
+			);
+		pr.m_ReplacementColor = pr.m_ModulationColor;
+		pr.m_DynamicFriction = 1.0;
+		pr.m_StaticFriction = 1.0;
+
+		//copy the entire vertex array to every primitive
+		for(int j=0; j < lwo->vertex_cnt; j++)
+		{
+			CVertex v;
+			v.nor = CVector(1,0,0);
+			v.pos = CVector(
+				lwo->vertex[3*j+0],
+				lwo->vertex[3*j+1],
+				lwo->vertex[3*j+2]
+				);
+			pr.m_Vertex.push_back(v);
+		}
+	}
+
+	printf("Created all primitives\n");
+
+	//copy faces to the primitives
+	for(int i=0; i < lwo->face_cnt; i++)
+	{
+		const lwFace *face = lwo->face+i;
+
+		/* ignore faces with less than 3 points */
+		if (face->index_cnt < 3)
+			continue;
+
+		CPrimitive &thePrimitive = m_Primitives[face->material];
+
+		for(int j=0; j < face->index_cnt; j++)
+		{
+			thePrimitive.m_Index.push_back(face->index[j]);
+
+			//TODO: update texture coordinates:
+			/*
+			thePrimitive.m_Vertex[face->index[j]].tex = CVector(
+				
+				);
+			*/
+		}
+	}
+
+	printf("Added all faces\n");
+
+	//TODO: optimise the result (remove unused vertices and empty primitives)
+
+	lw_object_free(lwo);
+
+	printf("Loading was succesful\n");
 	return true;
 }
 

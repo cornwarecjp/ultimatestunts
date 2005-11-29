@@ -76,6 +76,7 @@ public:
 	virtual bool loadGLBFile(CString filename);
 	bool loadRAWFile(CString filename);
 	bool load3DSFile(CString filename);
+	bool loadLWOFile(CString filename);
 
 	void merge(const CEditGraphObj &obj, const CString &lods);
 

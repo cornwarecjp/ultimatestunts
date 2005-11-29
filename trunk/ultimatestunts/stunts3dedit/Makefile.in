@@ -163,10 +163,10 @@ target_os = @target_os@
 target_vendor = @target_vendor@
 usdatadir = @usdatadir@
 bin_PROGRAMS = ustunts3dedit
-ustunts3dedit_SOURCES = 3ds.cpp editcamera.cpp editgraphobj.cpp editrenderer.cpp main.cpp textureloader.cpp
+ustunts3dedit_SOURCES = 3ds.cpp editcamera.cpp editgraphobj.cpp editrenderer.cpp lw.c main.cpp textureloader.cpp
 ustunts3dedit_LDADD = ../graphics/libgraphics.a ../shared/libshared.a @sdllibs@ @graphlibs@ @LIBINTL@
 
-EXTRA_DIST = 3ds.cpp 3ds.h editcamera.cpp editcamera.h editgraphobj.cpp editgraphobj.h editrenderer.cpp editrenderer.h main.cpp textureloader.cpp textureloader.h
+EXTRA_DIST = 3ds.cpp 3ds.h editcamera.cpp editcamera.h editgraphobj.cpp editgraphobj.h editrenderer.cpp editrenderer.h lw.c lw.h main.cpp textureloader.cpp textureloader.h
 
 # set the include path found by configure
 INCLUDES = $(all_includes) -I../intl -I../shared -I../graphics
@@ -182,8 +182,8 @@ bin_PROGRAMS = ustunts3dedit$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS)
 
 am_ustunts3dedit_OBJECTS = 3ds.$(OBJEXT) editcamera.$(OBJEXT) \
-	editgraphobj.$(OBJEXT) editrenderer.$(OBJEXT) main.$(OBJEXT) \
-	textureloader.$(OBJEXT)
+	editgraphobj.$(OBJEXT) editrenderer.$(OBJEXT) lw.$(OBJEXT) \
+	main.$(OBJEXT) textureloader.$(OBJEXT)
 ustunts3dedit_OBJECTS = $(am_ustunts3dedit_OBJECTS)
 ustunts3dedit_DEPENDENCIES = ../graphics/libgraphics.a \
 	../shared/libshared.a
@@ -193,8 +193,12 @@ depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/3ds.Po ./$(DEPDIR)/editcamera.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/editgraphobj.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/editrenderer.Po ./$(DEPDIR)/main.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/textureloader.Po
+@AMDEP_TRUE@	./$(DEPDIR)/editrenderer.Po ./$(DEPDIR)/lw.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/main.Po ./$(DEPDIR)/textureloader.Po
+COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+CCLD = $(CC)
+LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 CXXLD = $(CXX)
@@ -207,7 +211,7 @@ SOURCES = $(ustunts3dedit_SOURCES)
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .cpp .o .obj
+.SUFFIXES: .c .cpp .o .obj
 $(srcdir)/Makefile.in:  Makefile.am  $(top_srcdir)/configure.ac $(ACLOCAL_M4)
 	cd $(top_srcdir) && \
 	  $(AUTOMAKE) --gnu  stunts3dedit/Makefile
@@ -251,11 +255,34 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/editcamera.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/editgraphobj.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/editrenderer.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lw.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/textureloader.Po@am__quote@
 
 distclean-depend:
 	-rm -rf ./$(DEPDIR)
+
+.c.o:
+@am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" \
+@am__fastdepCC_TRUE@	  -c -o $@ `test -f '$<' || echo '$(srcdir)/'`$<; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Po"; \
+@am__fastdepCC_TRUE@	else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; \
+@am__fastdepCC_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(COMPILE) -c `test -f '$<' || echo '$(srcdir)/'`$<
+
+.c.obj:
+@am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" \
+@am__fastdepCC_TRUE@	  -c -o $@ `if test -f '$<'; then $(CYGPATH_W) '$<'; else $(CYGPATH_W) '$(srcdir)/$<'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Po"; \
+@am__fastdepCC_TRUE@	else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; \
+@am__fastdepCC_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(COMPILE) -c `if test -f '$<'; then $(CYGPATH_W) '$<'; else $(CYGPATH_W) '$(srcdir)/$<'; fi`
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" \
