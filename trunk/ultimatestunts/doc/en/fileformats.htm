@@ -1,0 +1,585 @@
+<a name="about">
+<h1>
+About this document
+</h1>
+<p>
+This document describes the file formats as used by UltimateStunts.
+The information described here applies to the most recent version,
+which is 0.6.0 at the time of writing, but many things also apply
+to older and newer versions.
+This document does NOT describe the configuration files (*.conf);
+for these files, please have a look at the documentation of the
+corresponding programs or at the comments in the files themselves.
+</p>
+<p>
+This file contains the following sections:
+</p>
+<ul>
+	<li><a href="#about">
+		About this document
+	</a></li>
+	<li><a href="#general">
+		General information about tracks
+	</a></li>
+	<li><a href="#track">
+		The track-file (*.track) format 
+	</a></li>
+	<li><a href="#3dedit">
+		The 3D-editor texture file (textures.dat)
+	</a></li>
+	<li><a href="#gl">
+		The old 3D-model (*.gl / *.glt) format 
+	</a></li>
+	<li><a href="#glb">
+		The new 3D model (*.glb) format
+	</a></li>
+	<li><a href="#future">
+		Future developments 
+	</a></li>
+</ul>
+
+<a name="general"></a>
+<h1>General information about tracks</h1>
+An UltimateStunts track is similar to an old stunts track in one
+important aspect: it consists of tiles. Each tile contains a 3D model
+of a piece of the track, e.g. a road, a piece of water, a bridge, or a
+tunnel. Tile-information is stored in files, each file containing
+just one tile.
+<p>
+The track-file, describing the track, contains references to the
+tile-files. Each tile can be used several times in one track, and in
+different orientations. So, if your track contains several straight
+roads in different directions, you'll only need one straight-road
+tile.
+<p>
+All tiles have the same sizes. Structures larger than the standard
+tile size, like wide corners, are built from smaller tiles. Tiles in
+a track are ordered in horizontal grids. Every point in the grid
+contains an id referring to the tile, an integer describing the
+orientation of the tile, and an integer describing the vertical
+position of the tile. Because of that last integer, it is possible to
+make tracks with very large height differences.
+<p>
+In one track, more than one of these grids can be used. This way, a 
+
+threedimensional grid is created effectively, and tiles can be placed
+above each other. This results in the possibility of underground
+tunnels, viaducts crossing each other, etc. etc.
+<p>
+Tiles are using textures. In most situations, different tiles are
+using the same textures. To prevent the same texture from being loaded
+more than once, textures are managed on the track level.
+
+<a name="track"></a>
+<h1>The track-file (*.track) format</h1>
+The track file is an implementation of the information described
+above. Track files are text
+files, so you should be able to edit them with a text editor. A track
+file has the following sections (in this order):
+<ul>
+	<li>The header</li>
+	<li>The texture section</li>
+	<li>The background section</li>
+	<li>The tiles section</li>
+	<li>The grid sections</li>
+	<li>The checkpoint section</li>
+</ul>
+Except for the header, each section begins with a line containing
+"BEGIN", and ends with a line "END". Inside a section, no comments
+should be placed. Outside a section, all data is ignored, but to make
+clear that it is a comment, each comment line should begin with a "#".
+
+<h3>The header</h3>
+The header, consisting of six lines, has the following syntax:
+<pre>
+TRACKFILE<i>
+length
+width
+height
+</i></pre>
+The word "TRACKFILE" is a magic word to make sure we are dealing with
+a track file. The <i>length</i> and <i>width</i> parameters give the
+sizes of the grids, and <i>height</i> is the number of grids used.
+Every number in the header must be consistent with the rest of the
+file, or else errors will occur while loading the track.
+
+<h3>The texture section</h3>
+Each line in the texture section contains a filename of a texture
+image. These filenames are interpreted as being relative to the
+datafiles directory. Currently, the only image format supported is the
+SGI rgb (*.rgb) format (4-channel *.rgba files, which are rgb files with an
+alpha channel, are also supported). Texture images must have a width and height
+that are powers of 2 (8, 16, 32, 128 etc.).<br>
+After the filename, an optional integer parameter <i>scalehint</i> can
+be given. So, the syntax of a texture line becomes
+
+<pre><i>filename</i> [<i>scalehint</i>]</pre>
+
+If the scalehint (which must be a power of 2) is larger than
+1, a smaller texture resolution is used. The resolution is calculated
+the following way:
+<pre>resolution_used = texture_maxsize / (scalehint * lod)</pre>
+The lod (Level Of Detail) used depends on the distance between tile
+and camera; a texture is loaded with lod = 1, 2, 4 and 8.<br>
+If the size of the texture in the file is smaller than
+resolution_used, then the file resolution is used. If resolution_used
+is smaller than 8, then no texture is used. Instead,
+textureless surfaces with the average color of the texture are used.
+
+<h3>The background section</h3>
+This section contains a description of the environment. This section should
+contain the following lines:
+<ul>
+	<li>The sky texture filename</li>
+	<li>The reflection map filename</li>
+	<li>The direction where the light goes to (three coordinates separated by commas, vector length should be 1)</li>
+	<li>The light color ("diffuse light") (red, green, blue components between 0.0 and 1.0)</li>
+	<li>The shadow color ("ambient light") (red, green, blue components between 0.0 and 1.0)</li>
+</ul>
+
+<h3>The tile section</h3>
+Each line in the tile section has the following syntax:
+<pre>
+<i>filename</i>[:<i>flags</i>] [<i>texture_id_0</i> [... [<i>texture_id_n</i>]]]
+</pre>
+The <i>filename</i>, relative to the datafile dir, refers to the 
+3D-model to be used. The <i>flags</i> give some additional information to
+Ultimate Stunts. Currently, these flags are recognised:
+<ul>
+	<li>s: the start tile</li>
+	<li>f: the finish tile</li>
+</ul>
+The <i>texture_id</i> parameters are indices to
+the textures section. (The first texture has id=0, the second id=1
+etc.) These parameters describe which textures are used by this tile.
+This way, it is even possible to use the same tile with different
+textures:
+<pre>
+BEGIN
+...
+the_same_filename.gl 1 2 3
+the_same_filename.gl 4 5 6
+...
+END
+</pre>
+The order in which the indices are given is important: e.g. for a road
+tile the first index could refer to a road texture, and the second to
+a grass texture. When swapping them, you get effects you don't want.
+:-)
+
+<h3>The grid sections</h3>
+Every grid section contains the data of one grid. The first grid
+section in the file contains layer 0, which should contain the lowest
+tiles of the track. Every higher layer should contain the tiles placed
+above the tiles of the lower layer.
+<p>
+Every line in a grid section contains the data of one line of tiles.
+The number of lines in a section should equal <i>length</i> in the
+header. The number of items in a line should equal <i>width</i>.<br>
+Every line begins with a tab, and items are separated with a tab.
+(DON'T use spaces here!). Every item has the following syntax:
+<pre>
+<i>tile_id</i>/<i>rotation</i>/<i>height</i>
+</pre>
+<i>tile_id</i> is a reference to an item in the tiles section. <i>
+rotation</i> is an integer describing the orientation of the tile, via
+<pre>degrees_clockwise = 90 * rotation</pre>
+<i>height</i> is an integer describing the vertical position, via
+<pre>y_offset = vertical_tilesize * height</pre>
+
+<h3>The checkpoint section</h3>
+This section defines the routes that can be followed by players in order to
+finish the track. When a player does not follow one of the alternatives,
+he/she gets penalty time.
+<p>
+Every checkpoint line in this section contains the tile coordinates of the
+checkpoint, followed by a ":" and a time value. The tile coordinates are integer
+numbers, that define a position in the grid: first the west-east position, then
+the north-south position and then the layer number (e.g. 0 for the lowest tile
+at that position). The time value is the time after starting when a fast car could
+be in the tile. The penalty time is calculated by taking the difference between the
+time of the last valid position and the new position, and multiplying this difference
+to make it bigger.
+<p>
+When a track has only one route, then the first checkpoint should be the start tile and
+the second checkpoint should be the tile directly after the start. After that, not every
+tile needs to be a checkpoint, but it is recommended to put checkpoints at strategic points
+like corners and the top of a looping. The last checkpoint should be the start/finish tile
+(when the start is also the finish), or, when the finish is at a diferent place, the last
+two checkpoints should be the finish and the tile directly behind the finish.
+<p>
+When there are multiple routes, the first route should be the fastest one. Then, the fastest
+alternative route should be defined, then all other alternatives, sorted on driving time, and
+as last the slowest alternative. The fastest route should be given in exactly the same way as
+described for single-route tracks. Alternative routes are slightly different from the first route:
+<p>
+The first checkpoint of an alternative route is not the start, but the last checkpoint that is shared
+with previously defined routes (Normally this is the tile where the two separate). The time of this
+tile is set to 0.0 seconds, and the time values of other checkpoints of this alternative should be
+given relative to this first point. The last checkpoint of the alternative should be the first checkpoint
+that is shared with previously defined routes. When Ultimate Stunts finds that there already is a checkpoint
+at that position, it knows that this alternative ends, and that following positions define new alternative
+routes.
+<p>
+Examples:
+<pre>
+
+-finish-<-B-<--\
+          |    |
+          ^    ^
+          |    |
+          A->--/
+          |
+          ^
+          |
+        start
+
+gives:
+
+BEGIN
+{start pos} : 0.0
+{checkpoints between start and A}
+{A pos} : {time of A}
+{checkpoints short path between A and B}
+{B pos} : {short time of B}
+{checkpoints between B and finish}
+{finish pos} : {short finish time}
+{pos after finish} : {time}
+{A pos} : 0.0
+{checkpoints long path between A and B}
+{B pos} : {long time of B - time of A}
+END
+</pre>
+
+<a name="3dedit"></a>
+<h1>The 3D-editor texture file (textures.dat)</h1>
+In order to use the right texture when editing a 3D-model file, the
+3D editor needs a file which describes the textures to be loaded. 
+This file is called textures.dat, and it should be located in the current
+directory.
+<p>
+The header section of this file only contains the line "TEDITFILE".
+The only other section in this file (beginning with the line "BEGIN"
+and ending with "END") contains the following lines:
+<ul>
+	<li>
+		A line containing the number of textures to be loaded.
+	</li><li>
+		lines describing the textures, similar to the textures
+		in the track fileformat.
+	</li>
+</ul>
+
+<a name="gl"></a>
+<h1>The old 3D-model (*.gl / *.glt) format</h1>
+In previous version (0.5.2 and before), all 3D models in UltimateStunts were
+stored in a text format. OpenGL programmers will recognise its syntax, because
+it's very similar to the commands in the openGL library. This section describes
+this old *.gl format. The new *.glt format is an extension to the *.gl format,
+and it allows vertex array models. It will be described here in the future.
+An important thing to know is that *.glt files are only used for editing: they
+cannot be loaded by Ultimate Stunts. Instead of that, version 0.5.3 and later use
+*.glb files.
+<p>
+Commands in *.gl files should be placed at the beginning of lines, so it's only
+possible to place one command per line, and no white space is allowed
+before the command.
+
+<h3>Primitives</h3>
+3D models in *.gl files are described with the same 3D primitives that are
+supported by openGL. Every primitive describes a certain kind of 3D polygon,
+with the verticed defined counterclockwise as seen from the side where the
+polygon should be visible. As an additional requirement, the order in which the
+primitives are defined in the *.gl file should be a "back to front" order as
+much as possible. This is necessary for users who disable Z-buffering.
+<p>
+The following 3D primitives are supported by the format: Quads, 
+Triangles, Trianglestrip, Quadstrip and Polygon. A primitive is started with a
+line containing its name, and it is ended with "End". The following
+code describes two triangles:
+<pre>
+Triangles
+[code describing the first triangle]
+[code describing the second triangle]
+End
+</pre>
+
+<h3>Vertex <i>x</i>,<i>y</i>,<i>z</i></h3>
+The most important command for describing primitives is the Vertex
+command. It describes one threedimensional point in the primitive,
+and should only be used within primitive code. The following
+example describes one square:
+<pre>
+Quads
+Vertex -5,0,-5
+Vertex -5,0,5
+Vertex 5,0,5
+Vertex 5,0,-5
+End
+</pre>
+In the same way, triangles, triangle strips, quad strips and polygons can be
+defined. The coordinates in Ultimate Stunts should be given in meters. For a
+tile, this means a range between -20 and 20 for x and z, and a range between
+0 and 12 for y.
+
+<h3>Color <i>red</i>,<i>green</i>,<i>blue</i></h3>
+The color command is used to change the drawing color. This can be
+done both before and within a primitive definition (like in openGL). 
+
+The parameters <i>red</i>,<i>green</i> and <i>blue</i> should be
+within the range [0,1]. Usage of Color is described by the following
+examples:
+<p>
+A red triangle:
+<pre>
+Color 1,0,0
+Triangles
+Vertex -1,0,0
+Vertex 0,1,0
+Vertex 1,0,0
+End
+</pre>
+A square with a red/yellow color gradient:
+<pre>
+Color 1,0,0
+Quads
+Vertex -5,0,-5
+Vertex -5,0,5
+
+Color 1,1,0
+Vertex 5,0,5
+Vertex 5,0,-5
+End
+</pre>
+A polygon with lots of colors:
+<pre>
+Polygon
+Color 1,0,0
+Vertex -3,0,-5
+Color 0.5,0.5,0
+Vertex -5,0,-3
+Color 0,1,0
+Vertex -5,0, 3
+Color 0,0.5,0.5
+Vertex -3,0, 5
+
+Color 0,0,1
+Vertex  3,0, 5
+Color 0.5,0,0.5
+Vertex  5,0, 3
+Color 0,0,0
+Vertex  5,0,-3
+Vertex  3,0,-5
+End
+</pre>
+
+<h3>Opacity <i>level</i></h3>
+Defines how opaque the next primitives will be. 1.0 is fully opaque, 0.0 is
+fully transparent.
+
+<h3>Reflectance <i>level</i></h3>
+Defines How well the reflection of the next primitives will be. 1.0 is fully
+reflecting, 0.0 is non-reflecting.
+
+<h3>Normal <i>x</i>,<i>y</i>,<i>z</i></h3>
+The normal vector is used to calculate shadows. Its length should be
+1, and it should be perpendicular to the surface. Normal can be used
+both before and within a primitive definition. The following example
+describes a quad with a correct normal vector:
+<pre>
+Normal 0,0.96,0.29
+Quads
+Vertex 5,0,5
+Vertex 5,3,-5
+Vertex -5,3,-5
+Vertex -5,0,5
+End
+</pre>
+
+<h3>Texture <i>texture_id</i></h3>
+This enables the usage of a texture. <i>texture_id</i> refers to one
+of the indices in the track file, called <i>texture_id_n</i> in the
+description above. The texture command can only be used outside
+primitive-definitions. The following listing, describing how to use
+the texture "texture_file.rgb", will make things clearer:
+<pre>
+----------tracks/default.track-----------
+TRACKFILE
+...
+#Texture section
+BEGIN
+texture_one.rgb
+texture_two.rgb
+<b>texture_file.rgb</b>
+...
+END
+...
+#Tiles section
+BEGIN
+...
+example_tile.gl 0 <b>2</b>
+...
+END
+...
+-----------------------------------------
+------------example_tile.gl--------------
+...
+Texture 1
+...
+-----------------------------------------
+</pre>
+Here, <i>texture_id</i> = 1, and refers to <i>texture_id_1</i>.
+<i>texture_id_1</i>, being 2, refers to the third texture, which is
+"texture_file.rgb".
+
+<h3>Notex</h3>
+Notex disables the usage of textures.
+
+<h3>TexCoord <i>u</i>,<i>v</i></h3>
+Attaches texture coordinates to vertices, used in a similar way as
+Normal and Color. If <i>u</i> and/or <i>v</i> are given a range
+greater than [0,1], the texture is tiled. The following example,
+showing a square with texture 0 attached to is, should be clear now:
+<pre>
+Texture 0
+Normal 0,1,0
+Quads
+TexCoord 1,1
+Vertex 5,0,5
+TexCoord 1,0
+Vertex 5,0,-5
+TexCoord 0,0
+Vertex -5,0,-5
+TexCoord 0,1
+Vertex -5,0,5
+End
+Notex
+</pre>
+
+<h3>Lod <i>levels</i></h3>
+Defines in which LOD (Level Of Detail) levels the following objects should
+be visible. <i>levels</i> is a combination of the characters 1, 2, 3, 4 and c.
+1 is the "high detail", "close-up" LOD, 4 is the "low detail", "far away" LOD,
+and c is the collision detection LOD. For example:
+<pre>
+Object A
+Lod 1c
+Object B
+Lod 1234c
+Object C
+</pre>
+Here, in all LODs the objects A and C are visible, and object B is also visible
+in LOD 1 and it is used for collision detection. The default LOD is 1234c.
+
+<a name="glb"></a>
+<h1>The new 3D model (*.glb) format</h1>
+This fileformat has replaced the *.gl file format since version 0.5.3. It is
+a 3D geometry file format, designed to have the following advantages over the
+*.gl format:
+<ul>
+	<li>Faster loading (because it's binary)</li>
+	<li>Better for vertex arrays (because of indexed vertices)</li>
+	<li>Easier to parse (it has fewer primitives)</li>
+</ul>
+The general idea is that a model consists of objects (like the primitives in the
+*.gl format); objects have a name, a material definition, a set of vertices and
+an index array that defines the triangles. We will probably also want to add
+other kinds of data to the file, so there will be a possibility to add new
+types of objects to the file format.
+
+<h3>Byte order</h3>
+The byte order is defined in the file shared/binbuffer.cpp, as binbuffer objects
+are used to load and store data from *.glb files.
+
+<h3>Top level format</h3>
+<pre>
+magic number (4 byte)
+objects
+</pre>
+The magic number is there to make sure that it really is an Ultimate Stunts
+geometry file. It must be "\0GLB". The order in which the objects are in the
+file does matter sometimes. For example, this order defines in which order the
+objects are displayed, so if the z-buffer is disabled, then a bad order can look
+bad.
+
+<h3>Object format</h3>
+<pre>
+object type (4 byte)
+object name size (4 byte)
+object name (null-terminated, aligned to 4 byte size)
+object data size (4 byte)
+object data
+</pre>
+The data size is the number of bytes in the object data (that excludes the
+object type and object data size). Depending on the object type, the object data
+can have the formats that are described below. For every format, the object
+type ID is placed within brackets.
+
+<h3>Geometry object data 0.5 (type 0x00000000)</h3>
+<pre>
+material data size (4 byte)
+number of vertices (4 bytes)
+number of indices (4 bytes)
+material data
+vertex array
+index array
+</pre>
+
+<h4>Material data</h4>
+<pre>
+material modulation color r,g,b,a (4 byte)
+material replacement color r,g,b,a (4 byte)
+LODs (1 byte)
+material reflectance (1 byte)
+material emissivity (1 byte)
+static friction coefficient (1 byte, range 0..16)
+dynamic friction coefficient (1 byte, range ???)
+unused (3 byte)
+texture name (null-terminated, aligned to 4 byte size)
+</pre>
+LODs contains a set of flags that describe in which LODs the object should be
+visible. The texture name can be a filename (relative to the Ultimate Stunts
+datadir), or a number. The modulation color is used to modulate the texture,
+the replacement color is used if the texture is disabled.
+<p>
+If the texture name is a number, then it can be set in the track file as a
+parameter. Colors can also be set as a parameter: if a==0 and b==255, then
+r is the number of the parameter. (this does not reduce the number of colors
+that can be set: if a==0 then the values of r,g,b don't matter.
+
+<h4>vertex element data</h4>
+<pre>
+x,y,z (3*4 byte, signed int, unit = millimeter)
+nx,ny,nz (3*4 byte, signed int, range -1..1)
+tx, ty (2*4 byte, signed int, range -128..128)
+</pre>
+
+<h4>index element data</h4>
+<pre>
+i (4 byte)
+</pre>
+The index refers to an element in the vertex array of the object.
+
+<a name="future"></a>
+<h1>Future developments</h1>
+
+<h3>New file formats</h3>
+When new functionality is added, new file formats will be needed. The collision
+detection information will be fetched from the *.glb files, but it will also
+need, for example, material information, like friction coefficients. Of course,
+that nice Stunts sinking effect won't be possible if we don't know which
+surfaces represent water.
+
+<h3>Changes in current file formats</h3>
+The track format will need some changes. The file needs to include
+lighting info. Also, the boundaries that prevent the cars from leaving the track
+should be defined in the track file.
+
+<h3>Client/server model</h3>
+Of course, all programs in a game session need to have the same track
+and tile files loaded. To ensure this, a system has to be designed to
+distribute these files. Of course the system has to be secure (to
+defend privacy), and it has to work on any computer. Designing my own
+file transfer protocol might be difficult, and depending on that of
+others might give a system dependence.
+
