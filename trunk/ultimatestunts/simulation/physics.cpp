@@ -49,12 +49,15 @@ CPhysics::~CPhysics()
 
 bool CPhysics::update()
 {
-	float dt = m_Timer.getdt(m_dtMin + 0.0001);
+	float dt = theWorld->m_Lastdt;
+	vector<CDataObject *> objs = theWorld->getObjectArray(CDataObject::eMovingObject);
 
-#ifdef DEBUGMSG
-	if(dt > 0.5)
-		{printf("Warning: Low update time detected\n"); dt = 0.5;}
-#endif
+
+	for(unsigned int i=0; i < objs.size(); i++)
+	{
+		CMovingObject *mo = (CMovingObject *)objs[i];
+		mo->m_LastUpdateTime = theWorld->m_LastTime;
+	}
 
 	if(!(theWorld->m_Paused))
 	{
@@ -89,8 +92,6 @@ bool CPhysics::update()
 
 		if(N == 0) N = 1; //should not be necesary
 
-		vector<CDataObject *> objs = theWorld->getObjectArray(CDataObject::eMovingObject);
-
 		//clear the collision arrays:
 		for(unsigned int i=0; i < objs.size(); i++)
 			((CMovingObject *)objs[i])->m_AllCollisions.clear();
@@ -99,7 +100,10 @@ bool CPhysics::update()
 		{
 			//simulation
 			for(unsigned int i=0; i < objs.size(); i++)
-				((CMovingObject *)objs[i])->update(this, dt);
+			{
+				CMovingObject *mo = (CMovingObject *)objs[i];
+				mo->update(this, dt);
+			}
 
 			//collision detection
 			for(unsigned int i=0; i < objs.size(); i++)

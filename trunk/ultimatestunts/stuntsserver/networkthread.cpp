@@ -18,12 +18,16 @@
 #include <unistd.h>
 
 #include "main.h"
+#include "usmacros.h"
+#include "netmessages.h"
 
 #include "networkthread.h"
 
-CNetworkThread::CNetworkThread(unsigned int port)
+CNetworkThread::CNetworkThread()
 {
-	m_Port = port;
+	//defaults:
+	m_Port = DEFAULTPORT;
+	m_ServerName = "Ultimate Stunts";
 }
 
 CNetworkThread::~CNetworkThread()
@@ -45,6 +49,12 @@ void CNetworkThread::setPort(unsigned int port)
 		m_Port = port;
 		//and do some other things, like clearing the player list
 	}
+}
+
+void CNetworkThread::setServerName(const CString &servername)
+{
+	//TODO: some locking for thread safety
+	m_ServerName = servername;
 }
 
 void CNetworkThread::sendToClient(const CMessageBuffer &b, unsigned int ID)
@@ -165,16 +175,30 @@ Uint8 CNetworkThread::processMessage(const CMessageBuffer &buffer)
 	int ID = identify(buffer.getIP(), buffer.getPort());
 	if(ID < 0) //unknown
 	{
-		//Maybe it's a JOIN request
+		//Some commands can be sent by unknown clients
 		if(buffer.getType() == CMessageBuffer::textMessage
 			|| buffer.getType() == CMessageBuffer::chat //debugging
 			)
 		{
 			CTextMessage t;
 			t.setBuffer(buffer);
-			if(t.m_Message == "JOIN")
+			if(t.m_Message == USNET_JOIN)
 			{
 				addClient(buffer.getIP(), buffer.getPort());
+				return 0;
+			}
+
+			if(t.m_Message == USNET_SEARCHFORSTUNTS_VERSION) //a broadcast message searching for a server
+			{
+				//send a reply
+				CTextMessage t2;
+				t2.m_Message = USNET_ULTIMATESTUNTS_SERVER + m_ServerName;
+				CMessageBuffer b2 = t2.getBuffer();
+				b2.setAC(1);
+				b2.setIP(buffer.getIP());
+				b2.setPort(buffer.getPort());
+				m_Net->sendDataReliable(b2);
+
 				return 0;
 			}
 		}
@@ -204,6 +228,10 @@ Uint8 CNetworkThread::processMessage(const CMessageBuffer &buffer)
 			CObjectChoice oc;
 			oc.setBuffer(buffer);
 			int ret = Clients.addRequest_safe(ID, oc);
+
+			if(Clients.reachedMinimum_safe())
+				gamecorethread.GO_minPlayers(); //giving permission to start the game
+			
 			if(ret < 0) return OBJECTCHOICE_REFUSED;
 			return ret;
 		}
@@ -265,20 +293,26 @@ void CNetworkThread::addClient(const CIPNumber &ip, unsigned int port)
 
 Uint8 CNetworkThread::processMessage(int ID, const CString &message)
 {
-	if(message == "LEAVE")
+	if(message == USNET_PING)
+	{
+		//consolethread.write("Received PING message");
+		//just send the confirmation
+		;
+	}
+	else if(message == USNET_LEAVE)
 	{
 		Clients.enter();
 		Clients.erase(Clients.begin() + ID);
 		//players, moving objects etc. still exist, but the input is not updated anymore
 		Clients.leave();
 	}
-	else if(message == "READY")
+	else if(message == USNET_READY)
 	{
 		Clients.enter();
 		Clients[ID].ready = true;
 		Clients.leave();
 	}
-	else if(message == "OBJECTS?")
+	else if(message == USNET_OBJECTS)
 	{
 		ObjectChoices.enter();
 		for(unsigned int i=0; i < ObjectChoices.size(); i++)
@@ -292,9 +326,17 @@ Uint8 CNetworkThread::processMessage(int ID, const CString &message)
 		CMessageBuffer b = ender.getBuffer();
 		sendToClient(b, ID); //puts on the queue
 	}
-	else if(message.mid(0, 4) == "GET ")
+	else if(message == USNET_STATUS)
 	{
-		CString filename = message.mid(4);
+		CTextMessage tm;
+		tm.m_Message = USNET_STATUS + gamecorethread.getGameStatus();
+		CMessageBuffer b = tm.getBuffer();
+		b.setAC(0);
+		sendToClient(b, ID); //puts on the queue
+	}
+	else if(message.mid(0, CString(USNET_GET).length()) == USNET_GET)
+	{
+		CString filename = message.mid(CString(USNET_GET).length());
 		return m_UploadManager.addFileRequest(ID, filename); //return: do we have the file?
 	}
 	else

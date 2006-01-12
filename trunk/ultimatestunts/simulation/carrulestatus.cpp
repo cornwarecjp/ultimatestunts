@@ -18,12 +18,12 @@
 #include <cstdio>
 
 #include "carrulestatus.h"
-#include "timer.h"
+#include "world.h"
 #include "cstring.h"
 
 CCarRuleStatus::CCarRuleStatus()
 {
-	float t = CTimer().getTime();
+	float t = 0.0; //theWorld->m_LastTime;
 
 	startTime = t;		//time when it started racing
 	penaltyTime = 0.0;	//penalty time accumulated while playing
@@ -41,7 +41,7 @@ CCarRuleStatus::~CCarRuleStatus()
 
 bool CCarRuleStatus::start()
 {
-	float t = CTimer().getTime();
+	float t = theWorld->m_LastTime;
 
 	startTime = t;		//time when it started racing
 	penaltyTime = 0.0;	//penalty time accumulated while playing
@@ -58,7 +58,7 @@ bool CCarRuleStatus::finish()
 {
 	if(state == eRacing)
 	{
-		finishTime = CTimer().getTime();	//time when it finished racing
+		finishTime = theWorld->m_LastTime;	//time when it finished racing
 		state = eFinished;
 
 		printf(
@@ -82,7 +82,7 @@ bool CCarRuleStatus::crash()
 {
 	if(state == eRacing)
 	{
-		finishTime = CTimer().getTime();	//time when it finished racing
+		finishTime = theWorld->m_LastTime;	//time when it finished racing
 		state = eCrashed;
 		return true;
 	}
@@ -94,7 +94,7 @@ bool CCarRuleStatus::giveUp()
 {
 	if(state != eGivenUp && state != eFinished)
 	{
-		finishTime = CTimer().getTime();	//time when it finished racing
+		finishTime = theWorld->m_LastTime;	//time when it finished racing
 		state = eGivenUp;
 		return true;
 	}

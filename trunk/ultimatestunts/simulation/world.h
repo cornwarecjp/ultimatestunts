@@ -66,6 +66,8 @@ public:
 	//Rule data
 	float m_GameStartTime;
 
+	float m_LastTime, m_Lastdt; //to be set by the game core
+
 	//Interface for sending and receiving messages
 	CChatSystem m_ChatSystem;
 

@@ -51,7 +51,7 @@ zbuffer = true
 transparency = blend
 
 #Maximum distance for drawing reflection. Transparency must be enabled to get realistic reflection
-reflectiondist = 50.0
+reflectiondist = 100.0
 
 #Reflection update settings:
 #Do you want the reflections to be updated when the objects move?
@@ -72,7 +72,7 @@ reflectiondrawmovingobjects = false
 #    2: use LOD 3 and 4
 # >= 3: use LOD 4
 #4 = ugly and fast, 1 = beautiful and slow
-movingobjectlod = 0
+movingobjectlod = -3
 
 #Do you want fog? options are:
 #off            -> no fog
@@ -134,10 +134,10 @@ playlist = music/playlist.txt
 [simulation]
 
 #Minimum time per simulation step
-dtmin = 0.001
+dtmin = 0.005
 
 #Maximum simulation steps per graphics frame
-Nmax = 100
+Nmax = 50
 
 
 [misc]

@@ -193,6 +193,11 @@ void CLoad3DS::ProcessNextChunk(t3DModel *pModel, tChunk *pPreviousChunk)
             // Initialize the object and all it's data members
             memset(&(pModel->pObject[pModel->numOfObjects - 1]), 0, sizeof(t3DObject));
 
+            //Set an initial rotation matrix (CJP)
+            pModel->pObject[pModel->numOfObjects - 1].Xaxis.x = 1.0;
+            pModel->pObject[pModel->numOfObjects - 1].Yaxis.y = 1.0;
+            pModel->pObject[pModel->numOfObjects - 1].Zaxis.z = 1.0;
+
             // Get the name of the object and store it, then add the read bytes to our byte counter.
             m_CurrentChunk->bytesRead += GetString(pModel->pObject[pModel->numOfObjects - 1].strName);
             
@@ -214,6 +219,7 @@ void CLoad3DS::ProcessNextChunk(t3DModel *pModel, tChunk *pPreviousChunk)
         default: 
             // If we didn't care about a chunk, then we get here.  We still need
             // to read past the unknown or ignored chunk and add the bytes read to the byte counter.
+            printf("Unknown chunk ID 0x%x\n", m_CurrentChunk->ID);
             m_CurrentChunk->bytesRead += fread(buffer, 1, m_CurrentChunk->length - m_CurrentChunk->bytesRead, m_FilePointer);
             break;
         }
@@ -283,9 +289,15 @@ void CLoad3DS::ProcessNextObjectChunk(t3DModel *pModel, t3DObject *pObject, tChu
             ReadUVCoordinates(pObject, m_CurrentChunk);
             break;
 
+        //CJP addition:
+        case OBJECT_LOCAL:
+            ReadLocalAxes(pObject, m_CurrentChunk);
+            break;
+
         default:  
 
             // Read past the ignored or unknown chunks
+            printf("Unknown object chunk ID 0x%x\n", m_CurrentChunk->ID);
             m_CurrentChunk->bytesRead += fread(buffer, 1, m_CurrentChunk->length - m_CurrentChunk->bytesRead, m_FilePointer);
             break;
         }
@@ -484,6 +496,41 @@ void CLoad3DS::ReadUVCoordinates(t3DObject *pObject, tChunk *pPreviousChunk)
 
     // Read in the texture coodinates (an array 2 float)
     pPreviousChunk->bytesRead += fread(pObject->pTexVerts, 1, pPreviousChunk->length - pPreviousChunk->bytesRead, m_FilePointer);
+}
+
+
+////////////////////////// READ LOCAL COORDINATE SYSTEM AXES \\\\\\\\ \\\\\\\\\\\\\\\\*
+/////
+/////   This reads the local coordinate system of the object (CJP addition)
+/////
+////////////////////////// READ LOCAL COORDINATE SYSTEM AXES \\\\\\\\ \\\\\\\\\\\\\\\\*
+void CLoad3DS::ReadLocalAxes(t3DObject *pObject, tChunk *)
+{
+	float buffer[12];
+
+	//printf("Coordinate system chunk; %d bytes\n", m_CurrentChunk->length - m_CurrentChunk->bytesRead);
+
+	m_CurrentChunk->bytesRead += fread(buffer, 1, 12*sizeof(float), m_FilePointer);
+
+	pObject->Xaxis.x = buffer[0];
+	pObject->Xaxis.y = buffer[1];
+	pObject->Xaxis.z = buffer[2];
+	pObject->Yaxis.x = buffer[3];
+	pObject->Yaxis.y = buffer[4];
+	pObject->Yaxis.z = buffer[5];
+	pObject->Zaxis.x = buffer[6];
+	pObject->Zaxis.y = buffer[7];
+	pObject->Zaxis.z = buffer[8];
+	pObject->objectCenter.x = buffer[9];
+	pObject->objectCenter.z =-buffer[10];
+	pObject->objectCenter.y = buffer[11];
+
+	/*
+	printf("%.3f,%.3f,%.3f\n", pObject->Xaxis.x, pObject->Xaxis.y, pObject->Xaxis.z);
+	printf("%.3f,%.3f,%.3f\n", pObject->Yaxis.x, pObject->Yaxis.y, pObject->Yaxis.z);
+	printf("%.3f,%.3f,%.3f\n", pObject->Zaxis.x, pObject->Zaxis.y, pObject->Zaxis.z);
+	printf("%.3f,%.3f,%.3f\n", pObject->objectCenter.x, pObject->objectCenter.y, pObject->objectCenter.z);
+	*/
 }
 
 

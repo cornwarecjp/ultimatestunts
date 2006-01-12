@@ -50,6 +50,7 @@ bool CCar::load(const CString &filename, const CParamList &list)
 	m_DesiredSteering = 0.0;
 	m_xAngle = 0.0;
 	m_zAngle = 0.0;
+	m_BodyHeight = 0.0;
 	m_Ground.nor = CVector(0,0,0);
 
 	CDataFile dfile(getFilename());
@@ -60,10 +61,14 @@ bool CCar::load(const CString &filename, const CParamList &list)
 	//Description
 	m_CarName = cfile.getValue("description", "fullname");
 
-	//Mass
+	//Mass + moment of inertia
 	m_InvMass = 1.0 / cfile.getValue("body", "mass").toFloat();
 	m_BodySize = cfile.getValue("body", "size").toVector();
-	m_InvInertia *= m_InvMass;
+	m_InvInertia.setElement(0, 0, 1.0 / (m_BodySize.y*m_BodySize.y + m_BodySize.z*m_BodySize.z));
+	m_InvInertia.setElement(1, 1, 1.0 / (m_BodySize.x*m_BodySize.x + m_BodySize.z*m_BodySize.z));
+	m_InvInertia.setElement(2, 2, 1.0 / (m_BodySize.x*m_BodySize.x + m_BodySize.y*m_BodySize.y));
+	m_InvInertia *= 12.0 * m_InvMass;
+	m_CenterOfMass = cfile.getValue("body", "centerofmass").toVector();
 
 	//body
 	CString bodygeomfile = cfile.getValue("body", "geometry");
@@ -95,10 +100,15 @@ bool CCar::load(const CString &filename, const CParamList &list)
 	m_FrontDownforce = cfile.getValue("frontwheels", "downforce").toFloat();
 	m_RearDownforce = cfile.getValue("rearwheels", "downforce").toFloat();
 
+	//Engine torque curve:
+	m_Engine.m_M0 =     cfile.getValue("engine", "zerotorque").toFloat();
+	m_Engine.m_Mmax =   cfile.getValue("engine", "maxtorque").toFloat();
+	m_Engine.m_w_Mmax = cfile.getValue("engine", "w_maxtorque").toFloat();
+	m_Engine.m_Pmax =   cfile.getValue("engine", "maxpower").toFloat();
+	m_Engine.m_w_Pmax = cfile.getValue("engine", "w_maxpower").toFloat();
+	m_Engine.m_w_Zero = cfile.getValue("engine", "w_zero").toFloat();
+
 	//driving pipeline
-	m_Engine.m_EngineM = cfile.getValue("engine", "enginetorque").toFloat();
-	m_Engine.m_MaxEngineW = cfile.getValue("engine", "maxenginespeed").toFloat();
-	m_Engine.m_dMdw = 5*m_Engine.m_EngineM / m_Engine.m_MaxEngineW;
 	float gear0 = cfile.getValue("engine", "gear0").toFloat();
 	float gear1 = cfile.getValue("engine", "gear1").toFloat();
 	float gear2 = cfile.getValue("engine", "gear2").toFloat();
@@ -173,6 +183,9 @@ bool CCar::load(const CString &filename, const CParamList &list)
 	m_Wheel[2].m_NeutralPos = CVector(-RearWheelNeutral.x,  RearWheelNeutral.y,  RearWheelNeutral.z);
 	m_Wheel[3].m_NeutralPos = CVector( RearWheelNeutral.x,  RearWheelNeutral.y,  RearWheelNeutral.z);
 
+	for(unsigned int i=0; i<4; i++)
+		m_Wheel[i].m_NeutralPos -= m_CenterOfMass; //save as relative to center of mass
+
 	//Calculate the position above the ground:
 	m_PositionAboveGround = 0.5 * (
 		m_Wheel[0].m_Radius - m_Wheel[0].m_NeutralPos.y +
@@ -205,7 +218,9 @@ bool CCar::load(const CString &filename, const CParamList &list)
 	m_Wheel[3].m_BrakeMax = RearBrakeMax;
 
 	//Setting the initial positions
-	resetBodyPositions(CVector(0,0,0), CMatrix());
+	m_Position = CVector(0,0,0);
+	m_OrientationMatrix = CMatrix();
+	resetBodyPositions();
 
 	return true;
 }
@@ -216,11 +231,8 @@ void CCar::unload()
 	CMovingObject::unload();
 }
 
-void CCar::resetBodyPositions(CVector pos, const CMatrix &ori)
+void CCar::resetBodyPositions()
 {
-	m_Position = pos;	//Main body
-	m_OrientationMatrix = ori;
-
 	placeBodies();
 }
 
@@ -230,7 +242,9 @@ void CCar::placeBodies()
 	CMatrix bodyOri;
 	bodyOri.setRotation(CVector(m_xAngle, 0.0, m_zAngle));
 
-	m_Bodies[0].m_Position = m_Position;
+	m_Bodies[0].m_Position = m_Position +
+		m_OrientationMatrix * (CVector(0.0,m_BodyHeight,0.0) - m_CenterOfMass);
+
 	m_Bodies[0].m_OrientationMatrix = bodyOri * m_OrientationMatrix;
 
 	for(unsigned int i=0; i < 4; i++)
@@ -544,9 +558,10 @@ void CCar::update(CPhysics *simulator, float dt)
 	{
 		float vvert = m_Velocity.dotProduct(m_Ground.nor);
 		float dobj = m_Bodies[0].m_Position.dotProduct(m_Ground.nor) - m_Ground.d;
-		if(vvert > 0.1 || dobj > 10.0)
+		if(vvert > 1.0 || dobj > 10.0)
 		{
 			//fprintf(stderr, "ground plane far below\n");
+			//printf("Airborne!\n");
 			simulateAir(simulator, dt);
 		}
 		else
@@ -646,6 +661,7 @@ void CCar::simulateAir(CPhysics *simulator, float dt)
 {
 	m_xAngle = 0.0;
 	m_zAngle = 0.0;
+	m_BodyHeight = 0.0;
 }
 
 void CCar::simulateGround(CPhysics *simulator, float dt)
@@ -653,17 +669,33 @@ void CCar::simulateGround(CPhysics *simulator, float dt)
 	applyWheelForces();
 
 	CVector M = m_Mtot;
+	CVector F = m_Ftot;
 	M *= m_OrientationMatrix.transpose(); //in car coordinates
+	F *= m_OrientationMatrix.transpose(); //in car coordinates
 	
-	if(fabs(m_xAngle) < 0.25)
+	if(fabs(m_xAngle) < 1.0)
 		{m_xAngle += 0.05 * dt * M.x * m_InvMass;}
 	else
-		{m_xAngle = 0.9 * m_xAngle;}
+	{
+		m_xAngle = 0.9 * m_xAngle;
+		printf("Error: car tilt exceeded maximum\n");
+	}
 
-	if(fabs(m_zAngle) < 0.25)
+	if(fabs(m_zAngle) < 1.0)
 		{m_zAngle += 0.5 * dt * M.z * m_InvMass;}
 	else
-		{m_zAngle = 0.9 * m_zAngle;}
+	{
+		m_zAngle = 0.9 * m_zAngle;
+		printf("Error: car roll exceeded maximum\n");
+	}
+
+	if(fabs(m_BodyHeight) < 1.0)
+		{m_BodyHeight += 0.5 * dt * F.y * m_InvMass;}
+	else
+	{
+		m_BodyHeight = 0.9 * m_BodyHeight;
+		printf("Error: car suspension height exceeded maximum\n");
+	}
 }
 
 void CCar::addDownforce()
@@ -781,10 +813,10 @@ void CCar::updateWheelTorques()      //engine + brakes
 {
 	CCarInput *input = (CCarInput *)m_InputData;
 
-	m_Wheel[0].m_M = 0.5 * (m_Engine.getWheelM(0) - m_Wheel[0].getBrakeTorque(input->m_Backward));
-	m_Wheel[1].m_M = 0.5 * (m_Engine.getWheelM(1) - m_Wheel[1].getBrakeTorque(input->m_Backward));
-	m_Wheel[2].m_M = 0.5 * (m_Engine.getWheelM(2) - m_Wheel[2].getBrakeTorque(input->m_Backward));
-	m_Wheel[3].m_M = 0.5 * (m_Engine.getWheelM(3) - m_Wheel[3].getBrakeTorque(input->m_Backward));
+	m_Wheel[0].m_M = m_Engine.getWheelM(0) - m_Wheel[0].getBrakeTorque(input->m_Backward);
+	m_Wheel[1].m_M = m_Engine.getWheelM(1) - m_Wheel[1].getBrakeTorque(input->m_Backward);
+	m_Wheel[2].m_M = m_Engine.getWheelM(2) - m_Wheel[2].getBrakeTorque(input->m_Backward);
+	m_Wheel[3].m_M = m_Engine.getWheelM(3) - m_Wheel[3].getBrakeTorque(input->m_Backward);
 
 	//adding the opposite torques to the body
 	for(unsigned int i=0; i < 3; i++)
@@ -795,7 +827,7 @@ void CCar::updateWheelTorques()      //engine + brakes
 		if(i == 1 || i == 3)
 			wz = -wz;
 
-		//x direction:
+		//x direction: (TODO: write out explicitly; this is inefficient)
 		CVector wx = wz.crossProduct(CVector(0,-1,0));
 
 		addTorque(-m_Wheel[i].m_M * wx);
@@ -804,14 +836,15 @@ void CCar::updateWheelTorques()      //engine + brakes
 
 void CCar::calculateNormalForces()
 {
+	CMatrix bodyOri;
+	bodyOri.setRotation(CVector(m_xAngle, 0.0, m_zAngle));
+
+	/*
 	CMatrix Rmat_inv = m_OrientationMatrix.transpose();
 
 	//external forces
 	CVector Fext = Rmat_inv * m_Ftot;
 	float Fy_tot = -Fext.y;
-
-	CMatrix bodyOri;
-	bodyOri.setRotation(CVector(m_xAngle, 0.0, m_zAngle));
 
 	float zfr = m_Wheel[0].m_NeutralPos.z, zba = m_Wheel[2].m_NeutralPos.z;
 	float length = zba - zfr;
@@ -820,6 +853,7 @@ void CCar::calculateNormalForces()
 	float wf[4];
 	wf[0] = wf[1] =  0.5 * zba / length;
 	wf[2] = wf[3] = -0.5 * zfr / length;
+	*/
 
 	for(unsigned int i=0; i < 4; i++)
 	{
@@ -832,7 +866,10 @@ void CCar::calculateNormalForces()
 		//y difference:
 		float dy = r.y - r0.y;
 
-		m_Wheel[i].m_Fnormal = wf[i] * Fy_tot - m_Wheel[i].m_suspk * dy;
+		//Body height:
+		dy += m_BodyHeight;
+
+		m_Wheel[i].m_Fnormal = - m_Wheel[i].m_suspk * dy; //+ wf[i] * Fy_tot
 		if(m_Wheel[i].m_Fnormal < 0.0) m_Wheel[i].m_Fnormal = 0.0; //no "glue" forces
 	}
 }
@@ -875,6 +912,8 @@ void CCar::applyWheelForces()
 		float Mwheel = 0.0;
 		CVector Fwheel = m_Wheel[i].getGroundForce(Mwheel, vlong, vlat, m_Wheel[i].m_Mu * muGround);
 
+		//fprintf(stderr, "%.3f, %.3f, %.f, %.f, %.f, ", vlong, vlat, Fwheel.y, Fwheel.z, Fwheel.x);
+
 		//feedback to the net torque on the wheel:
 		m_Wheel[i].m_M += Fwheel.z * m_Wheel[i].m_Radius;
 
@@ -884,6 +923,8 @@ void CCar::applyWheelForces()
 		r *= m_OrientationMatrix;
 		addForceAt(Fwheel, r);
 	}
+
+	//fprintf(stderr, "\n");
 }
 
 CBinBuffer &CCar::getData(CBinBuffer &b) const

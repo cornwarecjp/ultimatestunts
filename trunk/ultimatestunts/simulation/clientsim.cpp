@@ -21,25 +21,29 @@
 #include "textmessage.h"
 #include "movingobject.h"
 
+#include "netmessages.h"
+
 CClientSim::CClientSim(CGameCore *gc, CClientNet *net)
 {
 	m_GameCore = gc;
 	m_Net = net;
 	
-	m_PreviousTime = m_Timer.getTime();
+	m_PreviousTime = theWorld->m_LastTime;
 }
 
 CClientSim::~CClientSim()
 {
 }
 
-CString CClientSim::getTrackname()
+CString CClientSim::getTrackname(CGameCore::LoadStatusCallback callBackFun)
 {
-	m_Net->sendTextMessage("READY");
+	m_Net->sendTextMessage(USNET_READY);
 
 	while(true)
 	{
-		CMessageBuffer *buf = m_Net->receiveExpectedData(CMessageBuffer::textMessage, 10000);
+		m_Net->sendTextMessage(USNET_STATUS); //request for status
+
+		CMessageBuffer *buf = m_Net->receiveExpectedData(CMessageBuffer::textMessage, 500); //0.5 second
 		if(buf != NULL)
 		{
 			CTextMessage tm;
@@ -50,8 +54,15 @@ CString CClientSim::getTrackname()
 
 			delete buf;
 
-			if(tm.m_Message.mid(0,6) == "TRACK=")
-				return tm.m_Message.mid(6);
+			//We received the track file data:
+			CString trk = USNET_TRACK;
+			if(tm.m_Message.mid(0,trk.length()) == trk)
+				return tm.m_Message.mid(trk.length());
+
+			//We received a status update:
+			CString sts = USNET_STATUS;
+			if(callBackFun != NULL && tm.m_Message.mid(0,sts.length()) == sts)
+				callBackFun(tm.m_Message.mid(sts.length()), -1.0);
 		}
 	}
 
@@ -63,8 +74,12 @@ bool CClientSim::update()
 	//the moving objects:
 	vector<CDataObject *> objs = theWorld->getObjectArray(CDataObject::eMovingObject);
 
+	float now = theWorld->m_LastTime;
+
+	if(now < m_PreviousTime - 0.01) //then we obviously started a new game
+		m_PreviousTime = now;
+
 	//if some amount of time has passed:
-	float now = m_Timer.getTime();
 	if(now > m_PreviousTime + 0.04) //25 times per second
 	{
 		m_PreviousTime = now;

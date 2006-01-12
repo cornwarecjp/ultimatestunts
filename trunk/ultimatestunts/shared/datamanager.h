@@ -39,10 +39,8 @@ public:
 	int loadObject(const CString &filename, const CParamList plist, CDataObject::eDataType type=CDataObject::eNone);
 
 	//returns the object with the ID
-	CDataObject *getObject(CDataObject::eDataType type, unsigned int ID)
-		{return m_Objects[type][ID];}
-	const CDataObject *getObject(CDataObject::eDataType type, unsigned int ID) const
-		{return m_Objects[type][ID];}
+	CDataObject *getObject(CDataObject::eDataType type, unsigned int ID);
+	const CDataObject *getObject(CDataObject::eDataType type, unsigned int ID) const;
 	unsigned int getNumObjects(CDataObject::eDataType type) const
 		{return m_Objects[type].size();}
 

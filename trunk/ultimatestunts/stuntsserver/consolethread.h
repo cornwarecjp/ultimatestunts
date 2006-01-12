@@ -23,7 +23,6 @@
   */
 
 #include "cstring.h"
-#include "aiplayercar.h"
 
 
 //it does not need to be derived from CBThread,
@@ -49,26 +48,7 @@ public:
 private:
 	CString getInput(CString question="");
 
-	void unReadyPlayers();
-	void wait4ReadyPlayers();
-
-	void clearPlayerLists();
-	void addRemotePlayers();
-	void addAIPlayers();
-
 	bool executeCommand(const CString &cmd);
-	
-	vector<CPlayer *> m_RemotePlayers;
-	vector<CAIPlayerCar *> m_AIPlayers;
-
-	CString m_Trackfile;
-
-	struct SAIDescr
-	{
-		CString name;
-		CString carFile;
-	};
-	vector<SAIDescr> m_AIDescriptions;
 };
 
 #endif

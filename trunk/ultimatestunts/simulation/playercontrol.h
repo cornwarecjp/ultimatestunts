@@ -38,6 +38,8 @@ public:
 	virtual bool loadObjects();
 	virtual void clearPlayerList();
 
+	const vector<CObjectChoice> &getChoiceList() const
+		{return m_LocalChoices;}
 protected:
 	vector<CObjectChoice> m_LocalChoices;
 

@@ -72,6 +72,7 @@ int CStuntsNet::sendDataReliable(CMessageBuffer &data, bool wait)
 		{
 			printf("Error: connection timeout!!\n");
 			m_UnconfirmedMessages.clear(); //give up all messages
+			return -1;
 		}
 	}
 

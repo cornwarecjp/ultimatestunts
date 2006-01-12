@@ -64,7 +64,7 @@ static Uint32 read_long(FILE *f)
 static float read_float(FILE *f)
 {
   Uint32 x = read_long(f);
-  return *(float*)&x; /* CJP note: possibly doesn't work on every architecture */
+  return *((float*)(void*)(&x)); /* CJP note: possibly doesn't work on every architecture */
 }
 
 static int read_string(FILE *f, char *s)

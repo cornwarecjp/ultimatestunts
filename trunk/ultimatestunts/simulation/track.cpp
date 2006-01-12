@@ -40,7 +40,7 @@ bool CTrack::load(const CString &filename, const CParamList &list)
 	CString line = tfile.readl();
 	if(line != "TRACKFILE")
 	{
-		printf("   Track file does not contain a correct header\n");
+		printf("   Track file \"%s\" does not contain a correct header\n", filename.c_str());
 		return false;
 	}
 
@@ -203,7 +203,6 @@ bool CTrack::load(const CString &filename, const CParamList &list)
 	unsigned int counter = 0; //counts how many tiles we've had
 	bool isAlternative = false; //Are we tracking an alternative (not fastest) route?
 	float timeOffset = 0.0; //this is added to tile times
-
 
 	//Find "BEGIN"
 	if(!findBeginTag(tfile))

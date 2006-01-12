@@ -44,4 +44,8 @@ CString getShortName(const CString &longname);
 
 vector<CString> getDirContents(const CString &dir, const CString &ext = "");
 
+bool dataFileExists(const CString &filename, bool onlyLocal = false); //may cause automatic download from server
+bool deleteDataFile(const CString &filename); //only deletes in save directory
+bool copyDataFile(const CString &source, const CString &destination, bool srcIsData=true, bool dstIsData=true);
+
 #endif

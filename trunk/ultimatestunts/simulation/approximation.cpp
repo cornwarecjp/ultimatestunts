@@ -1,7 +1,7 @@
 /***************************************************************************
-                          usmisc.h  -  Misc utility functions
+                          approximation.cpp  -  Approximate physics behavior between network updates
                              -------------------
-    begin                : wo feb 2 2005
+    begin                : do dec 15 2005
     copyright            : (C) 2005 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
@@ -14,28 +14,44 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#ifndef USMISC_H
-#define USMISC_H
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#include <cstdio>
 
-#include <vector>
-namespace std {}
-using namespace std;
+#include "approximation.h"
 
-#include "cstring.h"
+CApproximation::CApproximation()
+{
+}
 
-/*
-this should be the start of all Ultimate Stunts
-programs. It finds and loads the configuration file,
-sets the datadir up, and initialises internationalisation.
-*/
-void shared_main(int argc, char *argv[]);
+CApproximation::~CApproximation()
+{
+}
 
+bool CApproximation::update()
+{
+	vector<CDataObject *> objs = theWorld->getObjectArray(CDataObject::eMovingObject);
 
-vector<CString> getCredits();
+	float dt = theWorld->m_Lastdt;
 
-#endif
+	for(unsigned int i=0; i < objs.size(); i++)
+	{
+		/*
+		A very simple approximation: just extrapolate the
+		positions according to the velocities
+		*/
+			
+		CMovingObject *mo = (CMovingObject *)objs[i];
 
+		mo->m_LastUpdateTime = theWorld->m_LastTime;
+
+		mo->m_Position += mo->m_Velocity * dt;
+
+		CMatrix dM;
+		dM.setRotation(mo->m_AngularVelocity * dt);
+		mo->m_OrientationMatrix *= dM;
+
+		mo->resetBodyPositions();
+	}
+
+	return true;
+}

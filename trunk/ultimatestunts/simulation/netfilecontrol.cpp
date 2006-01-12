@@ -22,6 +22,7 @@
 #include "clientnet.h"
 #include "filechunk.h"
 #include "datafile.h"
+#include "netmessages.h"
 
 CNetFileControl::CNetFileControl() : CFileControl(false)
 {
@@ -52,7 +53,7 @@ CString CNetFileControl::getLongFilename(const CString &shortName)
 		return "";
 
 	//File transfer over network
-	int retID = m_Network->sendTextMessage(CString("GET ") + shortName); //requesting the file
+	int retID = m_Network->sendTextMessage(CString(USNET_GET) + shortName); //requesting the file
 	if(retID > 0) //It has the file
 	{
 		CFileChunk theChunk;

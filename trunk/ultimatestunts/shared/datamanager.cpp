@@ -32,6 +32,27 @@ CDataManager::~CDataManager()
 	unloadAll(CDataObject::eNone);
 }
 
+CDataObject *CDataManager::getObject(CDataObject::eDataType type, unsigned int ID)
+{
+	if(ID >= (m_Objects[type]).size())
+	{
+		printf("Errror in CDataManager::getObject: %d <= %d\n", ID, (m_Objects[type]).size());
+		return NULL;
+	}
+
+	return m_Objects[type][ID];
+}
+const CDataObject *CDataManager::getObject(CDataObject::eDataType type, unsigned int ID) const
+{
+	if(ID >= (m_Objects[type]).size())
+	{
+		printf("Errror in CDataManager::getObject: %d <= %d\n", ID, (m_Objects[type]).size());
+		return NULL;
+	}
+
+	return m_Objects[type][ID];
+}
+
 int CDataManager::loadObject(const CString &filename, const CParamList plist, CDataObject::eDataType type)
 {
 	int ID = findObject(filename, plist, type);
@@ -81,7 +102,7 @@ vector<const CDataObject *> CDataManager::getObjectArray(CDataObject::eDataType 
 
 vector<CDataObject *> CDataManager::getSubset(CDataObject::eDataType type, const CString &subset)
 {
-	//printf("Indices: \"%s\"\n", indices.c_str());
+	//printf("Indices: \"%s\"\n", subset.c_str());
 	vector<CDataObject *> ret;
 
 	CString indices = subset;

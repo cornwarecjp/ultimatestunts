@@ -17,6 +17,7 @@
 
 #include <cstdio>
 #include "clientplayercontrol.h"
+#include "netmessages.h"
 
 CClientPlayerControl::CClientPlayerControl(CClientNet *net) : CPlayerControl()
 {
@@ -44,7 +45,7 @@ bool CClientPlayerControl::loadObjects()
 	clearPlayerList();
 
 	//TODO: find a way to make this reliable
-	m_Net->sendTextMessage("OBJECTS?");
+	m_Net->sendTextMessage(USNET_OBJECTS);
 	while(true)
 	{
 		CMessageBuffer *b = m_Net->receiveExpectedData(CMessageBuffer::objectChoice, 1000);

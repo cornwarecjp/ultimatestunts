@@ -66,7 +66,9 @@ public:
 	unsigned int getMovObjID()
 		{return m_MovObjID;}
 
-	virtual void resetBodyPositions(CVector pos, const CMatrix &ori)=0; //should be called after setting object position, orientation
+	//should be called after setting object position, orientation
+	virtual void resetBodyPositions()=0;
+
 	const CVector &getCameraPos() const
 		{return m_CameraPos;}
 
@@ -91,6 +93,9 @@ public:
 	CVector m_Velocity, m_AngularVelocity;
 	CVector m_Position;
 	CMatrix m_OrientationMatrix;
+
+	//Timing of network communication
+	float m_LastUpdateTime, m_LastNetworkUpdateTime;
 
 protected:
 	CVector m_CameraPos; //the relative position of the inside camera

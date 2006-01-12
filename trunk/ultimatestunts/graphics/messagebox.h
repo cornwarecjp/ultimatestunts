@@ -50,6 +50,8 @@ protected:
 	vector<CString> m_Lines; //the text divided into lines
 
 	void updateLines();
+
+	void drawTitle();
 };
 
 #endif

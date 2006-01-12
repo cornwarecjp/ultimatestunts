@@ -41,6 +41,8 @@
 #define LOBYTE(w)           ((Uint8)(w))
 #define HIBYTE(w)           ((Uint8)(((Uint16)(w) >> 8) & 0xFF))
 
+#define DEFAULTPORT 4301
+
 #define TILESIZE 60 //60 meter horizontal
 #define VERTSIZE 18  //18 meter vertical
 /*

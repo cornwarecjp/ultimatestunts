@@ -406,6 +406,19 @@ bool CEditGraphObj::load3DSFile(CString filename)
 			//pr.m_Texture = pObject->materialID;
 		}
 
+		//Position and orientation matrix:
+		CVector ObjPos(pObject->objectCenter.x, pObject->objectCenter.y, pObject->objectCenter.z);
+		CMatrix ObjOri;
+		ObjOri.setElement(0, 0, pObject->Xaxis.x);
+		ObjOri.setElement(0, 1, pObject->Xaxis.y);
+		ObjOri.setElement(0, 2, pObject->Xaxis.z);
+		ObjOri.setElement(1, 0, pObject->Yaxis.x);
+		ObjOri.setElement(1, 1, pObject->Yaxis.y);
+		ObjOri.setElement(1, 2, pObject->Yaxis.z);
+		ObjOri.setElement(2, 0, pObject->Zaxis.x);
+		ObjOri.setElement(2, 1, pObject->Zaxis.y);
+		ObjOri.setElement(2, 2, pObject->Zaxis.z);
+
 		//add the vertex array
 		for(int j=0; j < pObject->numOfVerts; j++)
 		{
@@ -413,6 +426,10 @@ bool CEditGraphObj::load3DSFile(CString filename)
 
 			vt.nor = CVector(pObject->pNormals[j].x, pObject->pNormals[j].y, pObject->pNormals[j].z);
 			vt.pos = CVector(pObject->pVerts[j].x, pObject->pVerts[j].y, pObject->pVerts[j].z);
+
+			//To absolute coordinates
+			vt.pos = ObjOri * (vt.pos - ObjPos);
+
 			if(pObject->bHasTexture)
 			{
 				// Make sure there was a UVW map applied to the object or else it won't have tex coords.

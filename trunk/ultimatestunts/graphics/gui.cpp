@@ -114,10 +114,10 @@ int CGUI::onRedraw()
 	return m_ChildWidget->onRedraw();
 }
 
-CString CGUI::showInputBox(const CString &title, const CString &deflt)
+CString CGUI::showInputBox(const CString &title, const CString &deflt, bool *cancelled)
 {
 	CInputBox *inputbox = new CInputBox;
-	inputbox->m_Title = title;
+	inputbox->setTitle(title);
 	inputbox->m_Text = deflt;
 	//determine maximum size
 	//unsigned int s = 25;
@@ -130,7 +130,11 @@ CString CGUI::showInputBox(const CString &title, const CString &deflt)
 	inputbox->m_Yrel = 0.3;
 	m_ChildWidget->m_Widgets.push_back(inputbox);
 	m_WinSys->runLoop(this);
+
 	CString ret = inputbox->m_Text;
+	if(cancelled != NULL)
+		*cancelled = inputbox->m_Cancelled;
+
 	m_ChildWidget->m_Widgets.resize(m_ChildWidget->m_Widgets.size()-1); //removes inputbox
 	delete inputbox;
 

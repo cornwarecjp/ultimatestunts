@@ -59,8 +59,8 @@
 
 	CString &fromTime(float t);
 
-	CString operator+(CString const &val); //std didn't do what I wanted
-	CString operator+(const char *val);
+	CString operator+(CString const &val) const; //std didn't do what I wanted
+	CString operator+(const char *val) const;
 	bool operator!= (const char *str) const;
 	bool operator!= (const CString &val) const;
 

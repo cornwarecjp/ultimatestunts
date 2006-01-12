@@ -24,9 +24,12 @@
 #define N_(String1, String2, n) ngettext ((String1), (String2), (n))
 
 #include "lconfig.h"
+#include "usmacros.h"
+#include "usmisc.h"
 
 #include "gamegui.h"
 #include "menu.h"
+#include "longmenu.h"
 
 #include "objectchoice.h"
 #include "aiplayercar.h"
@@ -35,12 +38,25 @@
 #include "datafile.h"
 
 CUSCore *_USGameCore = NULL;
+CGUIPage *_LoadingPage = NULL;
 
 bool game_mainloop()
 {
 	return _USGameCore->update();
 }
 
+void loadingCallback(const CString &status, float progress)
+{
+	CMenu *menu = (CMenu *)(_LoadingPage->m_Widgets[0]);
+
+	if(status != "")
+		menu->m_Lines[0] = _("Status: ") + status;
+
+	//TODO: progress
+
+	_LoadingPage->onRedraw();
+	theWinSystem->swapBuffers();
+}
 
 CGameGUI::CGameGUI(const CLConfig &conf, CGameWinSystem *winsys) : CGUI(conf, winsys)
 {
@@ -66,9 +82,11 @@ CGameGUI::CGameGUI(const CLConfig &conf, CGameWinSystem *winsys) : CGUI(conf, wi
 	//default values:
 	m_GameType = LocalGame;
 	m_TrackFile = "tracks/default.track";
+	m_ReplayFile = "tracks/default.repl";
 	m_HostName = "localhost";
-	m_HostPort = 1500;
-	m_MaxNumPlayers = 2;
+	m_HostPort = DEFAULTPORT;
+	m_MinPlayers = 2;
+	m_ServerName = "Ultimate Stunts"; //note the space in the name! (problem in windows command lines?)
 
 	//Default players:
 	SPlayerDescr pd;
@@ -109,6 +127,17 @@ CGameGUI::CGameGUI(const CLConfig &conf, CGameWinSystem *winsys) : CGUI(conf, wi
 	menu->m_Selected = 0;
 	menu->m_AlignLeft = true;
 
+	//SELECT SERVER MENU
+	m_SelectServerPage.m_Title = _("Select a server:");
+	menu = new CMenu;
+	menu->m_Xrel = 0.1;
+	menu->m_Yrel = 0.2;
+	menu->m_Wrel = 0.8;
+	menu->m_Hrel = 0.6;
+	m_SelectServerPage.m_Widgets.push_back(menu);
+	menu->m_Selected = 0;
+	menu->m_AlignLeft = false;
+
 	//TRACK MENU
 	m_TrackPage.m_Title = _("Select a track:");
 	menu = new CMenu;
@@ -117,6 +146,17 @@ CGameGUI::CGameGUI(const CLConfig &conf, CGameWinSystem *winsys) : CGUI(conf, wi
 	menu->m_Wrel = 0.8;
 	menu->m_Hrel = 0.6;
 	m_TrackPage.m_Widgets.push_back(menu);
+	menu->m_Selected = 0;
+	menu->m_AlignLeft = false;
+
+	//REPLAY MENU
+	m_ReplayPage.m_Title = _("Select a replay file:");
+	menu = new CMenu;
+	menu->m_Xrel = 0.1;
+	menu->m_Yrel = 0.2;
+	menu->m_Wrel = 0.8;
+	menu->m_Hrel = 0.6;
+	m_ReplayPage.m_Widgets.push_back(menu);
 	menu->m_Selected = 0;
 	menu->m_AlignLeft = false;
 
@@ -153,6 +193,18 @@ CGameGUI::CGameGUI(const CLConfig &conf, CGameWinSystem *winsys) : CGUI(conf, wi
 	menu->m_Selected = 0;
 	menu->m_AlignLeft = false;
 
+	//CREDITS MENU
+	m_CreditsPage.m_Title = _("Credits");
+	menu = new CLongMenu;
+	menu->m_Xrel = 0.1;
+	menu->m_Yrel = 0.2;
+	menu->m_Wrel = 0.8;
+	menu->m_Hrel = 0.6;
+	m_CreditsPage.m_Widgets.push_back(menu);
+	menu->m_Selected = 0;
+	menu->m_AlignLeft = true;
+	menu->m_Lines = getCredits();
+
 	//LOADING MENU
 	m_LoadingPage.m_Title = _("Loading");
 	menu = new CMenu;
@@ -163,7 +215,7 @@ CGameGUI::CGameGUI(const CLConfig &conf, CGameWinSystem *winsys) : CGUI(conf, wi
 	m_LoadingPage.m_Widgets.push_back(menu);
 	menu->m_Selected = 0;
 	menu->m_AlignLeft = false;
-	menu->m_Lines.push_back(_("please wait..."));
+	menu->m_Lines.push_back("...");
 
 	//HISCORE MENU
 	menu = new CMenu;
@@ -196,9 +248,9 @@ CGameGUI::CGameGUI(const CLConfig &conf, CGameWinSystem *winsys) : CGUI(conf, wi
 	m_HiscorePage.m_Title = _("Hiscore");
 	menu = new CMenu;
 	menu->m_Xrel = 0.1;
-	menu->m_Yrel = 0.1;
+	menu->m_Yrel = 0.05;
 	menu->m_Wrel = 0.8;
-	menu->m_Hrel = 0.1;
+	menu->m_Hrel = 0.15;
 	menu->m_Selected = 0;
 	menu->m_AlignLeft = false;
 	m_HiscorePage.m_Widgets.push_back(menu);
@@ -233,7 +285,9 @@ void CGameGUI::updateMenuTexts()
 	menu->m_Lines.push_back(_("Set the game type"));
 	menu->m_Lines.push_back(_("Select the track"));
 	menu->m_Lines.push_back(_("Select the players"));
+	menu->m_Lines.push_back(_("View a replay"));
 	menu->m_Lines.push_back(_("Options"));
+	menu->m_Lines.push_back(_("Credits"));
 	menu->m_Lines.push_back(_("Exit"));
 	//add some information
 	if(m_GameType == LocalGame)
@@ -243,12 +297,13 @@ void CGameGUI::updateMenuTexts()
 	}
 	else if(m_GameType == NewNetwork)
 	{
-		menu->m_Lines[1] += CString().format(_(" [Server started on port %d]"), 80, m_HostPort);
+		menu->m_Lines[1] += CString().format(_(" [Running server %s]"), 120,
+			m_ServerName.c_str(), m_HostPort);
 		menu->m_Lines[2] += CString(" [") + m_TrackFile + "]";
 	}
 	else //JoinNetwork
 	{
-		menu->m_Lines[1] += CString().format(_(" [Joining game at %s:%d]"), 80, m_HostName.c_str(), m_HostPort);
+		menu->m_Lines[1] += CString().format(_(" [Joining game on server %s]"), 80, m_ServerName.c_str());
 		menu->m_Lines[2] += CString(_(" [server will choose one]"));
 	}
 
@@ -265,9 +320,19 @@ void CGameGUI::updateMenuTexts()
 	menu->m_Lines.push_back(_("Join an existing network game"));
 	menu->m_Lines.push_back(_("Start a new network game"));
 
+	//SELECT SERVER MENU
+	menu = (CMenu *)(m_SelectServerPage.m_Widgets[0]);
+	menu->m_Lines.clear();
+	for(unsigned int i=0; i < m_ServerList.size(); i++)
+		menu->m_Lines.push_back(m_ServerList[i].hostName + " : " + m_ServerList[i].serverName);
+
 	//TRACK MENU
 	menu = (CMenu *)(m_TrackPage.m_Widgets[0]);
 	menu->m_Lines = getDirContents("tracks", ".track");
+
+	//REPLAY MENU
+	menu = (CMenu *)(m_ReplayPage.m_Widgets[0]);
+	menu->m_Lines = getDirContents("tracks", ".repl");
 
 	//PLAYERS MENU
 	menu = (CMenu *)(m_PlayersPage.m_Widgets[0]);
@@ -304,6 +369,8 @@ void CGameGUI::updateMenuTexts()
 	//HISCORE MENU
 	menu = (CMenu *)(m_HiscorePage.m_Widgets[3]);
 	menu->m_Lines.clear();
+	menu->m_Lines.push_back(_("View replay"));
+	menu->m_Lines.push_back(_("Save replay"));
 	menu->m_Lines.push_back(_("Play again"));
 	menu->m_Lines.push_back(_("Return to main menu"));
 }
@@ -321,14 +388,22 @@ void CGameGUI::start()
 			section = viewMainMenu();
 		else if(section=="gametypemenu")
 			section = viewGameTypeMenu();
+		else if(section=="selectservermenu")
+			section = viewSelectServerMenu();
 		else if(section=="trackmenu")
 			section = viewTrackMenu();
+		else if(section=="replaymenu")
+			section = viewReplayMenu();
+		else if(section=="viewreplay")
+			section = viewReplay();
 		else if(section=="playersmenu")
 			section = viewPlayersMenu();
 		else if(section=="playermenu")
 			section = viewPlayerMenu();
 		else if(section=="carmenu")
 			section = viewCarMenu();
+		else if(section=="creditsmenu")
+			section = viewCreditsMenu();
 		else if(section=="playgame")
 			section = playGame();
 		else if(section=="hiscore")
@@ -371,9 +446,13 @@ CString CGameGUI::viewMainMenu()
 		case 3:
 			return "playersmenu";
 		case 4:
+			return "replaymenu";
+		case 5:
 			showMessageBox(_("Please edit ultimatestunts.conf manually"));
 			return "mainmenu";
-		case 5:
+		case 6:
+			return "creditsmenu";
+		case 7:
 			return "exit";
 	}
 
@@ -389,52 +468,83 @@ CString CGameGUI::viewGameTypeMenu()
 
 	CMenu *menu = (CMenu *)(m_GameTypePage.m_Widgets[0]);
 
+	//A 'safe' starting point:
+	m_GameType = LocalGame;
+
+	bool cancelled = false;
 	switch(menu->m_Selected)
 	{
 		case 0:
 			m_GameType = LocalGame;
-			m_GameCore->initLocalGame(m_TrackFile);
 			break;
 		case 1:
-			m_GameType = JoinNetwork;
-			m_HostName = showInputBox(_("Enter the host name:"), m_HostName);
-			m_HostPort = showInputBox(_("Enter the port number:"), m_HostPort).toInt();
+			m_HostPort = showInputBox(_("Enter the port number:"), m_HostPort, &cancelled).toInt();
+			if(cancelled) break;
+
+			initGameType(); //to kill our own server if we had one (it should not be detected by the broadcast)
+			m_ServerList = CClientNet::broadcast(m_HostPort);
+			if(m_ServerList.size() == 1)
+			{
+				m_HostName = m_ServerList[0].hostName;
+				m_ServerName = m_ServerList[0].serverName;
+				m_GameType = JoinNetwork;
+
+				CString msg;
+				msg.format(_("Connected to server \"%s\""), 80, m_ServerName.c_str());
+				showMessageBox(msg);
+			}
+			else if(m_ServerList.size() == 0)
+			{
+				if(!showYNMessageBox(_("Could not find a server. Do you want to set it manually?")) )
+					break;
+
+				m_HostName = showInputBox(_("Enter the host name or IP number of the server:"),
+					m_HostName, &cancelled);
+				if(cancelled) break;
+
+				m_ServerName = m_HostName + ":" + m_HostPort;
+				m_GameType = JoinNetwork;
+			}
+			else //more than one server in the network
+			{
+				return "selectservermenu";
+			}
 			break;
+
 		case 2:
-			m_GameType = NewNetwork;
 			m_HostName = "localhost";
-			m_HostPort = showInputBox(_("Enter the port number:"), m_HostPort).toInt();
-			m_MaxNumPlayers = showInputBox(_("Maximum number of players:"), m_MaxNumPlayers).toInt();
+			m_HostPort = showInputBox(_("Enter the port number:"), m_HostPort, &cancelled).toInt();
+			if(cancelled) break;
+			m_ServerName = showInputBox(_("Enter a name for the server:"), "UStunts", &cancelled);
+			if(cancelled) break;
+			m_MinPlayers = showInputBox(_("Minimum number of players to wait for (including AI players):"),
+				m_MinPlayers, &cancelled).toInt();
+			if(cancelled) break;
+			m_GameType = NewNetwork;
 			break;
 	}
 
-	if(m_GameType == NewNetwork)
-	{
-		if(m_Server == NULL)
-		{
-			//start server if needed
-			m_Server = new CUSServer(m_HostPort, m_MaxNumPlayers);
-			sleep(1); //give the server some time to start
-		}
+	initGameType();
 
-		//update server settings
-		m_Server->set("port", m_HostPort);
-		m_Server->set("maxRequests", m_MaxNumPlayers);
-		m_Server->set("track", m_TrackFile);
-		m_Server->set("saveHiscore", "false"); //else, they would be saved twice on this computer
-	}
-	else
+	return "mainmenu";
+}
+
+CString CGameGUI::viewSelectServerMenu()
+{
+	m_ChildWidget = &m_SelectServerPage;
+	if(!m_WinSys->runLoop(this))
 	{
-		//stop server process if needed
-		if(m_Server != NULL)
-			{delete m_Server; m_Server = NULL;}
+		m_GameType = LocalGame;
+		initGameType();
+		return "mainmenu";
 	}
 
-	if(m_GameType != LocalGame)
-	{
-		//connect to the server
-		m_GameCore->initClientGame(m_HostName, m_HostPort);
-	}
+	CMenu *menu = (CMenu *)(m_SelectServerPage.m_Widgets[0]);
+
+	m_HostName = m_ServerList[menu->m_Selected].hostName;
+	m_ServerName = m_ServerList[menu->m_Selected].serverName;
+	m_GameType = JoinNetwork;
+	initGameType();
 
 	return "mainmenu";
 }
@@ -445,21 +555,30 @@ CString CGameGUI::viewTrackMenu()
 	if(!m_WinSys->runLoop(this))
 		return "mainmenu";
 
-
 	CMenu *menu = (CMenu *)(m_TrackPage.m_Widgets[0]);
 
 	m_TrackFile = CString("tracks/") + menu->m_Lines[menu->m_Selected];
 
-	if(m_GameType == LocalGame)
-	{
-		m_GameCore->initLocalGame(m_TrackFile);
-	}
-	else if(m_GameType == NewNetwork && m_Server != NULL)
-	{
+	if(m_GameType == NewNetwork && m_Server != NULL)
 		m_Server->set("track", m_TrackFile);
-	}
+
+
+	initGameType(); //sets the track in local game mode
 
 	return "mainmenu";
+}
+
+CString CGameGUI::viewReplayMenu()
+{
+	m_ChildWidget = &m_ReplayPage;
+	if(!m_WinSys->runLoop(this))
+		return "mainmenu";
+
+	CMenu *menu = (CMenu *)(m_ReplayPage.m_Widgets[0]);
+
+	m_ReplayFile = CString("tracks/") + menu->m_Lines[menu->m_Selected];
+
+	return "viewreplay";
 }
 
 CString CGameGUI::viewPlayersMenu()
@@ -510,7 +629,7 @@ CString CGameGUI::viewPlayerMenu()
 	switch(menu->m_Selected)
 	{
 	case 0: //Player type
-		m_PlayerDescr[m_SelectedPlayer].isHuman = !showYNMessageBox(_("Is this player an AI computer player?"));
+		m_PlayerDescr[m_SelectedPlayer].isHuman ^= true;
 		return "playermenu";
 	case 1: //name
 		m_PlayerDescr[m_SelectedPlayer].name = showInputBox(_("Enter the name:"));
@@ -549,116 +668,18 @@ CString CGameGUI::viewCarMenu()
 	return "playermenu";
 }
 
-CString CGameGUI::playGame()
+CString CGameGUI::viewCreditsMenu()
 {
-	load();
-	leave2DMode();
-
-	_USGameCore = m_GameCore;
-	m_WinSys->runLoop(game_mainloop, true); //true: swap buffers
-
-	enter2DMode();
-	unload();
-
-	return "hiscore";
-}
-
-void CGameGUI::load()
-{
-	m_ChildWidget = &m_LoadingPage;
-	onResize(0, 0, m_W, m_H);
-	onRedraw();
-	m_WinSys->swapBuffers();
-
-	//add players
-	unsigned int numHumanPlayers = 0;
-	for(unsigned int i=0; i < m_PlayerDescr.size(); i++)
-	{
-		if(m_GameType == NewNetwork && !(m_PlayerDescr[i].isHuman))
-			continue; //AI players will be added on the server side
-
-		//TODO: maybe use CObjectChoice class for m_PlayerDescr array
-		CPlayer *p;
-		CObjectChoice choice;
-		choice.m_Filename = m_CarFiles[m_PlayerDescr[i].carIndex].filename;
-		choice.m_PlayerName = m_PlayerDescr[i].name;
-
-		if(m_PlayerDescr[i].isHuman)
-			p = new CHumanPlayer((CGameWinSystem *)m_WinSys, numHumanPlayers);
-		else
-			p = new CAIPlayerCar();
-
-		if(!m_GameCore->addPlayer(p, choice))
-		{
-			showMessageBox(
-				CString().format(_("Player %s was refused"), 80,
-				m_PlayerDescr[i].name.c_str())
-				);
-			onRedraw();
-			m_WinSys->swapBuffers();
-
-			delete p;
-			continue;
-		}
-
-		if(m_PlayerDescr[i].isHuman) //set a camera to this player:
-		{
-			m_GameCore->addCamera(p->m_MovingObjectId);
-			numHumanPlayers++;
-		}
-
-		m_Players.push_back(p);
-	}
-
-	//add a camera for an AI player if there are no human players:
-	if(numHumanPlayers == 0)
-	{
-		m_GameCore->addCamera(0); //ASSUMES that 0 is the first ID (which is the case)
-	}
-
-	if(m_GameType == NewNetwork)
-	{
-		//clear the AI list
-		m_Server->clearai();
-
-		//In a new network game, place the AI's on the server side
-		for(unsigned int i=0; i < m_PlayerDescr.size(); i++)
-			if(!(m_PlayerDescr[i].isHuman))
-				m_Server->addai(m_PlayerDescr[i].name, m_CarFiles[m_PlayerDescr[i].carIndex].filename);
-
-		sleep(1); //To give messages some time to arive on server (TODO: remove when no longer needed)
-
-		//start the game on the server side
-		m_Server->start();
-	}
-
-	m_GameCore->readyAndLoad();
-	m_GameCore->setStartTime();
-}
-
-void CGameGUI::unload()
-{
-	m_GameCore->stopGame();
-
-	if(m_Server != NULL)
-		m_Server->stop();
-
-	for(unsigned int i=0; i<m_Players.size(); i++)
-		delete m_Players[i];
-	m_Players.clear();
-
-	if(m_Server != NULL)
-	{
-		//clear the AI list
-		m_Server->clearai();
-	}
-
-	//do not yet unload the server: we might want to play again
+	m_ChildWidget = &m_CreditsPage;
+	m_WinSys->runLoop(this);
+	
+	return "mainmenu";
 }
 
 CString CGameGUI::viewHiscore()
 {
 	CHiscore hiscore = m_GameCore->getHiscore();
+	m_ReplayFile = m_GameCore->getReplayFile();
 
 	//add hiscore data to the menu
 	CMenu *names = (CMenu *)m_HiscorePage.m_Widgets[0];
@@ -692,12 +713,227 @@ CString CGameGUI::viewHiscore()
 	switch(menu->m_Selected)
 	{
 		case 0:
-			return "playgame";
+			viewReplay();
+			return "hiscore";
 			break;
 		case 1:
+			{
+			bool cancelled = false;
+			CString newFN = showInputBox(_("Enter the replay filename:"), "abc.repl", &cancelled);
+			if(cancelled) return "hiscore"; //and don't save
+
+			//check extension
+			if(newFN.mid(newFN.length()-5) != ".repl")
+				newFN += ".repl";
+
+			//The real datadir filename
+			CString fn = "tracks/" + newFN;
+
+			//Check if we overwrite something
+			if(dataFileExists(fn, true)) //search only locally
+			{
+				CString q;
+				q.format(_("File %s already exists. Overwrite?"), 120, newFN.c_str());
+				if(!showYNMessageBox(q)) return "hiscore"; //and don't save
+			}
+
+			//Then the final copying
+			copyDataFile(m_ReplayFile, fn);
+
+			return "hiscore";
+			}
+			break;
+		case 2:
+			return "playgame";
+			break;
+		case 3:
 			return "mainmenu";
 			break;
 	}
 
 	return "";
 }
+
+/*
+----------------------------------------
+   THE NON-MENU FUNCTIONS
+----------------------------------------
+*/
+
+void CGameGUI::initGameType(bool keepServerAlive, bool keepReplayFile)
+{
+	//Use this as a safe starting point
+	m_GameCore->initLocalGame(m_TrackFile);
+
+	//Start or stop the server
+	if(m_GameType == NewNetwork)
+	{
+		if(m_Server == NULL)
+		{
+			//start server if needed
+			m_Server = new CUSServer(m_HostPort, m_ServerName);
+		}
+
+		//update server settings
+		m_Server->set("port", m_HostPort);
+		m_Server->set("serverName", m_ServerName);
+		m_Server->set("minPlayers", m_MinPlayers);
+		m_Server->set("track", m_TrackFile);
+		m_Server->set("saveHiscore", "false"); //else, they would be saved twice on this computer
+		sleep(1); //give the server some time to start
+	}
+	else
+	{
+		//stop server process if needed
+		if(!keepServerAlive && m_Server != NULL)
+			{delete m_Server; m_Server = NULL;}
+	}
+
+
+	if(m_GameType == ViewReplay)
+	{
+		m_GameCore->initReplayGame(m_ReplayFile);
+	}
+	else if(m_GameType == JoinNetwork || m_GameType == NewNetwork)
+	{
+		//connect to the server
+		if(!(m_GameCore->initClientGame(m_HostName, m_HostPort, keepReplayFile)) )
+		{
+			showMessageBox(_("Connecting to the server failed"));
+			m_GameType = LocalGame;
+		}
+	}
+}
+
+CString CGameGUI::viewReplay()
+{
+	eGameType oldType = m_GameType;
+
+	m_GameType = ViewReplay;
+	initGameType(true, true);
+
+	playGame(); //ignore its return value: we need to return here
+
+	m_GameType = oldType;
+	initGameType(true, true);
+
+	return "mainmenu";
+}
+
+CString CGameGUI::playGame()
+{
+	load();
+	leave2DMode();
+
+	_USGameCore = m_GameCore;
+	m_WinSys->runLoop(game_mainloop, true); //true: swap buffers
+
+	enter2DMode();
+	unload();
+
+	return "hiscore";
+}
+
+void CGameGUI::load()
+{
+	m_ChildWidget = &m_LoadingPage;
+	onResize(0, 0, m_W, m_H);
+	onRedraw();
+	m_WinSys->swapBuffers();
+
+	if(m_GameType != ViewReplay) //don't add players for a replay
+	{
+		//add players
+		unsigned int numHumanPlayers = 0;
+		for(unsigned int i=0; i < m_PlayerDescr.size(); i++)
+		{
+			if(m_GameType == NewNetwork && !(m_PlayerDescr[i].isHuman))
+				continue; //AI players will be added on the server side
+
+			//TODO: maybe use CObjectChoice class for m_PlayerDescr array
+			CPlayer *p;
+			CObjectChoice choice;
+			choice.m_Filename = m_CarFiles[m_PlayerDescr[i].carIndex].filename;
+			choice.m_PlayerName = m_PlayerDescr[i].name;
+
+			if(m_PlayerDescr[i].isHuman)
+				p = new CHumanPlayer((CGameWinSystem *)m_WinSys, numHumanPlayers);
+			else
+				p = new CAIPlayerCar();
+
+			if(!m_GameCore->addPlayer(p, choice))
+			{
+				showMessageBox(
+					CString().format(_("Player %s was refused"), 80,
+					m_PlayerDescr[i].name.c_str())
+					);
+				onRedraw();
+				m_WinSys->swapBuffers();
+
+				delete p;
+				continue;
+			}
+
+			if(m_PlayerDescr[i].isHuman) //set a camera to this player:
+			{
+				m_GameCore->addCamera(p->m_MovingObjectId);
+				numHumanPlayers++;
+			}
+
+			m_Players.push_back(p);
+		}
+
+		//add a camera for an AI player if there are no human players:
+		if(numHumanPlayers == 0 || m_GameType == ViewReplay)
+		{
+			m_GameCore->addCamera(0); //ASSUMES that 0 is the first ID (which is the case)
+		}
+	}
+
+	//add a camera for a replay game
+	if(m_GameType == ViewReplay)
+	{
+		m_GameCore->addCamera(0); //ASSUMES that 0 is the first ID (which is the case)
+	}
+
+	if(m_GameType == NewNetwork)
+	{
+		//clear the AI list
+		m_Server->clearai();
+
+		//In a new network game, place the AI's on the server side
+		for(unsigned int i=0; i < m_PlayerDescr.size(); i++)
+			if(!(m_PlayerDescr[i].isHuman))
+				m_Server->addai(m_PlayerDescr[i].name, m_CarFiles[m_PlayerDescr[i].carIndex].filename);
+
+		sleep(1); //To give messages some time to arive on server (TODO: remove when no longer needed)
+
+		//start the game on the server side
+		m_Server->start();
+	}
+
+	_LoadingPage = &m_LoadingPage;
+	m_GameCore->readyAndLoad(loadingCallback);
+	m_GameCore->setStartTime();
+}
+
+void CGameGUI::unload()
+{
+	m_GameCore->stopGame();
+
+	if(m_Server != NULL)
+		m_Server->stop();
+
+	for(unsigned int i=0; i<m_Players.size(); i++)
+		delete m_Players[i];
+	m_Players.clear();
+
+	if(m_Server != NULL)
+	{
+		//clear the AI list
+		m_Server->clearai();
+	}
+
+	//do not yet unload the server: we might want to play again
+}
+

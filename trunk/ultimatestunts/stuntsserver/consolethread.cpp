@@ -23,7 +23,6 @@
 
 CConsoleThread::CConsoleThread()
 {
-	m_Trackfile = "tracks/default.track";
 }
 
 CConsoleThread::~CConsoleThread()
@@ -64,156 +63,10 @@ CString CConsoleThread::getInput(CString question)
 	return out;
 }
 
-void CConsoleThread::unReadyPlayers()
-{
-	Clients.enter();
-	for(unsigned int i=0; i < Clients.size(); i++)
-		Clients[i].ready = false;
-	Clients.leave();
-}
-
-void CConsoleThread::wait4ReadyPlayers()
-{
-	printf("waiting until all clients are ready\n");
-	while(true)
-	{
-		bool ready = true;
-
-		Clients.enter();
-		for(unsigned int i=0; i < Clients.size(); i++)
-			if(!Clients[i].ready)
-				{ready = false; break;}
-		Clients.leave();
-
-		if(ready) break;
-
-		sleep(1);
-	}
-	printf("OK, they are ready\n");
-}
-
-void CConsoleThread::clearPlayerLists()
-{
-	printf("\n---Players\n");
-	for(unsigned int i=0; i < m_AIPlayers.size(); i++)
-		delete m_AIPlayers[i];
-	m_AIPlayers.clear();
-	for(unsigned int i=0; i < m_RemotePlayers.size(); i++)
-		delete m_RemotePlayers[i];
-	m_RemotePlayers.clear();
-
-	Clients.enter();
-	for(unsigned int i=0; i < Clients.size(); i++)
-	{
-		Clients[i].players.clear();
-		Clients[i].ready = false;
-	}
-	Clients.leave();
-
-	ObjectChoices.enter();
-	ObjectChoices.clear();
-	ObjectChoices.leave();
-}
-
-void CConsoleThread::addRemotePlayers()
-{
-	Clients.enter();
-
-	//add them
-	for(unsigned int i=0; i < Clients.playerRequests.size(); i++)
-	{
-		m_RemotePlayers.push_back(new CPlayer);
-		CPlayer *p = m_RemotePlayers.back();
-
-		CObjectChoice &choice = Clients.playerRequests[i];
-
-		if(!gamecorethread.m_GameCore->addPlayer(p, choice))
-		{
-			printf("Sim doesn't accept remote player %s\n", choice.m_PlayerName.c_str());
-			delete p;
-			m_RemotePlayers.erase(m_RemotePlayers.end());
-			continue;
-		}
-
-		//add to the objecechoice list
-		ObjectChoices.enter();
-		ObjectChoices.push_back(choice);
-		ObjectChoices.leave();
-	}
-
-	//remove player requests:
-	Clients.playerRequests.clear();
-
-	//Make references in the client info
-	for(unsigned int i=0; i < Clients.size(); i++)
-	{
-		Clients[i].players = Clients[i].playerRequests;
-		Clients[i].playerRequests.clear();
-		Clients[i].ready = false;
-	}
-
-	Clients.leave();
-}
-
-void CConsoleThread::addAIPlayers()
-{
-	for(unsigned int i=0; i<m_AIDescriptions.size(); i++)
-	{
-		m_AIPlayers.push_back(new CAIPlayerCar);
-		CAIPlayerCar *p = m_AIPlayers.back();
-
-		CString name = m_AIDescriptions[i].name;
-		CString car = m_AIDescriptions[i].carFile;
-
-		CObjectChoice choice;
-		choice.m_Filename = car;
-		choice.m_PlayerName = name;
-
-		if(!gamecorethread.m_GameCore->addPlayer(p, choice))
-		{
-			printf("Sim doesn't accept AI player %s\n", name.c_str());
-			delete p;
-			m_AIPlayers.erase(m_AIPlayers.end());
-			continue;
-		}
-
-		//add to the objecechoice list
-		ObjectChoices.enter();
-		ObjectChoices.push_back(choice);
-		ObjectChoices.leave();
-	}
-}
-
 void CConsoleThread::cmd_start()
 {
-	//TODO: super-server setup
-	gamecorethread.m_GameCore->initLocalGame(m_Trackfile);
-
-	//wait until all players are ready
-	wait4ReadyPlayers();
-	unReadyPlayers();
-
-	//now send the track info, so that they can load the track
-	networkthread.sendToAll("TRACK=" + m_Trackfile);
-
-	clearPlayerLists();
-	addRemotePlayers(); //add remote human and AI players
-	addAIPlayers(); //add local AI players
-
-	//load the track and moving objects
-	gamecorethread.m_GameCore->readyAndLoad();
-
-	//wait a second time for a ready signal
-	wait4ReadyPlayers();
-	unReadyPlayers();
-
-	//Then tell everybody to start the game, and start it here at the same time
-	networkthread.sendToAll("READY");
-	gamecorethread.m_GameCore->setStartTime();
-
-	printf("Starting gamecore thread\n");
-	if(!gamecorethread.start())
-		printf("For some reason, starting the thread failed\n");
+	printf("Giving the start command to the gamecore thread\n");
+	gamecorethread.GO_startCommand();
 }
 
 void CConsoleThread::cmd_stop()
@@ -221,8 +74,6 @@ void CConsoleThread::cmd_stop()
 	printf("Stopping gamecore thread\n");
 	if(!gamecorethread.stop())
 		printf("For some reason, stopping the thread failed\n");
-
-	clearPlayerLists();
 }
 
 void CConsoleThread::cmd_addai(const CString &args)
@@ -236,10 +87,10 @@ void CConsoleThread::cmd_addai(const CString &args)
 		car.Trim();
 
 		printf("Adding AI \'%s\' with car \'%s\'\n", name.c_str(), car.c_str());
-		SAIDescr ai;
+		CGamecoreThread::SAIDescr ai;
 		ai.name = name;
 		ai.carFile = car;
-		m_AIDescriptions.push_back(ai);
+		gamecorethread.addAI(ai);
 	}
 	else
 	{
@@ -250,7 +101,7 @@ void CConsoleThread::cmd_addai(const CString &args)
 void CConsoleThread::cmd_clearai()
 {
 	printf("Clearing AI list\n");
-	m_AIDescriptions.clear();
+	gamecorethread.clearAI();
 }
 
 void CConsoleThread::cmd_set(const CString &args)
@@ -266,13 +117,15 @@ void CConsoleThread::cmd_set(const CString &args)
 		printf("Setting \'%s\' to \'%s\'\n", var.c_str(), val.c_str());
 
 		if(var=="track")
-			{m_Trackfile = val;}
+			{gamecorethread.m_Trackfile = val;}
 		else if(var=="port")
 			{networkthread.setPort(val.toInt());}
-		else if(var=="maxRequests")
+		else if(var=="serverName")
+			{networkthread.setServerName(val);}
+		else if(var=="minPlayers")
 			{
 				Clients.enter();
-				Clients.maxRequests = val.toInt();
+				Clients.minPlayers = val.toInt();
 				Clients.leave();
 			}
 		else if(var=="saveHiscore")
@@ -290,9 +143,10 @@ void CConsoleThread::cmd_show()
 	ObjectChoices.enter();
 
 	printf("Variables:\n");
-	printf("  track = %s\n", m_Trackfile.c_str());
-	printf("  port = %d\n", networkthread.getPort());
-	printf("  maxRequests = %d\n", Clients.maxRequests);
+	printf("        track = %s\n", gamecorethread.m_Trackfile.c_str());
+	printf("         port = %d\n", networkthread.getPort());
+	printf("   serverName = %s\n", networkthread.getServerName().c_str());
+	printf("  minPlayers  = %d\n", Clients.minPlayers);
 	printf("  saveHiscore = %s\n", CString(gamecorethread.m_SaveHiscore).c_str());
 
 	printf("\nRemote clients:\n");
@@ -321,10 +175,12 @@ void CConsoleThread::cmd_show()
 		}
 	}
 
+	/*
 	printf("\nAI players:\n");
-	for(unsigned int i=0; i < m_AIDescriptions.size(); i++)
+	for(unsigned int i=0; i < gamecorethread.m_AIDescriptions.size(); i++)
 		printf("  %s with car %s\n",
-			m_AIDescriptions[i].name.c_str(), m_AIDescriptions[i].carFile.c_str());
+			gamecorethread.m_AIDescriptions[i].name.c_str(), gamecorethread.m_AIDescriptions[i].carFile.c_str());
+	*/
 
 	printf("\nObjects currently in the game:\n");
 	for(unsigned int j=0; j < ObjectChoices.size(); j++)
@@ -334,6 +190,8 @@ void CConsoleThread::cmd_show()
 
 	ObjectChoices.leave();
 	Clients.leave();
+
+	printf("\nGame status: %s\n", gamecorethread.getGameStatus().c_str());
 
 	//A small violation of thread safety
 	//we're only reading: shouldn't give too much trouble
@@ -368,8 +226,9 @@ bool CConsoleThread::executeCommand(const CString &cmd)
 			"  stop                 Stop the current game\n"
 			"Variables are: \n"
 			"  track                Track file\n"
-			"  port                 Port where the server should listen\n"
-			"  maxRequests          Maximum number of remote players\n"
+			"  port                 Network port where the server should listen\n"
+			"  serverName           Name for identifying the server\n"
+			"  minPlayers           Minumum number of remote players\n"
 			"  saveHiscore          Should the server save to the hiscore?\n"
 			);
 	}

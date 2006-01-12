@@ -31,12 +31,17 @@ public:
 	CCarEngine();
 	~CCarEngine();
 
-	//settings:
+	//Drivetrain settings:
 	vector<float> m_GearRatios;
 	float m_DifferentialRatio;
-	float m_EngineM, m_MaxEngineW, m_dMdw;
-
 	float m_FrontTraction, m_RearTraction;
+
+	//Torque curve settings:
+	float m_M0;             //Torque @ 0 RPM
+	float m_Mmax, m_w_Mmax; //Max torque point
+	float m_Pmax, m_w_Pmax; //Max power point
+	float m_w_Zero;         //zero-torque point
+
 
 	//input:
 	float m_Gas;

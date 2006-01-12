@@ -37,7 +37,7 @@ public:
 	virtual bool load(const CString &filename, const CParamList &list);
 	virtual void unload();
 
-	virtual void resetBodyPositions(CVector pos, const CMatrix &ori);
+	virtual void resetBodyPositions();
 
 	virtual CBinBuffer &getData(CBinBuffer &b) const;            //override for car-specific data
 	virtual bool setData(const CBinBuffer &b, unsigned int &pos);//override for car-specific data
@@ -57,6 +57,7 @@ public:
 	//State variables:
 	float m_DesiredSteering;
 	float m_xAngle, m_zAngle; //orientation of the body
+	float m_BodyHeight; //height of the body
 
 protected:
 	//car specific physics
@@ -84,6 +85,7 @@ protected:
 	CVector m_BodySize;
 	float m_cwA, m_RotationDamping;
 	float m_PositionAboveGround;
+	CVector m_CenterOfMass; //relative to body model
 
 	//wheels
 	float m_FrontSteerMax, m_RearSteerMax;

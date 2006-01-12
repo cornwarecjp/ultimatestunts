@@ -1,7 +1,7 @@
 /***************************************************************************
-                          usmisc.h  -  Misc utility functions
+                          approximation.h  -  Approximate physics behavior between network updates
                              -------------------
-    begin                : wo feb 2 2005
+    begin                : do dec 15 2005
     copyright            : (C) 2005 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
@@ -14,28 +14,22 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#ifndef USMISC_H
-#define USMISC_H
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#ifndef APPROXIMATION_H
+#define APPROXIMATION_H
 
-#include <vector>
-namespace std {}
-using namespace std;
+#include "simulation.h"
 
-#include "cstring.h"
+/**
+  *@author CJP
+  */
 
-/*
-this should be the start of all Ultimate Stunts
-programs. It finds and loads the configuration file,
-sets the datadir up, and initialises internationalisation.
-*/
-void shared_main(int argc, char *argv[]);
+class CApproximation : public CSimulation  {
+public: 
+	CApproximation();
+	virtual ~CApproximation();
 
-
-vector<CString> getCredits();
+	virtual bool update();
+};
 
 #endif
-

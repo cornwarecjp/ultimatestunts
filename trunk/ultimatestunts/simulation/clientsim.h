@@ -21,7 +21,6 @@
 #include "simulation.h"
 #include "clientnet.h"
 #include "gamecore.h"
-#include "timer.h"
 #include "hiscore.h"
 
 /**
@@ -33,7 +32,7 @@ public:
 	CClientSim(CGameCore *gc, CClientNet *net);
 	~CClientSim();
 
-	CString getTrackname();
+	CString getTrackname(CGameCore::LoadStatusCallback callBackFun);
 
 	virtual bool update();
 
@@ -45,7 +44,6 @@ protected:
 
 	CGameCore *m_GameCore;
 
-	CTimer m_Timer;
 	float m_PreviousTime;
 
 	CHiscore m_Hiscore;

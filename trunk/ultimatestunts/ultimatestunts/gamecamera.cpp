@@ -84,7 +84,8 @@ void CGameCamera::switchTrackedObject()
 
 void CGameCamera::update()
 {
-	float dt = m_Timer.getdt();
+	//float dt = m_Timer.getdt();
+	float dt = theWorld->m_Lastdt;
 
 	if(m_Id < 0) return;
 

@@ -22,11 +22,15 @@
 
 #include "winsystem.h"
 
+CWinSystem *theWinSystem = NULL;
+
 bool dummy_loopfunc()
 {return false;} //exit immediately
 
 CWinSystem::CWinSystem(const CString &caption, const CLConfig &conf)
 {
+	theWinSystem = this;
+
 	//Default values:
 	m_Flags = SDL_OPENGL |SDL_RESIZABLE|SDL_ANYFORMAT;
 	m_W = 640;

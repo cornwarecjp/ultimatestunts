@@ -1,5 +1,8 @@
      ../ultimatestunts/gamegui.cpp \
      ../ultimatestunts/uscore.cpp \
+     ../stuntsserver/gamecorethread.cpp \
      ../graphics/messagebox.cpp \
      ../shared/hello.cpp \
-     ../simulation/rulecontrol.cpp
+     ../shared/usmisc.cpp \
+     ../simulation/rulecontrol.cpp \
+     ../simulation/gamecore.cpp

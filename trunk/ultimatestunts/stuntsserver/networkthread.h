@@ -35,12 +35,16 @@
 
 class CNetworkThread : public CBThread  {
 public: 
-	CNetworkThread(unsigned int port=1500);
+	CNetworkThread();
 	virtual ~CNetworkThread();
 
 	void setPort(unsigned int port);
 	unsigned int getPort()
 		{return m_Port;}
+
+	void setServerName(const CString &servername);
+	CString getServerName()
+		{return m_ServerName;}
 
 	virtual void threadFunc();
 
@@ -55,6 +59,7 @@ public:
 	float getFPS(){return m_FPS;}
 protected:
 	unsigned int m_Port;
+	CString m_ServerName;
 	CStuntsNet *m_Net;
 
 	CUploadManager m_UploadManager;

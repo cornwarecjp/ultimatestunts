@@ -17,6 +17,7 @@
 
 #include <dirent.h>
 #include <cstdio>
+#include <unistd.h>
 
 #include "filecontrol.h"
 #include "datafile.h"
@@ -110,9 +111,62 @@ CString CDataFile::useExtern()
 CString getShortName(const CString &longname)
 {
 	int pos = longname.inStr(theFileControl->filecontroldatadir);
-	if(pos < 0) return "";
+	if(pos >= 0)
+		return longname.mid(pos + theFileControl->filecontroldatadir.length());
 
-	return longname.mid(pos + theFileControl->filecontroldatadir.length());
+	pos = longname.inStr(theFileControl->filecontrolsavedir);
+	if(pos >= 0)
+		return longname.mid(pos + theFileControl->filecontrolsavedir.length());
+
+	return "";
+}
+
+bool dataFileExists(const CString &filename, bool onlyLocal)
+{
+	if(onlyLocal)
+	{
+		return fileExists(theFileControl->filecontroldatadir + filename) ||
+			fileExists(theFileControl->filecontrolsavedir + filename);
+	}
+
+	CDataFile f;
+	bool ret = f.open(filename);
+	f.close();
+	return ret;
+}
+
+bool deleteDataFile(const CString &filename)
+{
+	CString fullname = theFileControl->filecontrolsavedir + filename;
+
+	if(!fileExists(fullname)) return false;
+
+	//Protection against evil removals (you never know)
+	if(filename.inStr("..") >= 0) return false;
+
+	printf("Deleting %s\n", fullname.c_str());
+	if(unlink(fullname.c_str()) != 0) return false;
+
+	return true;
+}
+
+bool copyDataFile(const CString &source, const CString &destination, bool srcIsData, bool dstIsData)
+{
+	CString src = source, dst = destination;
+
+	if(srcIsData)
+	{
+		CDataFile f(src);
+		src = f.useExtern();
+	}
+
+	if(dstIsData)
+	{
+		CDataFile f(dst, true); //write access
+		dst = f.useExtern();
+	}
+
+	return copyFile(src, dst);
 }
 
 vector<CString> getDirContents(const CString &dir, const CString &ext)

@@ -73,4 +73,6 @@ protected:
 	SDL_Joystick *m_Joystick;
 };
 
+extern CWinSystem *theWinSystem;
+
 #endif

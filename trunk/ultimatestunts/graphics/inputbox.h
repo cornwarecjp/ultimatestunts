@@ -18,14 +18,14 @@
 #ifndef INPUTBOX_H
 #define INPUTBOX_H
 
-#include "widget.h"
+#include "messagebox.h"
 #include "cstring.h"
 
 /**
   *@author CJP
   */
 
-class CInputBox : public CWidget  {
+class CInputBox : public CMessageBox  {
 public: 
 	CInputBox();
 	virtual ~CInputBox();
@@ -34,8 +34,8 @@ public:
 	virtual int onRedraw();
 	virtual int onMouseClick(int x, int y, unsigned int buttons);
 
-	CString m_Title;
 	CString m_Text;
+	bool m_Cancelled;
 };
 
 #endif

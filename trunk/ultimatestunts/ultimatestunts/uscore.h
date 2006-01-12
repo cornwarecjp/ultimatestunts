@@ -43,7 +43,7 @@ public:
 
 	virtual bool update(); //true = continue false = leave
 
-	virtual void readyAndLoad();
+	virtual void readyAndLoad(LoadStatusCallback callBackFun = NULL);
 
 protected:
 	CGameWinSystem *m_WinSys;

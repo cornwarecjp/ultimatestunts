@@ -164,10 +164,10 @@ target_vendor = @target_vendor@
 usdatadir = @usdatadir@
 noinst_LIBRARIES = libgraphics.a
 
-libgraphics_a_SOURCES = console.cpp background.cpp dynamicreflection.cpp font.cpp glextensions.cpp graphobj.cpp graphicworld.cpp gui.cpp guipage.cpp image.c inputbox.cpp lodtexture.cpp menu.cpp messagebox.cpp reflection.cpp renderer.cpp staticreflection.cpp texture.cpp widget.cpp winsystem.cpp
+libgraphics_a_SOURCES = console.cpp background.cpp dynamicreflection.cpp font.cpp glextensions.cpp graphobj.cpp graphicworld.cpp gui.cpp guipage.cpp image.c inputbox.cpp lodtexture.cpp longmenu.cpp menu.cpp messagebox.cpp reflection.cpp renderer.cpp staticreflection.cpp texture.cpp widget.cpp winsystem.cpp
 INCLUDES = $(all_includes) -I../intl -I../shared -I../simulation
 
-EXTRA_DIST = console.cpp console.h background.cpp background.h camera.h dynamicreflection.cpp dynamicreflection.h font.cpp font.h glextensions.cpp glextensions.h graphicworld.cpp graphicworld.h graphobj.cpp graphobj.h gui.cpp gui.h guipage.cpp guipage.h image.c image.h inputbox.cpp inputbox.h lodtexture.cpp  lodtexture.h menu.cpp menu.h messagebox.cpp messagebox.h reflection.cpp reflection.h renderer.cpp renderer.h staticreflection.cpp staticreflection.h texture.cpp texture.h widget.cpp widget.h winsystem.cpp winsystem.h
+EXTRA_DIST = console.cpp console.h background.cpp background.h camera.h dynamicreflection.cpp dynamicreflection.h font.cpp font.h glextensions.cpp glextensions.h graphicworld.cpp graphicworld.h graphobj.cpp graphobj.h gui.cpp gui.h guipage.cpp guipage.h image.c image.h inputbox.cpp inputbox.h lodtexture.cpp  lodtexture.h longmenu.cpp  longmenu.h menu.cpp menu.h messagebox.cpp messagebox.h reflection.cpp reflection.h renderer.cpp renderer.h staticreflection.cpp staticreflection.h texture.cpp texture.h widget.cpp widget.h winsystem.cpp winsystem.h
 subdir = graphics
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -182,9 +182,10 @@ am_libgraphics_a_OBJECTS = console.$(OBJEXT) background.$(OBJEXT) \
 	glextensions.$(OBJEXT) graphobj.$(OBJEXT) \
 	graphicworld.$(OBJEXT) gui.$(OBJEXT) guipage.$(OBJEXT) \
 	image.$(OBJEXT) inputbox.$(OBJEXT) lodtexture.$(OBJEXT) \
-	menu.$(OBJEXT) messagebox.$(OBJEXT) reflection.$(OBJEXT) \
-	renderer.$(OBJEXT) staticreflection.$(OBJEXT) texture.$(OBJEXT) \
-	widget.$(OBJEXT) winsystem.$(OBJEXT)
+	longmenu.$(OBJEXT) menu.$(OBJEXT) messagebox.$(OBJEXT) \
+	reflection.$(OBJEXT) renderer.$(OBJEXT) \
+	staticreflection.$(OBJEXT) texture.$(OBJEXT) widget.$(OBJEXT) \
+	winsystem.$(OBJEXT)
 libgraphics_a_OBJECTS = $(am_libgraphics_a_OBJECTS)
 
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)
@@ -196,9 +197,9 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/graphicworld.Po ./$(DEPDIR)/graphobj.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/gui.Po ./$(DEPDIR)/guipage.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/image.Po ./$(DEPDIR)/inputbox.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/lodtexture.Po ./$(DEPDIR)/menu.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/messagebox.Po ./$(DEPDIR)/reflection.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/renderer.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/lodtexture.Po ./$(DEPDIR)/longmenu.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/menu.Po ./$(DEPDIR)/messagebox.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/reflection.Po ./$(DEPDIR)/renderer.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/staticreflection.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/texture.Po ./$(DEPDIR)/widget.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/winsystem.Po
@@ -252,6 +253,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/image.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/inputbox.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lodtexture.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/longmenu.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/menu.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/messagebox.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/reflection.Po@am__quote@

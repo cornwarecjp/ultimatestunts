@@ -18,6 +18,8 @@
 #ifndef CLIENTNET_H
 #define CLIENTNET_H
 
+#include "usmacros.h"
+
 #include "cstring.h"
 #include "stuntsnet.h"
 #include "ipnumber.h"
@@ -29,8 +31,10 @@
 
 class CClientNet : public CStuntsNet {
 public: 
-	CClientNet(CString host="localhost", int port=1500);
+	CClientNet(CString host="localhost", int port=DEFAULTPORT);
 	virtual ~CClientNet();
+
+	virtual bool isConnected();
 
 	//Replacements that only send to host:port
 	virtual bool receiveData(unsigned int millisec=1);
@@ -43,6 +47,15 @@ public:
 	//Protocol tools
 	bool sendReady();
 	bool wait4Ready();
+
+	struct SBroadcastResult
+	{
+		CString serverName;
+		CString hostName;
+	};
+
+	static vector<SBroadcastResult> broadcast(int port);
+	
 protected:
 	CString m_Hostname;
 	CIPNumber m_ServerIP;

@@ -27,7 +27,7 @@
 
 class CUSServer {
 public: 
-	CUSServer(int port, int maxRequests);
+	CUSServer(int port, const CString &serverName);
 	~CUSServer();
 
 	void addai(const CString &name, const CString &car);
@@ -38,8 +38,11 @@ public:
 protected:
 	void giveCmd(const CString &cmd);
 
+	bool startServer(int port, const CString &serverName);
+	bool stopServer();
 private:
-	FILE *m_ServerInput;
+	int m_ServerFD;
+	int m_ServerPID;
 };
 
 #endif

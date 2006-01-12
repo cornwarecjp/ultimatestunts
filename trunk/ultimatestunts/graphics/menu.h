@@ -44,7 +44,7 @@ public:
 	bool m_AlignLeft;
 
 protected:
-	int getdy();
+	virtual int getdy();
 	
 };
 

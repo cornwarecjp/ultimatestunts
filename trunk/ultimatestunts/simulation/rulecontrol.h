@@ -18,10 +18,13 @@
 #ifndef RULECONTROL_H
 #define RULECONTROL_H
 
+#include <vector> //STL vector template
+namespace std {}
+using namespace std;
+
 #include "simulation.h"
 #include "car.h"
 
-#include "timer.h"
 #include "vector.h"
 
 /**
@@ -42,7 +45,7 @@ protected:
 
 	//Car rules:
 	void placeStart();
-	void updateCarRules(CCar *car);
+	void updateCarRules(unsigned int movObjIndex, CCar *car);
 	void addPenaltytime(CCar *car, float t);
 	void finish(CCar *car);
 	bool checkFinished();
@@ -50,7 +53,7 @@ protected:
 	int  m_StartX,  m_StartY,  m_StartH,  m_StartRot,  m_StartIndex,
 		m_FinishX, m_FinishY, m_FinishH, m_FinishRot, m_FinishIndex;
 
-	CTimer m_Timer;
+	vector<CVector> m_PreviousCarPositions; //needed for accurate finish time checking
 };
 
 #endif

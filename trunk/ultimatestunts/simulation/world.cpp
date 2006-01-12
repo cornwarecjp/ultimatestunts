@@ -28,6 +28,8 @@ CWorld::CWorld()
 	printDebug = false;
 	m_Paused = true;
 
+	m_Lastdt = m_LastTime = 0.0;
+
 	theWorld = this;
 }
 

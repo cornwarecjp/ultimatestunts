@@ -56,14 +56,17 @@ bool CRuleControl::update()
 	{
 		//Pause state before the start of the game
 
-		float t = m_Timer.getTime();
+		float t = theWorld->m_LastTime;
 
-		if(t > theWorld->m_GameStartTime)
+		if(t > 0.0)
+		{
 			theWorld->m_Paused = false;
+			placeStart(); //sets start times
+		}
 
 		static int timedif = 4;
 
-		int difnow = int(1.0 + theWorld->m_GameStartTime - t);
+		int difnow = int(1.0 - t);
 		if(difnow != timedif)
 		{
 			timedif = difnow;
@@ -86,14 +89,16 @@ bool CRuleControl::update()
 		{
 			CMovingObject *theObj = (CMovingObject *)objs[i];
 			if(theObj->getType() == CMessageBuffer::car)
-				updateCarRules((CCar *)theObj);
+				updateCarRules(i, (CCar *)theObj);
+
+			m_PreviousCarPositions[i] = theObj->m_Position;
 		}
 	}
 
 	return !checkFinished();
 }
 
-void CRuleControl::updateCarRules(CCar *car)
+void CRuleControl::updateCarRules(unsigned int movObjIndex, CCar *car)
 {
 	float penaltyMultiplier = 3.0; //multiplier between fastest time and penalty time
 
@@ -172,23 +177,28 @@ void CRuleControl::updateCarRules(CCar *car)
 		const CBound *b = (CBound *)theWorld->getObject(CDataObject::eBound, car->m_Bodies[0].m_Body);
 		float r = b->m_BSphere_r;
 
-		CVector relpos = pos - CVector(TILESIZE*x, VERTSIZE*y, TILESIZE*z);
+		CVector relpos1 = m_PreviousCarPositions[movObjIndex] - CVector(TILESIZE*x, VERTSIZE*y, TILESIZE*z);
+		CVector relpos2 = pos - CVector(TILESIZE*x, VERTSIZE*y, TILESIZE*z);
 
-		float dist = TILESIZE; //default: too great distance
+		float dist1 = TILESIZE, dist2 = TILESIZE; //default: too great distance
 		switch(m_FinishRot)
 		{
 		case 0:
 		case 2:
-			dist = fabsf(relpos.z);
+			dist1 = relpos1.z;
+			dist2 = relpos2.z;
 			break;
 		case 1:
 		case 3:
-			dist = fabsf(relpos.x);
+			dist1 = relpos1.x;
+			dist2 = relpos2.x;
 			break;
 		}
 
-		//if we have partially crossed the finish plane with the bounding sphere:
-		if(dist < r)
+		//Finish...
+		//...if we have partially crossed the finish plane with the bounding sphere
+		//...if we are on the other side of the finish plane
+		if(fabsf(dist2) < r || dist1 / dist2 < 0.0)
 			finish(car);
 	}
 }
@@ -260,6 +270,8 @@ bool CRuleControl::findStartFinish()
 
 void CRuleControl::placeStart()
 {
+	m_PreviousCarPositions.clear();
+
 	CVector tilePos = CVector(
 		TILESIZE * m_StartX,
 		VERTSIZE * m_StartH,
@@ -287,8 +299,12 @@ void CRuleControl::placeStart()
 		);
 
 		CMovingObject *mo = theWorld->getMovingObject(i);
-		
-		mo->resetBodyPositions(tilePos + tileOri * carPos, tileOri);
+
+		CVector position = tilePos + tileOri * carPos;
+		mo->m_Position = position;
+		mo->m_OrientationMatrix = tileOri;
+		mo->resetBodyPositions();
+		m_PreviousCarPositions.push_back(position);
 
 		CCarRuleStatus &status = ((CCar *)mo)->m_RuleStatus;
 		status.lastValidTile = status.currentTile = m_StartIndex;
@@ -314,7 +330,7 @@ bool CRuleControl::checkFinished()
 			}
 
 			if(status.state == CCarRuleStatus::eFinished &&
-				m_Timer.getTime() - status.finishTime < 3.0)
+				theWorld->m_LastTime - status.finishTime < 3.0)
 			{
 				ret = false;  //wait some time after everybody is finished
 				break;

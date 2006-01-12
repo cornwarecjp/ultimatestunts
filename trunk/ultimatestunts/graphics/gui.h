@@ -52,7 +52,7 @@ protected:
 	void enter2DMode();
 	void leave2DMode();
 
-	CString showInputBox(const CString &title, const CString &deflt="");
+	CString showInputBox(const CString &title, const CString &deflt="", bool *cancelled=NULL);
 	bool showYNMessageBox(const CString &title);
 	void showMessageBox(const CString &title);
 	

@@ -53,11 +53,17 @@ protected:
 		LocalGame=1,
 		NewNetwork,
 		JoinNetwork,
+		ViewReplay
 	} m_GameType;
+	void initGameType(bool keepServerAlive=false, bool keepReplayFile=false);
+
 	CString m_HostName;
 	int m_HostPort;
+	int m_MinPlayers;
+	CString m_ServerName;
+	vector<CClientNet::SBroadcastResult> m_ServerList;
 	CString m_TrackFile;
-	int m_MaxNumPlayers;
+	CString m_ReplayFile;
 
 	struct SPlayerDescr
 	{
@@ -84,19 +90,26 @@ protected:
 			void load();
 			void unload();
 		CString viewGameTypeMenu();
+		CString viewSelectServerMenu();
 		CString viewTrackMenu();
+		CString viewReplayMenu();
+		CString viewReplay();
 		CString viewPlayersMenu();
 		CString viewPlayerMenu();
 		CString viewCarMenu();
+		CString viewCreditsMenu();
 		CString viewHiscore();
 
 	//The menu pages:
 	CGUIPage m_MainPage;
 	CGUIPage m_GameTypePage;
+	CGUIPage m_SelectServerPage;
 	CGUIPage m_TrackPage;
+	CGUIPage m_ReplayPage;
 	CGUIPage m_PlayersPage;
 	CGUIPage m_PlayerPage;
 	CGUIPage m_CarPage;
+	CGUIPage m_CreditsPage;
 	CGUIPage m_LoadingPage;
 	CGUIPage m_HiscorePage;
 };

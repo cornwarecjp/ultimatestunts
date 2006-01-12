@@ -26,6 +26,8 @@ CMovingObject::CMovingObject(CDataManager *manager) : CDataObject(manager, CData
 	m_InvMass = 1.0;
 
 	m_InputData = new CMovObjInput;
+
+	m_LastNetworkUpdateTime = -1000.0; //first update will always come through this
 }
 
 CMovingObject::~CMovingObject()
@@ -130,6 +132,8 @@ CBinBuffer &CMovingObject::getData(CBinBuffer &b) const
 {
 	b += (Uint8)m_MovObjID;
 
+	b.addFloat32(m_LastUpdateTime, 0.005); //more accurate than 1/100 sec
+
 	CVector
 		p = m_Position,
 		o = m_OrientationMatrix.getRotation(),
@@ -147,8 +151,25 @@ CBinBuffer &CMovingObject::getData(CBinBuffer &b) const
 bool CMovingObject::setData(const CBinBuffer &b, unsigned int &pos)
 {
 	Uint8 ID = b.getUint8(pos);
-	if(ID != m_MovObjID) return false;
+	if(ID != m_MovObjID) return false; //wrong delivery, in some way
 
+	float time = b.getFloat32(pos, 0.005);
+	//printf("Received package: sendTime = %.2f\n", time);
+	if(time < m_LastNetworkUpdateTime)
+	{
+		printf("Old package: time %.2f < %.2f\n", time, m_LastNetworkUpdateTime);
+		return false; //it was an old package
+	}
+	if(time > theWorld->m_LastTime + 3.0)
+	{
+		printf("Too late package: time %.2f > %.2f + 3.0\n", time, theWorld->m_LastTime);
+		return false; //probably a package from a previous game session
+	}
+
+	m_LastNetworkUpdateTime = time;
+	m_LastUpdateTime = theWorld->m_LastTime;
+
+	//TODO: correct game time for average lag time
 
 		CVector
 			p = b.getVector32(pos, 0.001),
@@ -156,10 +177,21 @@ bool CMovingObject::setData(const CBinBuffer &b, unsigned int &pos)
 			v = b.getVector16(pos, 0.01),
 			w = b.getVector16(pos, 0.01);
 
-		m_Position = p;
-		m_OrientationMatrix.setRotation(o);
-		m_Velocity = v;
-		m_AngularVelocity = w;
+	/*
+	A little hack:
+	We do not REALLY set the position to the position in the message.
+	Instead, we mix it with the current position.
+	This damps out "synchronisation errors"
+	*/
+	float dampFactor = v.abs2() / (10.0 + v.abs2()); //no damping at low speeds
+	float vdif2 = (v - m_Velocity).abs2();
+	dampFactor *= 10.0 / (10.0 + vdif2); //lower damping at higher differences in speed (e.g. collisions)
+	//printf("%.3f\n", dampFactor);
+
+	m_Position = (1.0 - dampFactor) * p + dampFactor * m_Position; //some damping to correct for "synchronisation noise"
+	m_OrientationMatrix.setRotation(o);
+	m_Velocity = v;
+	m_AngularVelocity = w;
 
 	return true;
 }

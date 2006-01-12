@@ -37,9 +37,19 @@ CUDPNet::CUDPNet(unsigned int port)
 	m_SendCounter = 0;
 
 	m_Socket = socket(AF_INET,SOCK_DGRAM,0);
-	if(m_Socket < 0) {
-		printf("cannot open socket\n");
-		exit(1);
+	if(m_Socket < 0)
+	{
+		printf("Cannot open socket\n");
+		return;
+	}
+
+	int enable = 1;
+	if(setsockopt(m_Socket, SOL_SOCKET, SO_BROADCAST, &enable, sizeof(int)) != 0)
+	{
+		printf("Cannot use broadcast mode\n");
+		close(m_Socket);
+		m_Socket = -1;
+		return;
 	}
 
 	// bind to port
@@ -52,7 +62,9 @@ CUDPNet::CUDPNet(unsigned int port)
 	if(rc < 0)
 	{
 		printf("cannot bind port number %d \n", port);
-		exit(1);
+		close(m_Socket);
+		m_Socket = -1;
+		return;
 	}
 
 	fcntl(m_Socket, F_SETFL, O_NONBLOCK);
@@ -62,12 +74,25 @@ CUDPNet::CUDPNet(unsigned int port)
 
 CUDPNet::~CUDPNet()
 {
-	close(m_Socket);
+	closeConnection();
+}
+
+void CUDPNet::closeConnection()
+{
+	if(m_Socket >= 0) close(m_Socket);
+	m_Socket = -1;
 	printf("Disconnected\n");
+}
+
+bool CUDPNet::isConnected()
+{
+	return m_Socket >= 0;
 }
 
 bool CUDPNet::receiveData(unsigned int millisec)
 {
+	if(m_Socket < 0) return false;
+
 	// Watch socket to see when it has input.
 	struct pollfd pfd;
 	pfd.fd = m_Socket;
@@ -118,6 +143,10 @@ bool CUDPNet::receiveData(unsigned int millisec)
 
 bool CUDPNet::sendData(CMessageBuffer &data)
 {
+	if(m_Socket < 0) return false;
+
+	//printf("Sending %s\n", data.dump().c_str());
+
 	data.setCounter(m_SendCounter);
 	m_SendCounter++;
 
@@ -148,4 +177,14 @@ bool CUDPNet::sendData(CMessageBuffer &data)
 		sizeof(remoteCliAddr));
 
 	return (rc >= 0);
+}
+
+CIPNumber getBroadcastAddress()
+{
+	CIPNumber ret;
+	ret = INADDR_BROADCAST;
+
+	printf("Broadcast address is %s\n", ret.toString().c_str());
+
+	return ret;
 }

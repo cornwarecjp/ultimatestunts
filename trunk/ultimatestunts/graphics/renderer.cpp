@@ -139,6 +139,8 @@ CRenderer::CRenderer(const CWinSystem *winsys)
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_CULL_FACE);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+
+	glMateriali(GL_FRONT_AND_BACK, GL_SHININESS, 40);
 }
 
 CRenderer::~CRenderer()

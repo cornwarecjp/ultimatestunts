@@ -83,7 +83,7 @@ int CMenu::onMouseMove(int x, int y)
 
 int CMenu::onMouseClick(int x, int y, unsigned int buttons)
 {
-	onMouseMove(x, y);
+	CMenu::onMouseMove(x, y);
 
 	if(buttons == SDL_BUTTON_LEFT)
 		return WIDGET_QUIT;

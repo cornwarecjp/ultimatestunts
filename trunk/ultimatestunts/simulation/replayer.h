@@ -1,7 +1,7 @@
 /***************************************************************************
-                          usmisc.h  -  Misc utility functions
+                          replayer.h  -  Recording and playing replay files
                              -------------------
-    begin                : wo feb 2 2005
+    begin                : do dec 15 2005
     copyright            : (C) 2005 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
@@ -14,28 +14,50 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#ifndef USMISC_H
-#define USMISC_H
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#ifndef REPLAYER_H
+#define REPLAYER_H
 
-#include <vector>
-namespace std {}
-using namespace std;
+#include "simulation.h"
+#include "datafile.h"
 
 #include "cstring.h"
+#include "playercontrol.h"
 
-/*
-this should be the start of all Ultimate Stunts
-programs. It finds and loads the configuration file,
-sets the datadir up, and initialises internationalisation.
-*/
-void shared_main(int argc, char *argv[]);
+/**
+  *@author CJP
+  */
 
+class CReplayer : public CSimulation, protected CDataFile
+{
+public: 
+	CReplayer(const CPlayerControl *pctrl);
+	virtual ~CReplayer();
 
-vector<CString> getCredits();
+	bool open(const CString &filename, bool write=false);
+
+	void close() {CDataFile::close();}
+
+	virtual bool update();
+
+	//Header information:
+	CString m_TrackFile;
+	vector<CObjectChoice> m_ObjectList;
+
+	//Buffer sizes per object, and total per frame
+	vector<unsigned int> m_ObjectChunkSize;
+	unsigned int m_FrameChunkSize;
+
+protected:
+	bool fillHeaderInfo();
+	void writeHeader();
+	bool readHeader();
+	void writeData();
+	bool readData();
+
+	//Recording data
+	const CPlayerControl *m_PlayerControl;
+	float m_PreviousTime;
+};
 
 #endif
-

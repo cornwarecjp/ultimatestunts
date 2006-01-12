@@ -81,6 +81,10 @@ struct t3DObject
     CVector3  *pNormals;        // The object's normals
     CVector2  *pTexVerts;       // The texture's UV coordinates
     tFace *pFaces;              // The faces information of the object
+
+    //CJP additions:
+    CVector3 objectCenter;      // The center of the object
+    CVector3 Xaxis, Yaxis, Zaxis; //The rotation matrix
 };
 
 // This holds our model information.  This should also turn into a robust class.
@@ -125,6 +129,9 @@ End of modifications by CJP
 #define OBJECT_FACES        0x4120          // The objects faces
 #define OBJECT_MATERIAL     0x4130          // This is found if the object has a material, either texture map or color
 #define OBJECT_UV           0x4140          // The UV texture coordinates
+
+//CJP addition:
+#define OBJECT_LOCAL        0x4160          // Coordinate axes of the object
 
 
 // Here is our structure for our 3DS indicies (since .3DS stores 4 unsigned shorts)
@@ -177,6 +184,10 @@ private:
 
     // This reads the texture coodinates of the object
     void ReadUVCoordinates(t3DObject *pObject, tChunk *);
+
+    //CJP addition
+    // This reads the local coordinate system of the object
+    void ReadLocalAxes(t3DObject *pObject, tChunk *);
 
     // This reads in the material name assigned to the object and sets the materialID
     void ReadObjectMaterial(t3DModel *pModel, t3DObject *pObject, tChunk *pPreviousChunk);

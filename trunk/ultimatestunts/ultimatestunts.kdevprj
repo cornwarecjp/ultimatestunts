@@ -137,7 +137,7 @@ sub_dirs=
 type=static_library
 
 [graphics/Makefile.am]
-files=graphics/winsystem.cpp,graphics/winsystem.h,graphics/graphobj.cpp,graphics/graphobj.h,graphics/image.c,graphics/image.h,graphics/texture.cpp,graphics/texture.h,graphics/renderer.cpp,graphics/renderer.h,graphics/graphicworld.cpp,graphics/graphicworld.h,graphics/gui.cpp,graphics/gui.h,graphics/camera.h,graphics/background.cpp,graphics/background.h,graphics/reflection.cpp,graphics/reflection.h,graphics/console.cpp,graphics/console.h,graphics/font.cpp,graphics/font.h,graphics/lodtexture.cpp,graphics/lodtexture.h,graphics/widget.h,graphics/guipage.cpp,graphics/guipage.h,graphics/menu.cpp,graphics/menu.h,graphics/widget.cpp,graphics/inputbox.cpp,graphics/inputbox.h,graphics/messagebox.cpp,graphics/messagebox.h,graphics/glextensions.cpp,graphics/glextensions.h,graphics/graphicsettings.h,graphics/staticreflection.cpp,graphics/staticreflection.h,graphics/dynamicreflection.cpp,graphics/dynamicreflection.h
+files=graphics/winsystem.cpp,graphics/winsystem.h,graphics/graphobj.cpp,graphics/graphobj.h,graphics/image.c,graphics/image.h,graphics/texture.cpp,graphics/texture.h,graphics/renderer.cpp,graphics/renderer.h,graphics/graphicworld.cpp,graphics/graphicworld.h,graphics/gui.cpp,graphics/gui.h,graphics/camera.h,graphics/background.cpp,graphics/background.h,graphics/reflection.cpp,graphics/reflection.h,graphics/console.cpp,graphics/console.h,graphics/font.cpp,graphics/font.h,graphics/lodtexture.cpp,graphics/lodtexture.h,graphics/widget.h,graphics/guipage.cpp,graphics/guipage.h,graphics/menu.cpp,graphics/menu.h,graphics/widget.cpp,graphics/inputbox.cpp,graphics/inputbox.h,graphics/messagebox.cpp,graphics/messagebox.h,graphics/glextensions.cpp,graphics/glextensions.h,graphics/graphicsettings.h,graphics/staticreflection.cpp,graphics/staticreflection.h,graphics/dynamicreflection.cpp,graphics/dynamicreflection.h,graphics/longmenu.cpp,graphics/longmenu.h
 sub_dirs=
 type=static_library
 
@@ -292,6 +292,18 @@ install_location=
 type=SOURCE
 
 [graphics/lodtexture.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[graphics/longmenu.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[graphics/longmenu.h]
 dist=true
 install=false
 install_location=
@@ -662,7 +674,7 @@ install_location=
 type=HEADER
 
 [simulation/Makefile.am]
-files=simulation/physics.cpp,simulation/physics.h,simulation/simulation.cpp,simulation/simulation.h,simulation/player.cpp,simulation/player.h,simulation/world.cpp,simulation/world.h,simulation/movingobject.cpp,simulation/movingobject.h,simulation/car.cpp,simulation/car.h,simulation/message.cpp,simulation/message.h,simulation/messagebuffer.cpp,simulation/messagebuffer.h,simulation/objectchoice.cpp,simulation/objectchoice.h,simulation/carinput.cpp,simulation/carinput.h,simulation/movobjinput.cpp,simulation/movobjinput.h,simulation/aiplayercar.cpp,simulation/aiplayercar.h,simulation/clientsim.cpp,simulation/clientsim.h,simulation/bound.cpp,simulation/bound.h,simulation/material.h,simulation/clientnet.cpp,simulation/clientnet.h,simulation/rulecontrol.cpp,simulation/rulecontrol.h,simulation/playercontrol.cpp,simulation/playercontrol.h,simulation/clientplayercontrol.cpp,simulation/clientplayercontrol.h,simulation/collisionmodel.cpp,simulation/collisionmodel.h,simulation/tilemodel.cpp,simulation/tilemodel.h,simulation/body.h,simulation/collisionface.cpp,simulation/collisionface.h,simulation/collision.h,simulation/collisiondetector.cpp,simulation/collisiondetector.h,simulation/collisiondata.cpp,simulation/collisiondata.h,simulation/gamecore.cpp,simulation/gamecore.h,simulation/material.cpp,simulation/track.cpp,simulation/track.h,simulation/stuntsnet.cpp,simulation/stuntsnet.h,simulation/chatmessage.cpp,simulation/chatmessage.h,simulation/textmessage.cpp,simulation/textmessage.h,simulation/confirmation.h,simulation/udpnet.cpp,simulation/udpnet.h,simulation/carengine.cpp,simulation/carengine.h,simulation/carwheel.cpp,simulation/carwheel.h,simulation/carrulestatus.cpp,simulation/carrulestatus.h,simulation/netfilecontrol.cpp,simulation/netfilecontrol.h,simulation/hiscorefile.cpp,simulation/hiscorefile.h,simulation/hiscore.cpp,simulation/hiscore.h,simulation/chatsystem.cpp,simulation/chatsystem.h,simulation/filechunk.h
+files=simulation/physics.cpp,simulation/physics.h,simulation/simulation.cpp,simulation/simulation.h,simulation/player.cpp,simulation/player.h,simulation/world.cpp,simulation/world.h,simulation/movingobject.cpp,simulation/movingobject.h,simulation/car.cpp,simulation/car.h,simulation/message.cpp,simulation/message.h,simulation/messagebuffer.cpp,simulation/messagebuffer.h,simulation/objectchoice.cpp,simulation/objectchoice.h,simulation/carinput.cpp,simulation/carinput.h,simulation/movobjinput.cpp,simulation/movobjinput.h,simulation/aiplayercar.cpp,simulation/aiplayercar.h,simulation/clientsim.cpp,simulation/clientsim.h,simulation/bound.cpp,simulation/bound.h,simulation/material.h,simulation/clientnet.cpp,simulation/clientnet.h,simulation/rulecontrol.cpp,simulation/rulecontrol.h,simulation/playercontrol.cpp,simulation/playercontrol.h,simulation/clientplayercontrol.cpp,simulation/clientplayercontrol.h,simulation/collisionmodel.cpp,simulation/collisionmodel.h,simulation/tilemodel.cpp,simulation/tilemodel.h,simulation/body.h,simulation/collisionface.cpp,simulation/collisionface.h,simulation/collision.h,simulation/collisiondetector.cpp,simulation/collisiondetector.h,simulation/collisiondata.cpp,simulation/collisiondata.h,simulation/gamecore.cpp,simulation/gamecore.h,simulation/material.cpp,simulation/track.cpp,simulation/track.h,simulation/stuntsnet.cpp,simulation/stuntsnet.h,simulation/chatmessage.cpp,simulation/chatmessage.h,simulation/textmessage.cpp,simulation/textmessage.h,simulation/confirmation.h,simulation/udpnet.cpp,simulation/udpnet.h,simulation/carengine.cpp,simulation/carengine.h,simulation/carwheel.cpp,simulation/carwheel.h,simulation/carrulestatus.cpp,simulation/carrulestatus.h,simulation/netfilecontrol.cpp,simulation/netfilecontrol.h,simulation/hiscorefile.cpp,simulation/hiscorefile.h,simulation/hiscore.cpp,simulation/hiscore.h,simulation/chatsystem.cpp,simulation/chatsystem.h,simulation/filechunk.h,simulation/replayer.cpp,simulation/replayer.h,simulation/approximation.cpp,simulation/approximation.h,simulation/netmessages.h
 sub_dirs=
 type=static_library
 
@@ -673,6 +685,18 @@ install_location=
 type=SOURCE
 
 [simulation/aiplayercar.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[simulation/approximation.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[simulation/approximation.h]
 dist=true
 install=false
 install_location=
@@ -990,6 +1014,12 @@ install=false
 install_location=
 type=HEADER
 
+[simulation/netmessages.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
 [simulation/objectchoice.cpp]
 dist=true
 install=false
@@ -1033,6 +1063,18 @@ install_location=
 type=SOURCE
 
 [simulation/playercontrol.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[simulation/replayer.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[simulation/replayer.h]
 dist=true
 install=false
 install_location=

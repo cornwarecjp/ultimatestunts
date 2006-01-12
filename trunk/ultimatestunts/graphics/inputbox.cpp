@@ -25,8 +25,8 @@ CInputBox::CInputBox()
 {
 	loadConsoleFont();
 
-	m_Title = "Title";
 	m_Text = "Text";
+	m_Cancelled = false;
 }
 
 CInputBox::~CInputBox(){
@@ -34,6 +34,8 @@ CInputBox::~CInputBox(){
 
 int CInputBox::onKeyPress(int key)
 {
+	if(key == SDLK_ESCAPE) m_Cancelled = true;
+
 	if(key == SDLK_RETURN || key == SDLK_ESCAPE) return WIDGET_QUIT;
 
 	if(key > 255 || key < 0) return 0; //ignore key
@@ -86,13 +88,17 @@ int CInputBox::onRedraw()
 
 	glPopMatrix();
 
-	glTranslatef(-0.5*theConsoleFont->getFontW()*m_Title.size(), 0.3*m_H, 0);
+	//glTranslatef(-0.5*theConsoleFont->getFontW()*m_Title.size(), 0.3*m_H, 0);
 
 	//the title
 	glColor3f(1,1,1);
+
+	/*
 	theConsoleFont->enable();
 	theConsoleFont->drawString(m_Title);
 	theConsoleFont->disable();
+	*/
+	drawTitle();
 
 	return 0;
 }

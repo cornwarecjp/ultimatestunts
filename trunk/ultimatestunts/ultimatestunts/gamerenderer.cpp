@@ -287,11 +287,13 @@ void CGameRenderer::renderScene()
 	CVector ambCol = theTrack->m_AmbientColor;
 	
 	GLfloat light_color[] = {lightCol.x, lightCol.y, lightCol.z, 1.0};
+	GLfloat specular_color[] = {3.0*lightCol.x, 3.0*lightCol.y, 3.0*lightCol.z, 1.0};
 	GLfloat light_direction[] = {-lightDir.x, -lightDir.y, -lightDir.z, 0.0};
 	GLfloat ambient_color[] = {ambCol.x, ambCol.y, ambCol.z, 1.0};
 
 	glLightfv(GL_LIGHT0, GL_POSITION, light_direction);
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_color);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, specular_color);
 	glLightfv(GL_LIGHT0, GL_AMBIENT, ambient_color);
 
 	const CVector &camera = m_Camera->getPosition();
@@ -659,6 +661,22 @@ void CGameRenderer::viewDashboard(unsigned int n)
 		glColor4f(1,1,1,msgAlpha);
 		theConsoleFont->drawString(message);
 		glColor4f(1,1,1,1);
+		glPopMatrix();
+	}
+
+	//The time
+	if(theWorld->m_LastTime > 0.0)
+	{
+		CString time = CString().fromTime(theWorld->m_LastTime);
+
+		float size = 2.0; //character size
+		glPushMatrix();
+		glTranslatef(
+			0.5*(w - time.length() * size * theConsoleFont->getFontW()),
+			h - 2.5*theConsoleFont->getFontH(),
+			0);
+		glScalef(size,size,size);
+		theConsoleFont->drawString(time);
 		glPopMatrix();
 	}
 

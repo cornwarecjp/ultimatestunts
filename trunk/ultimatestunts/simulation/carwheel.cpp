@@ -46,6 +46,17 @@ CCarWheel::CCarWheel()
 CCarWheel::~CCarWheel(){
 }
 
+/*
+This function limits the size of F to a maximum value max.
+So, it affects the size of F, but not the direction.
+Close to the origin, the function is like y=x, so the size
+is not affected. As soon as the size of F approaches max,
+the curve becomes more horizontal, so that max is never
+exceeded. The result is a kind of a "normalized" Pacejka
+curve.
+Search on the internet about Pacejka curves to get more
+information.
+*/
 void staticlimit(float max, CVector &F, float &skidvolume)
 {
 	float Fabs = F.abs();
@@ -54,22 +65,32 @@ void staticlimit(float max, CVector &F, float &skidvolume)
 
 	if(skidding > 0.01)
 	{
+		//Two parts: first a parabola, then a staight line
+		float outval = 1.0;
+		if(skidding < 2.0)
+			outval = 1.0 - 0.25*(skidding-2.0)*(skidding-2.0);
+
+		float mul = max * outval / skidding;
+
+		/*
 		float smoothness = 2.0; //lower value = smoother transition
 
 		float factor = 0.5 + atanf(smoothness*(skidding - 1.0)) / M_PI;
 
 		float mul = 1.0 + factor * (1.0 / skidding - 1.0);
+		*/
 
 		if(mul > 1.0) mul = 1.0;
 		if(mul < 0.0) mul = 0.0;
 
+		F *= mul;
+
 		//printf("skidding = %.3f\n", skidding);
 		//printf("factor   = %.3f\n", factor);
 		//printf("mul      = %.3f\n", mul);
+		//printf("New F    = %.3f\n", F.abs());
 
-		F *= mul;
-
-		skidvolume = factor;
+		skidvolume = outval * outval; //factor;
 	}
 }
 
@@ -112,13 +133,18 @@ CVector CCarWheel::getGroundForce(float &groundM, float vlong, float vlat, float
 {
 	float vlong_rel = vlong + m_Radius * m_w;
 
-	float Flong_norm = -m_tractionStiffness * vlong_rel;
-	float Flat_norm = -m_cornerStiffness * vlat;
+	float speedfactor = fabsf(vlong);
+	if(speedfactor < 3.0) speedfactor = 3.0; //avoid weird effects at low speeds
+	float klong = -m_tractionStiffness / speedfactor;
+	float klat  = -m_cornerStiffness   / speedfactor;
 
-	CVector Fhor(Flat_norm, 0.0, Flong_norm);
-	staticlimit(contactMu, Fhor, m_SkidVolume);
+	float slip_long = klong * vlong_rel;
+	float slip_lat  = klat  * vlat;
 
-	return m_Fnormal * (Fhor + CVector(0.0, 1.0, 0.0));
+	CVector Slip(slip_lat, 0.0, slip_long);
+	staticlimit(contactMu, Slip, m_SkidVolume);
+
+	return m_Fnormal * (Slip + CVector(0.0, 1.0, 0.0));
 }
 
 /*

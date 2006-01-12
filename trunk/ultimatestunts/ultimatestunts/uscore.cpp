@@ -65,9 +65,9 @@ bool CUSCore::addCamera(unsigned int objid)
 	return true;
 }
 
-void CUSCore::readyAndLoad()
+void CUSCore::readyAndLoad(LoadStatusCallback callBackFun)
 {
-	CGameCore::readyAndLoad();
+	CGameCore::readyAndLoad(callBackFun);
 
 	printf("Setting cameras\n");
 	m_Renderer->setCameras(m_Cameras, m_NumCameras);
@@ -130,7 +130,6 @@ bool CUSCore::update()
 		}
 	}
 
-	
 	//Update the output:
 	m_Renderer->update();
 	m_Console->draw();

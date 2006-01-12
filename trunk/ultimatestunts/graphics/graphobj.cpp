@@ -213,6 +213,12 @@ bool CGraphObj::setMaterial(const SPrimitive &pr, bool forReflection)
 	}
 	else
 	{
+		//Shininess:
+		float speccol[] = {pr.reflectance, pr.reflectance, pr.reflectance, 0.0};
+		//float speccol[] = {1,1,1, 0.0};
+		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, speccol);
+
+		//Color:
 		kleur[0] = pr.color[m_CurrentLOD-1].x;
 		kleur[1] = pr.color[m_CurrentLOD-1].y;
 		kleur[2] = pr.color[m_CurrentLOD-1].z;

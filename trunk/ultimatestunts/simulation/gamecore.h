@@ -26,6 +26,7 @@ using namespace std;
 #include "cstring.h"
 #include "lconfig.h"
 #include "usmacros.h"
+#include "timer.h"
 
 //Simulation stuff
 #include "playercontrol.h"
@@ -52,14 +53,16 @@ public:
 
 	//step 1: initialise network connection etc.
 	//the last function call defines the current state
-	void initLocalGame(const CString &trackfile);
-	void initClientGame(const CString &host, unsigned int port);
+	bool initLocalGame(const CString &trackfile);
+	bool initClientGame(const CString &host, unsigned int port, bool keepOldReplay=false);
+	bool initReplayGame(const CString &replayfile);
 
 	//step 2: add players
 	bool addPlayer(CPlayer *p, CObjectChoice choice);
 
 	//step 3: wait for the start signal and load everything
-	virtual void readyAndLoad();
+	typedef void (* LoadStatusCallback) (const CString &t, float);
+	virtual void readyAndLoad(LoadStatusCallback callBackFun = NULL);
 
 	//step 4: start the game time counter
 	void setStartTime(float offset = 0.0);
@@ -74,6 +77,7 @@ public:
 
 	//step 7: Get result information of last game (hiscore, replay)
 	CHiscore getHiscore(bool onlyThisGame = false);
+	CString getReplayFile() {return m_ReplayFile;}
 
 	//some tools
 	//TODO: place these e.g. in CWorld
@@ -88,6 +92,10 @@ protected:
 	vector<CSimulation *> m_Simulations;
 	CClientNet *m_ClientNet;
 	CString m_TrackFile;
+	
+	CString m_ReplayFile;
+
+	enum {eLocalGame, eNetworkGame, eReplayGame} m_GameType;
 
 	CHiscore m_LastHiscores;
 	CHiscore m_LastHiscoresThisGame;

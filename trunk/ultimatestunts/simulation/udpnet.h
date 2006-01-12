@@ -24,6 +24,7 @@ using namespace std;
 
 #include "messagebuffer.h"
 #include "usmacros.h"
+#include "ipnumber.h"
 
 /**
   *@author CJP
@@ -34,14 +35,22 @@ public:
 	CUDPNet(unsigned int port); //0 = take a free port (like for clients)
 	virtual ~CUDPNet();
 
+
+	virtual bool isConnected();
+
 	virtual bool receiveData(unsigned int millisec=1); //returns true if new data has arrived
 	vector<CMessageBuffer> m_ReceiveBuffer;
 
 	virtual bool sendData(CMessageBuffer &data);
 
+protected:
+	void closeConnection();
+
 private:
 	unsigned int m_SendCounter;
 	int m_Socket;
 };
+
+CIPNumber getBroadcastAddress();
 
 #endif

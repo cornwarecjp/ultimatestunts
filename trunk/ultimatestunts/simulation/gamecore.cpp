@@ -18,17 +18,29 @@
 #include <cstdio>
 #include <unistd.h>
 
+#include <libintl.h>
+#define _(String) gettext (String)
+#define N_(String1, String2, n) ngettext ((String1), (String2), (n))
+
+#include "usmacros.h"
+
 #include "clientsim.h"
 #include "physics.h"
+#include "approximation.h"
+#include "replayer.h"
+
 #include "car.h"
 
 #include "gamecore.h"
+
+#define TEMPREPLAYFILE "last_race.repl"
 
 CGameCore::CGameCore()
 {
 	m_World = new CWorld();
 	m_PCtrl = NULL;
 	m_ClientNet = NULL;
+	m_GameType = eLocalGame;
 	initLocalGame(""); //just to get it into some state
 }
 
@@ -42,7 +54,7 @@ CGameCore::~CGameCore()
 	delete m_World;
 }
 
-void CGameCore::initLocalGame(const CString &trackfile)
+bool CGameCore::initLocalGame(const CString &trackfile)
 {
 	unloadGame();
 
@@ -50,11 +62,16 @@ void CGameCore::initLocalGame(const CString &trackfile)
 	if(m_ClientNet!=NULL)
 		delete m_ClientNet;
 	m_ClientNet = NULL;
-	stopGame();
+
 	m_TrackFile = trackfile;
+	m_ReplayFile = TEMPREPLAYFILE;
+	m_GameType = eLocalGame;
+
+	resetGame();
+	return true;
 }
 
-void CGameCore::initClientGame(const CString &host, unsigned int port)
+bool CGameCore::initClientGame(const CString &host, unsigned int port, bool keepOldReplay)
 {
 	unloadGame();
 
@@ -69,7 +86,39 @@ void CGameCore::initClientGame(const CString &host, unsigned int port)
 	if(m_ClientNet == NULL)
 		{m_ClientNet = new CClientNet(host, port);}
 
+	if(!(m_ClientNet->isConnected()) )
+	{
+		initLocalGame(m_TrackFile);
+		return false;
+	}
+
+	m_ReplayFile = TEMPREPLAYFILE;
+
+	//Deleting it will make the client to download it from the server
+	//at the end of the game
+	if(!keepOldReplay)
+		deleteDataFile(TEMPREPLAYFILE);
+
+	m_GameType = eNetworkGame;
+
 	resetGame();
+	return true;
+}
+
+bool CGameCore::initReplayGame(const CString &replayfile)
+{
+	unloadGame();
+
+	//delete client network of previous game sessions
+	if(m_ClientNet!=NULL)
+		delete m_ClientNet;
+	m_ClientNet = NULL;
+	
+	m_ReplayFile = replayfile;
+	m_GameType = eReplayGame;
+
+	resetGame();
+	return true;
 }
 
 bool CGameCore::addPlayer(CPlayer *p, CObjectChoice choice)
@@ -90,42 +139,116 @@ bool CGameCore::addPlayer(CPlayer *p, CObjectChoice choice)
 	return true;
 }
 
-void CGameCore::readyAndLoad()
+void CGameCore::readyAndLoad(LoadStatusCallback callBackFun)
 {
-	if(m_ClientNet != NULL)
+	if(callBackFun != NULL)
+		callBackFun(_("Game is being started"), 0.0);
+
+	//pre-load:
+	switch(m_GameType)
 	{
-		CClientSim *csim = (CClientSim *)(m_Simulations[0]);
-		m_TrackFile = csim->getTrackname();
+	case eLocalGame:
+		break;
+	case eNetworkGame:
+		{
+		CClientSim *csim = (CClientSim *)(m_Simulations[0]); //TODO: less dirty
+		m_TrackFile = csim->getTrackname(callBackFun);
+		}
+		break;
+	case eReplayGame:
+		{
+		CReplayer *replayer = (CReplayer *)(m_Simulations[0]); //TODO: less dirty
+		replayer->open(m_ReplayFile, false); //start playing the replay file
+		m_TrackFile = replayer->m_TrackFile;
+
+		m_Players.clear();
+		m_PCtrl->clearPlayerList();
+		for(unsigned int i=0; i < replayer->m_ObjectList.size(); i++)
+		{
+			CObjectChoice &oc = replayer->m_ObjectList[i];
+			printf("Loading player %d: %s, %s\n", i, oc.m_Filename.c_str(), oc.m_PlayerName.c_str());
+			if(m_PCtrl->addPlayer(oc) < 0)
+			{
+				printf("Error: player was refused!\n");
+				return; //failed
+			}
+		}
+
+		}
+		break;
 	}
-	
+
+	printf(
+	"\n"
+	"--------------------\n"
+	"Some important data:\n"
+	"--------------------\n"
+	" Track file: \"%s\"\n"
+	"Replay file: \"%s\"\n"
+	"--------------------\n",
+	m_TrackFile.c_str(),
+	m_ReplayFile.c_str()
+	);
+
+	if(callBackFun != NULL)
+		callBackFun(_("Loading files"), -1.0);
+
 	loadTrackData();
 	loadMovObjData();
 
-	if(m_ClientNet != NULL)
+	//post-load:
+	switch(m_GameType)
 	{
+	case eLocalGame:
+		{
+		CReplayer *replayer = (CReplayer *)(m_Simulations[2]); //TODO: less dirty
+		replayer->open(m_ReplayFile, true); //start recording the replay file
+		}
+		break;
+	case eNetworkGame:
+		{
 		printf("Telling the server that we're ready\n");
 		m_ClientNet->sendReady();
 
 		printf("Wait until everybody is ready\n");
 		m_ClientNet->wait4Ready();
+		}
+		break;
+	case eReplayGame:
+		break;
 	}
-
 }
 
 void CGameCore::setStartTime(float offset)
 {
 	//TODO: some time synchronisation between server and client
-	theWorld->m_GameStartTime = m_Timer.getTime() + 3.01 + offset;
+	theWorld->m_LastTime = 3.01 + offset;
+	theWorld->m_GameStartTime = m_Timer.getTime() + theWorld->m_LastTime;
 }
 
 bool CGameCore::update() //true = continue false = leave
 {
+	//Game time info:
+	float currTime = m_Timer.getTime() - theWorld->m_GameStartTime;
+
+	float dt = currTime - theWorld->m_LastTime + 0.00001; //to avoid division by zero
+
+	if(dt > 0.5)
+	{
+#ifdef DEBUGMSG
+		printf("Warning: Low update time detected\n");
+#endif
+		dt = 0.5;
+	}
+
+	theWorld->m_Lastdt = dt;
+	theWorld->m_LastTime = currTime;
+
 	//FPS:
-	float dt = m_Timer.getdt(0.00001);
 	float fpsnu = 1.0 / dt;
 	m_FPS = 0.9 * m_FPS + 0.1 * fpsnu;
 
-	if(m_ClientNet != NULL)
+	if(m_GameType == eNetworkGame)
 	{
 		usleep(10000); //< 100 fps. Just to give a server process some CPU time
 		m_ClientNet->m_ReceiveBuffer.clear(); //all messages that were not used in the previous turn
@@ -135,7 +258,6 @@ bool CGameCore::update() //true = continue false = leave
 	for(unsigned int i=0; i<m_Players.size(); i++)
 		m_Players[i]->update(); //Makes moving decisions
 
-	
 	bool retval = true;
 	for(unsigned int i=0; i<m_Simulations.size(); i++)
 	{
@@ -143,12 +265,14 @@ bool CGameCore::update() //true = continue false = leave
 	}
 
 	//Do the chatsystem message delivery
-	if(m_ClientNet==NULL)
+	switch(m_GameType)
 	{
+	case eLocalGame:
+	case eReplayGame:
 		theWorld->m_ChatSystem.loopBack(); //local delivery
-	}
-	else
-	{
+		break;
+	case eNetworkGame:
+		{
 		//send the entire outgoing queue. Receiving is done by CClientSim
 		//false = don't wait for the confirmation
 		for(unsigned int i=0; i < theWorld->m_ChatSystem.m_OutQueue.size(); i++)
@@ -158,9 +282,19 @@ bool CGameCore::update() //true = continue false = leave
 		}
 
 		theWorld->m_ChatSystem.m_OutQueue.clear();
+		}
+		break;
 	}
 
 	theWorld->m_ChatSystem.deliverMessages();
+
+	if(!retval && m_GameType == eLocalGame) //if we stop a local game
+	{
+		//Close the recording of the replay file
+		//to make it available as soon as possible for download
+		CReplayer *replayer = (CReplayer *)(m_Simulations[2]); //TODO: less dirty
+		replayer->close(); //stop recording the replay file
+	}
 
 	return retval;
 }
@@ -179,18 +313,31 @@ void CGameCore::resetGame()
 {
 	unloadGame();
 
-	if(m_ClientNet == NULL) //local game
+	switch(m_GameType)
 	{
+	case eLocalGame:
+		{
 		m_PCtrl = new CPlayerControl;
 		m_Simulations.push_back(new CRuleControl);
 		m_Simulations.push_back(new CPhysics(theMainConfig));
-	}
-	else
-	{
+		m_Simulations.push_back(new CReplayer(m_PCtrl));
+		}
+		break;
+	case eNetworkGame:
+		{
 		m_PCtrl = new CClientPlayerControl(m_ClientNet);
 		m_Simulations.push_back(new CClientSim(this, m_ClientNet));
-		//m_Simulations.push_back(new CPhysics(theMainConfig));
-		//TODO: CApproximation or CPhysics for slow connections
+		m_Simulations.push_back(new CApproximation);
+		//TODO: CPhysics for slow connections
+		}
+		break;
+	case eReplayGame:
+		{
+		m_PCtrl = new CPlayerControl;
+		m_Simulations.push_back(new CReplayer(m_PCtrl));
+		m_Simulations.push_back(new CApproximation);
+		}
+		break;
 	}
 }
 
@@ -240,8 +387,10 @@ void CGameCore::collectHiscoreData(bool saveHiscore)
 {
 	m_LastHiscoresThisGame.clear();
 
-	if(m_ClientNet == NULL) //local game
+	switch(m_GameType)
 	{
+	case eLocalGame:
+		{
 		for(unsigned int i=0; i < m_Players.size(); i++)
 		{
 			unsigned int carID = m_Players[i]->m_MovingObjectId;
@@ -258,19 +407,51 @@ void CGameCore::collectHiscoreData(bool saveHiscore)
 			e.isNew = true;
 			m_LastHiscoresThisGame.push_back(e);
 		}
-	}
-	else
-	{
+
+		//Close the replay recorder
+		CReplayer *replayer = (CReplayer *)(m_Simulations[2]); //TODO: less dirty
+		replayer->close();
+
+		}
+		break;
+	case eNetworkGame:
+		{
 		//TODO: special cases for other ways of exiting (e.g. Esc key)
 
 		m_LastHiscoresThisGame = ((CClientSim *)(m_Simulations[0]))->getHiscore();
+		}
+		break;
+	case eReplayGame:
+		//No hiscores to add
+		break;
 	}
 
-	//merge with existing hiscore file:
-	CHiscoreFile hf(m_TrackFile);
-	if(saveHiscore)
-		hf.addEntries(m_LastHiscoresThisGame);
-	m_LastHiscores = hf.getEntries();
+	if(m_GameType != eReplayGame) //in a replay game: don't touch any hiscore data
+	{
+		//merge with existing hiscore file:
+		CHiscoreFile hf(m_TrackFile);
+		if(saveHiscore)
+			hf.addEntries(m_LastHiscoresThisGame);
+		m_LastHiscores = hf.getEntries();
+	}
+
+	//Get the replay file (possibly from the server):
+	{
+		CDataFile f(m_ReplayFile);
+	} //~CDataFile destructor called -> closes the file again
+	
+	if(m_LastHiscores.size() > 0 && m_LastHiscores[0].isNew) //it could be 0 sometimes
+	{
+		//copy it to the track's replay file
+
+		CString destfn = "unrecognised_trackname.repl";
+		int dotpos = m_TrackFile.inStr('.');
+		if(dotpos >= 0)
+			destfn = m_TrackFile.mid(0, dotpos) + ".repl";
+
+		//printf("Copying %s to %s\n", m_ReplayFile.c_str(), destfn.c_str());
+		copyDataFile(m_ReplayFile, destfn);
+	}
 }
 
 CHiscore CGameCore::getHiscore(bool onlyThisGame)

@@ -198,6 +198,15 @@ int CMessageBox::onRedraw()
 
 	glPopMatrix();
 
+	drawTitle();
+
+	return 0;
+}
+
+void CMessageBox::drawTitle()
+{
+	glPushMatrix();
+
 	glTranslatef(0.0, 0.3*m_H, 0);
 	theConsoleFont->enable();
 	for(unsigned int i=0; i < m_Lines.size(); i++)
@@ -212,5 +221,5 @@ int CMessageBox::onRedraw()
 	}
 	theConsoleFont->disable();
 
-	return 0;
+	glPopMatrix();
 }

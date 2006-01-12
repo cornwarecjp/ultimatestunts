@@ -32,10 +32,13 @@ CCarEngine::~CCarEngine(){
 
 void CCarEngine::update(float dt, float w1, float w2, float w3, float w4)
 {
+	float currentW = 0.5 * m_FrontTraction * (w1 + w2) + 0.5 * m_RearTraction * (w3 + w4);
 	float factor = exp(-100.0*dt);
-	m_MainAxisW = factor * m_MainAxisW + (1.0-factor) * 0.25 * (w1 + w2 + w3 + w4);
+	m_MainAxisW = factor * m_MainAxisW + (1.0-factor) * currentW;
 
 	float MEngine = getEngineM(m_MainAxisW * getGearRatio());
+
+	//fprintf(stderr, "%.f\t%.f\n", m_MainAxisW * getGearRatio(), MEngine);
 
 	MEngine *= m_Gas;
 
@@ -45,10 +48,10 @@ void CCarEngine::update(float dt, float w1, float w2, float w3, float w4)
 float CCarEngine::getWheelM(unsigned int wheelnr)
 {
 	if(wheelnr == 0 || wheelnr == 1)
-		return m_FrontTraction * m_MainAxisM;
+		return 0.5 * m_FrontTraction * m_MainAxisM;
 
 	if(wheelnr == 2 || wheelnr == 3)
-		return m_RearTraction * m_MainAxisM;
+		return 0.5 * m_RearTraction * m_MainAxisM;
 
 	return 0.0;
 }
@@ -61,26 +64,37 @@ float CCarEngine::getGearRatio(int gear)
 
 float CCarEngine::getEngineM(float wengine)
 {
-	/*
-	|
-	|------------\
-	|             \
-	|              \
-	|               \
-	|                \
-	|                 \
-	L__________________\_______
-	|                   \
-	|                    \_____
-	*/
+	//Piecewise fit through several points
 
-	float MEngine = m_EngineM; //first part of the curve
-	if(wengine > m_MaxEngineW)
+	float Mengine = 0.0;
+
+	if(wengine < 0.0)
 	{
-		MEngine = m_EngineM - m_dMdw * (wengine - m_MaxEngineW);
+		//negative RPMs
+		//TODO: make something more realistic
+		Mengine = m_M0;
+	}
+	else if(wengine < m_w_Mmax)
+	{
+		float wrel = (wengine-m_w_Mmax)/m_w_Mmax;
+		Mengine = m_Mmax - (m_Mmax - m_M0) * wrel*wrel;
+	}
+	else if(wengine < m_w_Pmax)
+	{
+		float dw = m_w_Pmax-m_w_Mmax;
+		float wrel = (wengine-m_w_Mmax)/dw;
+		
+		float A = (3 + dw/m_w_Pmax) * m_Pmax / m_w_Pmax - 3*m_Mmax;
+		float B = (2 + dw/m_w_Pmax) * m_Pmax / m_w_Pmax - 2*m_Mmax;
+		Mengine = m_Mmax + A *wrel*wrel - B*wrel*wrel*wrel;
+	}
+	else
+	{
+		float wrel = (wengine - m_w_Pmax) / (m_w_Zero - m_w_Pmax);
+		Mengine = (m_Pmax / m_w_Pmax) * (1.0 - wrel*wrel);
 
-		if(MEngine < -0.1 * m_EngineM) MEngine = -0.1*m_EngineM;
+		if(Mengine < -0.1 * m_Mmax) Mengine = -0.1*m_Mmax;
 	}
 
-	return MEngine;
+	return Mengine;
 }

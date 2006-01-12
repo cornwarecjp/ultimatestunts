@@ -43,18 +43,13 @@ class CClientList : public CCriticalVector<CClient>
 public:
 	CClientList()
 	{
-		maxRequests = 2;
+		AIrequests = 0;
+		minPlayers = 2;
 	}
 
 	int addRequest_safe(unsigned int ID, const CObjectChoice &oc)
 	{
 		enter();
-		if(playerRequests.size() >= maxRequests)
-		{
-			leave();
-			return -1;
-		}
-		
 		playerRequests.push_back(oc);
 		int ret = playerRequests.size()-1;
 		operator[](ID).playerRequests.push_back(ret);
@@ -62,8 +57,18 @@ public:
 		return ret;
 	}
 
+	bool reachedMinimum_safe()
+	{
+		bool ret = false;
+		enter();
+		ret = playerRequests.size() + AIrequests >= minPlayers;
+		leave();
+		return ret;
+	}
+
 	vector<CObjectChoice> playerRequests;
-	unsigned int maxRequests;
+	unsigned int AIrequests;
+	unsigned int minPlayers;
 };
 
 #endif

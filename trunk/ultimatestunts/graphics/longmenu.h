@@ -1,8 +1,8 @@
 /***************************************************************************
-                          usmisc.h  -  Misc utility functions
+                          longmenu.h  -  menu with scrolling ability
                              -------------------
-    begin                : wo feb 2 2005
-    copyright            : (C) 2005 by CJP
+    begin                : ma jan 2 2006
+    copyright            : (C) 2006 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
 
@@ -14,28 +14,31 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#ifndef USMISC_H
-#define USMISC_H
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
+#ifndef LONGMENU_H
+#define LONGMENU_H
+
+#include "menu.h"
+
+/**
+  *@author CJP
+  */
+
+class CLongMenu : public CMenu  {
+public: 
+	CLongMenu();
+	virtual ~CLongMenu();
+
+	virtual int onKeyPress(int key);
+	virtual int onMouseMove(int x, int y);
+	virtual int onMouseClick(int x, int y, unsigned int buttons);
+	virtual int onRedraw();
+
+protected:
+	virtual int getdy();
+	unsigned int getNumVisibleLines();
+
+	unsigned int m_ScreenTop;
+};
+
 #endif
-
-#include <vector>
-namespace std {}
-using namespace std;
-
-#include "cstring.h"
-
-/*
-this should be the start of all Ultimate Stunts
-programs. It finds and loads the configuration file,
-sets the datadir up, and initialises internationalisation.
-*/
-void shared_main(int argc, char *argv[]);
-
-
-vector<CString> getCredits();
-
-#endif
-

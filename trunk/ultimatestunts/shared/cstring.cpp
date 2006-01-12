@@ -236,14 +236,14 @@ CString &CString::fromTime(float t)
 	return *this;
 }
 
-CString CString::operator+(CString const &val)
+CString CString::operator+(CString const &val) const
 {
 	CString ret(*this);
 	ret.append(val);
 	return ret;
 }
 
-CString CString::operator+(const char *val)
+CString CString::operator+(const char *val) const
 {
 	CString ret(*this);
 	ret.append(val);
@@ -336,7 +336,8 @@ CString &CString::format(const char *format, int maxsize, ...)
 float CString::toFloat()
 {
     float ret;
-    sscanf(c_str(), " %f ", &ret); //watch the spaces
+    if(sscanf(c_str(), " %f ", &ret) < 1) //watch the spaces
+    	return 0.0;
 
     return ret;
 }
