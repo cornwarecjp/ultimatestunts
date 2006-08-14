@@ -150,19 +150,19 @@ CRenderer::~CRenderer()
 
 void CRenderer::update()
 {
-	unsigned int w = m_WinSys->getWidth();
-	unsigned int h = m_WinSys->getHeight();
+	updateScreenSize();
 
 	//Set up openGL viewport + frustum stuff to window size
 
-	float ratio = (float) w / (float) h;
+	float ratio = (float) m_W / (float) m_H;
 	GLfloat near = 1.0;
 	GLfloat far = TILESIZE * m_Settings.m_VisibleTiles;
 	float hor_mul = near / 5.0;
 	GLfloat xs = ratio*hor_mul;
 	GLfloat ys = 1.0*hor_mul;
 
-	glViewport( 0, 0, w, h );
+	//printf("glViewport(%d, %d, %d, %d);\n", m_X, m_Y, m_W, m_H);
+	glViewport( m_X, m_Y, m_W, m_H );
 
 	glMatrixMode( GL_PROJECTION );
 	glLoadIdentity();
@@ -172,3 +172,9 @@ void CRenderer::update()
 	glLoadIdentity();
 }
 
+void CRenderer::updateScreenSize()
+{
+	m_X = m_Y = 0;
+	m_W = m_WinSys->getWidth();
+	m_H = m_WinSys->getHeight();
+}

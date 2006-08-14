@@ -106,7 +106,9 @@ int CGUI::onResize(int x, int y, int w, int h)
 	glViewport(0, 0, w, h);
 	glScissor(0, 0, w, h);
 
-	return m_ChildWidget->onResize(0, 0, w, h);
+	if(m_ChildWidget == NULL) return 0;
+
+	return m_ChildWidget->onResize(1, 1, w-2, h-2);
 }
 
 int CGUI::onRedraw()

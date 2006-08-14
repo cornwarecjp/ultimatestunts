@@ -30,6 +30,7 @@ CGUIPage::CGUIPage()
 	loadConsoleFont();
 
 	m_Title = "Ultimate Stunts menu";
+	m_DrawBackground = true;
 
 	if(_thePageBackground == NULL)
 	{
@@ -84,30 +85,42 @@ int CGUIPage::onRedraw()
 	CWidget::onRedraw();
 
 	//draw background:
-	_thePageBackground->draw();
-	glBegin(GL_QUADS);
-	glTexCoord2f(0,0);
-	glVertex2f(0,0);
-	glTexCoord2f(1,0);
-	glVertex2f(m_W,0);
-	glTexCoord2f(1,1);
-	glVertex2f(m_W,m_H);
-	glTexCoord2f(0,1);
-	glVertex2f(0,m_H);
-	glEnd();
+	if(m_DrawBackground)
+	{
+		_thePageBackground->draw();
+		glBegin(GL_QUADS);
+		glTexCoord2f(0,0);
+		glVertex2f(0,0);
+		glTexCoord2f(1,0);
+		glVertex2f(m_W,0);
+		glTexCoord2f(1,1);
+		glVertex2f(m_W,m_H);
+		glTexCoord2f(0,1);
+		glVertex2f(0,m_H);
+		glEnd();
+	}
+	else
+	{
+		glColor3f(0,0,0);
+		drawBackground();
+		glColor3f(1,1,1);
+	}
 
-	theConsoleFont->enable();
+	if(m_Title.length() > 0)
+	{
+		theConsoleFont->enable();
 
-	//draw the title:
-	glTranslatef(0.5*m_W, 0.8*m_H, 0); //set cursor
+		//draw the title:
+		glTranslatef(0.5*m_W, 0.8*m_H, 0); //set cursor
 
-	glColor3f(1,1,1);
+		glColor3f(1,1,1);
 
-	glTranslatef(-((int)m_Title.length())*theConsoleFont->getFontW(), 0, 0); //centered
-	glScalef(2,2,2);
-	theConsoleFont->drawString(m_Title);
+		glTranslatef(-((int)m_Title.length())*theConsoleFont->getFontW(), 0, 0); //centered
+		glScalef(2,2,2);
+		theConsoleFont->drawString(m_Title);
 
-	theConsoleFont->disable();
+		theConsoleFont->disable();
+	}
 
 	if(m_Widgets.size() == 0) return 0;
 

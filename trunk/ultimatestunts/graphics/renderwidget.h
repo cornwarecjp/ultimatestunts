@@ -1,8 +1,8 @@
 /***************************************************************************
-                          dynamicreflection.h  -  description
+                          renderwidget.h  -  GUI widget for 3D rendering
                              -------------------
-    begin                : za mei 14 2005
-    copyright            : (C) 2005 by CJP
+    begin                : sa jul 22 2006
+    copyright            : (C) 2006 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
 
@@ -15,29 +15,28 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef DYNAMICREFLECTION_H
-#define DYNAMICREFLECTION_H
+#ifndef RENDERWIDGET_H
+#define RENDERWIDGET_H
 
-#include "reflection.h"
+#include "widget.h"
+#include "renderer.h"
 
-/**
-  *@author CJP
-  */
+class CRenderWidget : public CWidget {
+public:
+	CRenderWidget(bool enableDepth=true, bool enableFog=true);
+	virtual ~CRenderWidget();
 
-class CDynamicReflection : public CReflection  {
-public: 
-	CDynamicReflection(unsigned int size);
-	~CDynamicReflection();
+	virtual int onRedraw();
 
-	void update(CRenderer *renderer, CCamera *cam, int side = -1);
+	CRenderer *m_Renderer;
 
 protected:
-	unsigned int m_ReflectionTexture[6]; //side textures
-	float m_CentralPixel[4]; //the front color = clear color for the spheremap
+	bool m_EnableDepth, m_EnableFog;
 
-	void initialiseReflections();
+private:
 
-	unsigned int m_Size;
+	void enter2DMode();
+	void leave2DMode();
 };
 
 #endif

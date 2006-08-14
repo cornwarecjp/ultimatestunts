@@ -24,7 +24,7 @@
 #include "vector.h"
 #include "usmacros.h"
 #include "lconfig.h"
-#include "graphicworld.h"
+//#include "graphicworld.h"
 #include "datafile.h"
 #include "glbfile.h"
 #include "lodtexture.h"
@@ -37,14 +37,15 @@ CGraphObj::CGraphObj(CDataManager *manager, eDataType type) : CDataObject(manage
 
 CGraphObj::~CGraphObj()
 {
+	unload();
 }
 
 bool CGraphObj::load(const CString &filename, const CParamList &list)
 {
-	CDataObject::load(filename, list);
-
 	CGLBFile f;
 	if(!f.load(filename)) return false;
+
+	CDataObject::load(filename, list);
 
 	CString subset = m_ParamList.getValue("subset", "");
 	vector<CDataObject *> matarray = m_DataManager->getSubset(CDataObject::eMaterial, subset);
@@ -144,11 +145,12 @@ void CGraphObj::unloadPrimitive(SPrimitive &pr)
 bool tex_enabled;
 bool use_blending;
 
-void CGraphObj::draw(const SGraphicSettings *settings, CReflection *reflection, unsigned int lod)
+void CGraphObj::draw(const SGraphicSettings *settings, CReflection *reflection, unsigned int lod, bool useMaterials)
 {
 	m_CurrentSettings = settings;
 	m_CurrentReflection = reflection;
 	m_CurrentLOD = lod;
+	m_UseMaterials = useMaterials;
 	
 	//TODO: make this code very fast (it's the main drawing routine)
 
@@ -213,6 +215,8 @@ bool CGraphObj::setMaterial(const SPrimitive &pr, bool forReflection)
 	}
 	else
 	{
+		if(!m_UseMaterials) return true; //don't set the material
+
 		//Shininess:
 		float speccol[] = {pr.reflectance, pr.reflectance, pr.reflectance, 0.0};
 		//float speccol[] = {1,1,1, 0.0};

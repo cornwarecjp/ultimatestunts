@@ -23,9 +23,8 @@
 #include <cstdlib>
 #include <cstdio>
 
-CReflection::CReflection(bool smooth)
+CReflection::CReflection()
 {
-	m_TexSmooth = smooth;
 }
 
 CReflection::~CReflection()

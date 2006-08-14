@@ -28,7 +28,7 @@
 //ONLY USE DERIVED CLASSES (CStaticReflection and CDynamicReflection)
 class CReflection  {
 public: 
-	CReflection(bool smooth);
+	CReflection();
 	~CReflection();
 
 	void enable(const SGraphicSettings *settings);
@@ -37,7 +37,6 @@ public:
 protected:
 	unsigned int m_Texture; //spheremap texture
 
-	bool m_TexSmooth;
 	const SGraphicSettings *m_CurrentSettings;
 
 	float oldambient[4]; //temporary place to put the ambient color

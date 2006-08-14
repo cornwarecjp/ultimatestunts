@@ -128,6 +128,7 @@ static rawImageRec *RawImageOpen(const char *fileName)
 	        (unsigned int) (x/sizeof(GLint)));
 	}
     }
+
     return raw;
 }
 
@@ -140,6 +141,8 @@ static void RawImageClose(rawImageRec *raw)
     free(raw->tmpG);
     free(raw->tmpB);
     free(raw->tmpA);
+    free(raw->rowStart); //Added by CJP
+    free(raw->rowSize); //Added by CJP
     free(raw);
 }
 
@@ -232,27 +235,28 @@ static void RawImageGetData_RGBA(rawImageRec *raw, RGBImageRec *final)
 
 RGBImageRec *RGBImageLoad(const char *fileName)
 {
-    rawImageRec *raw;
-    RGBImageRec *final;
+	rawImageRec *raw;
+	RGBImageRec *final;
 
-    raw = RawImageOpen(fileName);
-    final = (RGBImageRec *)malloc(sizeof(RGBImageRec));
-    if (final == NULL) {
-	fprintf(stderr, "Out of memory!\n");
-	exit(1);
-    }
-    final->sizeX = raw->sizeX;
-    final->sizeY = raw->sizeY;
-    if(raw->sizeZ == 4) //with alpha layer
-    {
+	raw = RawImageOpen(fileName);
+	final = (RGBImageRec *)malloc(sizeof(RGBImageRec));
+	if (final == NULL) {
+		fprintf(stderr, "Out of memory!\n");
+		exit(1);
+	}
+	final->sizeX = raw->sizeX;
+	final->sizeY = raw->sizeY;
+	if(raw->sizeZ == 4) //with alpha layer
+	{
 		RawImageGetData_RGBA(raw, final);
 		final->format = 1;
 	}
-    else
-    {
+	else
+	{
 		RawImageGetData(raw, final);
 		final->format = 0;
 	}
-    RawImageClose(raw);
-    return final;
+	RawImageClose(raw);
+
+	return final;
 }

@@ -28,6 +28,7 @@ CFont::CFont(CDataManager *manager) : CTexture(manager)
 
 CFont::~CFont()
 {
+	unload();
 }
 
 void CFont::unload()

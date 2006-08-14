@@ -27,7 +27,7 @@
 
 class CStaticReflection : public CReflection , public CTexture {
 public: 
-	CStaticReflection(bool smooth, CDataManager *manager);
+	CStaticReflection(CDataManager *manager);
 	~CStaticReflection();
 
 	bool load(const CString &filename, const CParamList &list);

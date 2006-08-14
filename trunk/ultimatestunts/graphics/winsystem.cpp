@@ -147,6 +147,8 @@ int CWinSystem::runLoop( bool (CALLBACKFUN *loopfunc)(), bool swp)
 {
 	bool quit = false;
 
+	SDL_EnableKeyRepeat(0, 0);
+
 	//if loopfunc want to quit for some reason, then is returns false
 	while(!quit)
 	{
@@ -210,6 +212,8 @@ bool CWinSystem::runLoop(CWidget *widget)
 {
 	int widgetmessages = widget->onResize(0, 0, m_W, m_H) | widget->onRedraw();
 	swapBuffers();
+
+	SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
 
 	while(!(widgetmessages & WIDGET_QUIT))
 	{
@@ -276,6 +280,8 @@ bool CWinSystem::runLoop(CWidget *widget)
 			swapBuffers();
 		}
 	}
+
+	SDL_EnableKeyRepeat(0, 0);
 
 	if(widgetmessages & WIDGET_CANCELLED)
 		return false;

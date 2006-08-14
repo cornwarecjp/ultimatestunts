@@ -35,6 +35,7 @@ CTexture::CTexture(CDataManager *manager) : CDataObject(manager, CDataObject::eM
 
 CTexture::~CTexture()
 {
+	unload();
 }
 
 bool CTexture::load(const CString &filename, const CParamList &list)
@@ -46,9 +47,11 @@ bool CTexture::load(const CString &filename, const CParamList &list)
 	m_TextureSmooth = m_ParamList.getValue("smooth", "true") == "true";
 
 	CDataFile f(m_Filename);
+
 	RGBImageRec *in_image = loadImage(f.useExtern());
 	in_image = loadFromImage(in_image, m_Sizex, m_Sizey);
 	freeImage(in_image);
+
 	return true;
 }
 
@@ -67,13 +70,24 @@ RGBImageRec *CTexture::loadImage(CString filename)
 	return RGBImageLoad(filename.c_str());
 }
 
+/*
+free's in_image
+returns either a malloc'ed image, or NULL
+
+Sometimes in_image is returned, and nothing is malloc'ed or free'd
+*/
 RGBImageRec *CTexture::loadFromImage(RGBImageRec *in_image, int xs, int ys)
 {
-	RGBImageRec *image = scaleImage(in_image, xs, ys);
+	RGBImageRec *image;
+
+	image = scaleImage(in_image, xs, ys);
 	if(image==NULL)
 	{
-		image = in_image;
-		in_image = NULL;
+		image = in_image; //in_image is not freed because we use it
+	}
+	else
+	{
+		freeImage(in_image); //no longer used because we have image
 	}
 
 	glGenTextures(1, &m_Texture);
@@ -100,8 +114,6 @@ RGBImageRec *CTexture::loadFromImage(RGBImageRec *in_image, int xs, int ys)
 
 	m_Sizex = image->sizeX;
 	m_Sizey = image->sizeY;
-
-	freeImage(in_image);
 
 	//determine color
 	RGBImageRec *image2 = scaleImage(image, 1,1);
@@ -157,6 +169,9 @@ CVector CTexture::getColor() const
 	return m_Color;
 }
 
+/*
+returns NULL when in already has the right size
+*/
 RGBImageRec *CTexture::scaleImage(RGBImageRec *in, int xs, int ys)
 {
 	int sizex,sizey;
@@ -171,7 +186,6 @@ RGBImageRec *CTexture::scaleImage(RGBImageRec *in, int xs, int ys)
 
 	if(sizex==in->sizeX && sizey==in->sizeY)
 		return NULL; //don't scale; use the same texture
-
 
 	bitmapdata = (unsigned char *)malloc(4*sizex*sizey*sizeof(unsigned char));
 	out = (RGBImageRec *)malloc(sizeof(RGBImageRec));

@@ -37,7 +37,10 @@ public:
 
 	virtual void update(); //default: set up viewport
 
+	unsigned int m_X, m_Y, m_W, m_H; //to be updated from outside or by updateScreenSize
 protected:
+	virtual void updateScreenSize(); //default: get from winsys
+
 	const CCamera *m_Camera;
 	const CWinSystem *m_WinSys;
 

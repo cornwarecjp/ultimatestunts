@@ -15,7 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 #include <GL/gl.h>
- 
+#include <cstdio>
+
 #include "widget.h"
 
 CWidget::CWidget()
@@ -55,6 +56,7 @@ int CWidget::onRedraw()
 {
 	glLoadIdentity();
 	glTranslatef(m_X, m_Y, 0);
+
 	glScissor(m_X, m_Y, m_W, m_H);
 
 	//glClear( GL_COLOR_BUFFER_BIT );

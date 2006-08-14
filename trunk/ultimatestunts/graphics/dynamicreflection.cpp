@@ -20,16 +20,9 @@
 #include <cstdlib>
 #include <cstdio>
 
+#include "usmacros.h"
 #include "dynamicreflection.h"
 
-//Reflection method:
-#define USECOPYTEXSUB
-
-#ifdef USECOPYTEXSUB
-#define CopyToTexture(size) glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, (size), (size))
-#else
-#define CopyToTexture(size) glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 0, 0, (size), (size), 0)
-#endif
 
 /*
 	0:front
@@ -332,7 +325,7 @@ void initialiseSpheremap()
 	_spheremapInitialised = true;
 }
 
-CDynamicReflection::CDynamicReflection(bool smooth, unsigned int size) : CReflection(smooth)
+CDynamicReflection::CDynamicReflection(unsigned int size) : CReflection()
 {
 	m_Size = size;
 
@@ -366,16 +359,9 @@ void CDynamicReflection::initialiseReflections()
 		glTexImage2D( GL_TEXTURE_2D, 0, 3, m_Size/2, m_Size/2, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
 		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );
-		if(m_TexSmooth)
-		{
-			glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-			glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-		}
-		else
-		{
-			glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-			glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-		}
+
+		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 	}
 
 	glGenTextures(1, &m_Texture);
@@ -383,16 +369,9 @@ void CDynamicReflection::initialiseReflections()
 	glTexImage2D( GL_TEXTURE_2D, 0, 3, m_Size, m_Size, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
 	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );
-	if(m_TexSmooth)
-	{
-		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-	}
-	else
-	{
-		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-	}
+
+	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 
 	delete [] data;
 }

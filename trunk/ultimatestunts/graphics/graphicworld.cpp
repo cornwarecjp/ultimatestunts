@@ -21,12 +21,57 @@
 #include "datafile.h"
 #include "world.h"
 
+
+CGraphicMovObj::CGraphicMovObj(CGraphicWorld *world) : CDataObject(world, CDataObject::eMovingObject)
+{
+	m_Shadow = NULL;
+	m_Dashboard = NULL;
+}
+
+bool CGraphicMovObj::load(const CString &filename, const CParamList &list)
+{
+	CDataObject::load(filename, list);
+
+	unsigned int refln = m_ParamList.getValue("reflnum" , "1"   ).toInt();
+	unsigned int refls = m_ParamList.getValue("reflsize", "1024").toInt();
+	unsigned int shads = m_ParamList.getValue("shadsize", "1024").toInt();
+	unsigned int ID    = m_ParamList.getValue("ID"      , "0"   ).toInt();
+
+	for(unsigned int i=0; i < refln; i++)
+	{
+		//fprintf(stderr, "Reflection added: cam %d\n", i);
+		m_Reflections.push_back(CDynamicReflection(refls));
+	}
+
+	m_Shadow = new CDynamicShadow(shads, (CGraphicWorld *)m_DataManager, ID);
+
+	m_Dashboard = new CDashboard(m_DataManager, ID);
+
+	return true;
+}
+
+void CGraphicMovObj::unload()
+{
+	if(!isLoaded()) return;
+
+	CDataObject::unload();
+
+	m_Reflections.clear();
+
+	delete m_Shadow;
+	delete m_Dashboard;
+}
+
+
+
+
+
 CGraphicWorld::CGraphicWorld()
 {
 	m_World = theWorld;
 
 	//Defaults:
-	m_TexMaxSize = m_BackgroundSize = 1024;
+	m_TexMaxSize = m_BackgroundSize = m_ReflectionSize = m_ShadowSize = 1024;
 
 	CString cnf = theMainConfig->getValue("graphics", "texture_maxsize");
 	if(cnf != "")
@@ -36,12 +81,20 @@ CGraphicWorld::CGraphicWorld()
 	if(cnf != "")
 		m_BackgroundSize = cnf.toInt();
 
+	cnf = theMainConfig->getValue("graphics", "reflection_size");
+	if(cnf != "")
+		m_ReflectionSize = cnf.toInt();
+	
+	cnf = theMainConfig->getValue("graphics", "shadow_size");
+	if(cnf != "")
+		m_ShadowSize = cnf.toInt();
+
 	cnf = theMainConfig->getValue("graphics", "texture_smooth");
 	m_TexSmooth = (cnf != "false");
 
 	//Create objects:
 	m_Background = new CBackground(this);
-	m_EnvMap = new CStaticReflection(m_TexSmooth, this);
+	m_EnvMap = new CStaticReflection(this);
 }
 
 CGraphicWorld::~CGraphicWorld()
@@ -64,6 +117,9 @@ CDataObject *CGraphicWorld::createObject(const CString &filename, const CParamLi
 
 	if(type == CDataObject::eBound)
 		return new CGraphObj(this, CDataObject::eBound);
+
+	if(type == CDataObject::eMovingObject)
+		return new CGraphicMovObj(this);
 
 	return NULL;
 }
@@ -97,6 +153,7 @@ bool CGraphicWorld::loadWorld()
 	printf("  Loading tiles:\n");
 	for(unsigned int i=0; i<m_World->getNumObjects(CDataObject::eTileModel); i++)
 		loadObject(m_World->getTileModel(i)->getFilename(), m_World->getTileModel(i)->getParamList(), CDataObject::eTileModel);
+
 
 	//params for background and envmap
 	CParamList plist;
@@ -172,6 +229,27 @@ bool CGraphicWorld::loadObjects()
 		plist.push_back(p);
 
 		loadObject(bounds[i]->getFilename(), plist, CDataObject::eBound);
+	}
+
+	//Allocate room for reflection and shadow textures
+	for(unsigned int i=0; i<m_World->getNumObjects(CDataObject::eMovingObject); i++)
+	{
+		CParamList plist;
+		SParameter p;
+		p.name = "ID";
+		p.value = i;
+		plist.push_back(p);
+		p.name = "reflnum";
+		p.value = m_World->getNumObjects(CDataObject::eMovingObject);
+		plist.push_back(p);
+		p.name = "reflsize";
+		p.value = m_ReflectionSize;
+		plist.push_back(p);
+		p.name = "shadsize";
+		p.value = m_ShadowSize;
+		plist.push_back(p);
+
+		loadObject(m_World->getMovingObject(i)->getFilename(), plist, CDataObject::eMovingObject);
 	}
 
 	return true;

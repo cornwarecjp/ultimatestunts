@@ -17,7 +17,7 @@
 
 #include "staticreflection.h"
 
-CStaticReflection::CStaticReflection(bool smooth, CDataManager *manager) : CReflection(smooth) , CTexture(manager)
+CStaticReflection::CStaticReflection(CDataManager *manager) : CReflection() , CTexture(manager)
 {
 }
 

@@ -27,6 +27,7 @@ CLODTexture::CLODTexture(CDataManager *manager) : CTexture(manager)
 
 CLODTexture::~CLODTexture()
 {
+	unload();
 }
 
 void CLODTexture::unload()

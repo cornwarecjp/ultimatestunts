@@ -36,13 +36,16 @@ class CGraphObj : public CDataObject
 		virtual bool load(const CString &filename, const CParamList &list);
 		virtual void unload();
 
-		void draw(const SGraphicSettings *settings, CReflection *reflection, unsigned int lod);
+		void draw(const SGraphicSettings *settings, CReflection *reflection, unsigned int lod, bool useMaterials=true);
 
 	protected:
+		//Rendering settings
 		const SGraphicSettings *m_CurrentSettings;
 		CReflection *m_CurrentReflection;
 		unsigned int m_CurrentLOD;
+		bool m_UseMaterials;
 
+		//Primitive data
 		struct SPrimitive
 		{
 			unsigned int LODs;

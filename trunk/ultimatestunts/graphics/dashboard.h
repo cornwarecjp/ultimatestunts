@@ -1,8 +1,8 @@
 /***************************************************************************
-                          dynamicreflection.h  -  description
+                          dashboard.h  -  A dashboard for cars etc.
                              -------------------
-    begin                : za mei 14 2005
-    copyright            : (C) 2005 by CJP
+    begin                : ma jan 30 2006
+    copyright            : (C) 2006 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
 
@@ -15,29 +15,37 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef DYNAMICREFLECTION_H
-#define DYNAMICREFLECTION_H
+#ifndef DASHBOARD_H
+#define DASHBOARD_H
 
-#include "reflection.h"
 
 /**
   *@author CJP
   */
 
-class CDynamicReflection : public CReflection  {
-public: 
-	CDynamicReflection(unsigned int size);
-	~CDynamicReflection();
+#include "car.h"
 
-	void update(CRenderer *renderer, CCamera *cam, int side = -1);
+#include "datamanager.h"
+#include "texture.h"
+#include "vector.h"
+
+class CDashboard {
+public: 
+	CDashboard(CDataManager *manager, unsigned int movObjID);
+	~CDashboard();
+
+	enum eShowMode
+	{eFull, eGauges, eTimer};
+	void draw(unsigned int w, unsigned int h, eShowMode mode = eFull);
 
 protected:
-	unsigned int m_ReflectionTexture[6]; //side textures
-	float m_CentralPixel[4]; //the front color = clear color for the spheremap
+	CTexture m_BackgroundTexture, m_SteerTexture;
 
-	void initialiseReflections();
+	CTexture m_VelGaugeTex, m_RPMGaugeTex;
 
-	unsigned int m_Size;
+	SCarDashboardInfo m_Info;
+
+	unsigned int m_MovObjID;
 };
 
 #endif

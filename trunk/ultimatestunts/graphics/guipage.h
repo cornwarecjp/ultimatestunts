@@ -42,6 +42,8 @@ public:
 
 	vector<CWidget *> m_Widgets;
 	CString m_Title;
+
+	bool m_DrawBackground;
 };
 
 #endif
