@@ -15,12 +15,12 @@ heigth
 BEGIN
 textures/grass2.rgb mu=0.8
 textures/road1.rgb mu=1
-textures/bricks2.rgb scale=2 mu=0.9
+textures/bricks2.rgb scale=2
 textures/concrete1.rgb mu=1
 textures/water1.rgb scale=2
 textures/sand1.rgb mu=0.8
 textures/cornerblocks.rgb mu=0.9
-textures/bricks1.rgb scale=4 mu=0.9
+textures/bricks1.rgb scale=4
 textures/splits1.rgb mu=1
 textures/metal1.rgba scale=8 mu=0.75
 textures/startfinish.rgb mu=0.8
@@ -29,12 +29,12 @@ textures/wood.rgb mu=0.8
 textures/door1.rgb
 textures/joes.rgb
 textures/window1.rgb
-textures/wall1.rgb mu=0.5
+textures/wall1.rgb
 textures/farmdoor1.rgb
 textures/tulips.rgba
 textures/fence.rgba scale=16
 textures/metal.rgb mu=0.5
-textures/net.rgba scale=16 mu=10
+textures/net.rgba scale=16
 textures/tenniscourt.rgb mu=0.9
 textures/pine.rgba
 END
