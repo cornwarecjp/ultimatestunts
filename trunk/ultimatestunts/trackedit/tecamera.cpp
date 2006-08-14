@@ -20,7 +20,8 @@
 
 CTECamera::CTECamera()
 {
-	m_XAngle = m_YAngle = 0.0;
+	m_XAngle = -0.5;
+	m_YAngle = 0.3;
 	CVector m_TargetPos = TILESIZE * CVector(10,0,10);
 
 	updatePosition();
@@ -34,6 +35,10 @@ void CTECamera::moveForward(float dist)
 	CVector dx = m_Orientation * CVector(0,0,-dist);
 	m_TargetPos += (dx - dx.component(CVector(0,1,0)));
 	updatePosition();
+}
+void CTECamera::resetPosition()
+{
+	m_TargetPos = CVector(0,0,0);
 }
 void CTECamera::turnRight(float angle)
 {
@@ -55,7 +60,7 @@ void CTECamera::updatePosition()
 	m_Orientation = vertmat * hormat;
 
 	//Distance
-	m_Position = CVector(0.0, 0.0, 3.0*TILESIZE);
+	m_Position = CVector(0.0, 0.0, 10.0*TILESIZE);
 	m_Position *= m_Orientation;
 	m_Position += m_TargetPos;
 }

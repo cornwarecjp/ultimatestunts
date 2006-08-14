@@ -104,6 +104,7 @@ press the 'h' key. Some of these keys are documented here:
         <li><a href="#s">Scale</a></li>
         <li><a href="#m">Mirror</a></li>
 	<li><a href="#a">Clamp</a></li>
+	<li><a href="#P2">Split</a></li>
         <li><a href="#l">Set as collision object</a></li>
 	<li><a href="#g">Generate normals, texture replacement colors or texture coordinates</a></li>
         <li><a href="#r">Rotate</a></li>
@@ -254,6 +255,16 @@ This function selects all coordinates that are <i>close to</i> the in value, and
 sets them equal to the out value. This can be useful, for instance, to give the
 edges of a tile model exactly the right sizes, if importing and exporting has
 created roundoff errors.
+<p>
+<a name="P2"></a><u>P: Split</u>
+<pre>
+Give axis (x, y or z):y
+Give limit value:12
+Do you want to keep everything above this value? (y/n):n
+</pre>
+With this function you can split the scene into two parts, keep one part and
+delete the other. The splitting is done by looking at coordinates of vertices.
+Triangles that are partially in and partially out the selected area are deleted.
 <p>
 <a name="l"></a><u>l: Set as collision object</u>
 <pre>

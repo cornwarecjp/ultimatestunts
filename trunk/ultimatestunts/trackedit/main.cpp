@@ -30,41 +30,7 @@
 
 //Graphics stuff
 #include "winsystem.h"
-#include "terenderer.h"
-#include "tecamera.h"
-
-#include "edittrack.h"
-#include "temanager.h"
-
-CWinSystem *winsys;
-CTERenderer *renderer;
-CTECamera *camera;
-
-CTEManager *datamanager;
-
-bool mainloop()
-{
-	bool ret = true;
-
-	if(winsys->wasPressed('\e'))
-		ret = false;
-
-	if(winsys->getKeyState(SDLK_PAGEUP))
-		camera->turnUp(0.01);
-	if(winsys->getKeyState(SDLK_PAGEDOWN))
-		camera->turnUp(-0.01);
-	if(winsys->getKeyState(SDLK_LEFT))
-		camera->turnRight(-0.01);
-	if(winsys->getKeyState(SDLK_RIGHT))
-		camera->turnRight(0.01);
-	if(winsys->getKeyState(SDLK_UP))
-		camera->moveForward(5.0);
-	if(winsys->getKeyState(SDLK_DOWN))
-		camera->moveForward(-5.0);
-
-	renderer->update();
-	return ret;
-}
+#include "tegui.h"
 
 int main(int argc, char *argv[])
 {
@@ -73,31 +39,14 @@ int main(int argc, char *argv[])
 	shared_main(argc, argv);
 
 	printf("\nCreating a window\n");
-	winsys = new CWinSystem("Stunts Track Editor", *theMainConfig);
+	CWinSystem *winsys = new CWinSystem("Ultimate Stunts Track Editor", *theMainConfig);
 
-	datamanager = new CTEManager;
-	int ID = datamanager->loadObject("tracks/default.track", CParamList(), CDataObject::eTrack);
-	if(ID < 0)
-	{
-		printf("Error: default.track not found\n");
-		return 1;
-	}
-	//CEditTrack *theTrack = (CEditTrack *)(datamanager->getObject(CDataObject::eTrack, ID));
+	CTEGUI *gui = new CTEGUI(*theMainConfig, winsys);
 
-	printf("\nInitialising the rendering engine\n");
-	renderer = new CTERenderer(winsys);
-	camera = new CTECamera();
-	renderer->setCamera(camera);
-	renderer->setManager(datamanager);
+	printf("Starting the GUI\n");
+	gui->start();
 
-	printf("\nEntering mainloop\n");
-	winsys->runLoop(mainloop, true); //true: swap buffers
-	printf("\nLeaving mainloop\n");
-
-	delete renderer;
-	delete camera;
-
-	delete datamanager;
+	delete gui;
 
 	delete winsys; //Important; don't remove: this calls SDL_Quit!!!
 

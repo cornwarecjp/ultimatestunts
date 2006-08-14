@@ -152,6 +152,31 @@ bool dirExists(const CString &dirname)
 	return true;
 }
 
+vector<CString> getDirContents(const CString &dir, const CString &ext)
+{
+	vector<CString> ret;
+
+	DIR *dir1 = opendir(dir.c_str());
+
+	if(dir1 != NULL)
+	{
+		while(true)
+		{
+			struct dirent *entry = readdir(dir1);
+			if(entry == NULL) break;
+
+			CString entname = entry->d_name;
+			//file extension check:
+			if(ext == "" || (entname.inStr(ext) >= 0 && entname.inStr(ext) == (int)(entname.length() - ext.length()) ))
+				ret.push_back(entname);
+		}
+
+		closedir(dir1);
+	}
+
+	return ret;
+}
+
 bool makeDir(const CString &dirname)
 {
 	//printf("makeDir(\"%s\");\n", dirname.c_str());

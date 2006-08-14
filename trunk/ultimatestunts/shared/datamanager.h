@@ -48,7 +48,7 @@ public:
 	vector<const CDataObject *> getObjectArray(CDataObject::eDataType type) const;
 	vector<CDataObject *> getSubset(CDataObject::eDataType type, const CString &subset);
 
-	void unloadAll(CDataObject::eDataType type=CDataObject::eNone);
+	virtual void unloadAll(CDataObject::eDataType type=CDataObject::eNone);
 protected:
 	virtual CDataObject *createObject(const CString &filename, const CParamList &plist, CDataObject::eDataType type);
 

@@ -28,10 +28,13 @@ CMovingObject::CMovingObject(CDataManager *manager) : CDataObject(manager, CData
 	m_InputData = new CMovObjInput;
 
 	m_LastNetworkUpdateTime = -1000.0; //first update will always come through this
+
+	m_Ground.nor = CVector(0,0,0);
 }
 
 CMovingObject::~CMovingObject()
 {
+	unload();
 	delete m_InputData; //I guess this will happen for all CMovingObject-derived classes
 }
 
@@ -107,6 +110,11 @@ void CMovingObject::update(CPhysics *simulator, float dt)
 	//Reset the forces:
 	m_Ftot = CVector (0,0,0);
 	m_Mtot = CVector (0,0,0);
+}
+
+void CMovingObject::determineGroundPlane(CPhysics *simulator)
+{
+	//TODO: some good default for non-car moving objects
 }
 
 void CMovingObject::correctCollisions()
@@ -186,6 +194,7 @@ bool CMovingObject::setData(const CBinBuffer &b, unsigned int &pos)
 	float dampFactor = v.abs2() / (10.0 + v.abs2()); //no damping at low speeds
 	float vdif2 = (v - m_Velocity).abs2();
 	dampFactor *= 10.0 / (10.0 + vdif2); //lower damping at higher differences in speed (e.g. collisions)
+	if(dampFactor > 0.95) dampFactor = 0.95; //not too much damping
 	//printf("%.3f\n", dampFactor);
 
 	m_Position = (1.0 - dampFactor) * p + dampFactor * m_Position; //some damping to correct for "synchronisation noise"

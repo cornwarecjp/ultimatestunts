@@ -33,6 +33,8 @@ public:
 
 	const CEditTrack *getTrack() const
 		{return (const CEditTrack *)getObject(CDataObject::eTrack, 0);}
+	CEditTrack *getTrack()
+		{return (CEditTrack *)getObject(CDataObject::eTrack, 0);}
 	CGraphObj *getTile(unsigned int ID)
 		{return (CGraphObj *)getObject(CDataObject::eTileModel, ID);}
 

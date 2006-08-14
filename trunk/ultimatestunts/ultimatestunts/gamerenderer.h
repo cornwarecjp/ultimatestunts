@@ -23,7 +23,6 @@
 
 #include "graphicworld.h"
 #include "movingobject.h"
-#include "dynamicreflection.h"
 
 /**
   *@author CJP
@@ -52,6 +51,7 @@ protected:
 
 
 	void clearScreen();
+	void updateShadows();
 	void updateReflections();
 	void selectCamera(unsigned int n, bool threed = true);
 	void renderScene();
@@ -73,8 +73,6 @@ protected:
 
 	const CWorld *m_World;
 	CGraphicWorld *m_GraphicWorld;
-
-	vector<CDynamicReflection> m_MovingObjectReflections;
 
 	int m_UpdateBodyReflection;
 

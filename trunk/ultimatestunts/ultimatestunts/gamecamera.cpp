@@ -165,6 +165,10 @@ void CGameCamera::update()
 			//TODO: all other viewpoints
 	}
 
+	//Set the initial position:
+	if(m_Position.abs2() < 0.01)
+		m_Reached = true;
+
 	if(m_Reached)
 		{m_Position = tp; m_Velocity = tv;}
 	else

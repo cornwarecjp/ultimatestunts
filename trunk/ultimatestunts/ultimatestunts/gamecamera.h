@@ -40,6 +40,9 @@ public:
 
 	void setCameraMode(eCameraMode mode);
 	void swithCameraMode();
+	eCameraMode getCameraMode()
+		{return m_Mode;}
+
 	void setTrackedObject(int id);
 	void switchTrackedObject();
 

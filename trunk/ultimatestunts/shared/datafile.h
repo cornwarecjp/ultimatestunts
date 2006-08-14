@@ -20,10 +20,6 @@
 
 #include "cfile.h"
 
-#include <vector>
-namespace std {}
-using namespace std;
-
 /**
   *@author CJP
   */
@@ -42,7 +38,7 @@ public:
 
 CString getShortName(const CString &longname);
 
-vector<CString> getDirContents(const CString &dir, const CString &ext = "");
+vector<CString> getDataDirContents(const CString &dir, const CString &ext = "");
 
 bool dataFileExists(const CString &filename, bool onlyLocal = false); //may cause automatic download from server
 bool deleteDataFile(const CString &filename); //only deletes in save directory

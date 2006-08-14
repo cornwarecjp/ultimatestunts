@@ -27,6 +27,7 @@ CTrack::CTrack(CDataManager *manager) : CDataObject(manager, CDataObject::eTrack
 
 CTrack::~CTrack()
 {
+	unload();
 }
 
 bool CTrack::load(const CString &filename, const CParamList &list)

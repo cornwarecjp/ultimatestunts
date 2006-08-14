@@ -27,6 +27,8 @@ CTERenderer::CTERenderer(const CWinSystem *winsys) : CRenderer(winsys)
 	m_Manager = NULL;
 	camx = camy = camz = 0;
 	tgtx = tgty = tgtz = 0;
+
+	m_X = m_Y = m_W = m_H = 0;
 }
 
 CTERenderer::~CTERenderer()
@@ -39,9 +41,16 @@ void CTERenderer::setManager(CTEManager *manager)
 	m_Settings.m_VisibleTiles = 100; //make sure that a lot of tiles are visible
 }
 
+void CTERenderer::updateScreenSize()
+{
+	; //Don't update screen size: it is filled in from the outside
+}
+
 void CTERenderer::update()
 {
-	CRenderer::update(); //set up viewport
+	//set up viewport
+	CRenderer::update();
+
 	//printf("Updating graphics\n");
 
 	//Clear the screen
@@ -64,6 +73,8 @@ void CTERenderer::update()
 	tgty = (int)(0.5 + (target.y)/VERTSIZE);
 	tgtz = (int)(0.5 + (target.z)/TILESIZE);
 	//printf ("x,y,z = %d,%d,%d\n",camx,camy,camz);
+
+	glColor3f(1,1,1);
 
 	//Draw the track
 	glDisable(GL_FOG);
@@ -91,20 +102,61 @@ void CTERenderer::update()
 
 	
 	//The active tile
-	glPushMatrix();
-	glTranslatef(TILESIZE*tgtx, VERTSIZE*tgty, TILESIZE*tgtz);
+	int  lengte = m_Manager->getTrack()->m_L;
+	int  breedte = m_Manager->getTrack()->m_W;
+	if(tgtx>=0 && tgtx<lengte && tgtz>=0 && tgtz<breedte)
+	{
+		int hoogte = m_Manager->getTrack()->m_H;
+		int pilaar_index = hoogte * tgtz + hoogte * breedte * tgtx;
 
-	glBegin(GL_LINE_LOOP);
+		int ymin = 1000, ymax = -1000;
+		for (int i = 0; i < hoogte; i++) //bottom to top
+		{
+			STile temp = m_Manager->getTrack()->m_Track[pilaar_index + i]; //welke tile?
 
-	glVertex3f(-TILESIZE/2,0.0,-TILESIZE/2);
-	glVertex3f(-TILESIZE/2,0.0, TILESIZE/2);
-	glVertex3f( TILESIZE/2,0.0, TILESIZE/2);
-	glVertex3f( TILESIZE/2,0.0,-TILESIZE/2);
+			if(temp.m_Model == 0) break; //0 = empty tile
 
-	glEnd();
-	
-	glPopMatrix();
+			if(temp.m_Z > ymax) ymax = temp.m_Z;
+			if(temp.m_Z < ymin) ymin = temp.m_Z;
+		}
+		ymax++;
 
+		glPushMatrix();
+		glTranslatef(TILESIZE*tgtx, 0.0, TILESIZE*tgtz);
+
+		glBegin(GL_LINE_LOOP);
+
+		glVertex3f(-TILESIZE/2,VERTSIZE*ymin,-TILESIZE/2);
+		glVertex3f(-TILESIZE/2,VERTSIZE*ymin, TILESIZE/2);
+		glVertex3f( TILESIZE/2,VERTSIZE*ymin, TILESIZE/2);
+		glVertex3f( TILESIZE/2,VERTSIZE*ymin,-TILESIZE/2);
+
+		glEnd();
+
+		glBegin(GL_LINE_LOOP);
+
+		glVertex3f(-TILESIZE/2,VERTSIZE*ymax,-TILESIZE/2);
+		glVertex3f(-TILESIZE/2,VERTSIZE*ymax, TILESIZE/2);
+		glVertex3f( TILESIZE/2,VERTSIZE*ymax, TILESIZE/2);
+		glVertex3f( TILESIZE/2,VERTSIZE*ymax,-TILESIZE/2);
+
+		glEnd();
+
+		glBegin(GL_LINES);
+
+		glVertex3f(-TILESIZE/2,VERTSIZE*ymin,-TILESIZE/2);
+		glVertex3f(-TILESIZE/2,VERTSIZE*ymax,-TILESIZE/2);
+		glVertex3f(-TILESIZE/2,VERTSIZE*ymin, TILESIZE/2);
+		glVertex3f(-TILESIZE/2,VERTSIZE*ymax, TILESIZE/2);
+		glVertex3f( TILESIZE/2,VERTSIZE*ymin, TILESIZE/2);
+		glVertex3f( TILESIZE/2,VERTSIZE*ymax, TILESIZE/2);
+		glVertex3f( TILESIZE/2,VERTSIZE*ymin,-TILESIZE/2);
+		glVertex3f( TILESIZE/2,VERTSIZE*ymax,-TILESIZE/2);
+
+		glEnd();
+
+		glPopMatrix();
+	}
 
 	glEnable(GL_LIGHTING);
 	glEnable(GL_TEXTURE_2D);
@@ -200,6 +252,9 @@ void CTERenderer::viewPilaar(int x, int y, int cur_zpos)
 			lod = 2;
 		else
 			lod = 1;
+
+		//One LOD closer in the track editor:
+		if(lod>1) lod--;
 
 		int pilaar_index = hoogte * y + hoogte * breedte * x;
 		int ynu = 0;

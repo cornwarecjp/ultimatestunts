@@ -169,7 +169,7 @@ bool copyDataFile(const CString &source, const CString &destination, bool srcIsD
 	return copyFile(src, dst);
 }
 
-vector<CString> getDirContents(const CString &dir, const CString &ext)
+vector<CString> getDataDirContents(const CString &dir, const CString &ext)
 {
 	vector<CString> ret;
 

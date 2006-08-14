@@ -36,7 +36,7 @@ CDataObject *CDataManager::getObject(CDataObject::eDataType type, unsigned int I
 {
 	if(ID >= (m_Objects[type]).size())
 	{
-		printf("Errror in CDataManager::getObject: %d <= %d\n", ID, (m_Objects[type]).size());
+		printf("Errror in CDataManager::getObject: %d >= %d\n", ID, (m_Objects[type]).size());
 		return NULL;
 	}
 
@@ -46,7 +46,7 @@ const CDataObject *CDataManager::getObject(CDataObject::eDataType type, unsigned
 {
 	if(ID >= (m_Objects[type]).size())
 	{
-		printf("Errror in CDataManager::getObject: %d <= %d\n", ID, (m_Objects[type]).size());
+		printf("Errror in CDataManager::getObject: %d >= %d\n", ID, (m_Objects[type]).size());
 		return NULL;
 	}
 
@@ -60,15 +60,18 @@ int CDataManager::loadObject(const CString &filename, const CParamList plist, CD
 		return ID;
 
 	//else
+
 	CDataObject *obj = createObject(filename, plist, type);
 	if(obj == NULL) return -1;
 	if(!obj->load(filename, plist))
 	{
+		obj->unload();
 		delete obj;
 		return -1;
 	}
 
 	m_Objects[type].push_back(obj);
+
 	return m_Objects[type].size() - 1;
 }
 
@@ -83,7 +86,9 @@ void CDataManager::unloadAll(CDataObject::eDataType type)
 		return;
 	}
 
-	//TODO: type-specific unload
+	//Type-specific unload
+	while(m_Objects[type].size() > 0)
+		unloadObject(type, 0);
 }
 
 vector<CDataObject *> CDataManager::getObjectArray(CDataObject::eDataType type)
@@ -152,6 +157,7 @@ int CDataManager::findObject(const CString &filename, const CParamList plist, CD
 void CDataManager::unloadObject(unsigned int type, unsigned int i)
 {
 	CDataObject *obj = m_Objects[type][i];
+	obj->unload();
 	delete obj;
 	m_Objects[type].erase(m_Objects[type].begin() + i);
 }

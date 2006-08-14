@@ -37,6 +37,7 @@ class CCollisionDetector {
 public: 
 	CCollisionDetector();
 	~CCollisionDetector();
+	void reset();
 
 	vector<CCollisionData> getCollisions(const CMovingObject *obj);
 

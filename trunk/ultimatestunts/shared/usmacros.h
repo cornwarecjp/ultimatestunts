@@ -80,3 +80,13 @@
 #define DEBUGMSG
 
 #endif
+
+//Reflection method:
+#define USECOPYTEXSUB
+
+#ifdef USECOPYTEXSUB
+#define CopyToTexture(size) glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, (size), (size))
+#else
+#define CopyToTexture(size) glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 0, 0, (size), (size), 0)
+#endif
+

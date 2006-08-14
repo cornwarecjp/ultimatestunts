@@ -18,6 +18,8 @@
 #include <cstdio>
 #include <cstdlib>
 
+#include "config.h"
+
 //internationalisation:
 #include <locale.h>
 #include <libintl.h>
@@ -173,24 +175,48 @@ void shared_main(int argc, char *argv[])
 	CString conf_lang = theMainConfig->getValue("misc", "language");
 	if(conf_lang == "system")
 	{
-		setlocale(LC_MESSAGES, "");
+		char *retval = setlocale(LC_MESSAGES, "");
+		if(retval == NULL)
+		{
+			printf("Setting the LC_MESSAGES locale to \"\" failed\n");
+		}
+		else
+		{
+			printf("Locale LC_MESSAGES is set to \"%s\"\n", retval);
+		}
 	}
 	else
 	{
-		setlocale(LC_MESSAGES, conf_lang.c_str());
+		char *retval = setlocale(LC_MESSAGES, conf_lang.c_str());
+		if(retval == NULL)
+		{
+			printf("Setting the LC_MESSAGES locale to \"%s\" failed\n", conf_lang.c_str());
+		}
+		else
+		{
+			printf("Locale LC_MESSAGES is set to \"%s\"\n", retval);
+		}
 
 #ifdef __CYGWIN__
-        //F* Cygwin doesn't set the locale correctly
-        setenv("LC_MESSAGES", conf_lang.c_str(), 1);
+		//F* Cygwin doesn't set the locale correctly
+		setenv("LC_MESSAGES", conf_lang.c_str(), 1);
 #endif
-
+		setenv("LANGUAGE", conf_lang.c_str(), 1);
+		setenv("LC_MESSAGES", conf_lang.c_str(), 1);
 	}
 
 	//select the Ultimate Stunts domain
 	//We can only use ISO 8859-1 because of the font texture
-	bindtextdomain(PACKAGE, (absdir + "lang").c_str());
-	bind_textdomain_codeset(PACKAGE, "ISO-8859-1");
-	textdomain(PACKAGE);
+	printf("  Package %s, directory %s\n", PACKAGE, (absdir + "lang").c_str());
+	printf("  bindtextdomain returns %s\n",
+	    bindtextdomain(PACKAGE, (absdir + "lang").c_str())
+	    );
+	printf("  bind_textdomain_codeset returns %s\n",
+	    bind_textdomain_codeset(PACKAGE, "ISO-8859-1")
+	    );
+	printf("  textdomain returns %s\n",
+	    textdomain(PACKAGE)
+	    );
 }
 
 vector<CString> getCredits()

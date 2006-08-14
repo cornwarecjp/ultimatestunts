@@ -36,9 +36,6 @@ CWorld::CWorld()
 CWorld::~CWorld(){
 	unloadAll();
 
-	//dJointGroupDestroy(m_ContactGroup);
-	//dWorldDestroy(m_ODEWorld);
-
 	theWorld = NULL;
 }
 
@@ -67,4 +64,10 @@ CDataObject *CWorld::createObject(const CString &filename, const CParamList &pli
 		return new CTrack(this);
 
 	return NULL;
+}
+
+void CWorld::unloadAll(CDataObject::eDataType type)
+{
+	CDataManager::unloadAll(type);
+	m_Detector.reset();
 }

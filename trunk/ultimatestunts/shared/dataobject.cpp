@@ -58,7 +58,10 @@ CDataObject::CDataObject(CDataManager *manager, eDataType type)
 	m_isLoaded = false;
 }
 
-CDataObject::~CDataObject(){
+CDataObject::~CDataObject()
+{
+	if(m_isLoaded)
+		unload(); //Strange enough this always calls CDataObject::unload() and not overloaded functions
 }
 
 bool CDataObject::load(const CString &filename, const CParamList &list)

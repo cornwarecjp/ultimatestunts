@@ -8,5 +8,6 @@ shared/hello.cpp
 shared/usmisc.cpp
 simulation/rulecontrol.cpp
 simulation/gamecore.cpp
+trackedit/tegui.cpp
 
 # end of file POTFILE.in

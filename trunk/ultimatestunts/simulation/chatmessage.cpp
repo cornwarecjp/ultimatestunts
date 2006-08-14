@@ -21,13 +21,13 @@
 
 CChatMessage::CChatMessage(const CString &str)
 {
-	m_SendTime = CTimer().getTime() - theWorld->m_GameStartTime;
+	m_SendTime = theWorld->m_LastTime;
 	m_Message = str;
 }
 
 CChatMessage::CChatMessage()
 {
-	m_SendTime = CTimer().getTime() - theWorld->m_GameStartTime;
+	m_SendTime = theWorld->m_LastTime;
 }
 
 CChatMessage::~CChatMessage()

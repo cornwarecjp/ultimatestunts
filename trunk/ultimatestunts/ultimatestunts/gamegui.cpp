@@ -67,7 +67,7 @@ CGameGUI::CGameGUI(const CLConfig &conf, CGameWinSystem *winsys) : CGUI(conf, wi
 	m_ChildWidget = &m_MainPage;
 
 	//Car file cache:
-	vector<CString> theCarFiles = getDirContents("cars", ".conf");
+	vector<CString> theCarFiles = getDataDirContents("cars", ".conf");
 	for(unsigned int i=0; i < theCarFiles.size(); i++)
 	{
 		SCarFile cf;
@@ -90,7 +90,7 @@ CGameGUI::CGameGUI(const CLConfig &conf, CGameWinSystem *winsys) : CGUI(conf, wi
 
 	//Default players:
 	SPlayerDescr pd;
-	pd.name = "CJP";
+	pd.name = _("Anonymous");
 	pd.isHuman = true;
 	for(unsigned int i=0; i < m_CarFiles.size(); i++)
 		if(m_CarFiles[i].filename == "cars/ferrarispider.conf")
@@ -107,6 +107,7 @@ CGameGUI::CGameGUI(const CLConfig &conf, CGameWinSystem *winsys) : CGUI(conf, wi
 	//setting up the menus:
 	//MAIN MENU
 	m_MainPage.m_Title = _("Main menu");
+	m_MainPage.m_DrawBackground = true;
 	CMenu *menu = new CMenu;
 	menu->m_Xrel = 0.1;
 	menu->m_Yrel = 0.2;
@@ -118,6 +119,7 @@ CGameGUI::CGameGUI(const CLConfig &conf, CGameWinSystem *winsys) : CGUI(conf, wi
 
 	//GAMETYPE MENU
 	m_GameTypePage.m_Title = _("Select the game type:");
+	m_GameTypePage.m_DrawBackground = true;
 	menu = new CMenu;
 	menu->m_Xrel = 0.1;
 	menu->m_Yrel = 0.2;
@@ -129,6 +131,7 @@ CGameGUI::CGameGUI(const CLConfig &conf, CGameWinSystem *winsys) : CGUI(conf, wi
 
 	//SELECT SERVER MENU
 	m_SelectServerPage.m_Title = _("Select a server:");
+	m_SelectServerPage.m_DrawBackground = true;
 	menu = new CMenu;
 	menu->m_Xrel = 0.1;
 	menu->m_Yrel = 0.2;
@@ -140,7 +143,8 @@ CGameGUI::CGameGUI(const CLConfig &conf, CGameWinSystem *winsys) : CGUI(conf, wi
 
 	//TRACK MENU
 	m_TrackPage.m_Title = _("Select a track:");
-	menu = new CMenu;
+	m_TrackPage.m_DrawBackground = true;
+	menu = new CLongMenu;
 	menu->m_Xrel = 0.1;
 	menu->m_Yrel = 0.2;
 	menu->m_Wrel = 0.8;
@@ -151,6 +155,7 @@ CGameGUI::CGameGUI(const CLConfig &conf, CGameWinSystem *winsys) : CGUI(conf, wi
 
 	//REPLAY MENU
 	m_ReplayPage.m_Title = _("Select a replay file:");
+	m_ReplayPage.m_DrawBackground = true;
 	menu = new CMenu;
 	menu->m_Xrel = 0.1;
 	menu->m_Yrel = 0.2;
@@ -162,6 +167,7 @@ CGameGUI::CGameGUI(const CLConfig &conf, CGameWinSystem *winsys) : CGUI(conf, wi
 
 	//PLAYERS MENU
 	m_PlayersPage.m_Title = _("Players menu:");
+	m_PlayersPage.m_DrawBackground = true;
 	menu = new CMenu;
 	menu->m_Xrel = 0.1;
 	menu->m_Yrel = 0.2;
@@ -173,6 +179,7 @@ CGameGUI::CGameGUI(const CLConfig &conf, CGameWinSystem *winsys) : CGUI(conf, wi
 
 	//PLAYER MENU
 	m_PlayerPage.m_Title = _("Configure Player:");
+	m_PlayerPage.m_DrawBackground = true;
 	menu = new CMenu;
 	menu->m_Xrel = 0.1;
 	menu->m_Yrel = 0.2;
@@ -184,6 +191,7 @@ CGameGUI::CGameGUI(const CLConfig &conf, CGameWinSystem *winsys) : CGUI(conf, wi
 
 	//CAR MENU
 	m_CarPage.m_Title = "Select a car:";
+	m_CarPage.m_DrawBackground = true;
 	menu = new CMenu;
 	menu->m_Xrel = 0.1;
 	menu->m_Yrel = 0.2;
@@ -194,7 +202,8 @@ CGameGUI::CGameGUI(const CLConfig &conf, CGameWinSystem *winsys) : CGUI(conf, wi
 	menu->m_AlignLeft = false;
 
 	//CREDITS MENU
-	m_CreditsPage.m_Title = _("Credits");
+	m_CreditsPage.m_Title = _("Credits and License");
+	m_CreditsPage.m_DrawBackground = true;
 	menu = new CLongMenu;
 	menu->m_Xrel = 0.1;
 	menu->m_Yrel = 0.2;
@@ -207,6 +216,7 @@ CGameGUI::CGameGUI(const CLConfig &conf, CGameWinSystem *winsys) : CGUI(conf, wi
 
 	//LOADING MENU
 	m_LoadingPage.m_Title = _("Loading");
+	m_LoadingPage.m_DrawBackground = true;
 	menu = new CMenu;
 	menu->m_Xrel = 0.1;
 	menu->m_Yrel = 0.2;
@@ -246,6 +256,7 @@ CGameGUI::CGameGUI(const CLConfig &conf, CGameWinSystem *winsys) : CGUI(conf, wi
 	m_HiscorePage.m_Widgets.push_back(menu);
 
 	m_HiscorePage.m_Title = _("Hiscore");
+	m_HiscorePage.m_DrawBackground = true;
 	menu = new CMenu;
 	menu->m_Xrel = 0.1;
 	menu->m_Yrel = 0.05;
@@ -287,7 +298,7 @@ void CGameGUI::updateMenuTexts()
 	menu->m_Lines.push_back(_("Select the players"));
 	menu->m_Lines.push_back(_("View a replay"));
 	menu->m_Lines.push_back(_("Options"));
-	menu->m_Lines.push_back(_("Credits"));
+	menu->m_Lines.push_back(_("Credits and License"));
 	menu->m_Lines.push_back(_("Exit"));
 	//add some information
 	if(m_GameType == LocalGame)
@@ -328,11 +339,11 @@ void CGameGUI::updateMenuTexts()
 
 	//TRACK MENU
 	menu = (CMenu *)(m_TrackPage.m_Widgets[0]);
-	menu->m_Lines = getDirContents("tracks", ".track");
+	menu->m_Lines = getDataDirContents("tracks", ".track");
 
 	//REPLAY MENU
 	menu = (CMenu *)(m_ReplayPage.m_Widgets[0]);
-	menu->m_Lines = getDirContents("tracks", ".repl");
+	menu->m_Lines = getDataDirContents("tracks", ".repl");
 
 	//PLAYERS MENU
 	menu = (CMenu *)(m_PlayersPage.m_Widgets[0]);

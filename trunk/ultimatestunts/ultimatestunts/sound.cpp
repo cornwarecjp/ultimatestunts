@@ -137,9 +137,9 @@ CSound::CSound(const CLConfig &conf)
 	m_SoundVolume = conf.getValue("sound", "soundvolume").toInt();
 
 	//Defining the playlist
-	vector<CString> wavfiles = getDirContents("music", ".wav");
-	vector<CString> mp3files = getDirContents("music", ".mp3");
-	vector<CString> oggfiles = getDirContents("music", ".ogg");
+	vector<CString> wavfiles = getDataDirContents("music", ".wav");
+	vector<CString> mp3files = getDataDirContents("music", ".mp3");
+	vector<CString> oggfiles = getDataDirContents("music", ".ogg");
 	m_Playlist = wavfiles;
 	for(unsigned int i=0; i < mp3files.size(); i++)
 		m_Playlist.push_back(mp3files[i]);

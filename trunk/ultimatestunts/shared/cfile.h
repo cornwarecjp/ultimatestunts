@@ -20,6 +20,10 @@
 
 #include <cstdio> //voor FILE type
 
+#include <vector>
+namespace std {}
+using namespace std;
+
 #include "cstring.h"
 #include "binbuffer.h"
 
@@ -51,6 +55,7 @@ class CFile
 
 bool fileExists(const CString &filename);
 bool dirExists(const CString &dirname);
+vector<CString> getDirContents(const CString &dir, const CString &ext = "");
 bool makeDir(const CString &dirname);
 bool makeFile(const CString &filename); //also makes top directories
 bool copyFile(const CString &src, const CString &dest);

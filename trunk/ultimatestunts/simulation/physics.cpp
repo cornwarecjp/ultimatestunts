@@ -35,7 +35,6 @@ Niels Bohr
 
 CPhysics::CPhysics(const CLConfig *conf)
 {
-	m_Detector = new CCollisionDetector;
 	m_FastCPUMode = true; //start mode; not really important
 
 	m_dtMin = conf->getValue("simulation", "dtmin").toFloat();
@@ -44,7 +43,6 @@ CPhysics::CPhysics(const CLConfig *conf)
 
 CPhysics::~CPhysics()
 {
-	delete m_Detector;
 }
 
 bool CPhysics::update()
@@ -109,7 +107,7 @@ bool CPhysics::update()
 			for(unsigned int i=0; i < objs.size(); i++)
 			{
 				CMovingObject *mo = (CMovingObject *)objs[i];
-				mo->m_SimCollisions = m_Detector->getCollisions(mo);
+				mo->m_SimCollisions = theWorld->m_Detector.getCollisions(mo);
 				for(unsigned int j=0; j < mo->m_SimCollisions.size(); j++)
 					mo->m_AllCollisions.push_back(mo->m_SimCollisions[j]);
 			}
@@ -121,9 +119,3 @@ bool CPhysics::update()
 	}
 	return true;
 }
-
-const CCollisionFace *CPhysics::getGroundFace(const CVector &pos)
-{
-	return m_Detector->getGroundFace(pos);
-}
-

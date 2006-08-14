@@ -31,6 +31,11 @@ CCollisionDetector::~CCollisionDetector()
 {
 }
 
+void CCollisionDetector::reset()
+{
+	m_FirstUpdate = true;
+}
+
 vector<CCollisionData> CCollisionDetector::getCollisions(const CMovingObject *obj)
 {
 	if(m_FirstUpdate)

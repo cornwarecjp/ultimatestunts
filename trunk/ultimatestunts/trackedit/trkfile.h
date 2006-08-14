@@ -1,8 +1,8 @@
 /***************************************************************************
-                          edittrack.h  -  An editable track
+                          trkfile.h  -  An original Stunts track file
                              -------------------
-    begin                : ma mei 23 2005
-    copyright            : (C) 2005 by CJP
+    begin                : sa jul 29 2006
+    copyright            : (C) 2006 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
 
@@ -15,27 +15,35 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef EDITTRACK_H
-#define EDITTRACK_H
+#ifndef TRKFILE_H
+#define TRKFILE_H
 
-#include "track.h"
+#include <vector> //STL vector template
+namespace std {}
+using namespace std;
+
+#include "cstring.h"
 
 /**
   *@author CJP
   */
 
-class CEditTrack : public CTrack  {
+class CTRKFile {
 public: 
-	CEditTrack(CDataManager *manager);
-	~CEditTrack();
+	CTRKFile();
+	~CTRKFile();
 
-	bool save(const CString &filename) const;
-	bool import(const CString &filename);
+	bool load(const CString &filename);
 
-protected:
-	void placeItem(unsigned int offset, const CString &item);
+	struct STile
+	{
+		unsigned char terrain;
+		unsigned char item;
+	};
 
-	CString hexStr(unsigned char x);
+	vector<vector<STile> > m_Track;
+
+	unsigned char m_Skybox;
 };
 
 #endif

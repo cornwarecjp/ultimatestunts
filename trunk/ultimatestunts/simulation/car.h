@@ -19,7 +19,6 @@
 #define CAR_H
 
 #include "movingobject.h"
-#include "collisionface.h"
 
 #include "carengine.h"
 #include "carwheel.h"
@@ -28,6 +27,43 @@
 /**
   *@author CJP
   */
+
+struct SCarDashboardInfo
+{
+	CString background_tex;
+	float background_hth;
+
+	CString steer_tex;
+	CVector steer_pos;
+	float steer_rad;
+	float steer_ang;
+
+	CString analog_vel_tex;
+	CVector analog_vel_pos;
+	float analog_vel_rad;
+	float analog_vel_an0;
+	float analog_vel_an1;
+	float analog_vel_max;
+
+	CString analog_rpm_tex;
+	CVector analog_rpm_pos;
+	float analog_rpm_rad;
+	float analog_rpm_an0;
+	float analog_rpm_an1;
+	float analog_rpm_max;
+
+	CVector digital_vel_pos;
+	float digital_vel_hth;
+	float digital_vel_wth;
+
+	CVector digital_rpm_pos;
+	float digital_rpm_hth;
+	float digital_rpm_wth;
+
+	CVector songtitle_pos;
+	float songtitle_hth;
+	float songtitle_wth;
+};
 
 class CCar : public CMovingObject  {
 public: 
@@ -59,6 +95,7 @@ public:
 	float m_xAngle, m_zAngle; //orientation of the body
 	float m_BodyHeight; //height of the body
 
+	SCarDashboardInfo m_Dashboard;
 protected:
 	//car specific physics
 	void simulateGeneral(CPhysics *simulator, float dt);
@@ -73,8 +110,7 @@ protected:
 	void addDownforce();         //aerodynamic downforce
 	void doSteering(float dt);
 
-	CCollisionFace m_Ground; //the ground plane ( |normal| < 0.5 is no plane)
-	void determineGroundPlane(CPhysics *simulator);
+	virtual void determineGroundPlane(CPhysics *simulator);
 	void placeOnGround();
 
 	virtual void placeBodies();

@@ -222,14 +222,14 @@ void CGameCore::readyAndLoad(LoadStatusCallback callBackFun)
 void CGameCore::setStartTime(float offset)
 {
 	//TODO: some time synchronisation between server and client
-	theWorld->m_LastTime = 3.01 + offset;
-	theWorld->m_GameStartTime = m_Timer.getTime() + theWorld->m_LastTime;
+	theWorld->m_LastTime = -3.01 + offset;
+	m_TimerOffset = m_Timer.getTime() - theWorld->m_LastTime;
 }
 
 bool CGameCore::update() //true = continue false = leave
 {
 	//Game time info:
-	float currTime = m_Timer.getTime() - theWorld->m_GameStartTime;
+	float currTime = m_Timer.getTime() - m_TimerOffset;
 
 	float dt = currTime - theWorld->m_LastTime + 0.00001; //to avoid division by zero
 

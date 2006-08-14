@@ -31,6 +31,7 @@ using namespace std;
 #include "movingobject.h"
 #include "objectchoice.h"
 #include "collision.h"
+#include "collisiondetector.h"
 #include "chatsystem.h"
 
 #include "datamanager.h"
@@ -59,13 +60,14 @@ public:
 	const CTrack *getTrack() const
 		{return (const CTrack *)getObject(CDataObject::eTrack, 0);}
 
+	virtual void unloadAll(CDataObject::eDataType type=CDataObject::eNone);
+
 
 	//Collision data
+	CCollisionDetector m_Detector;
 	vector<CCollision> m_Collisions; //is re-filled by the simulation on every frame
 
 	//Rule data
-	float m_GameStartTime;
-
 	float m_LastTime, m_Lastdt; //to be set by the game core
 
 	//Interface for sending and receiving messages

@@ -20,9 +20,13 @@ texture_maxsize = 512
 #value <= 4: no background
 background_size = 512
 
+#Shadow map texture size
+#value <= 8: no shadow (NYI!)
+shadow_size = 256
+
 #Reflection map texture size
 #value <= 8: no reflection (NYI!)
-reflection_size = 256
+reflection_size = 64
 
 #Smooth shadows are needed to make round objects look natural.
 #This option also applies to the smoothness fog effect.
@@ -51,7 +55,8 @@ zbuffer = true
 transparency = blend
 
 #Maximum distance for drawing reflection. Transparency must be enabled to get realistic reflection
-reflectiondist = 100.0
+reflectiondist = 0.0
+#100.0
 
 #Reflection update settings:
 #Do you want the reflections to be updated when the objects move?
@@ -145,9 +150,14 @@ Nmax = 50
 #Language setting. If this is set to "system", then
 #the operating system's settings decide the language.
 #If the language is not supported, then english is
-#used. Hint: use the following format:
+#used.
+#Hint: use the following format:
 #language_country
 #for intance: de_DE, fr_FR, hu_HU, nl_NL, pt_BR
+#On some systems, you also need to add the codeset
+#for instance: nl_NL.UTF-8
+#For a list of locales that is supported on your system,
+#execute the command "locale -a"
 language = system
 
 

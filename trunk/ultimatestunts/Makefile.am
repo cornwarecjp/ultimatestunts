@@ -3,6 +3,6 @@ EXTRA_DIST = ultimatestunts.conf ultimatestunts.kdevprj AUTHORS COPYING ChangeLo
 
 CFLAGS=-Wall
 
-AUTOMAKE_OPTIONS = foreign 1.4
+AUTOMAKE_OPTIONS = foreign 1.9
 
 SUBDIRS = intl po data shared simulation graphics stuntsserver stuntsai stunts3dedit trackedit ultimatestunts

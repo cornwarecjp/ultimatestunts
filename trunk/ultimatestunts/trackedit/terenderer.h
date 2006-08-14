@@ -36,6 +36,8 @@ public:
 	void update();
 
 protected:
+	virtual void updateScreenSize();
+
 	CTEManager *m_Manager;
 
 	int camx, camy, camz; //tile position of the camera

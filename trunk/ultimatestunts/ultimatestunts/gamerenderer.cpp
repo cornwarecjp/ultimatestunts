@@ -41,22 +41,33 @@ CGameRenderer::~CGameRenderer()
 
 bool CGameRenderer::loadTrackData()
 {
-	if(m_GraphicWorld->loadWorld())
-	{
-		CVector fc = m_GraphicWorld->m_Background->getColor();
-		m_FogColor[0] = fc.x;
-		m_FogColor[1] = fc.y;
-		m_FogColor[2] = fc.z;
-		m_FogColor[3] = 1.0;
-		glClearColor(m_FogColor[0],m_FogColor[1],m_FogColor[2],m_FogColor[3]);
+	if(!m_GraphicWorld->loadWorld())
+		return false;
 
-		if(m_Settings.m_FogMode >= 0)
-			glFogfv(GL_FOG_COLOR, m_FogColor);
+	CVector fc = m_GraphicWorld->m_Background->getColor();
+	m_FogColor[0] = fc.x;
+	m_FogColor[1] = fc.y;
+	m_FogColor[2] = fc.z;
+	m_FogColor[3] = 1.0;
+	glClearColor(m_FogColor[0],m_FogColor[1],m_FogColor[2],m_FogColor[3]);
 
-		return true;
-	}
+	if(m_Settings.m_FogMode >= 0)
+		glFogfv(GL_FOG_COLOR, m_FogColor);
 
-	return false;
+	//Lighting:
+	CTrack *theTrack = theWorld->getTrack();
+	CVector lightCol = theTrack->m_LightColor;
+	CVector ambCol = theTrack->m_AmbientColor;
+
+	GLfloat light_color[] = {lightCol.x, lightCol.y, lightCol.z, 1.0};
+	GLfloat specular_color[] = {3.0*lightCol.x, 3.0*lightCol.y, 3.0*lightCol.z, 1.0};
+	GLfloat ambient_color[] = {ambCol.x, ambCol.y, ambCol.z, 1.0};
+
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_color);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, specular_color);
+	glLightfv(GL_LIGHT0, GL_AMBIENT, ambient_color);
+
+	return true;
 }
 
 void CGameRenderer::unloadTrackData()
@@ -90,6 +101,8 @@ void CGameRenderer::update()
 	else
 	{
 		//float tstart = _DebugTimer.getTime();
+
+		updateShadows();
 		
 		updateReflections();
 		//fprintf(stderr, "Update reflections: %.5f\n\n\n", _DebugTimer.getTime() - tstart);
@@ -122,6 +135,27 @@ void CGameRenderer::clearScreen()
 		glClear( GL_COLOR_BUFFER_BIT );
 }
 
+void CGameRenderer::updateShadows()
+{
+	CVector lightDir     = theWorld->getTrack()->m_LightDirection;
+	CVector lightColor   = theWorld->getTrack()->m_LightColor;
+	CVector ambientColor = theWorld->getTrack()->m_AmbientColor;
+
+	CVector totalColor = 1.4*lightColor + ambientColor;
+
+	CVector shadowColor(
+		lightColor.x / totalColor.x,
+		lightColor.y / totalColor.y,
+		lightColor.z / totalColor.z);
+
+	for(unsigned int i=0; i < m_GraphicWorld->getNumObjects(CDataObject::eMovingObject); i++)
+	{
+		CDynamicShadow *shadow = m_GraphicWorld->getMovObjShadow(i);
+		shadow->setLightSource(lightDir, shadowColor);
+		shadow->update(&m_Settings);
+	}
+}
+
 void CGameRenderer::updateReflections()
 {
 	static int currentSide = 0;
@@ -135,15 +169,17 @@ void CGameRenderer::updateReflections()
 		if(currentObject >= (int)(m_NumCameras * m_World->getNumObjects(CDataObject::eMovingObject))) currentObject = 0;
 	}
 
+	/*
 	//initialising reflections if they don't exist
 	unsigned int numRequired = m_NumCameras * m_World->getNumObjects(CDataObject::eMovingObject);
 	unsigned int numPresent = m_MovingObjectReflections.size();
 	if(numPresent < numRequired)
 		for(unsigned int i=0; i< (numRequired - numPresent); i++)
 		{
-			CDynamicReflection r(m_Settings.m_TexSmooth, m_Settings.m_ReflectionSize);
+			CDynamicReflection r(m_Settings.m_ReflectionSize);
 			m_MovingObjectReflections.push_back(r);
 		}
+	*/
 
 	//Updating the reflection images
 	if(m_Settings.m_UpdRefAllObjs)
@@ -168,12 +204,15 @@ void CGameRenderer::updateReflections()
 
 				//update reflection
 				m_UpdateBodyReflection = obj;
-				unsigned int index = cam + m_NumCameras * obj;
+
+				CDynamicReflection *theRefl = m_GraphicWorld->getMovObjReflection(obj, cam);
+				//unsigned int index = cam + m_NumCameras * obj;
+				//CDynamicReflection *theRefl = m_MovingObjectReflections[index];
 
 				if(m_Settings.m_UpdRefAllSides)
-					{m_MovingObjectReflections[index].update(this, &front);}
+					{theRefl->update(this, &front);}
 				else
-					{m_MovingObjectReflections[index].update(this, &front, currentSide);}
+					{theRefl->update(this, &front, currentSide);}
 			}
 
 		}
@@ -198,12 +237,15 @@ void CGameRenderer::updateReflections()
 
 			//update reflection
 			m_UpdateBodyReflection = obj;
-			unsigned int index = cam + m_NumCameras * obj;
+
+			CDynamicReflection *theRefl = m_GraphicWorld->getMovObjReflection(obj, cam);
+			//unsigned int index = cam + m_NumCameras * obj;
+			//CDynamicReflection *theRefl = m_MovingObjectReflections[index];
 
 			if(m_Settings.m_UpdRefAllSides)
-				{m_MovingObjectReflections[index].update(this, &front);}
+				{theRefl->update(this, &front);}
 			else
-				{m_MovingObjectReflections[index].update(this, &front, currentSide);}
+				{theRefl->update(this, &front, currentSide);}
 		}
 	}
 
@@ -281,20 +323,9 @@ void CGameRenderer::renderScene()
 	//fprintf(stderr, "renderTrack start: %.3f\n", _DebugTimer.getTime());
 
 	//Lighting:
-	CTrack *theTrack = theWorld->getTrack();
-	CVector lightDir = theTrack->m_LightDirection;
-	CVector lightCol = theTrack->m_LightColor;
-	CVector ambCol = theTrack->m_AmbientColor;
-	
-	GLfloat light_color[] = {lightCol.x, lightCol.y, lightCol.z, 1.0};
-	GLfloat specular_color[] = {3.0*lightCol.x, 3.0*lightCol.y, 3.0*lightCol.z, 1.0};
+	CVector lightDir = theWorld->getTrack()->m_LightDirection;
 	GLfloat light_direction[] = {-lightDir.x, -lightDir.y, -lightDir.z, 0.0};
-	GLfloat ambient_color[] = {ambCol.x, ambCol.y, ambCol.z, 1.0};
-
 	glLightfv(GL_LIGHT0, GL_POSITION, light_direction);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_color);
-	glLightfv(GL_LIGHT0, GL_SPECULAR, specular_color);
-	glLightfv(GL_LIGHT0, GL_AMBIENT, ambient_color);
 
 	const CVector &camera = m_Camera->getPosition();
 
@@ -577,9 +608,12 @@ void CGameRenderer::viewMovObj(unsigned int n)
 		//The reflection
 		if(dist < m_Settings.m_ReflectionDist)
 		{
+			CDynamicReflection *theRefl = m_GraphicWorld->getMovObjReflection(n, m_CurrentCamera);
+			//CDynamicReflection *theRefl = m_MovingObjectReflections[m_CurrentCamera + m_NumCameras * n];
+
 			m_GraphicWorld->getMovObjBound(b.m_Body)->draw(
 				&m_Settings,
-				&m_MovingObjectReflections[m_CurrentCamera + m_NumCameras * n],
+				theRefl,
 				lod);
 		}
 		else
@@ -589,16 +623,54 @@ void CGameRenderer::viewMovObj(unsigned int n)
 
 		glPopMatrix();
 	}
+
+
+	//The shadow
+	CVector r = mo->m_Bodies[0].m_Position;
+	const CCollisionFace *plane = theWorld->m_Detector.getGroundFace(r);
+	if(plane != NULL)
+	{
+		CVector lightDir = theWorld->getTrack()->m_LightDirection.normal();
+		float ldotn = lightDir.dotProduct(plane->nor);
+		if(ldotn < -0.001) //plane is lighted
+		{
+			CVector difference = lightDir / ldotn;
+
+			CDynamicShadow *shadow = m_GraphicWorld->getMovObjShadow(n);
+
+			float ps = shadow->getPhysicalSize();
+			CVector texcoords[] = {
+				CVector(0,0,0),
+				CVector(1,0,0),
+				CVector(1,1,0),
+				CVector(0,1,0)
+				};
+			CVector corners[4];
+			for(unsigned int i=0; i<4; i++)
+			{
+				corners[i] = ps*(2*texcoords[i]-CVector(1,1,0));
+				corners[i] *= shadow->getLightOrientation();
+				corners[i] += r;
+				corners[i] -= difference * (corners[i].dotProduct(plane->nor) - plane->d - 0.01);
+			}
+
+			shadow->enable();
+
+			glBegin(GL_QUADS);
+			for(unsigned int i=0; i<4; i++)
+			{
+				glTexCoord2f(texcoords[i].x,texcoords[i].y);
+				glVertex3f(corners[i].x,corners[i].y,corners[i].z);
+			}
+			glEnd();
+
+			shadow->disable();
+		}
+	}
 }
 
 void CGameRenderer::viewDashboard(unsigned int n)
 {
-	//The object:
-	CMovingObject *theObj = theWorld->getMovingObject( ((CGameCamera *)(m_Cameras[n]))->m_PrimaryTarget );
-
-	int w = m_ViewportW;
-	int h = m_ViewportH;
-
 	glMatrixMode( GL_MODELVIEW );
 	glLoadIdentity();
 
@@ -607,81 +679,15 @@ void CGameRenderer::viewDashboard(unsigned int n)
 	glDisable(GL_LIGHTING);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
 
-
-	theConsoleFont->enable();
-
-	//The message in the middle:
-	CString message;
-	float msgAlpha = 1.0;
-	if(theObj->m_IncomingMessages.size() > 0)
+	if( ((CGameCamera *)m_Camera)->getCameraMode() == CGameCamera::In )
 	{
-		//remove all messages but the last:
-		if(theObj->m_IncomingMessages.size() > 1)
-		{
-			theObj->m_IncomingMessages[0] = theObj->m_IncomingMessages.back();
-			theObj->m_IncomingMessages.resize(1); //delete all messages except the last
-		}
-
-		float racingTime = CTimer().getTime() - theWorld->m_GameStartTime;
-		float msgAge = racingTime - theObj->m_IncomingMessages[0].m_SendTime;
-		float maxAge = 1.0 + 0.1 * theObj->m_IncomingMessages[0].m_Message.length();
-		float fadeAge = 1.0;
-
-		/*
-		printf("msg \"%s\" age = %.2f - %.2f = %.2f\n",
-			theObj->m_IncomingMessages[0].m_Message.c_str(),
-			racingTime, theObj->m_IncomingMessages[0].m_SendTime, msgAge);
-		*/
-
-		if(msgAge < maxAge)
-		{
-			message = theObj->m_IncomingMessages[0].m_Message;
-
-			msgAge = msgAge - maxAge + fadeAge;
-			if(msgAge > 0.0)
-			{
-				msgAlpha = 1.0 - msgAge / fadeAge;
-			}
-		}
-		else
-		{
-			theObj->m_IncomingMessages.clear(); //also delete the last message
-		}
+		m_GraphicWorld->getMovObjDashboard(n)->draw(m_ViewportW, m_ViewportH, CDashboard::eFull);
+	}
+	else
+	{
+		m_GraphicWorld->getMovObjDashboard(n)->draw(m_ViewportW, m_ViewportH, CDashboard::eGauges);
 	}
 
-	if(message.length() > 0)
-	{
-		float size = 2.0; //character size
-		glPushMatrix();
-		glTranslatef(
-			0.5*(w - message.length() * size * theConsoleFont->getFontW()),
-			0.5*(h + theConsoleFont->getFontH()),
-			0);
-		glScalef(size,size,size);
-		glColor4f(1,1,1,msgAlpha);
-		theConsoleFont->drawString(message);
-		glColor4f(1,1,1,1);
-		glPopMatrix();
-	}
-
-	//The time
-	if(theWorld->m_LastTime > 0.0)
-	{
-		CString time = CString().fromTime(theWorld->m_LastTime);
-
-		float size = 2.0; //character size
-		glPushMatrix();
-		glTranslatef(
-			0.5*(w - time.length() * size * theConsoleFont->getFontW()),
-			h - 2.5*theConsoleFont->getFontH(),
-			0);
-		glScalef(size,size,size);
-		theConsoleFont->drawString(time);
-		glPopMatrix();
-	}
-
-	theConsoleFont->disable();
-	
 	glEnable(GL_LIGHTING);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 	if(m_Settings.m_ZBuffer) glEnable(GL_DEPTH_TEST);

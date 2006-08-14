@@ -33,6 +33,7 @@ using namespace std;
 #include "chatmessage.h"
 
 #include "collisiondata.h"
+#include "collisionface.h"
 
 #include "vector.h"
 #include "matrix.h"
@@ -115,6 +116,10 @@ protected:
 	CMatrix m_InvInertia;
 
 	CVector m_Ftot, m_Mtot;
+
+	//Collision data for misc. simulation purposes:
+	virtual void determineGroundPlane(CPhysics *simulator);
+	CCollisionFace m_Ground; //the ground plane ( |normal| < 0.5 is no plane)
 };
 
 #endif

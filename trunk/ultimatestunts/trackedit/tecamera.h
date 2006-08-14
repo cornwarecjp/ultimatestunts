@@ -30,6 +30,7 @@ public:
 	~CTECamera();
 
 	void moveForward(float dist);
+	void resetPosition();
 	void turnRight(float angle);
 	void turnUp(float angle);
 

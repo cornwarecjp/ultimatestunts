@@ -101,6 +101,7 @@ protected:
 	CHiscore m_LastHiscoresThisGame;
 
 	CTimer m_Timer; //for the FPS counter
+	float m_TimerOffset; //timer offset relative to game time
 	float m_FPS;
 
 	virtual void loadTrackData();

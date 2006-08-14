@@ -1,8 +1,8 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT([Ultimate Stunts], [0.6.1], [cornware-cjp@users.sourceforge.net], [ultimatestunts])
+AC_INIT([Ultimate Stunts], [0.6.2], [cornware-cjp@users.sourceforge.net], [ultimatestunts])
 AC_CONFIG_SRCDIR([ultimatestunts/main.cpp])
-AC_CONFIG_HEADER(config.h)
+AM_CONFIG_HEADER(config.h)
 AC_CANONICAL_TARGET
 
 AM_INIT_AUTOMAKE
@@ -47,7 +47,7 @@ if test "x$ac_cv_header_windows_h" != "xyes" ; then
 
   AC_PATH_XTRA
 
-  x_suffix="$X_LIBS $X_PRE_LIBS -lX11 -lXi -lXext -lXmu $X_EXTRA_LIBS -lm"
+  x_suffix="$X_LIBS $X_PRE_LIBS -lX11 -lXi -lXext $X_EXTRA_LIBS -lm"
   graphlibs=$x_suffix
 
   CFLAGS="$CFLAGS $X_CFLAGS"
@@ -90,14 +90,16 @@ dnl -------------
 dnl Check for SDL
 dnl -------------
 AC_LANG_PUSH(C)
-AM_PATH_SDL(1.1.0, sdllibs="$SDL_LIBS $sdllibs";AC_DEFINE(HAVE_SDL))
+AM_PATH_SDL(1.1.0, sdllibs="$SDL_LIBS $sdllibs";AC_DEFINE([HAVE_SDL], [], [SDL Lib]))
 AC_LANG_POP(C)
 CFLAGS="$CFLAGS $SDL_CFLAGS"
 CXXFLAGS="$CXXFLAGS $SDL_CFLAGS"
 
 dnl added "-mconsole" for stdio in windows
+dnl added "-DWIN32" for correct setting of libintl in windows
 if test "x$ac_cv_header_windows_h" = "xyes" ; then
   sdllibs="$sdllibs -mconsole"
+  CFLAGS="$CFLAGS -DWIN32"
 fi
 
 dnl ---------------------
@@ -114,7 +116,7 @@ dnl -----------------------
 AC_HEADER_STDC
 
 AC_CHECK_HEADER(GL/gl.h)
-AC_CHECK_HEADER(GL/glext.h,AC_DEFINE(HAVE_GLEXT_H),[], [#include <GL/gl.h>])
+AC_CHECK_HEADER(GL/glext.h,AC_DEFINE([HAVE_GLEXT_H], [], [glext.h header]),[], [#include <GL/gl.h>])
 
 dnl AC_CHECK_HEADER(windows.h, AC_DEFINE(WIN32))
 dnl AC_CHECK_HEADER(joystick.h, AC_DEFINE(JOYSTICK_IS_PRESENT))
@@ -126,15 +128,15 @@ dnl TODO: set audio lib with configure command line
 dnl ------------------------
 dnl Check openAL audio library (currently default)
 dnl ------------------------
-AC_CHECK_HEADER(AL/al.h, AC_DEFINE(OPENAL_HEADER))
-AC_CHECK_LIB(openal, alGetError, soundlibs="-lopenal $soundlibs";AC_DEFINE(HAVE_LIBOPENAL))
+AC_CHECK_HEADER(AL/al.h, AC_DEFINE([OPENAL_HEADER], [], [OpenAL headers]))
+AC_CHECK_LIB(openal, alGetError, soundlibs="-lopenal $soundlibs";AC_DEFINE([HAVE_LIBOPENAL], [], [OpenAL Lib]))
 
 if test "x$soundlibs" = "x" ; then
 
   dnl ------------------------
   dnl Check fmod audio library (if openal not present)
   dnl ------------------------
-  AC_CHECK_HEADER(fmod/fmod.h, AC_DEFINE(FMOD_HEADER))
+  AC_CHECK_HEADER(fmod/fmod.h, AC_DEFINE([FMOD_HEADER], [], [FMOD headers]))
 
   dnl This doesn't work in Cygwin because of incorrect function definition
   dnl AC_CHECK_LIB(fmod, FSOUND_Close,soundlibs="-lfmod $soundlibs";AC_DEFINE(HAVE_LIBFMOD))
@@ -153,7 +155,7 @@ if test "x$soundlibs" = "x" ; then
       return 0;
   }
   ]
-  ,soundlibs="-lfmod $soundlibs";result="yes";AC_DEFINE(HAVE_LIBFMOD), result="no")
+  ,soundlibs="-lfmod $soundlibs";result="yes";AC_DEFINE([HAVE_LIBFMOD], [], [FMOD lib]), result="no")
   LIBS=$OLDLIBS
   AC_MSG_RESULT($result)
 
@@ -176,16 +178,26 @@ CFLAGS="-Wall $CFLAGS"
 CXXFLAGS="-Wall $CXXFLAGS"
 
 dnl -------------------
+dnl F***ing gcc 4.0 uses UTF-8 by default
+dnl -------------------
+CFLAGS="-finput-charset=ISO-8859-1 -fexec-charset=ISO-8859-1 $CFLAGS"
+CXXFLAGS="-finput-charset=ISO-8859-1 -fexec-charset=ISO-8859-1 $CXXFLAGS"
+
+
+dnl -------------------
 dnl i18n
 dnl -------------------
 AM_GNU_GETTEXT
+AM_GNU_GETTEXT_VERSION
+
+
 
 dnl ------------------
 dnl The directory locations
 dnl ------------------
 usdatadir="${prefix}/share/ultimatestunts/"
 
-AC_DEFINE_UNQUOTED(PREFIXDIR, "$prefix")
+AC_DEFINE_UNQUOTED([PREFIXDIR], ["$prefix"], [Prefix dir])
 
 AC_SUBST(netlibs)
 AC_SUBST(soundlibs)

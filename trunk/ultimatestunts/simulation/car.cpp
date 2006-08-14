@@ -51,7 +51,6 @@ bool CCar::load(const CString &filename, const CParamList &list)
 	m_xAngle = 0.0;
 	m_zAngle = 0.0;
 	m_BodyHeight = 0.0;
-	m_Ground.nor = CVector(0,0,0);
 
 	CDataFile dfile(getFilename());
 	CLConfig cfile(dfile.useExtern());
@@ -132,6 +131,39 @@ bool CCar::load(const CString &filename, const CParamList &list)
 
 	//One texture:
 	m_Textures.push_back(theWorld->loadObject(cfile.getValue("texture", "file"), CParamList(), CDataObject::eMaterial));
+
+	//Dashboard info:
+	m_Dashboard.background_tex = cfile.getValue("dashboard", "background_tex");
+	m_Dashboard.background_hth = cfile.getValue("dashboard", "background_hth").toFloat();
+
+	m_Dashboard.steer_tex = cfile.getValue("dashboard", "steer_tex");
+	m_Dashboard.steer_pos = cfile.getValue("dashboard", "steer_pos").toVector();
+	m_Dashboard.steer_rad = cfile.getValue("dashboard", "steer_rad").toFloat();
+	m_Dashboard.steer_ang = cfile.getValue("dashboard", "steer_ang").toFloat();
+
+	m_Dashboard.analog_vel_tex = cfile.getValue("dashboard", "analog_vel_tex");
+	m_Dashboard.analog_vel_pos = cfile.getValue("dashboard", "analog_vel_pos").toVector();
+	m_Dashboard.analog_vel_rad = cfile.getValue("dashboard", "analog_vel_rad").toFloat();
+	m_Dashboard.analog_vel_an0 = cfile.getValue("dashboard", "analog_vel_an0").toFloat();
+	m_Dashboard.analog_vel_an1 = cfile.getValue("dashboard", "analog_vel_an1").toFloat();
+	m_Dashboard.analog_vel_max = cfile.getValue("dashboard", "analog_vel_max").toFloat();
+
+	m_Dashboard.analog_rpm_tex = cfile.getValue("dashboard", "analog_rpm_tex");
+	m_Dashboard.analog_rpm_pos = cfile.getValue("dashboard", "analog_rpm_pos").toVector();
+	m_Dashboard.analog_rpm_rad = cfile.getValue("dashboard", "analog_rpm_rad").toFloat();
+	m_Dashboard.analog_rpm_an0 = cfile.getValue("dashboard", "analog_rpm_an0").toFloat();
+	m_Dashboard.analog_rpm_an1 = cfile.getValue("dashboard", "analog_rpm_an1").toFloat();
+	m_Dashboard.analog_rpm_max = cfile.getValue("dashboard", "analog_rpm_max").toFloat();
+
+	m_Dashboard.digital_vel_pos = cfile.getValue("dashboard", "digital_vel_pos").toVector();
+	m_Dashboard.digital_vel_hth = cfile.getValue("dashboard", "digital_vel_hth").toFloat();
+	m_Dashboard.digital_vel_wth = cfile.getValue("dashboard", "digital_vel_wth").toFloat();
+	m_Dashboard.digital_rpm_pos = cfile.getValue("dashboard", "digital_rpm_pos").toVector();
+	m_Dashboard.digital_rpm_hth = cfile.getValue("dashboard", "digital_rpm_hth").toFloat();
+	m_Dashboard.digital_rpm_wth = cfile.getValue("dashboard", "digital_rpm_wth").toFloat();
+	m_Dashboard.songtitle_pos = cfile.getValue("dashboard", "songtitle_pos").toVector();
+	m_Dashboard.songtitle_hth = cfile.getValue("dashboard", "songtitle_hth").toFloat();
+	m_Dashboard.songtitle_wth = cfile.getValue("dashboard", "songtitle_wth").toFloat();
 
 	//The input object: CCarInput instead of CMovObjInput
 	delete m_InputData;
@@ -282,7 +314,7 @@ void CCar::determineGroundPlane(CPhysics *simulator)
 		CVector pos = m_OrientationMatrix * m_Wheel[i].m_NeutralPos;
 		//fprintf(stderr, "Wheel %d height: %.3f\n", i, (pos + m_Position).y);
 
-		const CCollisionFace * theFace = simulator->getGroundFace(pos + m_Position);
+		const CCollisionFace * theFace = theWorld->m_Detector.getGroundFace(pos + m_Position);
 		if(theFace != NULL)
 		{
 			CCollisionFace cf = *theFace;
@@ -292,7 +324,7 @@ void CCar::determineGroundPlane(CPhysics *simulator)
 			float dpos = pos.dotProduct(cf.nor);
 
 			//check if it's close enough to the wheel
-			if(dpos - cf.d > 1.5 * m_Wheel[i].m_Radius)
+			if(dpos - cf.d > 5.0 * m_Wheel[i].m_Radius)
 				continue;
 
 			//fprintf(stderr, "  -> on the ground\n");
@@ -541,14 +573,19 @@ void CCar::placeOnGround()
 void CCar::update(CPhysics *simulator, float dt)
 {
 	//Reset the skid volume to 0.0
+	//Reset the torque on the wheel to 0.0
 	for(unsigned int i=0; i < 4; i++)
+	{
 		m_Wheel[i].m_SkidVolume = 0.0;
+		m_Wheel[i].m_M = 0.0;
+	}
 
+	//Wheel stuff
 	doSteering(dt);
 
-	determineGroundPlane(simulator);
-
 	simulateGeneral(simulator, dt);
+
+	determineGroundPlane(simulator);
 	if(m_Ground.nor.abs2() < 0.25)
 	{
 		//fprintf(stderr, "ground plane NOT found\n");
@@ -572,8 +609,7 @@ void CCar::update(CPhysics *simulator, float dt)
 		}
 	}
 
-
-	//the wheels
+	//integration step for the wheels
 	for(unsigned int i=0; i < 4; i++)
 	{
 		m_Wheel[i].m_a += m_Wheel[i].m_w * dt;
@@ -653,8 +689,8 @@ void CCar::simulateGeneral(CPhysics *simulator, float dt)
 	//Wheel simulation
 	//----------------------
 	updateWheelOrientation();
-	updateWheelTorques();
 	calculateNormalForces();
+	updateWheelTorques();
 }
 
 void CCar::simulateAir(CPhysics *simulator, float dt)
@@ -813,10 +849,10 @@ void CCar::updateWheelTorques()      //engine + brakes
 {
 	CCarInput *input = (CCarInput *)m_InputData;
 
-	m_Wheel[0].m_M = m_Engine.getWheelM(0) - m_Wheel[0].getBrakeTorque(input->m_Backward);
-	m_Wheel[1].m_M = m_Engine.getWheelM(1) - m_Wheel[1].getBrakeTorque(input->m_Backward);
-	m_Wheel[2].m_M = m_Engine.getWheelM(2) - m_Wheel[2].getBrakeTorque(input->m_Backward);
-	m_Wheel[3].m_M = m_Engine.getWheelM(3) - m_Wheel[3].getBrakeTorque(input->m_Backward);
+	m_Wheel[0].m_M += m_Engine.getWheelM(0) - m_Wheel[0].getBrakeTorque(input->m_Backward);
+	m_Wheel[1].m_M += m_Engine.getWheelM(1) - m_Wheel[1].getBrakeTorque(input->m_Backward);
+	m_Wheel[2].m_M += m_Engine.getWheelM(2) - m_Wheel[2].getBrakeTorque(input->m_Backward);
+	m_Wheel[3].m_M += m_Engine.getWheelM(3) - m_Wheel[3].getBrakeTorque(input->m_Backward);
 
 	//adding the opposite torques to the body
 	for(unsigned int i=0; i < 3; i++)

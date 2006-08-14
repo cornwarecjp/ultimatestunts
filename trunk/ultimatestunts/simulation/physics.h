@@ -24,9 +24,6 @@
   */
 
 #include "simulation.h"
-#include "timer.h"
-#include "collisiondetector.h"
-#include "collisionface.h"
 #include "generalmatrix.h"
 #include "lconfig.h"
 
@@ -36,16 +33,11 @@ public:
 	virtual ~CPhysics();
 
 	virtual bool update();
-
-	const CCollisionFace *getGroundFace(const CVector &pos);
 protected:
-	CTimer m_Timer;
 	bool m_FastCPUMode;
 
 	float m_dtMin;
 	unsigned int m_NMax;
-
-	CCollisionDetector *m_Detector;
 };
 
 #endif
