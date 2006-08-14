@@ -27,7 +27,8 @@ void loadFunc()
 			"2: *.glb file\n"
 			"3: 3dto3d smooth *.raw file\n"
 			"4: *.lwo file\n"
-			"5: 3D Studio *.3ds file\n");
+			"5: *.3ds file\n"
+			"6: *.obj file\n");
 		switch(getInput("Your choice: ").toInt())
 		{
 			case 1:
@@ -40,8 +41,10 @@ void loadFunc()
 				obj2.loadLWOFile(getInput("Enter filename: ")); break;
 			case 5:
 				obj2.load3DSFile(getInput("Enter filename: ")); break;
+			case 6:
+				obj2.loadOBJFile(getInput("Enter filename: ")); break;
 			default:
-				printf("Please choose between 1, 2, 3 and 4\n");
+				printf("Please choose between 1 and 6\n");
 		}
 		graphobj->merge(obj2, lods);
 	}
@@ -52,7 +55,8 @@ void loadFunc()
 			"2: *.glb file\n"
 			"3: 3dto3d smooth *.raw file\n"
 			"4: *.lwo file\n"
-			"5: 3D Studio *.3ds file\n");
+			"5: *.3ds file\n"
+			"6: *.obj file\n");
 		switch(getInput("Your choice: ").toInt())
 		{
 			case 1:
@@ -65,8 +69,10 @@ void loadFunc()
 				graphobj->loadLWOFile(getInput("Enter filename: ")); break;
 			case 5:
 				graphobj->load3DSFile(getInput("Enter filename: ")); break;
+			case 6:
+				graphobj->loadOBJFile(getInput("Enter filename: ")); break;
 			default:
-				printf("Please choose between 1, 2, 3 and 4\n");
+				printf("Please choose between 1 and 6\n");
 		}
 	}
 	graphobj->render(VisibleLODs);
@@ -115,6 +121,7 @@ void helpFunc()
 		"%c: Scale\n"
 		"%c: Mirror\n"
 		"%c: Clamp\n"
+		"%c: Split\n"
 		"%c: Generate normals, texture replacement colors or texture coordinates\n"
 		"%c: Translate\n"
 		"%c: Rotate Texture\n"
@@ -122,7 +129,7 @@ void helpFunc()
 		"%c: Help\n",
 		eLoad, eSave, eSettings, ePrimitive, eVertex, eNew, eChange,
 		eChangePrimitive, eDuplicatePrimitive, eSetCollision, eRotate, eScale,
-		eMirror, eClamp, eGenerate, eTranslate, eRotateTexture, eTranslateTexture,
+		eMirror, eClamp, eSplit, eGenerate, eTranslate, eRotateTexture, eTranslateTexture,
 		eHelp
 	);
 }

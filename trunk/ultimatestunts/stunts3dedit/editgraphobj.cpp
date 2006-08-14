@@ -19,8 +19,11 @@
 #include <cstdio> //for sscanf
 #include <cmath> //for fabs
 
-#include "3ds.h"
-#include "lw.h"
+#include "load3ds.h"
+#include "loadglt.h"
+#include "loadlwo.h"
+#include "loadobj.h"
+#include "loadraw.h"
 #include "glbfile.h"
 
 #include "editgraphobj.h"
@@ -39,209 +42,6 @@ CEditGraphObj::~CEditGraphObj()
 		glDeleteLists(m_ObjList, 1);
 		glDeleteLists(m_ObjListRef, 1);
 	}
-}
-
-bool CEditGraphObj::loadGLTFile(CString filename)
-{
-	clear();
-
-	//State variables:
-	CVertex state;
-		state.pos = CVector(0,0,0);
-		state.nor = CVector(0,1,0);
-		state.col = CVector(1,1,1);
-		state.tex = CVector(0,0,0);
-		state.opacity = 1.0;
-		state.reflectance = 0.0;
-	int texid = -1;
-	CString name = "default-name";
-	CString LODs = "1234c";
-
-	CDataFile f(filename);
-
-	while(true)
-	{
-		CString line = f.readl();
-		if(line[0] == '\n') break; //EOF
-
-		int sp = line.inStr(' ');
-		if(sp > 0)
-		{
-			CString lhs = line.mid(0, sp);
-			CString rhs = line.mid(sp+1, line.length());
-			if(lhs == "#Tedit-name")
-				name = rhs;
-			if(lhs == "Lod")
-				LODs = rhs;
-			if(lhs == "Texture")
-				texid =rhs.toInt();
-			if(lhs == "Color")
-			{
-				state.col = rhs.toVector();
-				if(m_Primitives.size()>0) m_Primitives.back().m_ModulationColor = state.col;
-			}
-			if(lhs == "Opacity")
-			{
-				state.opacity = rhs.toFloat();
-				if(m_Primitives.size()>0) m_Primitives.back().m_Opacity = state.opacity;
-			}
-			if(lhs == "Reflectance")
-			{
-				state.reflectance = rhs.toFloat();
-				if(m_Primitives.size()>0) m_Primitives.back().m_Reflectance = state.reflectance;
-			}
-			if(lhs == "Normal")
-				state.nor = rhs.toVector();
-			if(lhs == "TexCoord")
-				state.tex = rhs.toVector();
-			if(lhs == "Vertex")
-			{
-				state.pos = rhs.toVector();
-				if(m_Primitives.size()>0) m_Primitives.back().m_Vertex.push_back(state);
-			}
-			if(lhs == "ReplacementColor")
-				if(m_Primitives.size()>0) m_Primitives.back().m_ReplacementColor = rhs.toVector();
-			if(lhs == "Emissivity")
-				if(m_Primitives.size()>0) m_Primitives.back().m_Emissivity = rhs.toFloat();
-			if(lhs == "StaticFriction")
-				if(m_Primitives.size()>0) m_Primitives.back().m_StaticFriction = rhs.toFloat();
-			if(lhs == "DynamicFriction")
-				if(m_Primitives.size()>0) m_Primitives.back().m_DynamicFriction = rhs.toFloat();
-
-			if(lhs == "Index")
-				if(m_Primitives.size()>0)
-					m_Primitives.back().m_Index.push_back((unsigned int)rhs.toInt());
-
-			if(lhs == "Quads")
-			{
-				CPrimitive pr;
-				pr.m_Name = name;
-				pr.m_Texture = texid;
-				pr.m_Type = CPrimitive::Quads;
-				pr.m_LODs = LODs;
-				m_Primitives.push_back(pr);
-			}
-			if(lhs == "Triangles")
-			{
-				CPrimitive pr;
-				pr.m_Name = name;
-				pr.m_Texture = texid;
-				pr.m_Type = CPrimitive::Triangles;
-				pr.m_LODs = LODs;
-				m_Primitives.push_back(pr);
-			}
-			if(lhs == "Trianglestrip")
-			{
-				CPrimitive pr;
-				pr.m_Name = name;
-				pr.m_Texture = texid;
-				pr.m_Type = CPrimitive::TriangleStrip;
-				pr.m_LODs = LODs;
-				m_Primitives.push_back(pr);
-			}
-			if(lhs == "Quadstrip")
-			{
-				CPrimitive pr;
-				pr.m_Name = name;
-				pr.m_Texture = texid;
-				pr.m_Type = CPrimitive::QuadStrip;
-				pr.m_LODs = LODs;
-				m_Primitives.push_back(pr);
-			}
-			if(lhs == "Polygon")
-			{
-				CPrimitive pr;
-				pr.m_Name = name;
-				pr.m_Texture = texid;
-				pr.m_Type = CPrimitive::Polygon;
-				pr.m_LODs = LODs;
-				m_Primitives.push_back(pr);
-			}
-			if(lhs == "VertexArray")
-			{
-				CPrimitive pr;
-				pr.m_Name = name;
-				pr.m_Texture = texid;
-				pr.m_Type = CPrimitive::VertexArray;
-				pr.m_LODs = LODs;
-				m_Primitives.push_back(pr);
-			}
-
-			if(lhs == "Notex")
-				texid = -1;
-			if(lhs == "End")
-				name = "default-name";
-
-		}
-		else
-		{
-			CString lhs = line; //easier than doing a find/replace on lhs
-
-			if(lhs == "Quads")
-			{
-				CPrimitive pr;
-				pr.m_Name = name;
-				pr.m_Texture = texid;
-				pr.m_Type = CPrimitive::Quads;
-				pr.m_LODs = LODs;
-				m_Primitives.push_back(pr);
-			}
-			if(lhs == "Triangles")
-			{
-				CPrimitive pr;
-				pr.m_Name = name;
-				pr.m_Texture = texid;
-				pr.m_Type = CPrimitive::Triangles;
-				pr.m_LODs = LODs;
-				m_Primitives.push_back(pr);
-			}
-			if(lhs == "Trianglestrip")
-			{
-				CPrimitive pr;
-				pr.m_Name = name;
-				pr.m_Texture = texid;
-				pr.m_Type = CPrimitive::TriangleStrip;
-				pr.m_LODs = LODs;
-				m_Primitives.push_back(pr);
-			}
-			if(lhs == "Quadstrip")
-			{
-				CPrimitive pr;
-				pr.m_Name = name;
-				pr.m_Texture = texid;
-				pr.m_Type = CPrimitive::QuadStrip;
-				pr.m_LODs = LODs;
-				m_Primitives.push_back(pr);
-			}
-			if(lhs == "Polygon")
-			{
-				CPrimitive pr;
-				pr.m_Name = name;
-				pr.m_Texture = texid;
-				pr.m_Type = CPrimitive::Polygon;
-				pr.m_LODs = LODs;
-				m_Primitives.push_back(pr);
-			}
-			if(lhs == "VertexArray")
-			{
-				CPrimitive pr;
-				pr.m_Name = name;
-				pr.m_Texture = texid;
-				pr.m_Type = CPrimitive::VertexArray;
-				pr.m_LODs = LODs;
-				m_Primitives.push_back(pr);
-			}
-
-			if(lhs == "Notex")
-				texid = -1;
-			if(lhs == "End")
-				name = "default-name";
-		}
-	}
-
-	convertToVertexArrays();
-
-	return true;
 }
 
 bool CEditGraphObj::loadGLBFile(CString filename)
@@ -291,276 +91,29 @@ bool CEditGraphObj::loadGLBFile(CString filename)
 	return true;
 }
 
+bool CEditGraphObj::loadGLTFile(CString filename)
+{
+	return loadGLT(filename, *this);
+}
+
 bool CEditGraphObj::loadRAWFile(CString filename)
 {
-	clear();
-
-	CDataFile f(filename);
-
-	while(true)
-	{
-		CString line = f.readl();
-		if(line[0] == '\n') break; //EOF
-
-		if(line[0] > '9') //it is an alphabetical character
-		{
-				CPrimitive pr;
-				pr.m_Name = line;
-				pr.m_Texture = -1;
-				pr.m_Type = CPrimitive::Triangles;
-				pr.m_LODs = "1234c";
-				m_Primitives.push_back(pr);
-		}
-		else
-		{
-			CVector r1,r2,r3,n1,n2,n3;
-			sscanf(line.c_str(), " %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f ",
-				&r1.x, &r1.y, &r1.z, &r2.x, &r2.y, &r2.z, &r3.x, &r3.y, &r3.z,
-				&n1.x, &n1.y, &n1.z, &n2.x, &n2.y, &n2.z, &n3.x, &n3.y, &n3.z);
-
-			CVertex v1, v2, v3;
-			v1.pos = r1;
-			v2.pos = r2;
-			v3.pos = r3;
-			v1.nor = -n1;
-			v2.nor = -n2;
-			v3.nor = -n3;
-			v1.col = v2.col = v3.col = CVector(1,1,1);
-			v1.opacity = v2.opacity = v3.opacity = 1.0;
-			v1.reflectance = v2.reflectance = v3.reflectance = 0.0;
-
-			m_Primitives[m_Primitives.size()-1].m_Vertex.push_back(v1);
-			m_Primitives[m_Primitives.size()-1].m_Vertex.push_back(v2);
-			m_Primitives[m_Primitives.size()-1].m_Vertex.push_back(v3);
-		}
-	}
-
-	convertToVertexArrays();
-
-	return true;
+	return loadRAW(filename, *this);
 }
 
 bool CEditGraphObj::load3DSFile(CString filename)
 {
-	CDataFile f(filename);
-	CString fn2 = f.useExtern();
-	
-	clear();
-
-	CLoad3DS g_Load3ds;                                     // This is 3DS class.  This should go in a good model class.
-	t3DModel g_3DModel;                                     // This holds the 3D Model info that we load in
-
-	g_Load3ds.Import3DS(&g_3DModel, fn2.c_str());         // Load our .3DS file into our model structure
-
-	/*
-	We won't load the textures, as we're only interested in the
-	texture coordinates. Load textures with textures.dat.
-	*/
-	/*
-	for(int i = 0; i < g_3DModel.numOfMaterials; i++)
-	{
-		// Check to see if there is a file name to load in this material
-		if(strlen(g_3DModel.pMaterials[i].strFile) > 0)
-		{
-			// Use the name of the texture file to load the bitmap, with a texture ID (i).
-			// We pass in our global texture array, the name of the texture, and an ID to reference it.
-			CreateTexture(g_Texture, g_3DModel.pMaterials[i].strFile, i);
-		}
-
-
-		// Set the texture ID for this material
-		g_3DModel.pMaterials[i].texureId = i;
-	}
-	*/
-
-	// Since we know how many objects our model has, go through each of them.
-	for(int i = 0; i < g_3DModel.numOfObjects; i++)
-	{
-		// Make sure we have valid objects just in case. (size() is in the vector class)
-		if(g_3DModel.pObject.size() <= 0) break;
-
-		// Get the current object that we are displaying
-		t3DObject *pObject = &g_3DModel.pObject[i];
-
-		CPrimitive pr;
-		pr.m_Name = pObject->strName;
-		pr.m_Type = CPrimitive::VertexArray;
-		pr.m_LODs = "1234c";
-		pr.m_Emissivity = 0.0;
-		pr.m_Opacity = 1.0;
-		pr.m_Reflectance = 0.0;
-		pr.m_ModulationColor = CVector(1,1,1);
-		pr.m_ReplacementColor = CVector(1,1,1);
-		pr.m_DynamicFriction = 1.0;
-		pr.m_StaticFriction = 1.0;
-
-		// Check to see if this object has a texture map, if so bind the texture to it.
-		if(pObject->bHasTexture)
-		{
-			pr.m_Texture = -1;
-		}
-		else
-		{
-			//default to no texture even if there is a texture
-			pr.m_Texture = -1;
-			//pr.m_Texture = pObject->materialID;
-		}
-
-		//Position and orientation matrix:
-		CVector ObjPos(pObject->objectCenter.x, pObject->objectCenter.y, pObject->objectCenter.z);
-		CMatrix ObjOri;
-		ObjOri.setElement(0, 0, pObject->Xaxis.x);
-		ObjOri.setElement(0, 1, pObject->Xaxis.y);
-		ObjOri.setElement(0, 2, pObject->Xaxis.z);
-		ObjOri.setElement(1, 0, pObject->Yaxis.x);
-		ObjOri.setElement(1, 1, pObject->Yaxis.y);
-		ObjOri.setElement(1, 2, pObject->Yaxis.z);
-		ObjOri.setElement(2, 0, pObject->Zaxis.x);
-		ObjOri.setElement(2, 1, pObject->Zaxis.y);
-		ObjOri.setElement(2, 2, pObject->Zaxis.z);
-
-		//add the vertex array
-		for(int j=0; j < pObject->numOfVerts; j++)
-		{
-			CVertex vt;
-
-			vt.nor = CVector(pObject->pNormals[j].x, pObject->pNormals[j].y, pObject->pNormals[j].z);
-			vt.pos = CVector(pObject->pVerts[j].x, pObject->pVerts[j].y, pObject->pVerts[j].z);
-
-			//To absolute coordinates
-			vt.pos = ObjOri * (vt.pos - ObjPos);
-
-			if(pObject->bHasTexture)
-			{
-				// Make sure there was a UVW map applied to the object or else it won't have tex coords.
-				if(pObject->pTexVerts)
-					vt.tex = CVector(pObject->pTexVerts[j].x, pObject->pTexVerts[j].y, 0.0);
-			}
-			else
-			{
-				// Make sure there is a valid material/color assigned to this object.
-				// You should always at least assign a material color to an object,
-				// but just in case we want to check the size of the material list.
-				// if the size is at least one, and the material ID != -1,
-				// then we have a valid material.
-				if(g_3DModel.pMaterials.size() && pObject->materialID >= 0)
-				{
-					// Get and set the color that the object is, since it must not have a texture
-					BYTE *pColor = g_3DModel.pMaterials[pObject->materialID].color;
-
-					// Assign the current color to this model
-					pr.m_ModulationColor.x = (float)(pColor[0]) / 255.0;
-					pr.m_ModulationColor.y = (float)(pColor[1]) / 255.0;
-					pr.m_ModulationColor.z = (float)(pColor[2]) / 255.0;
-				}
-			}
-
-			pr.m_Vertex.push_back(vt);
-		}
-		
-		// Go through all of the faces (polygons) of the object and draw them
-		for(int j = 0; j < pObject->numOfFaces; j++)
-		{
-			// Go through each corner of the triangle and draw it.
-			for(int whichVertex = 0; whichVertex < 3; whichVertex++)
-			{
-				// Get the index for each point of the face
-				unsigned int index = pObject->pFaces[j].vertIndex[whichVertex];
-
-				pr.m_Index.push_back(index);
-			}
-
-		}
-
-		m_Primitives.push_back(pr);
-	}
-
-	return true;
+	return load3DS(filename, *this);
 }
 
 bool CEditGraphObj::loadLWOFile(CString filename)
 {
-	CDataFile f(filename);
-	CString fn2 = f.useExtern();
+	return loadLWO(filename, *this);
+}
 
-	if(!lw_is_lwobject(fn2.c_str())) return false;
-
-	clear();
-
-	lwObject *lwo = lw_object_read(fn2.c_str());
-	if(lwo == NULL) return false;
-
-	printf("Loaded all data from LWO file\n");
-	
-	//first, create a primitive for every material
-	for(int i=0; i < lwo->material_cnt; i++)
-	{
-		m_Primitives.push_back(CPrimitive());
-		CPrimitive &pr = m_Primitives.back();
-
-		pr.m_Name = lwo->material[i].name;
-		pr.m_Type = CPrimitive::VertexArray;
-		pr.m_LODs = "1234c";
-		pr.m_Emissivity = 0.0;
-		pr.m_Opacity = 1.0;
-		pr.m_Reflectance = 0.0;
-		pr.m_ModulationColor = CVector(
-			lwo->material[i].r,
-			lwo->material[i].g,
-			lwo->material[i].b
-			);
-		pr.m_ReplacementColor = pr.m_ModulationColor;
-		pr.m_DynamicFriction = 1.0;
-		pr.m_StaticFriction = 1.0;
-
-		//copy the entire vertex array to every primitive
-		for(int j=0; j < lwo->vertex_cnt; j++)
-		{
-			CVertex v;
-			v.nor = CVector(1,0,0);
-			v.pos = CVector(
-				lwo->vertex[3*j+0],
-				lwo->vertex[3*j+1],
-				lwo->vertex[3*j+2]
-				);
-			pr.m_Vertex.push_back(v);
-		}
-	}
-
-	printf("Created all primitives\n");
-
-	//copy faces to the primitives
-	for(int i=0; i < lwo->face_cnt; i++)
-	{
-		const lwFace *face = lwo->face+i;
-
-		/* ignore faces with less than 3 points */
-		if (face->index_cnt < 3)
-			continue;
-
-		CPrimitive &thePrimitive = m_Primitives[face->material];
-
-		for(int j=0; j < face->index_cnt; j++)
-		{
-			thePrimitive.m_Index.push_back(face->index[j]);
-
-			//TODO: update texture coordinates:
-			/*
-			thePrimitive.m_Vertex[face->index[j]].tex = CVector(
-				
-				);
-			*/
-		}
-	}
-
-	printf("Added all faces\n");
-
-	//TODO: optimise the result (remove unused vertices and empty primitives)
-
-	lw_object_free(lwo);
-
-	printf("Loading was succesful\n");
-	return true;
+bool CEditGraphObj::loadOBJFile(CString filename)
+{
+	return loadOBJ(filename, *this);
 }
 
 void CEditGraphObj::merge(const CEditGraphObj &obj, const CString &lods)
@@ -635,6 +188,7 @@ void CEditGraphObj::saveGLTFile(const CString &filename)
 	f.writel("#CornWare UltimateStunts graphics file");
 	f.writel("#created by the stunts3dedit editor");
 	f.writel("");
+	f.writel("Lod 1234c");
 	f.writel("Normal 0,1,0");
 	f.writel("Color 1,1,1");
 	f.writel("Opacity 1");

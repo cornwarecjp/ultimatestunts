@@ -56,6 +56,7 @@ enum eKeyconf {
 	eScale = 's',
 	eMirror = 'm',
 	eClamp = 'a',
+	eSplit = 'P',
 	eGenerate = 'g',
 	eTranslate = 't',
 
@@ -135,6 +136,8 @@ bool mainloop()
 		mirrorFunc();
 	if(winsys->wasPressed(eClamp))
 		clampFunc();
+	if(winsys->wasPressed(eSplit))
+		splitFunc();
 	if(winsys->wasPressed(eGenerate))
 		generateFunc();
 	if(winsys->wasPressed(eTranslate))

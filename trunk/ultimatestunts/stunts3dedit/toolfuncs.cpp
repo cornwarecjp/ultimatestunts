@@ -343,3 +343,65 @@ void generateFunc()
 
 	graphobj->render(VisibleLODs);
 }
+
+void splitFunc()
+{
+	CString axis = getInput("Give axis (x, y or z):");
+	float limit  = getInput("Give limit value:").toFloat();
+	bool above   = getInput("Do you want to keep everything above this value? (y/n):") == "y";
+
+	CVector normal;
+	if(axis == "x")
+		{normal = CVector(1,0,0);}
+	else if(axis == "y")
+		{normal = CVector(0,1,0);}
+	else if(axis == "z")
+		{normal = CVector(0,0,1);}
+	else
+		{return;}
+
+	if(!above) normal = -normal;
+
+	for(unsigned int p=0; p<graphobj->m_Primitives.size(); p++)
+	{
+		CPrimitive &pr = graphobj->m_Primitives[p];
+
+		//First delete triangles
+		int numPlanes = pr.m_Index.size() / 3; //rounded to lower value if necessary
+		for(int plane=0; plane < numPlanes; plane++)
+		{
+			CVector p1 = pr.m_Vertex[pr.m_Index[3*plane]].pos;
+			CVector p2 = pr.m_Vertex[pr.m_Index[3*plane+1]].pos;
+			CVector p3 = pr.m_Vertex[pr.m_Index[3*plane+2]].pos;
+
+			if(p1.dotProduct(normal) < limit ||
+				p2.dotProduct(normal) < limit ||
+				p3.dotProduct(normal) < limit)
+			{
+				//delete the triangle
+				pr.m_Index.erase(pr.m_Index.begin()+3*plane);
+				pr.m_Index.erase(pr.m_Index.begin()+3*plane);
+				pr.m_Index.erase(pr.m_Index.begin()+3*plane);
+
+				numPlanes--;
+				plane--; //do the same index again
+			}
+		}
+
+		//Then delete vertices
+		for(int i=0; i < int(pr.m_Vertex.size()); i++)
+			if(pr.m_Vertex[i].pos.dotProduct(normal) < limit)
+			{
+				pr.m_Vertex.erase(pr.m_Vertex.begin()+i);
+
+				//update indices
+				for(unsigned int j=0; j < pr.m_Index.size(); j++)
+					if(pr.m_Index[j] > (unsigned int)i)
+						pr.m_Index[j]--;
+
+				i--; //do the same index again
+			}
+	}
+
+	graphobj->render(VisibleLODs);
+}

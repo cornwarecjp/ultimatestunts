@@ -68,15 +68,12 @@ public:
 	CEditGraphObj();
 	virtual ~CEditGraphObj();
 
-	/*
-	DON't use load(..) at the moment: use loadFromFile instead.
-	TODO: replace load*File with a load-derived function
-	*/
 	virtual bool loadGLTFile(CString filename);
 	virtual bool loadGLBFile(CString filename);
 	bool loadRAWFile(CString filename);
 	bool load3DSFile(CString filename);
 	bool loadLWOFile(CString filename);
+	bool loadOBJFile(CString filename);
 
 	void merge(const CEditGraphObj &obj, const CString &lods);
 
