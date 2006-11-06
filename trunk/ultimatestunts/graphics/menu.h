@@ -35,7 +35,7 @@ public:
 	virtual ~CMenu();
 
 	virtual int onKeyPress(int key);
-	virtual int onMouseMove(int x, int y);
+	virtual int onMouseMove(int x, int y, unsigned int buttons);
 	virtual int onMouseClick(int x, int y, unsigned int buttons);
 	virtual int onRedraw();
 

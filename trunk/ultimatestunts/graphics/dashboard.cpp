@@ -47,7 +47,14 @@ CDashboard::CDashboard(CDataManager *manager, unsigned int movObjID) :
 		m_Info = ((CCar *)mo)->m_Dashboard;
 
 		if(m_Info.background_tex != "")
+		{
 			m_BackgroundTexture.load(m_Info.background_tex, CParamList());
+
+			//Get rid of texture repeating artifact
+			m_BackgroundTexture.draw();
+			glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
+			glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );
+		}
 
 		if(m_Info.steer_tex != "")
 			m_SteerTexture.load(m_Info.steer_tex, CParamList());
@@ -70,6 +77,10 @@ void CDashboard::draw(unsigned int w, unsigned int h, eShowMode mode)
 	if(theObj->getType() != CMessageBuffer::car) return;
 
 	CCar *theCar = (CCar *)theObj;
+
+	//Switch from full to timer mode at a certain aspect ratio
+	if(mode == eFull && h < 0.5*w)
+		mode = eGauges;
 
 	glPushMatrix();
 	glScalef(w, w, 1.0);

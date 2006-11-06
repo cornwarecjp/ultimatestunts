@@ -33,9 +33,6 @@ using namespace std;
 struct STile {
 	int m_Model;
 	int m_Z, m_R; //height, orientation. 0 <= m_R <= 3
-
-	float m_Time; //Fastest possible time to reach this tile, from the start
-	int m_RouteCounter; //0 = start, 1 = next after start, etc.. Negative = not in the track
 };
 
 class CTrack : public CDataObject  {
@@ -49,8 +46,25 @@ public:
 	vector<STile> m_Track; //refer to tile model elements in the manager object
 	int m_L, m_W, m_H;
 
-	int m_FinishRouteCounter; //same meaning as in the tile data
-	float m_FinishTime;
+	//int m_FinishRouteCounter; //same meaning as in the tile data
+	//float m_FinishTime;
+
+	//New rule data format:
+	class CCheckpoint
+	{
+	public:
+		int x, y, z;
+
+		bool operator==(const CCheckpoint &val) const
+			{return x==val.x && y==val.y && z==val.z;}
+	};
+	class CRoute : public vector<CCheckpoint>
+	{
+	public:
+		unsigned int startRoute, startTile;
+		unsigned int finishRoute, finishTile;
+	};
+	vector<CRoute> m_Routes;
 
 	CString m_BackgroundFilename;
 	CString m_EnvMapFilename;

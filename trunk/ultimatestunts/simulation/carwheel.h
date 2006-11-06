@@ -40,7 +40,8 @@ public:
 	float m_M; //acumulator for force moment around the axis
 
 	//Wheel behaviour functions (documented in the .cpp file):
-	CVector getGroundForce(float &groundM, float vlong, float vlat, float contactMu);
+	CVector getGroundForce(
+		CVector &groundM, float vlong, float vlat, float contactMu, float contactRoll);
 	float getBrakeTorque(float brakeFactor);
 
 	//Temorary data
@@ -55,6 +56,7 @@ public:
 
 	CVector m_NeutralPos; //in car coordinates
 	float m_Mu; //static friction limit on asphalt
+	float m_Roll; //roll friction coefficient on asphalt
 };
 
 #endif

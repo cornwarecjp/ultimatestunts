@@ -41,6 +41,9 @@ CCarWheel::CCarWheel()
 	m_tractionStiffness = 0.25;
 	m_cornerStiffness = 1.0;
 	m_BrakeMax = 100.0;
+
+	m_Mu = 1.0;
+	m_Roll = 0.0;
 }
 
 CCarWheel::~CCarWheel(){
@@ -70,7 +73,7 @@ void staticlimit(float max, CVector &F, float &skidvolume)
 		if(skidding < 2.0)
 			outval = 1.0 - 0.25*(skidding-2.0)*(skidding-2.0);
 
-		float mul = max * outval / skidding;
+		float mul = outval / skidding;
 
 		/*
 		float smoothness = 2.0; //lower value = smoother transition
@@ -92,22 +95,27 @@ void staticlimit(float max, CVector &F, float &skidvolume)
 
 		skidvolume = outval * outval; //factor;
 	}
+	else
+	{
+		skidvolume = 0.0;
+	}
 }
 
 /*
-The following function defines the behaviour of the tyres.
+The following function defines the behaviour of the tires.
 This is the most important aspect of the physics model of
 a racing simulation, so if you want to improve the realism,
 then this is probably where you want to be.
 
 parameters:
-groundM  : place to put the torque in
-vlong    : longitudinal velocity of the wheel center. Positive is backward.
-vlat     : lateral velocity of the wheel center. Positive is to the right
-contactMu: The static friction limit of the contact surface
+groundM    : place to put the torque in (same coordinate system as return value)
+vlong      : longitudinal velocity of the wheel center. Positive is backward.
+vlat       : lateral velocity of the wheel center. Positive is to the right
+contactMu  : The static friction limit of the contact surface
+contactRoll: The roll friction coefficient of the contact surface
 
 return value:
-The tyre surface force vector that works on the tyre,
+The tire surface force vector that works on the tire,
 with the following axis directions:
 x = to the right
 y = to the top
@@ -129,7 +137,8 @@ velocities         are in meters per second (m/s)
 angular velocities are in rads per second (rad/s)
 
 */
-CVector CCarWheel::getGroundForce(float &groundM, float vlong, float vlat, float contactMu)
+CVector CCarWheel::getGroundForce(
+	CVector &groundM, float vlong, float vlat, float contactMu, float contactRoll)
 {
 	float vlong_rel = vlong + m_Radius * m_w;
 
@@ -144,6 +153,11 @@ CVector CCarWheel::getGroundForce(float &groundM, float vlong, float vlat, float
 	CVector Slip(slip_lat, 0.0, slip_long);
 	staticlimit(contactMu, Slip, m_SkidVolume);
 
+	//fprintf(stderr, "%.f; %.f; %.f; ", 1000*vlong_rel, 1000*slip_long, 1000*Slip.z);
+
+	CVector rollFriction(contactRoll * vlong/speedfactor, 0.0, 0.0);
+
+	groundM = m_Fnormal * rollFriction;
 	return m_Fnormal * (Slip + CVector(0.0, 1.0, 0.0));
 }
 

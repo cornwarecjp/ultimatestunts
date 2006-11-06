@@ -100,7 +100,7 @@ bool CRuleControl::update()
 
 void CRuleControl::updateCarRules(unsigned int movObjIndex, CCar *car)
 {
-	float penaltyMultiplier = 3.0; //multiplier between fastest time and penalty time
+	//float penaltyMultiplier = 3.0; //multiplier between fastest time and penalty time
 
 	CCarRuleStatus &status = car->m_RuleStatus;
 	CVector pos = car->m_Position;
@@ -109,70 +109,180 @@ void CRuleControl::updateCarRules(unsigned int movObjIndex, CCar *car)
 	int x = (int)(0.5 + (pos.x)/TILESIZE);
 	int y = (int)(0.5 + (pos.y)/VERTSIZE);
 	int z = (int)(0.5 + (pos.z)/TILESIZE);
+	CTrack::CCheckpoint carpos;
+	carpos.x = x;
+	carpos.y = y;
+	carpos.z = z;
 
 	CTrack &track = *(theWorld->getTrack());
-	unsigned int width = track.m_W;
-	unsigned int height = track.m_H;
 
-	//get the index of the tile around or below the car
-	int base_index = height * z + height * width * x;
-	unsigned int currentIndex = base_index;
-	for(unsigned int i=0; i < height; i++)
+	//Find it on the current position
+	int routenr = -1, tilenr = -1;
+	if(track.m_Routes[status.currentRoute][status.currentTile] == carpos)
 	{
-		STile &tile = track.m_Track[base_index+i];
-		if(tile.m_Z > y || tile.m_Model == 0) break;
-		currentIndex = base_index+i;
+		routenr = (int)status.currentRoute; tilenr = (int)status.currentTile;
 	}
 
-	unsigned int prevIndex = status.currentTile;
-	unsigned int validIndex = status.lastValidTile;
-
-	int validCounter = track.m_Track[validIndex].m_RouteCounter,
-		prevCounter = track.m_Track[prevIndex].m_RouteCounter,
-		currentCounter = track.m_Track[currentIndex].m_RouteCounter;
-
-	//are we inside the finish tile?
-	bool currentIsFinish = theWorld->getTileModel(track.m_Track[currentIndex].m_Model)->m_isFinish;
-
-	//Route tracking:
-	if(currentIndex != prevIndex && currentCounter >= 0) //we're on a route, and not on the start
-	{
-		printf("\nvalid, prev, current = %d, %d, %d\n", validCounter, prevCounter, currentCounter);
-		printf("curTileTime = %.2f s\n", track.m_Track[currentIndex].m_Time);
-		printf("maxTileTime = %.2f s\n", status.maxTileTime);
-
-		//special case for finish penalty time
-		if(currentIsFinish)
-		{
-			float t1 = track.m_Track[validIndex].m_Time;
-			float t2 = track.m_FinishTime;
-			int finishCounter = track.m_FinishRouteCounter;
-
-			if(finishCounter > validCounter+1 && t2-t1 > 0 && status.maxTileTime < t2)
-				addPenaltytime(car, penaltyMultiplier * (t2-t1));
-		}
-		
-		if(prevCounter>=0 && currentCounter == prevCounter+1) //we're following a certain route
-		{
-			float t1 = track.m_Track[validIndex].m_Time;
-			float t2 = track.m_Track[prevIndex].m_Time;
-
-			if(prevIndex != validIndex) //a gap in the route
+	//Find it on the current route ahead
+	if(routenr < 0 && (status.currentTile+1 < track.m_Routes[status.currentRoute].size()) )
+		for(int i=status.currentTile+1; i < (int)track.m_Routes[status.currentRoute].size() ; i++)
+			if(track.m_Routes[status.currentRoute][i] == carpos)
 			{
-				if(t2-t1 > 0 && status.maxTileTime < t2)
-					addPenaltytime(car, penaltyMultiplier * (t2-t1));
+				routenr = (int)status.currentRoute; tilenr = i;
+				break;
 			}
 
-			if(status.maxTileTime < t2) status.maxTileTime = t2;
-			status.lastValidTile = currentIndex;
+	//Find it on the current route behind
+	if(routenr < 0 && (status.currentTile > 0) )
+		for(int i=status.currentTile-1; i >= 0 ; i--)
+			if(track.m_Routes[status.currentRoute][i] == carpos)
+			{
+				routenr = (int)status.currentRoute; tilenr = i;
+				break;
+			}
+
+	//Find it on other routes
+	//Prefer routes which are completed until this tile
+	//Even better: routes which also contain the previous tile
+	//Prefer lower route-numbers
+	unsigned int prefLevel = 0; //0 = nothing, 1 = completed 2 = contains previous
+	if(routenr < 0)
+	{
+		for(int r=track.m_Routes.size()-1; r >= 0 ; r--)
+			for(int i=track.m_Routes[r].size()-1; i >= 0 ; i--)
+				if(track.m_Routes[r][i] == carpos)
+				{
+					unsigned int thisLevel = 0;
+
+					if(i <= status.lastPosition[r]+1)
+						thisLevel = 1;
+
+					if(i > 0 &&
+						track.m_Routes[r][i-1] ==
+						track.m_Routes[status.currentRoute][status.currentTile]
+						)
+						thisLevel = 2;
+
+					if(thisLevel >= prefLevel)
+					{
+						routenr = r; tilenr = i;
+						prefLevel = thisLevel;
+					}
+				}
+	}
+
+	bool doFinishCheck = false;
+	if(routenr == 0 && tilenr == (int)(track.m_Routes[0].size()-1))
+	{
+		//printf("Enabling finish\n");
+		doFinishCheck = true;
+	}
+
+	//Check whether we are on a new route tile
+	if(routenr >= 0 && (routenr != (int)status.currentRoute || tilenr != (int)status.currentTile) )
+	{
+		//printf("We are on route %d tile %d\n", routenr, tilenr);
+
+		CTrack::CRoute &theRoute = track.m_Routes[routenr];
+
+		if(tilenr == status.lastPosition[routenr]+1) //exploration of this route
+		{
+			//printf("Normal following route %d\n", routenr);
+			status.lastPosition[routenr] = tilenr;
+
+			if(routenr > 0 &&
+				status.lastPosition[routenr] ==
+					(int)(track.m_Routes[routenr].size())-1) //end of sub-route
+			{
+				//printf("End of route %d, continuing route %d\n", routenr, theRoute.finishRoute);
+				tilenr = theRoute.finishTile;
+				routenr = theRoute.finishRoute;
+
+				//Also finished this part of the route:
+				status.lastPosition[routenr] = tilenr;
+			}
+		}
+		else if(tilenr <= status.lastPosition[routenr]) //we've already been there
+		{
+			//printf("Already been here\n");
+			; //nothing to do
+		}
+		else if(tilenr == 1 && status.lastPosition[theRoute.startRoute] >= (int)(theRoute.startTile))
+		{
+			//new sub-route
+
+			//printf("Entered route %d\n", routenr);
+			status.lastPosition[routenr] = tilenr;
+		}
+		else if(
+			(routenr == (int)(status.currentRoute) && tilenr == (int)(status.currentTile+1))
+				||
+			doFinishCheck
+			)
+		{
+			//Following the wrong route, not yet been there: must give penalty points
+
+			//Calculate minimum distance following a valid route
+			SRoutePos from, to;
+			if(doFinishCheck)
+			{
+				to.route = routenr;
+				to.tile = tilenr;
+			}
+			else
+			{
+				to.route = status.currentRoute;
+				to.tile = status.currentTile;
+			}
+			float minDistance = getSmallestDistance(status, from, to); //fills in from
+
+			//Calculate minimum distance following a straight line
+			printf("Searching path to route %d tile %d\n", to.route, to.tile);
+			float lineDistance = getDirectDistance(from, to);
+
+			printf("Valid distance: %.1f; Line distance: %.1f\n", minDistance, lineDistance);
+
+			float dx = minDistance - lineDistance;
+			if(dx > 0) //expected to be always true, but you never know
+			{
+				float dt = dx / 10.0; //10 m/s
+				if(dt >= 0.500) //threshold: not too small penalty times
+					addPenaltytime(car, dt);
+			}
+
+			reachRouteRecursive(status, routenr, tilenr);
+		}
+		else
+		{
+			//printf("You are not supposed to be on route %d tile %d\n", routenr, tilenr);
 		}
 
-		status.currentTile = currentIndex;
+		if(status.lastPosition[routenr] >= tilenr) //we are legally on this position
+		{
+			//Enter possible alternative routes
+			for(unsigned int r=0; r<track.m_Routes.size(); r++)
+				if(track.m_Routes[r][0] == track.m_Routes[routenr][tilenr]) //we are on the start tile of the route
+				{
+					//printf("Allowing alternative route %d\n", r);
+					if(status.lastPosition[r] < 0)
+						status.lastPosition[r] = 0;
+				}
+		}
+
+		status.currentRoute = routenr;
+		status.currentTile = tilenr;
 	}
+
+	/*
+	if(routenr < 0)
+	{
+		printf("Position %d, %d, %d is not on any route\n", x, y, z);
+	}
+	*/
 
 	//Finish checking:
 	//If we are inside the finish tile, and we have already done some part of the track:
-	if(currentIsFinish && validCounter > 0)
+	if(doFinishCheck) //currentIsFinish && racedSomeTrack)
 	{
 		const CBound *b = (CBound *)theWorld->getObject(CDataObject::eBound, car->m_Bodies[0].m_Body);
 		float r = b->m_BSphere_r;
@@ -201,6 +311,86 @@ void CRuleControl::updateCarRules(unsigned int movObjIndex, CCar *car)
 		if(fabsf(dist2) < r || dist1 / dist2 < 0.0)
 			finish(car);
 	}
+
+}
+
+void CRuleControl::reachRouteRecursive(CCarRuleStatus &status, unsigned int route, unsigned int tile)
+{
+	if(status.lastPosition[route] < 0)
+	{
+		CTrack &track = *(theWorld->getTrack());
+		CTrack::CRoute &r = track.m_Routes[route];
+		reachRouteRecursive(status, r.startRoute, r.startTile);
+	}
+
+	if(status.lastPosition[route] < (int)tile)
+	{
+		status.lastPosition[route] = tile;
+	}
+}
+
+float CRuleControl::getSmallestDistance(const CCarRuleStatus &status, SRoutePos &from, SRoutePos to)
+{
+	//End of recursion situation:
+	if(status.lastPosition[to.route] >= (int)(to.tile))
+	{
+		//printf("From route %d tile %d\n", to.route, to.tile);
+		from = to;
+		return 0.0;
+	}
+
+	float ret = -1.0;
+
+	CTrack &track = *(theWorld->getTrack());
+
+	if(to.tile > 0)
+	{
+		SRoutePos mid = to;
+		mid.tile--;
+		ret = getSmallestDistance(status, from, mid) + getDirectDistance(mid, to);
+	}
+	else //to.tile == 0, follow a split upstream
+	{
+		SRoutePos to2;
+		to2.route = track.m_Routes[to.route].startRoute;
+		to2.tile = track.m_Routes[to.route].startTile;
+		ret = getSmallestDistance(status, from, to2);
+	}
+
+	//Follow joins upstream
+	for(unsigned int i=0; i < track.m_Routes.size(); i++)
+		if(track.m_Routes[i].finishRoute == to.route && track.m_Routes[i].finishTile == to.tile)
+		{
+			SRoutePos to2, from2;
+			to2.route = i;
+			to2.tile = track.m_Routes[i].size()-1;
+			float ret2 = getSmallestDistance(status, from2, to2);
+
+			if(ret2 < ret)
+			{
+				ret = ret2;
+				from = from2;
+			}
+		}
+
+	//printf("  Via route %d tile %d\n", to.route, to.tile);
+
+	return ret;
+}
+
+float CRuleControl::getDirectDistance(SRoutePos from, SRoutePos to)
+{
+	CTrack &track = *(theWorld->getTrack());
+
+	CTrack::CCheckpoint p1, p2;
+	p1 = track.m_Routes[from.route][from.tile];
+	p2 = track.m_Routes[to.route][to.tile];
+
+	float dx = TILESIZE * ((float)p1.x - (float)p2.x);
+	float dy = VERTSIZE * ((float)p1.y - (float)p2.y);
+	float dz = TILESIZE * ((float)p1.z - (float)p2.z);
+
+	return sqrt(dx*dx + dy*dy + dz*dz);
 }
 
 void CRuleControl::addPenaltytime(CCar *car, float t)
@@ -307,7 +497,7 @@ void CRuleControl::placeStart()
 		m_PreviousCarPositions.push_back(position);
 
 		CCarRuleStatus &status = ((CCar *)mo)->m_RuleStatus;
-		status.lastValidTile = status.currentTile = m_StartIndex;
+		//status.lastValidTile = status.currentTile = m_StartIndex;
 		status.start();
 	}
 }

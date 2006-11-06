@@ -84,7 +84,11 @@ vector<CCollisionData> CCollisionDetector::getCollisions(const CMovingObject *ob
 
 		if(o2 == obj) continue;
 
-		CCollisionData c = ObjObjTest(obj->m_Bodies[0], o2->m_Bodies[0]);
+		CVector vmean =
+			(obj->m_Velocity * o2->getInvMass() + o2->m_Velocity * obj->getInvMass())
+			/ (o2->getInvMass() + obj->getInvMass());
+
+		CCollisionData c = ObjObjTest(obj->m_Bodies[0], o2->m_Bodies[0], vmean);
 		if(c.nor.abs2() < 0.1) continue; //no collision
 
 		ret.push_back(c);
@@ -302,7 +306,7 @@ vector<CCollisionData> CCollisionDetector::ObjTrackBoundTest(const CBody &body)
 	return ret;
 }
 
-CCollisionData CCollisionDetector::ObjObjTest(const CBody &body1, const CBody &body2)
+CCollisionData CCollisionDetector::ObjObjTest(const CBody &body1, const CBody &body2, CVector vmean)
 {
 	CCollisionData ret;
 	ret.nor = CVector(0,0,0); //this will mean that there is no collision
@@ -348,10 +352,12 @@ CCollisionData CCollisionDetector::ObjObjTest(const CBody &body1, const CBody &b
 		if(!faceTest(p1, o1, b1, p2, o2, b2, theFace)) return ret;
 	}
 
-	ret.nor = p2 - p1;
+	ret.nor = p1 - p2;
 	ret.nor.normalise();
-	ret.pos = p1 + b1->m_BSphere_r * ret.nor;
-	ret.depth = -0.5 * (b1->m_BSphere_r + b2->m_BSphere_r - (p2-p1).abs());
+	ret.pos = p1 - b1->m_BSphere_r * ret.nor;
+	ret.depth = 0.5 * (b1->m_BSphere_r + b2->m_BSphere_r - (p2-p1).abs());
+	ret.vmean = vmean;
+
 
 	return ret;
 }
@@ -391,6 +397,7 @@ vector<CCollisionData> CCollisionDetector::ObjTileTest(const CMovingObject *theO
 		//fprintf(stderr, "Tileface # %d\n", tf);
 
 		if(tilemodel->m_Faces[tf].isSurface) continue; //do not collide with surface faces
+		if(tilemodel->m_Faces[tf].isWater  ) continue; //do not collide with water   faces
 
 		if(tilemodel->m_Faces[tf].nor.abs2() < 0.5) continue; //invalid plane
 		//fprintf(stderr, "Test 4: it's a valid plane\n");

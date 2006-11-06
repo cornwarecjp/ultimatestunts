@@ -9,29 +9,29 @@ width
 heigth
 
 BEGIN
-textures/grass2.rgb mu=0.8
-textures/road2.rgb mu=1
-textures/concrete1.rgb
-textures/startfinish.rgb
-textures/road1.rgb mu=1
-textures/wall1.rgb scale=4 mu=0.9
-textures/bricks2.rgb scale=2 mu=0.9
-textures/splits1.rgb mu=1
-textures/concrete2.rgb mu=0.9
-textures/metal.rgb mu=0.8
-textures/door1.rgb
-textures/window1.rgb
-textures/fence.rgba scale=8
-textures/wood.rgb
-textures/pine.rgba
-textures/bricks1.rgb
-textures/stonebricks.rgb
-textures/cornerblocks.rgb mu=0.9
-textures/farmdoor1.rgb
-textures/tulips.rgba
-textures/net.rgba scale=16 mu=10
-textures/tenniscourt.rgb mu=0.9
-textures/metal1.rgba
+textures/grass2.jpg mu=0.8 roll=20
+textures/road2.jpg mu=1 roll=1
+textures/concrete1.jpg
+textures/startfinish.jpg
+textures/road1.jpg mu=1 roll=1
+textures/wall1.jpg scale=4 mu=0.9 roll=5
+textures/bricks2.jpg scale=2
+textures/splits1.jpg mu=1 roll=1
+textures/concrete2.jpg mu=0.9 roll=1
+textures/metal.jpg mu=0.8 roll=0.8
+textures/door1.jpg
+textures/window1.jpg
+textures/fence.png scale=8
+textures/wood.jpg
+textures/pine.png
+textures/bricks1.jpg
+textures/stonebricks.jpg
+textures/cornerblocks.jpg mu=0.9 roll=1
+textures/farmdoor1.jpg
+textures/tulips.png
+textures/net.png scale=16
+textures/tenniscourt.jpg mu=0.9 roll=20
+textures/metal1.png mu=0.9 roll=1
 END
 
 BEGIN
@@ -292,14 +292,14 @@ BEGIN
  6,18,0:47
  6,22,0:52
 11,22,0:58
-11,21,0:60
+11,21,0:60 end
 
 #Alternative 1, hill instead of tunnel
  7, 0,0:0
  7, 1,0:2
  7, 5,0:8
  7, 9,0:13
- 6, 9,0:15
+ 6, 9,0:15 end
 
 #Alternative 2, the mountain thing
 11, 2,0:0
@@ -322,5 +322,5 @@ BEGIN
 14,17,0:64
 10,17,1:66
  7,17,1:68
- 6,17,0:70
+ 6,17,0:70 end
 END

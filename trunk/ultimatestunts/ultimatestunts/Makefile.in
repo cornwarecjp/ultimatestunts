@@ -52,11 +52,12 @@ CONFIG_CLEAN_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
-am_ustunts_OBJECTS = main.$(OBJEXT) gamecamera.$(OBJEXT) \
+am_ustunts_OBJECTS = carviewer.$(OBJEXT) gamecamera.$(OBJEXT) \
 	gamegui.$(OBJEXT) gamerenderer.$(OBJEXT) \
-	gamewinsystem.$(OBJEXT) humanplayer.$(OBJEXT) music.$(OBJEXT) \
-	sndsample.$(OBJEXT) sound.$(OBJEXT) soundobj.$(OBJEXT) \
-	soundworld.$(OBJEXT) uscore.$(OBJEXT) usserver.$(OBJEXT)
+	gamewinsystem.$(OBJEXT) humanplayer.$(OBJEXT) main.$(OBJEXT) \
+	music.$(OBJEXT) sndsample.$(OBJEXT) sound.$(OBJEXT) \
+	soundobj.$(OBJEXT) soundworld.$(OBJEXT) uscore.$(OBJEXT) \
+	usserver.$(OBJEXT)
 ustunts_OBJECTS = $(am_ustunts_OBJECTS)
 ustunts_DEPENDENCIES = ../graphics/libgraphics.a \
 	../simulation/libsimulation.a ../shared/libshared.a
@@ -208,9 +209,9 @@ target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
 usdatadir = @usdatadir@
-ustunts_SOURCES = main.cpp gamecamera.cpp gamegui.cpp gamerenderer.cpp gamewinsystem.cpp humanplayer.cpp music.cpp sndsample.cpp sound.cpp soundobj.cpp soundworld.cpp uscore.cpp usserver.cpp
+ustunts_SOURCES = carviewer.cpp gamecamera.cpp gamegui.cpp gamerenderer.cpp gamewinsystem.cpp humanplayer.cpp main.cpp music.cpp sndsample.cpp sound.cpp soundobj.cpp soundworld.cpp uscore.cpp usserver.cpp
 ustunts_LDADD = ../graphics/libgraphics.a ../simulation/libsimulation.a ../shared/libshared.a @sdllibs@ @graphlibs@ @soundlibs@ @netlibs@ @LIBINTL@
-EXTRA_DIST = main.cpp gamecamera.cpp gamecamera.h gamegui.cpp gamegui.h gamerenderer.cpp gamerenderer.h gamewinsystem.cpp gamewinsystem.h humanplayer.cpp humanplayer.h music.cpp music.h sndsample.cpp sndsample.h sound.cpp sound.h soundobj.cpp soundobj.h soundworld.cpp soundworld.h uscore.cpp uscore.h usserver.cpp usserver.h
+EXTRA_DIST = carviewer.cpp carviewer.h gamecamera.cpp gamecamera.h gamegui.cpp gamegui.h gamerenderer.cpp gamerenderer.h gamewinsystem.cpp gamewinsystem.h humanplayer.cpp humanplayer.h main.cpp music.cpp music.h sndsample.cpp sndsample.h sound.cpp sound.h soundobj.cpp soundobj.h soundworld.cpp soundworld.h uscore.cpp uscore.h usserver.cpp usserver.h
 # set the include path found by configure
 INCLUDES = $(all_includes) -I../intl -I../shared -I../simulation -I../graphics
 
@@ -229,9 +230,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  ultimatestunts/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  ultimatestunts/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu  ultimatestunts/Makefile
+	  $(AUTOMAKE) --foreign  ultimatestunts/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -282,6 +283,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/carviewer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gamecamera.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gamegui.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gamerenderer.Po@am__quote@

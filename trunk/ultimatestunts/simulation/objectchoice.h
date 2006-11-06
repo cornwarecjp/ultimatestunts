@@ -20,7 +20,7 @@
 
 #include "SDL.h"
 #include "message.h"
-#include "cstring.h"
+#include "dataobject.h"
 
 #define OBJECTCHOICE_REFUSED 255 //network return value for refusing a new object
 
@@ -38,8 +38,7 @@ public:
 
 	CMessageBuffer::eMessageType m_ObjType;
 	CString m_Filename;
-	//Additional: (car) settings
-	//Additional: selected skin / color
+	CParamList m_Parameters;
 
 	CString m_PlayerName;
 

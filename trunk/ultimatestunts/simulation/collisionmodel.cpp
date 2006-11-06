@@ -88,6 +88,7 @@ bool CCollisionModel::loadGLB(const CString &filename, const CParamList &list)
 			theFace.isSurface = (pr.LODs & 32) != 0;
 			//if(theFace.isSurface) printf("%d is is a surface\n", t);
 			theFace.isWater = (pr.LODs & 32) != 0 && (pr.LODs & 16) != 0;
+			if(theFace.isWater) theFace.isSurface = false;
 
 			theFace.material = mat;
 			theFace.reverse = false;

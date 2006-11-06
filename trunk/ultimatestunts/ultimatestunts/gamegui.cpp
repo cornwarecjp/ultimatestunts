@@ -30,6 +30,7 @@
 #include "gamegui.h"
 #include "menu.h"
 #include "longmenu.h"
+#include "renderwidget.h"
 
 #include "objectchoice.h"
 #include "aiplayercar.h"
@@ -75,6 +76,7 @@ CGameGUI::CGameGUI(const CLConfig &conf, CGameWinSystem *winsys) : CGUI(conf, wi
 		CDataFile dfile(cf.filename);
 		CLConfig carconf(dfile.useExtern());
 		cf.fullname = carconf.getValue("description", "fullname");
+		cf.defaultColor = carconf.getValue("skin", "defaultcolor").toVector();
 		//printf("file %s name %s\n", cf.filename.c_str(), cf.fullname.c_str());
 		m_CarFiles.push_back(cf);
 	}
@@ -92,6 +94,7 @@ CGameGUI::CGameGUI(const CLConfig &conf, CGameWinSystem *winsys) : CGUI(conf, wi
 	SPlayerDescr pd;
 	pd.name = _("Anonymous");
 	pd.isHuman = true;
+	pd.carColor = CVector(1, 0, 0); //default: red
 	for(unsigned int i=0; i < m_CarFiles.size(); i++)
 		if(m_CarFiles[i].filename == "cars/ferrarispider.conf")
 		{
@@ -180,6 +183,25 @@ CGameGUI::CGameGUI(const CLConfig &conf, CGameWinSystem *winsys) : CGUI(conf, wi
 	//PLAYER MENU
 	m_PlayerPage.m_Title = _("Configure Player:");
 	m_PlayerPage.m_DrawBackground = true;
+	{
+		m_CarViewer = new CCarViewer(m_WinSys, m_GameCore->getGraphicWorld());
+		CRenderWidget *render;
+		if(theMainConfig->getValue("graphics", "car_preview") == "true")
+		{
+			render = new CRenderWidget(true, false, true);
+			render->m_Renderer = m_CarViewer;
+		}
+		else
+		{
+			render = new CRenderWidget(true, false, false);
+		}
+
+		render->m_Xrel = 0.1;
+		render->m_Yrel = 0.2;
+		render->m_Wrel = 0.8;
+		render->m_Hrel = 0.6;
+		m_PlayerPage.m_Widgets.push_back(render);
+	}
 	menu = new CMenu;
 	menu->m_Xrel = 0.1;
 	menu->m_Yrel = 0.2;
@@ -272,6 +294,7 @@ CGameGUI::CGameGUI(const CLConfig &conf, CGameWinSystem *winsys) : CGUI(conf, wi
 CGameGUI::~CGameGUI()
 {
 	delete m_GameCore;
+	delete m_CarViewer;
 
 	if(m_Server != NULL)
 	{
@@ -362,11 +385,12 @@ void CGameGUI::updateMenuTexts()
 	menu->m_Lines.push_back(_("Return to main menu"));
 
 	//PLAYER MENU
-	menu = (CMenu *)(m_PlayerPage.m_Widgets[0]);
+	menu = (CMenu *)(m_PlayerPage.m_Widgets[1]);
 	menu->m_Lines.clear();
 	menu->m_Lines.push_back(_("Player type: ") + txtPlayertype[m_PlayerDescr[m_SelectedPlayer].isHuman]);
 	menu->m_Lines.push_back(_("Name       : ") + m_PlayerDescr[m_SelectedPlayer].name);
 	menu->m_Lines.push_back(_("Car        : ") + m_CarFiles[m_PlayerDescr[m_SelectedPlayer].carIndex].fullname);
+	menu->m_Lines.push_back(_("Choose a car color"));
 	menu->m_Lines.push_back(_("Delete this player"));
 	menu->m_Lines.push_back(_("Ready"));
 
@@ -492,7 +516,10 @@ CString CGameGUI::viewGameTypeMenu()
 			m_HostPort = showInputBox(_("Enter the port number:"), m_HostPort, &cancelled).toInt();
 			if(cancelled) break;
 
-			initGameType(); //to kill our own server if we had one (it should not be detected by the broadcast)
+			//to kill our own server if we had one
+			//(it should not be detected by the broadcast):
+			initGameType();
+
 			m_ServerList = CClientNet::broadcast(m_HostPort);
 			if(m_ServerList.size() == 1)
 			{
@@ -618,6 +645,7 @@ CString CGameGUI::viewPlayersMenu()
 			if(m_CarFiles[i].filename == "cars/ferrarispider.conf")
 			{
 				newpl.carIndex = i;
+				newpl.carColor = m_CarFiles[i].defaultColor;
 				break;
 			}
 		m_PlayerDescr.push_back(newpl);
@@ -629,13 +657,17 @@ CString CGameGUI::viewPlayersMenu()
 
 CString CGameGUI::viewPlayerMenu()
 {
+	m_CarViewer->loadCar(
+		m_CarFiles[m_PlayerDescr[m_SelectedPlayer].carIndex].filename,
+		m_PlayerDescr[m_SelectedPlayer].carColor);
+
 	m_ChildWidget = &m_PlayerPage;
 	if(!m_WinSys->runLoop(this)) //cancelling returns false
 		return "playersmenu";
 
 	//the rest is done when there is no cancelling
 
-	CMenu *menu = (CMenu *)(m_PlayerPage.m_Widgets[0]);
+	CMenu *menu = (CMenu *)(m_PlayerPage.m_Widgets[1]);
 
 	switch(menu->m_Selected)
 	{
@@ -643,12 +675,24 @@ CString CGameGUI::viewPlayerMenu()
 		m_PlayerDescr[m_SelectedPlayer].isHuman ^= true;
 		return "playermenu";
 	case 1: //name
-		m_PlayerDescr[m_SelectedPlayer].name = showInputBox(_("Enter the name:"));
+		{
+			CString original = m_PlayerDescr[m_SelectedPlayer].name;
+			bool cancelled = false;
+			m_PlayerDescr[m_SelectedPlayer].name =
+				showInputBox(_("Enter the name:"), "", &cancelled);
+			if(cancelled) m_PlayerDescr[m_SelectedPlayer].name = original;
+		}
 		return "playermenu";
 	case 2: //car
 		return "carmenu";
-	case 3: //delete
-		if(m_SelectedPlayer == 0)
+	case 3: //car color
+		//m_PlayerDescr[m_SelectedPlayer].carColor = showInputBox(_("Enter the car color:"),
+		//	m_PlayerDescr[m_SelectedPlayer].carColor).toVector();
+		m_PlayerDescr[m_SelectedPlayer].carColor = showColorSelect(_("Car color:"),
+			m_PlayerDescr[m_SelectedPlayer].carColor);
+		return "playermenu";
+	case 4: //delete
+		if(m_PlayerDescr.size() == 1)
 		{
 			showMessageBox(_("Can't delete: there needs to be at least one player"));
 			return "playermenu";
@@ -660,7 +704,7 @@ CString CGameGUI::viewPlayerMenu()
 			return "playersmenu";
 		}
 		return "playermenu";
-	case 4: //return
+	case 5: //return
 		return "playersmenu";
 	}
 
@@ -674,6 +718,7 @@ CString CGameGUI::viewCarMenu()
 	{
 		CMenu *menu = (CMenu *)(m_CarPage.m_Widgets[0]);
 		m_PlayerDescr[m_SelectedPlayer].carIndex = menu->m_Selected;
+		m_PlayerDescr[m_SelectedPlayer].carColor = m_CarFiles[menu->m_Selected].defaultColor;
 	}
 
 	return "playermenu";
@@ -866,6 +911,12 @@ void CGameGUI::load()
 			CObjectChoice choice;
 			choice.m_Filename = m_CarFiles[m_PlayerDescr[i].carIndex].filename;
 			choice.m_PlayerName = m_PlayerDescr[i].name;
+			{
+				SParameter p;
+				p.name = "color";
+				p.value = m_PlayerDescr[i].carColor;
+				choice.m_Parameters.push_back(p);
+			}
 
 			if(m_PlayerDescr[i].isHuman)
 				p = new CHumanPlayer((CGameWinSystem *)m_WinSys, numHumanPlayers);

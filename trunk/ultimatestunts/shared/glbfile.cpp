@@ -253,3 +253,75 @@ void CGLBFile::save(const CString &filename)
 	}
 }
 
+void tesselateSquare(CGLBFile::SPrimitive &pr, unsigned int tess)
+{
+	//Step 1: find square sizes
+	CVector max(-1000.0,-1000.0,-1000.0), min(1000.0, 1000.0, 1000.0);
+	for(unsigned int i=0; i < pr.vertex.size(); i++)
+	{
+		CVector pos = pr.vertex[i].pos;
+
+		if(pos.x > max.x) max.x = pos.x;
+		if(pos.y > max.y) max.y = pos.y;
+		if(pos.z > max.z) max.z = pos.z;
+
+		if(pos.x < min.x) min.x = pos.x;
+		if(pos.y < min.y) min.y = pos.y;
+		if(pos.z < min.z) min.z = pos.z;
+	}
+	CVector size = max - min;
+	bool upside = pr.vertex[0].nor.y > 0.0;
+
+	//Step 2: clear primitive
+	pr.vertex.clear();
+	pr.index.clear();
+
+	//Step 3: create vertices
+	for(unsigned int y=0; y <= tess; y++)
+	for(unsigned int x=0; x <= tess; x++)
+	{
+		float xfrac = float(x) / tess;
+		float yfrac = float(y) / tess;
+
+		CGLBFile::SVertex vt;
+
+		vt.nor = upside? CVector(0,1,0) : CVector(0,-1,0);
+		vt.tex = CVector(xfrac,yfrac,0);
+		vt.pos = min + CVector(xfrac*size.x, 0.0, yfrac*size.z);
+
+		pr.vertex.push_back(vt);
+	}
+
+	//Step 4: create triangles
+	unsigned int base = 0;
+	for(unsigned int y=0; y < tess; y++)
+	{
+	for(unsigned int x=0; x < tess; x++)
+	{
+		if(upside)
+		{
+			pr.index.push_back(base);
+			pr.index.push_back(base+tess+1);
+			pr.index.push_back(base+tess+2);
+
+			pr.index.push_back(base);
+			pr.index.push_back(base+tess+2);
+			pr.index.push_back(base+1);
+		}
+		else
+		{
+			pr.index.push_back(base);
+			pr.index.push_back(base+1);
+			pr.index.push_back(base+tess+2);
+
+			pr.index.push_back(base);
+			pr.index.push_back(base+tess+2);
+			pr.index.push_back(base+tess+1);
+		}
+
+		base++;
+	}
+	base++;
+	}
+}
+

@@ -27,11 +27,12 @@ public:
 	CWidget();
 	virtual ~CWidget();
 
-	virtual int onMouseMove(int x, int y);
+	virtual int onMouseMove(int x, int y, unsigned int buttons);
 	virtual int onMouseClick(int x, int y, unsigned int buttons);
 	virtual int onKeyPress(int key);
 	virtual int onResize(int x, int y, int w, int h);
 	virtual int onRedraw();
+	virtual int onIdle();
 
 	bool isInWidget(int x, int y);
 

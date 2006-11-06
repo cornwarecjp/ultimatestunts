@@ -627,9 +627,9 @@ _nl_locale_name (category, categoryname)
     case LANG_SINDHI: return "sd";
     case LANG_SLOVAK: return "sk_SK";
     case LANG_SLOVENIAN: return "sl_SI";
-    case LANG_SORBIAN:
+    //case LANG_SERBIAN:
       /* FIXME: Adjust this when such locales appear on Unix.  */
-      return "wen_DE";
+      //return "wen_DE";
     case LANG_SPANISH:
       switch (sub)
 	{

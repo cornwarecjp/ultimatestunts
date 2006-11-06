@@ -36,13 +36,15 @@ class CGraphObj : public CDataObject
 		virtual bool load(const CString &filename, const CParamList &list);
 		virtual void unload();
 
-		void draw(const SGraphicSettings *settings, CReflection *reflection, unsigned int lod, bool useMaterials=true);
+		void draw(const SGraphicSettings *settings, CReflection *reflection,
+			unsigned int lod, float t, bool useMaterials=true);
 
 	protected:
 		//Rendering settings
 		const SGraphicSettings *m_CurrentSettings;
 		CReflection *m_CurrentReflection;
 		unsigned int m_CurrentLOD;
+		float m_CurrentTime;
 		bool m_UseMaterials;
 
 		//Primitive data
@@ -69,6 +71,10 @@ class CGraphObj : public CDataObject
 
 		//returns false for fully transparent materials
 		bool setMaterial(const SPrimitive &pr, bool forReflection=false);
+
+		//Animates the primitives
+		virtual void animate(float t);
+		float m_WaterLevel;
 };
 
 #endif

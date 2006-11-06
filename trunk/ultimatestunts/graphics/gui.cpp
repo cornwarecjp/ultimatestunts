@@ -21,6 +21,7 @@
 #include "gui.h"
 #include "inputbox.h"
 #include "messagebox.h"
+#include "colorselect.h"
 
 
 CGUI::CGUI(const CLConfig &conf, CWinSystem *winsys)
@@ -78,9 +79,9 @@ void CGUI::start()
 	leave2DMode();
 }
 
-int CGUI::onMouseMove(int x, int y)
+int CGUI::onMouseMove(int x, int y, unsigned int buttons)
 {
-	return m_ChildWidget->onMouseMove(x, y);
+	return m_ChildWidget->onMouseMove(x, y, buttons);
 }
 
 int CGUI::onMouseClick(int x, int y, unsigned int buttons)
@@ -113,7 +114,17 @@ int CGUI::onResize(int x, int y, int w, int h)
 
 int CGUI::onRedraw()
 {
+	//Firt clear the screen
+	glDisable(GL_SCISSOR_TEST);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glEnable(GL_SCISSOR_TEST);
+
 	return m_ChildWidget->onRedraw();
+}
+
+int CGUI::onIdle()
+{
+	return m_ChildWidget->onIdle();
 }
 
 CString CGUI::showInputBox(const CString &title, const CString &deflt, bool *cancelled)
@@ -136,6 +147,9 @@ CString CGUI::showInputBox(const CString &title, const CString &deflt, bool *can
 	CString ret = inputbox->m_Text;
 	if(cancelled != NULL)
 		*cancelled = inputbox->m_Cancelled;
+
+	if(inputbox->m_Cancelled)
+		ret = deflt;
 
 	m_ChildWidget->m_Widgets.resize(m_ChildWidget->m_Widgets.size()-1); //removes inputbox
 	delete inputbox;
@@ -178,3 +192,28 @@ void CGUI::showMessageBox(const CString &title)
 	delete messagebox;
 }
 
+CVector CGUI::showColorSelect(const CString &title, CVector deflt, bool *cancelled)
+{
+	CColorSelect *selector = new CColorSelect;
+	selector->setTitle(title);
+	selector->m_Color = deflt;
+
+	selector->m_Wrel = 0.5;
+	selector->m_Hrel = 0.4;
+	selector->m_Xrel = 0.25;
+	selector->m_Yrel = 0.3;
+	m_ChildWidget->m_Widgets.push_back(selector);
+	m_WinSys->runLoop(this);
+
+	CVector ret = selector->m_Color;
+	if(cancelled != NULL)
+		*cancelled = selector->m_Cancelled;
+
+	if(selector->m_Cancelled)
+		ret = deflt;
+
+	m_ChildWidget->m_Widgets.resize(m_ChildWidget->m_Widgets.size()-1); //removes selector
+	delete selector;
+
+	return ret;
+}

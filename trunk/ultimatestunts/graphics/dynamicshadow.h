@@ -45,7 +45,7 @@ public:
 	float getPhysicalSize()
 		{return m_PhysicalSize;}
 
-	void update(const SGraphicSettings *settings);
+	void update(const SGraphicSettings *settings, float t);
 protected:
 	void initialiseShadow();
 

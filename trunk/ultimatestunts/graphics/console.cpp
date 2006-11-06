@@ -32,7 +32,7 @@ CFont *loadConsoleFont()
 
 	if(theConsoleFont == NULL)
 	{
-		CString fontfile = "misc/courier.rgba";
+		CString fontfile = "misc/iso8859-1.rgba";
 		theConsoleFont = new CFont(NULL);
 		printf("Loading font from %s\n", fontfile.c_str());
 

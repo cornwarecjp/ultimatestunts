@@ -52,6 +52,11 @@ CUSCore::~CUSCore()
 	delete m_Console;
 }
 
+CGraphicWorld *CUSCore::getGraphicWorld()
+{
+	return m_Renderer->m_GraphicWorld;
+}
+
 bool CUSCore::addCamera(unsigned int objid)
 {
 	if(m_NumCameras > 3) return false; //max 4 cameras

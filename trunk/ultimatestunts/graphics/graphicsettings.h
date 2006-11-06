@@ -30,9 +30,12 @@ struct SGraphicSettings
 	bool m_ShadowSmooth;
 	float m_ReflectionDist;
 	bool m_UpdRef, m_UpdRefAllSides, m_UpdRefAllObjs;
-	int m_ReflectionSize;
+	int m_ReflectionSize, m_ShadowSize;
 	bool m_ReflectionDrawMovingObjects;
 	bool m_TrackDisplayList;
+
+	bool m_EnableAnimation;
+	unsigned m_WaterTesselation;
 };
 
 #endif

@@ -3,6 +3,7 @@
 ultimatestunts/gamegui.cpp
 ultimatestunts/uscore.cpp
 stuntsserver/gamecorethread.cpp
+graphics/colorselect.cpp
 graphics/messagebox.cpp
 shared/hello.cpp
 shared/usmisc.cpp

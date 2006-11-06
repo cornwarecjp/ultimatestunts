@@ -29,7 +29,7 @@ CCarRuleStatus::CCarRuleStatus()
 	penaltyTime = 0.0;	//penalty time accumulated while playing
 	finishTime = t;		//time when it finished racing
 
-	maxTileTime = 0.0;
+	//maxTileTime = 0.0;
 
 
 	state = eNotStarted;
@@ -47,9 +47,16 @@ bool CCarRuleStatus::start()
 	penaltyTime = 0.0;	//penalty time accumulated while playing
 	finishTime = t;		//time when it finished racing
 
-	maxTileTime = 0.0;
+	//maxTileTime = 0.0;
 
 	state = eRacing;
+
+	lastPosition.resize(theWorld->getTrack()->m_Routes.size());
+	for(unsigned int i=0; i < lastPosition.size(); i++)
+		lastPosition[i] = -1;
+	lastPosition[0] = 0;
+	currentRoute = 0;
+	currentTile = 0;
 
 	return true;
 }

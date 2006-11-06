@@ -15,7 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#define USNET_SEARCHFORSTUNTS_VERSION "SEARCHFORSTUNTS 0.6.1"
+#define USNET_SEARCHFORSTUNTS_VERSION "SEARCHFORSTUNTS 0.6.3"
 #define USNET_ULTIMATESTUNTS_SERVER "ULTIMATESTUNTS"
 
 #define USNET_JOIN    "JOIN"

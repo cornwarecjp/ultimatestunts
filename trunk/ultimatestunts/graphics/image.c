@@ -3,11 +3,21 @@
 /* This code lets your read in SGI .rgb files. */
 
 /* Modifications were made by CJP to add RGBA support */
+/* Modifications were made by CJP to add SDL_image support */
 
 #include <stdio.h>
 #include <stdlib.h> 
 #include <string.h>
 #include "image.h"
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#ifdef HAVE_SDL_IMAGE
+#include "SDL.h"
+#include "SDL_image.h"
+#endif
 
 #ifndef SEEK_SET
 #  define SEEK_SET 0
@@ -259,4 +269,115 @@ RGBImageRec *RGBImageLoad(const char *fileName)
 	RawImageClose(raw);
 
 	return final;
+}
+
+#ifdef HAVE_SDL_IMAGE
+Uint32 getSDLPixel(Uint8 *p, int Bpp)
+{
+	switch(Bpp)
+	{
+	case 1:
+		return *p;
+	case 2:
+		return *(Uint16 *)p;
+	case 3:
+		if(SDL_BYTEORDER == SDL_BIG_ENDIAN)
+			{return p[0] << 16 | p[1] << 8 | p[2];}
+		else
+			{return p[0] | p[1] << 8 | p[2] << 16;}
+	case 4:
+		return *(Uint32 *)p;
+	default:
+		return 0;       /* shouldn't happen, but avoids warnings */
+	}
+
+	return 0;       /* shouldn't happen, but avoids warnings */
+}
+
+RGBImageRec *SDL2RGB(SDL_Surface *srcimage)
+{
+	Uint8 red, green, blue, alpha;
+	Uint8 *SrcPtr, *DstPtr;
+	Uint32 pixel;
+	unsigned int x, y;
+	Uint8 DstBytesPerPixel;
+	int mustLock;
+	RGBImageRec *ret = (RGBImageRec *)malloc(sizeof(RGBImageRec));
+	SDL_Surface *image = srcimage;
+
+	//Get image information
+	ret->sizeX = image->w;
+	ret->sizeY = image->h;
+	ret->format = (image->format->Amask != 0); //Does it have alpha values?
+
+	//Convert color keys to an alpha channel
+	if(!(ret->format) && (image->flags & SDL_SRCCOLORKEY))
+	{
+		//printf("Color keying is used!\n");
+		image = SDL_DisplayFormatAlpha(srcimage);
+
+		if(image == NULL)
+		{
+			printf("Error: failed to convert color keying to alpha channel\n");
+			image = srcimage;
+		}
+		else
+		{
+			SDL_FreeSurface(srcimage);
+			ret->format = (image->format->Amask != 0); //Ask again: does it have alpha values?
+		}
+	}
+
+	DstBytesPerPixel = 3;
+	if(ret->format) DstBytesPerPixel = 4;
+	ret->data = (unsigned char *)malloc(ret->sizeX*ret->sizeY*DstBytesPerPixel*sizeof(unsigned char));
+
+	//Transfer pixel data
+	mustLock = SDL_MUSTLOCK(image);
+	if(mustLock) SDL_LockSurface(image);
+
+	for(y=0; y < ret->sizeY; y++)
+	{
+		SrcPtr = (Uint8 *)(image->pixels) + y            * ret->sizeX * image->format->BytesPerPixel;
+		DstPtr = (Uint8 *)(ret->data) + (ret->sizeY-y-1) * ret->sizeX * DstBytesPerPixel;
+
+		for(x=0; x < ret->sizeX; x++)
+		{
+			pixel = getSDLPixel(SrcPtr, image->format->BytesPerPixel);
+			SDL_GetRGBA(pixel, image->format, &red, &green, &blue, &alpha);
+
+			DstPtr[0] = red;
+			DstPtr[1] = green;
+			DstPtr[2] = blue;
+			if(ret->format) DstPtr[3] = alpha;
+
+			SrcPtr += image->format->BytesPerPixel;
+			DstPtr += DstBytesPerPixel;
+		}
+	}
+
+	if(mustLock) SDL_UnlockSurface(image);
+
+	SDL_FreeSurface(image);
+
+	return ret;
+}
+#endif
+
+RGBImageRec *GenericImageLoad(const char *fileName)
+{
+#ifdef HAVE_SDL_IMAGE
+	SDL_Surface *image;
+	image=IMG_Load(fileName);
+	if(!image)
+	{
+		//If SDL_image can't load it, try our own RGB(A) loader
+		return RGBImageLoad(fileName);
+	}
+	//Convert from SDL_Surface to own structure
+	return SDL2RGB(image);
+
+#else
+	return RGBImageLoad(fileName);
+#endif
 }

@@ -16,17 +16,23 @@
  ***************************************************************************/
 #include <GL/gl.h>
 #include <cstdio>
+#include <cmath>
 
 #include "gamerenderer.h"
 #include "console.h"
 #include "timer.h"
+
+#define FOV_MULTIPLIER (0.25)
+
+#ifndef M_PI
+#define M_PI 3.1415926536
+#endif
 
 //TODO: remove this when not debugging
 CTimer _DebugTimer;
 
 CGameRenderer::CGameRenderer(const CWinSystem *winsys) : CRenderer(winsys)
 {
-	m_World = theWorld;
 	m_GraphicWorld = new CGraphicWorld();
 	m_NumCameras = 1;
 
@@ -119,7 +125,7 @@ void CGameRenderer::update()
 
 			//2D part
 			selectCamera(i, false);
-			viewDashboard(i);
+			viewDashboard(m_Cameras[i]->getTrackedObject());
 			//fprintf(stderr, "Viewport output: %.5f\n\n\n", _DebugTimer.getTime() - tcam);
 		}
 
@@ -137,6 +143,8 @@ void CGameRenderer::clearScreen()
 
 void CGameRenderer::updateShadows()
 {
+	if(m_Settings.m_ShadowSize <= 4) return;
+
 	CVector lightDir     = theWorld->getTrack()->m_LightDirection;
 	CVector lightColor   = theWorld->getTrack()->m_LightColor;
 	CVector ambientColor = theWorld->getTrack()->m_AmbientColor;
@@ -152,7 +160,7 @@ void CGameRenderer::updateShadows()
 	{
 		CDynamicShadow *shadow = m_GraphicWorld->getMovObjShadow(i);
 		shadow->setLightSource(lightDir, shadowColor);
-		shadow->update(&m_Settings);
+		shadow->update(&m_Settings, theWorld->m_LastTime);
 	}
 }
 
@@ -166,7 +174,8 @@ void CGameRenderer::updateReflections()
 	if(currentSide == 0 || m_Settings.m_UpdRefAllSides)
 	{
 		currentObject++;
-		if(currentObject >= (int)(m_NumCameras * m_World->getNumObjects(CDataObject::eMovingObject))) currentObject = 0;
+		if(currentObject >= (int)(m_NumCameras * theWorld->getNumObjects(CDataObject::eMovingObject)))
+			currentObject = 0;
 	}
 
 	/*
@@ -188,7 +197,7 @@ void CGameRenderer::updateReflections()
 		{
 			m_CurrentCamera = cam;
 
-			for(unsigned int obj=0; obj < m_World->getNumObjects(CDataObject::eMovingObject); obj++)
+			for(unsigned int obj=0; obj < theWorld->getNumObjects(CDataObject::eMovingObject); obj++)
 			{
 				CMovingObject *mo = theWorld->getMovingObject(obj);
 				CVector pos = mo->m_Position;
@@ -279,7 +288,7 @@ void CGameRenderer::selectCamera(unsigned int n, bool threed)
 	float ratio = (float) w / (float) h;
 	GLfloat near = 1.0;
 	GLfloat far = TILESIZE * m_Settings.m_VisibleTiles;
-	float hor_mul = near / 5.0;
+	float hor_mul = near * FOV_MULTIPLIER;
 	GLfloat xs = ratio*hor_mul;
 	GLfloat ys = 1.0*hor_mul;
 
@@ -350,10 +359,16 @@ void CGameRenderer::renderScene()
 
 	//Draw the moving objects
 	//float tobj = _DebugTimer.getTime();
-	int num_objs = m_World->getNumObjects(CDataObject::eMovingObject);
+	CGameCamera *gcam = (CGameCamera *)m_Camera;
+	int num_objs = theWorld->getNumObjects(CDataObject::eMovingObject);
 	for(int i=0; i<num_objs; i++)
-		if(i != m_UpdateBodyReflection) //don't draw the body in its own reflection
-			viewMovObj(i);
+	{
+		if(i == m_UpdateBodyReflection)
+			continue; //don't draw the object in its own reflection
+		if(i == gcam->getTrackedObject() && gcam->getCameraMode() == CGameCamera::In)
+			continue; //don't draw the object in "In object" camera view
+		viewMovObj(i);
+	}
 	//fprintf(stderr, "Drawing moving objects: %.5f\n", _DebugTimer.getTime() - tobj);
 
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -419,8 +434,8 @@ void CGameRenderer::viewTrack_normal()
 	glPushMatrix();
 
 	//Nu volgt de weergave-routine
-	int lengte = m_World->getTrack()->m_L;
-	int  breedte = m_World->getTrack()->m_W;
+	int lengte = theWorld->getTrack()->m_L;
+	int  breedte = theWorld->getTrack()->m_W;
 
 	//printf ("x,y,z = %d,%d,%d\n",camx,camy,camz);
 
@@ -462,8 +477,8 @@ void CGameRenderer::viewTrackPart(
 	int dx,  int dy,
 	int cur_zpos)
 {
-	int lengte = m_World->getTrack()->m_L;
-	int  breedte = m_World->getTrack()->m_W;
+	int lengte = theWorld->getTrack()->m_L;
+	int  breedte = theWorld->getTrack()->m_W;
 
 	glPushMatrix();
 	glTranslatef(xmin * TILESIZE, 0, ymin * TILESIZE);
@@ -494,8 +509,8 @@ void CGameRenderer::viewTrackPart(
 
 void CGameRenderer::viewPilaar(int x, int y, int cur_zpos)
 {
-	int  breedte = m_World->getTrack()->m_W;
-	int hoogte = m_World->getTrack()->m_H;
+	int  breedte = theWorld->getTrack()->m_W;
+	int hoogte = theWorld->getTrack()->m_H;
 
 	glPushMatrix();
 
@@ -519,7 +534,7 @@ void CGameRenderer::viewPilaar(int x, int y, int cur_zpos)
 
 		for (int i = 0; i < hoogte; i++) //bottom to top
 		{
-			STile temp = m_World->getTrack()->m_Track[pilaar_index + i]; //welke tile?
+			STile temp = theWorld->getTrack()->m_Track[pilaar_index + i]; //welke tile?
 
 			if(temp.m_Model == 0) break; //0 = empty tile
 
@@ -530,7 +545,7 @@ void CGameRenderer::viewPilaar(int x, int y, int cur_zpos)
 			{
 				for(int j = hoogte-1; j >= i; j--) //top to bottom
 				{
-					temp = m_World->getTrack()->m_Track[pilaar_index + j]; //welke tile?
+					temp = theWorld->getTrack()->m_Track[pilaar_index + j]; //welke tile?
 
 					if(temp.m_Model > 0) //0 = empty tile
 					{
@@ -549,7 +564,8 @@ void CGameRenderer::viewPilaar(int x, int y, int cur_zpos)
 						}
 
 						//draw the model
-						m_GraphicWorld->getTile(temp.m_Model)->draw(&m_Settings, m_GraphicWorld->m_EnvMap, lod);
+						m_GraphicWorld->getTile(temp.m_Model)->draw(
+							&m_Settings, m_GraphicWorld->m_EnvMap, lod, theWorld->m_LastTime);
 					}
 				}
 				break;
@@ -567,7 +583,8 @@ void CGameRenderer::viewPilaar(int x, int y, int cur_zpos)
 			}
 
 			//tekenen
-			m_GraphicWorld->getTile(temp.m_Model)->draw(&m_Settings, m_GraphicWorld->m_EnvMap, lod);
+			m_GraphicWorld->getTile(temp.m_Model)->draw(
+				&m_Settings, m_GraphicWorld->m_EnvMap, lod, theWorld->m_LastTime);
 		}
 
 	glPopMatrix();
@@ -612,13 +629,12 @@ void CGameRenderer::viewMovObj(unsigned int n)
 			//CDynamicReflection *theRefl = m_MovingObjectReflections[m_CurrentCamera + m_NumCameras * n];
 
 			m_GraphicWorld->getMovObjBound(b.m_Body)->draw(
-				&m_Settings,
-				theRefl,
-				lod);
+				&m_Settings, theRefl, lod, theWorld->m_LastTime);
 		}
 		else
 		{
-			m_GraphicWorld->getMovObjBound(b.m_Body)->draw(&m_Settings, NULL, lod);
+			m_GraphicWorld->getMovObjBound(b.m_Body)->draw(
+				&m_Settings, NULL, lod, theWorld->m_LastTime);
 		}
 
 		glPopMatrix();
@@ -626,54 +642,54 @@ void CGameRenderer::viewMovObj(unsigned int n)
 
 
 	//The shadow
-	CVector r = mo->m_Bodies[0].m_Position;
-	const CCollisionFace *plane = theWorld->m_Detector.getGroundFace(r);
-	if(plane != NULL)
+	if(m_Settings.m_ShadowSize > 4)
 	{
-		CVector lightDir = theWorld->getTrack()->m_LightDirection.normal();
-		float ldotn = lightDir.dotProduct(plane->nor);
-		if(ldotn < -0.001) //plane is lighted
+		CVector r = mo->m_Bodies[0].m_Position;
+		const CCollisionFace *plane = theWorld->m_Detector.getGroundFace(r);
+		if(plane != NULL)
 		{
-			CVector difference = lightDir / ldotn;
-
-			CDynamicShadow *shadow = m_GraphicWorld->getMovObjShadow(n);
-
-			float ps = shadow->getPhysicalSize();
-			CVector texcoords[] = {
-				CVector(0,0,0),
-				CVector(1,0,0),
-				CVector(1,1,0),
-				CVector(0,1,0)
-				};
-			CVector corners[4];
-			for(unsigned int i=0; i<4; i++)
+			CVector lightDir = theWorld->getTrack()->m_LightDirection.normal();
+			float ldotn = lightDir.dotProduct(plane->nor);
+			if(ldotn < -0.001) //plane is lighted
 			{
-				corners[i] = ps*(2*texcoords[i]-CVector(1,1,0));
-				corners[i] *= shadow->getLightOrientation();
-				corners[i] += r;
-				corners[i] -= difference * (corners[i].dotProduct(plane->nor) - plane->d - 0.01);
+				CVector difference = lightDir / ldotn;
+
+				CDynamicShadow *shadow = m_GraphicWorld->getMovObjShadow(n);
+
+				float ps = shadow->getPhysicalSize();
+				CVector texcoords[] = {
+					CVector(0,0,0),
+					CVector(1,0,0),
+					CVector(1,1,0),
+					CVector(0,1,0)
+					};
+				CVector corners[4];
+				for(unsigned int i=0; i<4; i++)
+				{
+					corners[i] = ps*(2*texcoords[i]-CVector(1,1,0));
+					corners[i] *= shadow->getLightOrientation();
+					corners[i] += r;
+					corners[i] -= difference * (corners[i].dotProduct(plane->nor) - plane->d - 0.01);
+				}
+
+				shadow->enable();
+
+				glBegin(GL_QUADS);
+				for(unsigned int i=0; i<4; i++)
+				{
+					glTexCoord2f(texcoords[i].x,texcoords[i].y);
+					glVertex3f(corners[i].x,corners[i].y,corners[i].z);
+				}
+				glEnd();
+
+				shadow->disable();
 			}
-
-			shadow->enable();
-
-			glBegin(GL_QUADS);
-			for(unsigned int i=0; i<4; i++)
-			{
-				glTexCoord2f(texcoords[i].x,texcoords[i].y);
-				glVertex3f(corners[i].x,corners[i].y,corners[i].z);
-			}
-			glEnd();
-
-			shadow->disable();
 		}
 	}
 }
 
 void CGameRenderer::viewDashboard(unsigned int n)
 {
-	glMatrixMode( GL_MODELVIEW );
-	glLoadIdentity();
-
 	if(m_Settings.m_ZBuffer) glDisable(GL_DEPTH_TEST);
 	if(m_Settings.m_FogMode >= 0) glDisable(GL_FOG);
 	glDisable(GL_LIGHTING);
@@ -688,8 +704,108 @@ void CGameRenderer::viewDashboard(unsigned int n)
 		m_GraphicWorld->getMovObjDashboard(n)->draw(m_ViewportW, m_ViewportH, CDashboard::eGauges);
 	}
 
+	//Reflection debugging:
+	/*
+	glPushMatrix();
+	glScalef(m_ViewportW, m_ViewportH, 1.0);
+	glTranslatef(0.75, 0.75, 0.0);
+
+	//glDisable(GL_BLEND);
+	glColor4f(1,1,1,1);
+	CDynamicReflection *theRefl = m_GraphicWorld->getMovObjReflection(0, 0);
+	theRefl->enable(&m_Settings);
+	theRefl->disable();
+
+	glBegin(GL_QUADS);
+	glTexCoord2f(0,0);
+	glVertex2f(-0.2,-0.2);
+	glTexCoord2f(1,0);
+	glVertex2f( 0.2,-0.2);
+	glTexCoord2f(1,1);
+	glVertex2f( 0.2, 0.2);
+	glTexCoord2f(0,1);
+	glVertex2f(-0.2, 0.2);
+	glEnd();
+
+	//glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); //default blending function
+	glPopMatrix();
+	*/
+
+	glLoadIdentity();
+	viewLensFlare();
+
 	glEnable(GL_LIGHTING);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 	if(m_Settings.m_ZBuffer) glEnable(GL_DEPTH_TEST);
 	if(m_Settings.m_FogMode >= 0) glEnable(GL_FOG);
+}
+
+void CGameRenderer::viewLensFlare()
+{
+	if(m_GraphicWorld->m_LensFlare.size() == 0) return;
+
+	CVector lightpos = -(theWorld->getTrack()->m_LightDirection);
+	CVector lightcol = theWorld->getTrack()->m_LightColor;
+	const CMatrix &cammat = m_Camera->getOrientation();
+
+	lightpos /= cammat;
+
+	if(lightpos.z > -0.01) return; //behind camera
+	lightpos.z = -lightpos.z;
+
+	lightpos.x /= lightpos.z;
+	lightpos.y /= lightpos.z;
+	lightpos.z = 0.0;
+
+	lightpos *= 0.5 / FOV_MULTIPLIER;
+	lightpos.x *= float(m_ViewportH) / m_ViewportW;
+
+	float distance = lightpos.abs();
+	if(distance >= 2.0) return; //out of view
+	float intensity = 0.5 * (2.0 - distance);
+
+	float angle = atan2f(lightpos.y, lightpos.x) * (180.0/M_PI);
+
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE); //additive blending
+
+	glPushMatrix();
+	glTranslatef(0.5*m_ViewportW, 0.5*m_ViewportH, 0.0);
+	glScalef(m_ViewportW, m_ViewportW, 1.0);
+
+	for(unsigned int i=0; i < m_GraphicWorld->m_LensFlare.size(); i++)
+	{
+		const CGraphicWorld::SLensFlare &flare = m_GraphicWorld->m_LensFlare[i];
+
+		CVector flarepos = flare.distance * lightpos;
+
+		float flaresize = flare.size;
+		float flareintensity = intensity;
+		if(i > 0) flareintensity *= 0.5; //Everything half the intensity of the sun
+
+		glColor4f(lightcol.x, lightcol.y, lightcol.z, flareintensity);
+		flare.image->draw();
+
+		glPushMatrix();
+		glTranslatef(flarepos.x, flarepos.y, 0.0);
+		glRotatef(2 * angle, 0.0, 0.0, 1.0);
+
+		glBegin(GL_QUADS);
+		glTexCoord2f(0,0);
+		glVertex2f(-flaresize,-flaresize);
+		glTexCoord2f(1,0);
+		glVertex2f( flaresize,-flaresize);
+		glTexCoord2f(1,1);
+		glVertex2f( flaresize, flaresize);
+		glTexCoord2f(0,1);
+		glVertex2f(-flaresize, flaresize);
+		glEnd();
+
+		glPopMatrix();
+	}
+
+	glPopMatrix();
+
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); //default blending function
+	glColor4f(1,1,1,1);
 }

@@ -34,6 +34,7 @@ public:
 
 	int m_Mul; //texture size multiplier
 	float m_Mu; //static friction coefficient
+	float m_Roll; //roll friction coefficient
 };
 
 #endif

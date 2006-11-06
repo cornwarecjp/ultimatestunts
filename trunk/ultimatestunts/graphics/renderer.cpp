@@ -35,12 +35,20 @@ CRenderer::CRenderer(const CWinSystem *winsys)
 	m_Settings.m_Transparency = SGraphicSettings::blend;
 	m_Settings.m_TexSmooth = true;
 	m_Settings.m_ShadowSmooth = true;
+	m_Settings.m_WaterTesselation = 10;
+	m_Settings.m_EnableAnimation = true;
+	m_Settings.m_ShadowSize = 512;
 
 	//Load the setings
 	CString cnf = theMainConfig->getValue("graphics", "background_size");
 	//printf("Background size: %s\n", cnf.c_str());
 	if(cnf != "" && cnf.toInt() <= 4)
 		m_Settings.m_UseBackground = false;
+
+	cnf = theMainConfig->getValue("graphics", "shadow_size");
+	//printf("Shadow size: %s\n", cnf.c_str());
+	if(cnf != "")
+		m_Settings.m_ShadowSize = cnf.toInt();
 
 	cnf = theMainConfig->getValue("graphics", "visible_tiles");
 	//printf("Visible tiles: %s\n", cnf.c_str());
@@ -77,6 +85,13 @@ CRenderer::CRenderer(const CWinSystem *winsys)
 		if(cnf == "blend")	m_Settings.m_Transparency = SGraphicSettings::blend;
 	}
 
+	cnf = theMainConfig->getValue("animation", "watertesselation");
+	if(cnf != "")
+	{
+		m_Settings.m_WaterTesselation = cnf.toInt();
+		if(cnf.toInt() < 0) m_Settings.m_WaterTesselation = 0;
+	}
+
 	m_Settings.m_ReflectionSize = theMainConfig->getValue("graphics", "reflection_size").toInt();
 	m_Settings.m_ReflectionDist = theMainConfig->getValue("graphics", "reflectiondist").toFloat();
 	m_Settings.m_UpdRef = theMainConfig->getValue("graphics", "updatereflection") == "true";
@@ -87,6 +102,8 @@ CRenderer::CRenderer(const CWinSystem *winsys)
 	m_Settings.m_MovingObjectLOD = theMainConfig->getValue("graphics", "movingobjectlod").toInt();
 
 	m_Settings.m_TrackDisplayList = theMainConfig->getValue("graphics", "trackdisplaylist") == "true";
+
+	m_Settings.m_EnableAnimation = theMainConfig->getValue("animation", "enable") == "true";
 
 	//Next: use these settings
 	if(m_Settings.m_ZBuffer)

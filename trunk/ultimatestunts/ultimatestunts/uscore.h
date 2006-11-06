@@ -45,6 +45,8 @@ public:
 
 	virtual void readyAndLoad(LoadStatusCallback callBackFun = NULL);
 
+	CGraphicWorld *getGraphicWorld();
+
 protected:
 	CGameWinSystem *m_WinSys;
 	CGameRenderer *m_Renderer;

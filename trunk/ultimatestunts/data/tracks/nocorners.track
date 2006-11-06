@@ -9,10 +9,10 @@ width
 heigth
 
 BEGIN
-textures/grass2.rgb
-textures/road2.rgb
-textures/concrete1.rgb
-textures/startfinish.rgb
+textures/grass2.jpg mu=0.8 roll=20
+textures/road2.jpg mu=1  roll=1
+textures/concrete1.jpg
+textures/startfinish.jpg
 END
 
 BEGIN
@@ -48,6 +48,8 @@ END
 BEGIN
 1,6,0:0.0
 1,5,0:2.0
-1,2,0:9.0
-1,1,0:10.0
+1,4,0:
+1,3,0:
+1,2,0:9.0 end
+#1,1,0:10.0
 END

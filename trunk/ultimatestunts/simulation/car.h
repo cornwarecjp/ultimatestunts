@@ -112,6 +112,7 @@ protected:
 
 	virtual void determineGroundPlane(CPhysics *simulator);
 	void placeOnGround();
+	void fixFlyingOrientation();
 
 	virtual void placeBodies();
 

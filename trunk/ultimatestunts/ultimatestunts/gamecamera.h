@@ -44,6 +44,9 @@ public:
 		{return m_Mode;}
 
 	void setTrackedObject(int id);
+	int getTrackedObject()
+		{return m_Id;}
+
 	void switchTrackedObject();
 
 	unsigned int m_PrimaryTarget; //e.g. for the dashboard

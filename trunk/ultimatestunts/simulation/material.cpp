@@ -21,6 +21,7 @@ CMaterial::CMaterial(CDataManager *manager) : CDataObject(manager, CDataObject::
 {
 	m_Mul = 1;
 	m_Mu = 1.0;
+	m_Roll = 1.0;
 }
 
 CMaterial::~CMaterial()
@@ -30,8 +31,9 @@ bool CMaterial::load(const CString &filename, const CParamList &list)
 {
 	CDataObject::load(filename, list);
 
-	m_Mul = m_ParamList.getValue("scale", "1").toInt();
-	m_Mu = m_ParamList.getValue("mu", "1.0").toFloat();
+	m_Mul  = m_ParamList.getValue("scale", "1"  ).toInt();
+	m_Mu   = m_ParamList.getValue("mu"   , "1.0").toFloat();
+	m_Roll = m_ParamList.getValue("roll" , "1.0").toFloat();
 
 	return true;
 }

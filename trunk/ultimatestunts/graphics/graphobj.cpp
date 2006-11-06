@@ -16,9 +16,13 @@
  ***************************************************************************/
 #include <cstdio>
 #include <cstdlib>
+#include <cmath>
 
 #include <GL/gl.h>
 
+#ifndef M_PI
+#define M_PI 3.1415926536
+#endif
 
 #include "glextensions.h"
 #include "vector.h"
@@ -50,6 +54,8 @@ bool CGraphObj::load(const CString &filename, const CParamList &list)
 	CString subset = m_ParamList.getValue("subset", "");
 	vector<CDataObject *> matarray = m_DataManager->getSubset(CDataObject::eMaterial, subset);
 
+	unsigned int waterTesselation = theMainConfig->getValue("animation", "watertesselation").toInt();
+
 	//the primitives
 	for(unsigned int p=0; p < f.m_Primitives.size(); p++)
 	{
@@ -69,6 +75,15 @@ bool CGraphObj::load(const CString &filename, const CParamList &list)
 		pr2.texture[0] = pr2.texture[1] = pr2.texture[2] = pr2.texture[3] = 0;
 		pr2.color[0] = pr2.color[1] = pr2.color[2] = pr2.color[3] = pr1.ModulationColor;
 
+		//Process the user-defined color
+		if(pr1.Opacity < 0.01 && pr1.ModulationColor.z > 0.99)
+		{
+			printf("Changing to user-defined color\n");
+			pr2.opacity = 1.0;
+			pr2.color[0] = pr2.color[1] = pr2.color[2] = pr2.color[3] =
+				list.getValue("color", "1,1,1").toVector();
+		}
+
 		//add texture
 		if(pr1.Texture >= 0)
 		{
@@ -87,6 +102,13 @@ bool CGraphObj::load(const CString &filename, const CParamList &list)
 				}
 			}
 			
+		}
+
+		//For water animation:
+		if(waterTesselation != 0 && (pr1.LODs & 16) != 0 && (pr1.LODs & 32) != 0)
+		{
+			m_WaterLevel = pr1.vertex[0].pos.y;
+			tesselateSquare(pr1, waterTesselation);
 		}
 
 		//add vertices
@@ -145,12 +167,20 @@ void CGraphObj::unloadPrimitive(SPrimitive &pr)
 bool tex_enabled;
 bool use_blending;
 
-void CGraphObj::draw(const SGraphicSettings *settings, CReflection *reflection, unsigned int lod, bool useMaterials)
+void CGraphObj::draw(
+	const SGraphicSettings *settings, CReflection *reflection,
+	unsigned int lod, float t, bool useMaterials)
 {
 	m_CurrentSettings = settings;
 	m_CurrentReflection = reflection;
 	m_CurrentLOD = lod;
 	m_UseMaterials = useMaterials;
+
+	if(settings->m_EnableAnimation && fabsf(t - m_CurrentTime) > 0.01)
+	{
+		m_CurrentTime = t;
+		animate(t);
+	}
 	
 	//TODO: make this code very fast (it's the main drawing routine)
 
@@ -274,5 +304,56 @@ bool CGraphObj::setMaterial(const SPrimitive &pr, bool forReflection)
 	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, kleur);
 
 	return true;
+}
+
+void CGraphObj::animate(float t)
+{
+	for(unsigned int p=0; p < m_Primitives.size(); p++)
+	{
+		const SPrimitive &pr = m_Primitives[p];
+
+		//LOD testing:
+		if( (pr.LODs & 16) == 0) continue;
+		if( (pr.LODs & 32) == 0) continue;
+
+
+		for(unsigned int v=0; v < pr.numVertices; v++)
+		{
+			//CGLBFile::SVertex &vt = pr1.vertex[v];
+
+			GLfloat *offset = (GLfloat *)pr.vertex + 8*v;
+
+			//GL_T2F_N3F_V3F array format:
+			/*
+			*(offset  ) = vt.tex.x;
+			*(offset+1) = vt.tex.y;
+			
+			*(offset+2) = vt.nor.x;
+			*(offset+3) = vt.nor.y;
+			*(offset+4) = vt.nor.z;
+			
+			*(offset+5) = vt.pos.x;
+			*(offset+6) = vt.pos.y;
+			*(offset+7) = vt.pos.z;
+			*/
+			float x = *(offset+5);
+			float z = *(offset+7);
+			float wave = 0.4 * (
+				sin(( x+z)*2*M_PI/TILESIZE + 2.0*t) +
+				sin(( x-z)*2*M_PI/TILESIZE + 2.0*t) +
+				sin((-x+z)*2*M_PI/TILESIZE + 2.0*t) +
+				sin((-x-z)*2*M_PI/TILESIZE + 2.0*t)
+				)
+				+ 0.25 * (
+				sin(( 2*x+z)*2*M_PI/TILESIZE + 5.11*t) +
+				sin(( x-2*z)*2*M_PI/TILESIZE + 5.11*t) +
+				sin((-x+2*z)*2*M_PI/TILESIZE + 5.11*t) +
+				sin((-2*x-z)*2*M_PI/TILESIZE + 5.11*t)
+				);
+			*(offset+6) = m_WaterLevel + wave;
+		}
+
+		//printf("Animate water\n");
+	}
 }
 

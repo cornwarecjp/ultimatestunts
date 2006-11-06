@@ -102,7 +102,10 @@ void CGameCamera::update()
 		case In:
 			tp = to->m_Position + to->m_OrientationMatrix * to->getCameraPos();
 			if(m_Reached)
-				{tm = to->m_OrientationMatrix;}
+			{
+				tm.rotX(0.1);
+				tm *= to->m_OrientationMatrix;
+			}
 			//else: autotarget
 
 			tv = to->m_Velocity;

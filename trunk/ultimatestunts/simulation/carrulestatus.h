@@ -18,6 +18,10 @@
 #ifndef CARRULESTATUS_H
 #define CARRULESTATUS_H
 
+#include <vector> //STL vector template
+namespace std {}
+using namespace std;
+
 
 /**
   *@author CJP
@@ -40,10 +44,6 @@ public:
 	float penaltyTime;	//penalty time accumulated while playing
 	float finishTime;	//time when it finished racing
 
-	unsigned int currentTile;	//tile where the car currently is in (not counting tiles outside routes)
-	unsigned int lastValidTile;	//last tile on a valid route where the car was
-	float maxTileTime;			//maximum reached tile time
-
 	enum
 	{
 		eNotStarted = 0,
@@ -52,6 +52,13 @@ public:
 		eCrashed = 3,
 		eGivenUp = 4
 	} state;
+
+
+	vector<int> lastPosition; //last legal position on a route
+
+	//tile where the car currently is
+	unsigned int currentTile;
+	unsigned int currentRoute;
 };
 
 #endif

@@ -119,7 +119,7 @@ int CMessageBox::onKeyPress(int key)
 	return WIDGET_REDRAW;
 }
 
-int CMessageBox::onMouseMove(int x, int y)
+int CMessageBox::onMouseMove(int x, int y, unsigned int buttons)
 {
 	switch(m_Type)
 	{
@@ -144,7 +144,7 @@ int CMessageBox::onMouseMove(int x, int y)
 
 int CMessageBox::onMouseClick(int x, int y, unsigned int buttons)
 {
-	onMouseMove(x, y);
+	onMouseMove(x, y, buttons);
 	return WIDGET_QUIT;
 }
 

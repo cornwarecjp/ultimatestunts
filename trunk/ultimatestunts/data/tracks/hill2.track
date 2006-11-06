@@ -9,25 +9,25 @@ width
 heigth
 
 BEGIN
-textures/grass2.rgb mu=0.9
-textures/road2.rgb mu=1
-textures/concrete1.rgb
-textures/startfinish.rgb
-textures/splits1.rgb mu=1
-textures/concrete2.rgb mu=0.8
-textures/door1.rgb
-textures/fence.rgba scale=8
-textures/window1.rgb
-textures/road1.rgb mu=1
-textures/bricks1.rgb scale=4 mu=0.9
-textures/metal1.rgba scale=8 mu=0.75
-textures/bricks2.rgb scale=2 mu=0.9
-textures/stonebricks.rgb
-textures/wood.rgb
-textures/glass.rgb
-textures/net.rgba
-textures/whitetexture.rgb
-textures/joes.rgb
+textures/grass2.jpg mu=0.9 roll=20
+textures/road2.jpg mu=1 roll=1
+textures/concrete1.jpg
+textures/startfinish.jpg
+textures/splits1.jpg mu=1 roll=1
+textures/concrete2.jpg
+textures/door1.jpg
+textures/fence.png scale=8
+textures/window1.jpg
+textures/road1.jpg mu=1 roll=1
+textures/bricks1.jpg scale=4
+textures/metal1.png scale=8 mu=0.9 roll=0.8
+textures/bricks2.jpg scale=2
+textures/stonebricks.jpg
+textures/wood.jpg
+textures/glass.jpg
+textures/net.png
+textures/whitetexture.jpg
+textures/joes.jpg
 END
 
 BEGIN
@@ -147,61 +147,140 @@ BEGIN
 5,20,0:0.0
 5,19,0:2.0
 5,18,0:4.0
+5,17,0:
+5,16,0:
+5,15,0:
+5,14,0:
 5,13,0:8.0
 5,11,0:9
+5,10,0:
 5, 9,0:11
+6, 9,1:
+7, 9,0:
 8, 9,0:16.0
 9, 9,0:18.0
 9,10,0:20.0
+9,11,0:
+9,12,0:
+9,13,0:
+9,14,0:
+9,15,0:
+9,16,0:
+9,17,0:
+9,18,0:
 9,19,0:26.0
+9,20,0:
 9,21,0:28.5
 8,21,0:30.5
+7,21,0:
+6,21,0:
 5,21,0:37.0
-5,20,0:40.0
+5,20,0:40.0 end
 
 #Alternative 1, looping on the right
 8, 9,0:0
 8,10,0:2
+8,11,0:
+8,12,0:
+8,13,0:
+8,14,0:
+8,15,0:
 8,16,0:7
+8,17,0:
 8,18,2:10
 8,17,2:12
+8,18,0:
 8,19,0:15
-8,21,0:17
+8,20,0:
+8,21,0:17 end
 
 #Alternative 2, pipe on the left
 5, 9,0:0
 5, 8,0:1
+5, 7,0:
+5, 6,0:
+5, 5,0:
+5, 4,0:
+5, 3,0:
 5, 2,0:5
 5, 1,0:7
+4, 1,0:
+3, 1,0:
 2, 1,0:10
 2, 2,0:12
+2, 3,0:
 2, 4,0:15
+2, 5,0:
+2, 6,0:
+2, 7,0:
+2, 8,0:
+2, 9,0:
+2,10,0:
+2,11,0:
+2,12,0:
+2,13,0:
+2,14,0:
+2,15,0:
+2,16,0:
+2,17,0:
 2,18,0:25
+2,19,0:
+2,20,0:
 2,21,0:30
+3,21,0:
 4,21,0:34
 4,22,0:36
 5,22,0:38
-5,21,0:40
+5,21,0:40 end
 
 #Alternative 3, tunnel
 5,18,0:0
 6,18,0:2
 6,17,0:4
 6,16,0:5
+6,15,0:
+6,14,0:
+6,13,0:
+6,12,0:
+6,11,0:
+6,10,0:
 6, 9,0:8
 6, 8,0:10
+6, 7,0:
+6, 6,0:
+6, 5,0:
+6, 4,0:
+6, 3,0:
 6, 2,0:18
-5, 2,0:20
+5, 2,0:20 end
 
 #Alternative 4, looping on the left
 2, 1,0:0
 1, 1,0:2
 0, 1,0:4
+0, 2,0:
+0, 3,0:
+0, 4,0:
 0, 5,0:10
+0, 6,0:
 0, 7,2:12
 0, 6,2:13
+0, 7,0:
 0, 8,0:15
+0, 9,0:
+0,10,0:
+0,11,0:
+0,12,0:
+0,13,0:
+0,14,0:
+0,15,0:
+0,16,0:
+0,17,0:
+0,18,0:
+0,19,0:
+0,20,0:
 0,21,0:26
-2,21,0:30
+1,21,0:
+2,21,0:30 end
 END
 

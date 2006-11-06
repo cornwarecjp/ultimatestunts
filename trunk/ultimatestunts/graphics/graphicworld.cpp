@@ -43,7 +43,8 @@ bool CGraphicMovObj::load(const CString &filename, const CParamList &list)
 		m_Reflections.push_back(CDynamicReflection(refls));
 	}
 
-	m_Shadow = new CDynamicShadow(shads, (CGraphicWorld *)m_DataManager, ID);
+	if(shads > 4)
+		m_Shadow = new CDynamicShadow(shads, (CGraphicWorld *)m_DataManager, ID);
 
 	m_Dashboard = new CDashboard(m_DataManager, ID);
 
@@ -58,8 +59,8 @@ void CGraphicMovObj::unload()
 
 	m_Reflections.clear();
 
-	delete m_Shadow;
-	delete m_Dashboard;
+	if(m_Shadow != NULL) delete m_Shadow;
+	if(m_Dashboard != NULL) delete m_Dashboard;
 }
 
 
@@ -95,6 +96,60 @@ CGraphicWorld::CGraphicWorld()
 	//Create objects:
 	m_Background = new CBackground(this);
 	m_EnvMap = new CStaticReflection(this);
+
+	//Load lens flare
+	if(theMainConfig->getValue("graphics", "lensflare_enable") == "true")
+	{
+		CString flare_files     = theMainConfig->getValue("graphics", "lensflare_files");
+		CString flare_sizes     = theMainConfig->getValue("graphics", "lensflare_sizes");
+		CString flare_distances = theMainConfig->getValue("graphics", "lensflare_distances");
+
+		while(true)
+		{
+			int comma_files = flare_files.inStr(',');
+			int comma_sizes = flare_sizes.inStr(',');
+			int comma_distances = flare_distances.inStr(',');
+
+			CString file;
+			float size, distance;
+
+			if(comma_files < 0)
+				{file = flare_files;}
+			else
+			{
+				file = flare_files.mid(0, comma_files);
+				flare_files = flare_files.mid(comma_files+1);
+			}
+
+			if(comma_sizes < 0)
+				{size = flare_sizes.toFloat();}
+			else
+			{
+				size = flare_sizes.mid(0, comma_sizes).toFloat();
+				flare_sizes = flare_sizes.mid(comma_sizes+1);
+			}
+
+			if(comma_distances < 0)
+				{distance = flare_distances.toFloat();}
+			else
+			{
+				distance = flare_distances.mid(0, comma_distances).toFloat();
+				flare_distances = flare_distances.mid(comma_distances+1);
+			}
+
+			printf("Loading lensflare distance %.3f size %.3f file %s\n",
+				distance, size, file.c_str());
+
+			SLensFlare flare;
+			flare.distance = distance;
+			flare.size = size;
+			flare.image = new CTexture(this);
+			flare.image->load(file, CParamList());
+			m_LensFlare.push_back(flare);
+
+			if(comma_files < 0 || comma_sizes < 0 || comma_distances < 0) break;
+		}
+	}
 }
 
 CGraphicWorld::~CGraphicWorld()
@@ -102,6 +157,10 @@ CGraphicWorld::~CGraphicWorld()
 	unloadWorld();
 	delete m_Background;
 	delete m_EnvMap;
+
+	for(unsigned int i=0; i < m_LensFlare.size(); i++)
+		delete m_LensFlare[i].image;
+	m_LensFlare.clear();
 }
 
 CDataObject *CGraphicWorld::createObject(const CString &filename, const CParamList &plist, CDataObject::eDataType type)
@@ -129,6 +188,8 @@ bool CGraphicWorld::loadWorld()
 	printf("Loading the graphic world\n");
 
 	printf("  Loading tile textures:\n");
+	//First unload all currently loaded textures to get the IDs right
+	unloadAll(CDataObject::eMaterial);
 	for(unsigned int i=0; i<m_World->getNumObjects(CDataObject::eMaterial); i++)
 	{
 		int mul = m_World->getMaterial(i)->m_Mul;
@@ -151,6 +212,8 @@ bool CGraphicWorld::loadWorld()
 	}
 
 	printf("  Loading tiles:\n");
+	//First unload all currently loaded tiles to get the IDs right
+	unloadAll(CDataObject::eTileModel);
 	for(unsigned int i=0; i<m_World->getNumObjects(CDataObject::eTileModel); i++)
 		loadObject(m_World->getTileModel(i)->getFilename(), m_World->getTileModel(i)->getParamList(), CDataObject::eTileModel);
 
@@ -219,6 +282,8 @@ bool CGraphicWorld::loadObjects()
 	}
 
 	//Body graphics
+	//First unload all currently loaded textures to get the IDs right
+	unloadAll(CDataObject::eBound);
 	vector<const CDataObject *> bounds = m_World->getObjectArray(CDataObject::eBound);
 	for(unsigned int i=0; i<bounds.size(); i++)
 	{

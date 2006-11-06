@@ -5,266 +5,274 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Ultimate Stunts 0.6.2\n"
+"Project-Id-Version: Ultimate Stunts 0.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-08-13 17:06+0200\n"
+"POT-Creation-Date: 2006-10-30 20:46+0100\n"
 "PO-Revision-Date: 2006-01-02 20:45+0100\n"
 "Last-Translator: CJP <cornware-cjp@users.sourceforge.net>\n"
 "Language-Team: Dutch <cornware-cjp@users.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=ISO-8859-1\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8-bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: ultimatestunts/gamegui.cpp:53
+#: ultimatestunts/gamegui.cpp:54
 msgid "Status: "
 msgstr "Status: "
 
-#: ultimatestunts/gamegui.cpp:93
+#: ultimatestunts/gamegui.cpp:95
 msgid "Anonymous"
 msgstr "Anoniem"
 
-#: ultimatestunts/gamegui.cpp:109
+#: ultimatestunts/gamegui.cpp:112
 msgid "Main menu"
 msgstr "Hoofdmenu"
 
-#: ultimatestunts/gamegui.cpp:121
+#: ultimatestunts/gamegui.cpp:124
 msgid "Select the game type:"
 msgstr "Selecteer het speltype:"
 
-#: ultimatestunts/gamegui.cpp:133
+#: ultimatestunts/gamegui.cpp:136
 msgid "Select a server:"
 msgstr "Selecteer een server:"
 
-#: ultimatestunts/gamegui.cpp:145 trackedit/tegui.cpp:83
+#: ultimatestunts/gamegui.cpp:148 trackedit/tegui.cpp:83
 #: trackedit/tegui.cpp:94
 msgid "Select a track:"
 msgstr "Selecteer een baan:"
 
-#: ultimatestunts/gamegui.cpp:157
+#: ultimatestunts/gamegui.cpp:160
 msgid "Select a replay file:"
 msgstr "Selecteer een replay:"
 
-#: ultimatestunts/gamegui.cpp:169
+#: ultimatestunts/gamegui.cpp:172
 msgid "Players menu:"
 msgstr "Spelers menu:"
 
-#: ultimatestunts/gamegui.cpp:181
+#: ultimatestunts/gamegui.cpp:184
 msgid "Configure Player:"
 msgstr "Speler instellingen:"
 
-#: ultimatestunts/gamegui.cpp:205 ultimatestunts/gamegui.cpp:301
+#: ultimatestunts/gamegui.cpp:227 ultimatestunts/gamegui.cpp:324
 msgid "Credits and License"
 msgstr "Credits en Licentie"
 
-#: ultimatestunts/gamegui.cpp:218 stuntsserver/gamecorethread.cpp:359
+#: ultimatestunts/gamegui.cpp:240 stuntsserver/gamecorethread.cpp:359
 msgid "Loading"
 msgstr "Bezig met laden"
 
-#: ultimatestunts/gamegui.cpp:258
+#: ultimatestunts/gamegui.cpp:280
 msgid "Hiscore"
 msgstr "Hiscore"
 
-#: ultimatestunts/gamegui.cpp:288
+#: ultimatestunts/gamegui.cpp:311
 msgid "Computer"
 msgstr "Computer "
 
-#: ultimatestunts/gamegui.cpp:289
+#: ultimatestunts/gamegui.cpp:312
 msgid "Human   "
 msgstr "Menselijk"
 
-#: ultimatestunts/gamegui.cpp:295
+#: ultimatestunts/gamegui.cpp:318
 msgid "Drive!"
 msgstr "Race!"
 
-#: ultimatestunts/gamegui.cpp:296
+#: ultimatestunts/gamegui.cpp:319
 msgid "Set the game type"
 msgstr "Stel het speltype in"
 
-#: ultimatestunts/gamegui.cpp:297
+#: ultimatestunts/gamegui.cpp:320
 msgid "Select the track"
 msgstr "Selecteer de baan"
 
-#: ultimatestunts/gamegui.cpp:298
+#: ultimatestunts/gamegui.cpp:321
 msgid "Select the players"
 msgstr "Selecteer de spelers"
 
-#: ultimatestunts/gamegui.cpp:299
+#: ultimatestunts/gamegui.cpp:322
 msgid "View a replay"
 msgstr "Bekijk een replay"
 
-#: ultimatestunts/gamegui.cpp:300
+#: ultimatestunts/gamegui.cpp:323
 msgid "Options"
 msgstr "Opties"
 
-#: ultimatestunts/gamegui.cpp:302 trackedit/tegui.cpp:79
+#: ultimatestunts/gamegui.cpp:325 trackedit/tegui.cpp:79
 msgid "Exit"
 msgstr "Afsluiten"
 
-#: ultimatestunts/gamegui.cpp:306
+#: ultimatestunts/gamegui.cpp:329
 msgid " [Local Game]"
 msgstr " [Lokaal spel]"
 
-#: ultimatestunts/gamegui.cpp:311
+#: ultimatestunts/gamegui.cpp:334
 #, c-format
 msgid " [Running server %s]"
 msgstr " [Server %s draait]"
 
-#: ultimatestunts/gamegui.cpp:317
+#: ultimatestunts/gamegui.cpp:340
 #, c-format
 msgid " [Joining game on server %s]"
 msgstr " [Doe mee op server %s]"
 
-#: ultimatestunts/gamegui.cpp:318
+#: ultimatestunts/gamegui.cpp:341
 msgid " [server will choose one]"
 msgstr " [server zal er een kiezen]"
 
-#: ultimatestunts/gamegui.cpp:323
+#: ultimatestunts/gamegui.cpp:346
 #, c-format
 msgid " [%d player selected]"
 msgid_plural " [%d players selected]"
 msgstr[0] " [%d speler geselecteerd]"
 msgstr[1] " [%d spelers geselecteerd]"
 
-#: ultimatestunts/gamegui.cpp:330
+#: ultimatestunts/gamegui.cpp:353
 msgid "Local game"
 msgstr "Lokaal spel"
 
-#: ultimatestunts/gamegui.cpp:331
+#: ultimatestunts/gamegui.cpp:354
 msgid "Join an existing network game"
 msgstr "Doe mee aan een netwerkspel"
 
-#: ultimatestunts/gamegui.cpp:332
+#: ultimatestunts/gamegui.cpp:355
 msgid "Start a new network game"
 msgstr "Start een nieuw netwerkspel"
 
-#: ultimatestunts/gamegui.cpp:361
+#: ultimatestunts/gamegui.cpp:384
 msgid "Add a player"
 msgstr "Voeg een speler toe"
 
-#: ultimatestunts/gamegui.cpp:362 ultimatestunts/gamegui.cpp:386
+#: ultimatestunts/gamegui.cpp:385 ultimatestunts/gamegui.cpp:410
 msgid "Return to main menu"
 msgstr "Terug naar het hoofdmenu"
 
-#: ultimatestunts/gamegui.cpp:367
+#: ultimatestunts/gamegui.cpp:390
 msgid "Player type: "
 msgstr "Speler type: "
 
-#: ultimatestunts/gamegui.cpp:368
+#: ultimatestunts/gamegui.cpp:391
 msgid "Name       : "
 msgstr "Naam       : "
 
-#: ultimatestunts/gamegui.cpp:369
+#: ultimatestunts/gamegui.cpp:392
 msgid "Car        : "
 msgstr "Auto       : "
 
-#: ultimatestunts/gamegui.cpp:370
+#: ultimatestunts/gamegui.cpp:393
+msgid "Choose a car color"
+msgstr "Kies een kleur"
+
+#: ultimatestunts/gamegui.cpp:394
 msgid "Delete this player"
 msgstr "Verwijder deze speler"
 
-#: ultimatestunts/gamegui.cpp:371
+#: ultimatestunts/gamegui.cpp:395
 msgid "Ready"
 msgstr "Klaar"
 
-#: ultimatestunts/gamegui.cpp:374
+#: ultimatestunts/gamegui.cpp:398
 #, c-format
 msgid "Select a car for %s:"
 msgstr "Selecteer een auto voor %s:"
 
-#: ultimatestunts/gamegui.cpp:383
+#: ultimatestunts/gamegui.cpp:407
 msgid "View replay"
 msgstr "Bekijk de replay"
 
-#: ultimatestunts/gamegui.cpp:384
+#: ultimatestunts/gamegui.cpp:408
 msgid "Save replay"
 msgstr "Sla de replay op"
 
-#: ultimatestunts/gamegui.cpp:385
+#: ultimatestunts/gamegui.cpp:409
 msgid "Play again"
 msgstr "Speel opnieuw"
 
-#: ultimatestunts/gamegui.cpp:426 trackedit/tegui.cpp:143
+#: ultimatestunts/gamegui.cpp:450 trackedit/tegui.cpp:143
 msgid "Do you really want to quit?"
 msgstr "Wilt u echt afsluiten?"
 
-#: ultimatestunts/gamegui.cpp:453
+#: ultimatestunts/gamegui.cpp:477
 msgid "The track must be selected on the server"
 msgstr "De track moet geselecteerd worden op de server"
 
-#: ultimatestunts/gamegui.cpp:462
+#: ultimatestunts/gamegui.cpp:486
 msgid "Please edit ultimatestunts.conf manually"
 msgstr "Verander ultimatestunts.conf handmatig"
 
-#: ultimatestunts/gamegui.cpp:492 ultimatestunts/gamegui.cpp:527
+#: ultimatestunts/gamegui.cpp:516 ultimatestunts/gamegui.cpp:551
 msgid "Enter the port number:"
 msgstr "Geef het poortnummer:"
 
-#: ultimatestunts/gamegui.cpp:504
+#: ultimatestunts/gamegui.cpp:528
 #, c-format
 msgid "Connected to server \"%s\""
 msgstr "Verbonden met server \"%s\""
 
-#: ultimatestunts/gamegui.cpp:509
+#: ultimatestunts/gamegui.cpp:533
 msgid "Could not find a server. Do you want to set it manually?"
 msgstr "Kon geen server vinden. Wilt u het handmatig instellen?"
 
-#: ultimatestunts/gamegui.cpp:512
+#: ultimatestunts/gamegui.cpp:536
 msgid "Enter the host name or IP number of the server:"
 msgstr "Geef de hostnaam of IP-nummer van de server:"
 
-#: ultimatestunts/gamegui.cpp:529
+#: ultimatestunts/gamegui.cpp:553
 msgid "Enter a name for the server:"
 msgstr "Geef een naam voor de server:"
 
-#: ultimatestunts/gamegui.cpp:531
+#: ultimatestunts/gamegui.cpp:555
 msgid "Minimum number of players to wait for (including AI players):"
 msgstr "Minimum aantal spelers om op te wachten (inclusief AI spelers):"
 
-#: ultimatestunts/gamegui.cpp:646
+#: ultimatestunts/gamegui.cpp:675
 msgid "Enter the name:"
 msgstr "Vul de naam in:"
 
-#: ultimatestunts/gamegui.cpp:653
-msgid "Can't delete: there needs to be at least one player"
-msgstr "Kan niet verwijderen: er moet minimaal �n speler zijn"
+#: ultimatestunts/gamegui.cpp:682
+msgid "Car color:"
+msgstr "Autokleur:"
 
-#: ultimatestunts/gamegui.cpp:656
+#: ultimatestunts/gamegui.cpp:688
+msgid "Can't delete: there needs to be at least one player"
+msgstr "Kan niet verwijderen: er moet minimaal één speler zijn"
+
+#: ultimatestunts/gamegui.cpp:691
 msgid "Delete this player?"
 msgstr "Verwijder deze speler?"
 
-#: ultimatestunts/gamegui.cpp:710
+#: ultimatestunts/gamegui.cpp:746
 msgid "  (this race)"
 msgstr "  (deze race)"
 
-#: ultimatestunts/gamegui.cpp:733
+#: ultimatestunts/gamegui.cpp:769
 msgid "Enter the replay filename:"
 msgstr "Geef de replay-bestandsnaam:"
 
-#: ultimatestunts/gamegui.cpp:747 trackedit/tegui.cpp:258
+#: ultimatestunts/gamegui.cpp:783 trackedit/tegui.cpp:258
 #, c-format
 msgid "File %s already exists. Overwrite?"
 msgstr "Bestand %s bestaat al. Overschrijven?"
 
-#: ultimatestunts/gamegui.cpp:813
+#: ultimatestunts/gamegui.cpp:849
 msgid "Connecting to the server failed"
 msgstr "Verbinden met de server is mislukt"
 
-#: ultimatestunts/gamegui.cpp:878
+#: ultimatestunts/gamegui.cpp:920
 #, c-format
 msgid "Player %s was refused"
 msgstr "Speler %s was geweigerd"
 
-#: ultimatestunts/uscore.cpp:111
+#: ultimatestunts/uscore.cpp:116
 #, c-format
 msgid "Frame rate: %.1f FPS"
 msgstr "Frame rate: %.1f FPS"
 
-#: ultimatestunts/uscore.cpp:112
+#: ultimatestunts/uscore.cpp:117
 #, c-format
 msgid "Top speed in this session: %.1f km/h"
 msgstr "max snelheid in deze sessie: %.1f km/h"
 
-#: ultimatestunts/uscore.cpp:125
+#: ultimatestunts/uscore.cpp:130
 #, c-format
 msgid "Car %d velocity %.1f km/h; gear %d; %.1f RPM"
 msgstr "Auto %d snelheid %.1f km/h; versnelling %d; %.1f RPM"
@@ -297,9 +305,13 @@ msgstr "Spel wordt gestart"
 msgid "Waiting for client processes"
 msgstr "Wachten op client processen"
 
-#: graphics/messagebox.cpp:171
+#: graphics/colorselect.cpp:182 graphics/messagebox.cpp:171
 msgid "OK"
 msgstr "OK"
+
+#: graphics/colorselect.cpp:195
+msgid "Cancel"
+msgstr "Annuleren"
 
 #: graphics/messagebox.cpp:184
 msgid "Yes"
@@ -346,23 +358,23 @@ msgstr "Licentie:"
 msgid "GO!"
 msgstr "GO!"
 
-#: simulation/rulecontrol.cpp:211
+#: simulation/rulecontrol.cpp:401
 msgid "Penalty time: "
 msgstr "Penalty tijd: "
 
-#: simulation/rulecontrol.cpp:222
+#: simulation/rulecontrol.cpp:412
 msgid "You finished (waiting for other players)"
 msgstr "U bent gefinished (wacht op andere spelers)"
 
-#: simulation/rulecontrol.cpp:245
+#: simulation/rulecontrol.cpp:435
 #, c-format
 msgid "Error: more than one start in the track\n"
-msgstr "Error: meer dan �n start in de baan\n"
+msgstr "Error: meer dan één start in de baan\n"
 
-#: simulation/rulecontrol.cpp:256
+#: simulation/rulecontrol.cpp:446
 #, c-format
 msgid "Error: more than one finish in the track\n"
-msgstr "Error: meer dan �n finish in de baan\n"
+msgstr "Error: meer dan één finish in de baan\n"
 
 #: simulation/gamecore.cpp:194
 msgid "Loading files"
@@ -406,4 +418,3 @@ msgstr "Geef de bestandsnaam:"
 #, c-format
 msgid "Saving of %s failed"
 msgstr "Opslaan van %s is mislukt"
-

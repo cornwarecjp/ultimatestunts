@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT([Ultimate Stunts], [0.6.2], [cornware-cjp@users.sourceforge.net], [ultimatestunts])
+AC_INIT([Ultimate Stunts], [0.6.3], [cornware-cjp@users.sourceforge.net], [ultimatestunts])
 AC_CONFIG_SRCDIR([ultimatestunts/main.cpp])
 AM_CONFIG_HEADER(config.h)
 AC_CANONICAL_TARGET
@@ -95,8 +95,18 @@ AC_LANG_POP(C)
 CFLAGS="$CFLAGS $SDL_CFLAGS"
 CXXFLAGS="$CXXFLAGS $SDL_CFLAGS"
 
+dnl -------------
+dnl Check for SDL_image
+dnl -------------
+haveSDLimage="yes"
+AC_CHECK_HEADER(SDL_image.h, AC_DEFINE([SDL_IMAGE_HEADER], [], [SDL_image header]))
+AC_CHECK_LIB(SDL_image, IMG_Load, graphlibs="-lSDL_image $graphlibs";AC_DEFINE([HAVE_SDL_IMAGE], [], [SDL_image Lib]), [haveSDLimage="no"])
+
+
+dnl -------------
 dnl added "-mconsole" for stdio in windows
 dnl added "-DWIN32" for correct setting of libintl in windows
+dnl -------------
 if test "x$ac_cv_header_windows_h" = "xyes" ; then
   sdllibs="$sdllibs -mconsole"
   CFLAGS="$CFLAGS -DWIN32"
@@ -178,10 +188,25 @@ CFLAGS="-Wall $CFLAGS"
 CXXFLAGS="-Wall $CXXFLAGS"
 
 dnl -------------------
-dnl F***ing gcc 4.0 uses UTF-8 by default
+dnl Tell gcc that we want to use ISO 8859-1, and NOT UTF-8
+dnl This is because the font texture is in ISO 8859-1
+dnl But firs we check whether the compiler accepts these options
 dnl -------------------
-CFLAGS="-finput-charset=ISO-8859-1 -fexec-charset=ISO-8859-1 $CFLAGS"
-CXXFLAGS="-finput-charset=ISO-8859-1 -fexec-charset=ISO-8859-1 $CXXFLAGS"
+AC_LANG_PUSH(C)
+OLDCFLAGS=$CFLAGS
+CFLAGS="-finput-charset=ISO-8859-1 -fexec-charset=ISO-8859-1"
+AC_CACHE_CHECK(whether $CC accepts -finput-charset and -fexec-charset, cc_charset_setting,
+	       [AC_COMPILE_IFELSE([AC_LANG_PROGRAM()], [cc_charset_setting=yes],
+							[cc_charset_setting=no])])
+CFLAGS=$OLDCFLAGS
+AC_LANG_POP(C)
+
+if test $cc_charset_setting = yes; then
+  CFLAGS="-finput-charset=ISO-8859-1 -fexec-charset=ISO-8859-1 $CFLAGS"
+  CXXFLAGS="-finput-charset=ISO-8859-1 -fexec-charset=ISO-8859-1 $CXXFLAGS"
+fi
+
+
 
 
 dnl -------------------
@@ -189,7 +214,6 @@ dnl i18n
 dnl -------------------
 AM_GNU_GETTEXT
 AM_GNU_GETTEXT_VERSION
-
 
 
 dnl ------------------
@@ -228,19 +252,29 @@ dnl -------------
 if test "x$soundlibs" = "x"; then
   echo ""
   echo "WARNING: No appropriate sound libraries found."
-  echo "You can still compile Ultimate Stunts, but"
-  echo "sound will not be available"
+  echo "  You can still compile Ultimate Stunts, but"
+  echo "  sound will not be available"
 fi
 if test "x$graphlibs" = "x"; then
   echo ""
   echo "WARNING: No appropriate graphics libraries found"
-  echo "You can still compile the non-graphical programs"
+  echo "  You can still compile the non-graphical programs"
 fi
 if test "x$sdllibs" = "x"; then
   echo ""
   echo "WARNING: SDL library not found"
-  echo "You may still be able to compile the non-graphical programs,"
-  echo "but that is not guaranteed"
+  echo "  You may still be able to compile the non-graphical programs,"
+  echo "  but that is not guaranteed"
+fi
+if test "x$haveSDLimage" = "xno"; then
+  echo ""
+  echo "WARNING: SDL_image library not found"
+  echo "  It is still perfectly possible to compile Ultimate Stunts,"
+  echo "  but it won't be able to load all image formats."
+  echo "  This is no problem for the non-graphical programs,"
+  echo "  but the graphical programs will not work with all"
+  echo "  the default texture files. Only .rgb and .rgba are"
+  echo "  supported withoud SDL_image."
 fi
 
 echo ""

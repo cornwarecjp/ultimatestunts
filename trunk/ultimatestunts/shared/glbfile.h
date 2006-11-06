@@ -57,4 +57,6 @@ public:
 	vector<SPrimitive> m_Primitives;
 };
 
+void tesselateSquare(CGLBFile::SPrimitive &pr, unsigned int tess);
+
 #endif

@@ -50,6 +50,7 @@ Section "Ultimate Stunts (required)"
   ; Put file there
   File ustunts3dedit.exe
   File ustuntsserver.exe
+  File ustuntstrackedit.exe
   File ustunts.bat
   File *.dll
   File *.ico
@@ -78,6 +79,7 @@ Section "Start Menu Shortcuts"
   CreateDirectory "$SMPROGRAMS\Ultimate Stunts"
   CreateShortCut "$SMPROGRAMS\Ultimate Stunts\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
   CreateShortCut "$SMPROGRAMS\Ultimate Stunts\Ultimate Stunts.lnk" "$INSTDIR\ustunts.bat" "" "$INSTDIR\ultimatestunts.ico" 0
+  CreateShortCut "$SMPROGRAMS\Ultimate Stunts\Track Editor.lnk" "$INSTDIR\ustuntstrackedit.exe" "" "$INSTDIR\ultimatestunts.ico" 0
   
 SectionEnd
 

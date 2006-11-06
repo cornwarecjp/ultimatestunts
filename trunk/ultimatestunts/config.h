@@ -152,6 +152,9 @@
 /* SDL Lib */
 #define HAVE_SDL 
 
+/* SDL_image Lib */
+#define HAVE_SDL_IMAGE 
+
 /* Define to 1 if you have the `setenv' function. */
 #define HAVE_SETENV 1
 
@@ -253,19 +256,22 @@
 #define PACKAGE_NAME "Ultimate Stunts"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "Ultimate Stunts 0.6.2"
+#define PACKAGE_STRING "Ultimate Stunts 0.6.3"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "ultimatestunts"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "0.6.2"
+#define PACKAGE_VERSION "0.6.3"
 
 /* Prefix dir */
 #define PREFIXDIR "/usr/local"
 
 /* Define if <inttypes.h> exists and defines unusable PRI* macros. */
 /* #undef PRI_MACROS_BROKEN */
+
+/* SDL_image header */
+#define SDL_IMAGE_HEADER 
 
 /* Define as the maximum value of type 'size_t', if the system doesn't define
    it. */
@@ -283,7 +289,7 @@
 #define STDC_HEADERS 1
 
 /* Version number of package */
-#define VERSION "0.6.2"
+#define VERSION "0.6.3"
 
 /* Define to 1 if the X Window System is missing or not being used. */
 /* #undef X_DISPLAY_MISSING */

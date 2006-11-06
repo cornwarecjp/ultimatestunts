@@ -130,8 +130,80 @@ bool CEditTrack::save(const CString &filename) const
 	}
 
 
-	//Write dummy route section
+	//Write route section
 	tfile.writel("BEGIN");
+
+	for(unsigned int r=0; r < m_Routes.size(); r++)
+	{
+		tfile.writel("");
+		tfile.writel(CString("#Route ") + r);
+		for(unsigned int i=0; i < m_Routes[r].size(); i++)
+		{
+			CCheckpoint cp = m_Routes[r][i];
+			bool isLast = (i == m_Routes[r].size()-1);
+
+			for(int h=0; h < m_H; h++)
+			{
+				const STile &t = m_Track[h + m_H * (cp.z+m_W*cp.x)];
+				if(t.m_Z == cp.y)
+				{
+					cp.y = h;
+					break;
+				}
+			}
+
+			CString line = CString(cp.x) + "," + cp.z + "," + cp.y + ":";
+
+			cp = m_Routes[r][i];
+			printf("%d, %d, %d -> %s\n", cp.x, cp.y, cp.z, line.c_str());
+
+			if(isLast)
+				line += " end";
+
+			tfile.writel(line);
+		}
+	}
+
+	/*
+	//Search for start/finish
+	for(int y=0; y<m_H; y++)
+		for(int z=0; z<m_W; z++)
+			for(int x=0; x<m_L; x++)
+			{
+				int n = y + m_H * (z+m_W*x);
+				const STile &t = m_Track[n];
+				CParamList pl =
+					m_DataManager->getObject(CDataObject::eTileModel, t.m_Model)->getParamList();
+
+				CString flags = pl.getValue("flags", "");
+				if(flags.inStr('s') >= 0)
+				{
+					//Start/finish
+					tfile.writel(CString(x)+","+z+","+y+":0.0");
+
+					//Tile after start/finish (not always correct)
+					int x2 = x, z2 = z;
+					switch(t.m_R % 4)
+					{
+					case 0: z2--; break;
+					case 1: x2--; break;
+					case 2: z2++; break;
+					case 3: x2++; break;
+					}
+
+					for(int y2=m_H-1; y2>=0; y2--)
+						if(m_Track[y2 + m_H * (z2+m_W*x2)].m_Model > 0)
+						{
+							tfile.writel(CString(x2)+","+z2+","+y2+":2.0");
+							break;
+						}
+
+					//Start/finish again
+					tfile.writel(CString(x)+","+z+","+y+":4.0");
+				}
+			}
+	*/
+
 	tfile.writel("END");
 	tfile.writel("");
 
@@ -248,7 +320,561 @@ bool CEditTrack::import(const CString &filename)
 				m_Track[offset+i].m_Z++;
 	}
 
+	printf("test\n");
+
+	//delete all existing routes
+	m_Routes.clear();
+
+	//Follow all the routes in the trk file
+	//First find the start tile and its orientation
+	for(unsigned int x=0; x<30; x++)
+	for(unsigned int z=0; z<30; z++)
+	for(unsigned int y=0; y<(unsigned int)m_H; y++)
+	{
+		STile &t = m_Track[y + m_H * (z+m_W*x)];
+		CDataObject *tmodel = m_DataManager->getObject(CDataObject::eTileModel, t.m_Model);
+		if(tmodel->getParamList().getValue("flags", "").inStr('s') >= 0)
+		{
+			//Found it: now follow the routes
+			CTrack::CCheckpoint start;
+			start.x = x; start.y = t.m_Z; start.z = z;
+
+			m_Routes.push_back(CTrack::CRoute());
+			followTRKRoutes(trk, start, t.m_R);
+
+			break;
+		}
+	}
+
 	return true;
+}
+
+void CEditTrack::followTRKRoutes(const CTRKFile &file, CTrack::CCheckpoint start, int dir)
+{
+	if(m_Routes.size() >= 30*30) return;
+
+	vector<CTrack::CCheckpoint> splitPoints;
+	vector<int> splitDirs;
+
+	while(true)
+	{
+		unsigned char item = file.m_Track[start.z][start.x].item;
+		int altdir = -1; //meaning: no split or join, no skip
+
+		switch(item)
+		{
+		case 0xfd:
+			trackRTKCorners(
+				item,
+				file.m_Track[start.z-1][start.x-1].item,
+				dir, start.y, altdir);
+			break;
+		case 0xfe:
+			trackRTKCorners(
+				item,
+				file.m_Track[start.z-1][start.x].item,
+				dir, start.y, altdir);
+			break;
+		case 0xff:
+			trackRTKCorners(
+				item,
+				file.m_Track[start.z][start.x-1].item,
+				dir, start.y, altdir);
+			break;
+		default:
+			trackRTKCorners(
+				file.m_Track[start.z][start.x].terrain,
+				item,
+				dir, start.y, altdir);
+		};
+
+		if(file.m_Track[start.z][start.x].terrain == 0x06)
+			start.y++;
+
+		//search for current position in existing routes
+		bool found = false;
+		for(unsigned int r=0; r < m_Routes.size(); r++)
+		for(unsigned int i=0; i < m_Routes[r].size(); i++)
+		{
+			if(r == m_Routes.size()-1 && i == m_Routes[r].size()-1) continue; //don't check this
+
+			if(m_Routes[r][i] == start)
+			{
+				found = true;
+				break;
+			}
+		}
+
+		if(found && item != 0x4a && item != 0x7d && item != 0x8a) //not a crosspoint
+		{
+			if(altdir == -2) //found a join
+			{
+				printf("Stopping route %d on a join\n", m_Routes.size()-1);
+				m_Routes.back().push_back(start);
+				break;
+			}
+			else
+			{
+				if(altdir != -3 && m_Routes.back().size() > 0)
+				{
+					//This is not a valid route, so undo it:
+					printf("Collision with other route: undo routing\n");
+					if(undoRoutingFromSplit(splitPoints))
+					{
+					printf("Continuing routing from last splits\n");
+						start = splitPoints.back();
+						dir = splitDirs.back();
+						splitPoints.resize(splitPoints.size()-1);
+						splitDirs.resize(splitDirs.size()-1);
+						printf("  %d splits remaining on this route\n", splitPoints.size());
+						continue;
+					}
+					else
+					{
+						break;
+					}
+				}
+			}
+		}
+
+		//Add tile to current route
+		printf("Following route %d: %d %d %d\n", m_Routes.size()-1, start.x, start.y, start.z);
+		if(altdir != -3 && //-3 means skip
+			( m_Routes.back().size()==0 || !(start == m_Routes.back().back()) ) //is different
+			)
+			m_Routes.back().push_back(start);
+
+		if(altdir >= 0) //found a split
+		{
+			printf("Splitting the route\n");
+			splitPoints.push_back(start);
+			splitDirs.push_back(altdir);
+		}
+
+		//move forward
+		switch(dir)
+		{
+		case 0:
+			start.z--; break;
+		case 1:
+			start.x--; break;
+		case 2:
+			start.z++; break;
+		case 3:
+			start.x++; break;
+		}
+
+		if(start.x<0 || start.z<0 || start.x>=30 || start.z>=30)
+		{
+			printf("Over the edge: undo routing\n");
+			//This is not a valid route, so undo it:
+			if(undoRoutingFromSplit(splitPoints))
+			{
+				printf("Continuing routing from last splits\n");
+				start = splitPoints.back();
+				dir = splitDirs.back();
+				splitPoints.resize(splitPoints.size()-1);
+				splitDirs.resize(splitDirs.size()-1);
+				continue;
+			}
+			else
+			{
+				break;
+			}
+		}
+
+		//Check for finish tiles
+		unsigned char newItem = file.m_Track[start.z][start.x].item;
+		if(newItem == 0x01 ||
+			newItem == 0x86 || newItem == 0x87 || newItem == 0x88 || newItem == 0x89 ||
+			newItem == 0x93 || newItem == 0x94 || newItem == 0x95 || newItem == 0x96 ||
+			newItem == 0xb3 || newItem == 0xb4 || newItem == 0xb5
+			)
+		{
+			if(file.m_Track[start.z][start.x].terrain==0x06) start.y++;
+			printf("Stopping route %d on finish %d %d %d\n", m_Routes.size()-1,
+				start.x, start.y, start.z);
+			m_Routes.back().push_back(start);
+			break;
+		}
+	}
+
+	//Process alternative routes
+	for(unsigned int i=0; i < splitPoints.size(); i++)
+	{
+		m_Routes.push_back(CTrack::CRoute());
+		followTRKRoutes(file, splitPoints[i], splitDirs[i]);
+	}
+}
+
+bool CEditTrack::undoRoutingFromSplit
+	(vector<CTrack::CCheckpoint> &splitpoints)
+{
+	if(m_Routes.size() < 2) return false;
+
+	if(splitpoints.size() > 0)
+	{
+		//Delete until splitpoint
+		while(true)
+		{
+			if(m_Routes.back().back() == splitpoints.back())
+				break; //this is the split point
+
+			//Otherwise this is not yet the splitpoint:
+			m_Routes.back().resize(m_Routes.back().size()-1);
+		}
+
+		//And continue from splitpoint
+		return true;
+	}
+
+	//Otherwise:
+
+	//Delete completely
+	m_Routes.resize(m_Routes.size()-1);
+
+	//And don't continue
+	return false;
+}
+
+void CEditTrack::trackRTKCorners(unsigned char terrain, unsigned char item, int &dir, int &height, int &altdir)
+{
+	//default:
+	height = 0;
+	altdir = -1;
+
+	//Corners:
+	switch(item)
+	{
+	//No road items:
+	case 0x00:	case 0x97:
+	case 0x98:	case 0x99:	case 0x9a:	case 0x9b:	case 0x9c:	case 0x9d:	case 0x9e:	case 0x9f:
+	case 0xa0:	case 0xa1:	case 0xa2:	case 0xa3:	case 0xa4:	case 0xa5:	case 0xa6:	case 0xa7:
+	case 0xa8:	case 0xa9:	case 0xaa:	case 0xab:	case 0xac:	case 0xad:	case 0xae:	case 0xaf:
+	case 0xb0:	case 0xb1:	case 0xb2:
+		altdir = -3;
+		break;
+
+	//Straight road items:
+	case 0x04:	case 0x0e:	case 0x18:	case 0x22:	case 0x28:	case 0x2a:	case 0x2c:	case 0x2e:
+	case 0x30:	case 0x31:	case 0x3a:	case 0x3b:	case 0x40:	case 0x42:	case 0x44:	case 0x46:
+	case 0x47:	case 0x53:	case 0x55:	case 0x61:	case 0x62:	case 0x63:	case 0x67:	case 0x6d:
+	case 0x6f:	case 0x71:	case 0x73:
+		if(dir == 1 || dir == 3)
+			altdir = -3;
+		break;
+
+	case 0x05:	case 0x0f:	case 0x19:	case 0x23:	case 0x29:	case 0x2b:	case 0x2d:	case 0x2f:
+	case 0x32:	case 0x33:	case 0x38:	case 0x39:	case 0x41:	case 0x43:	case 0x45:	case 0x48:
+	case 0x49:	case 0x54:	case 0x56:	case 0x5f:	case 0x60:	case 0x64:	case 0x68:	case 0x6e:
+	case 0x70:	case 0x72:	case 0x74:
+		if(dir == 0 || dir == 2)
+			altdir = -3;
+		break;
+
+	//Sharp corners:
+	case 0x06:
+	case 0x10:
+	case 0x1a:
+		dir = (dir==0)? 3 : 2;
+		break;
+	case 0x07:
+	case 0x11:
+	case 0x1b:
+		dir = (dir==0)? 1 : 2;
+		break;
+	case 0x08:
+	case 0x12:
+	case 0x1c:
+		dir = (dir==2)? 3 : 0;
+		break;
+	case 0x09:
+	case 0x13:
+	case 0x1d:
+		dir = (dir==2)? 1 : 0;
+		break;
+
+	//High-speed slaloms:
+	case 0x3c:
+		switch(terrain)
+		{
+		case 0xfd: if(dir==3){dir=0; altdir=-3;} break;
+		case 0xfe: if(dir==0){dir=3;} break;
+		case 0xff: if(dir==2){dir=1;} break;
+		default:   if(dir==1){dir=2; altdir=-3;} break;
+		};
+		break;
+	case 0x3d:
+		switch(terrain)
+		{
+		case 0xfd: if(dir==2){dir=1; altdir=-3;} break;
+		case 0xfe: if(dir==3){dir=0;} break;
+		case 0xff: if(dir==1){dir=2;} break;
+		default:   if(dir==0){dir=3; altdir=-3;} break;
+		};
+		break;
+	case 0x3e:
+		switch(terrain)
+		{
+		case 0xfd: if(dir==0){dir=1;} break;
+		case 0xfe: if(dir==1){dir=0; altdir=-3;} break;
+		case 0xff: if(dir==3){dir=2; altdir=-3;} break;
+		default:   if(dir==2){dir=3;} break;
+		};
+		break;
+	case 0x3f:
+		switch(terrain)
+		{
+		case 0xfd: if(dir==1){dir=0;} break;
+		case 0xfe: if(dir==2){dir=3; altdir=-3;} break;
+		case 0xff: if(dir==0){dir=1; altdir=-3;} break;
+		default:   if(dir==3){dir=2;} break;
+		};
+		break;
+
+	//wide corners
+	case 0x0a:
+	case 0x14:
+	case 0x1e:
+	case 0x34:
+	case 0x69:
+		if(terrain <= 0x12)
+		{
+			dir = (dir==0)? 3 : 2;
+			altdir = -3;
+		}
+		break;
+	case 0x0b:
+	case 0x15:
+	case 0x1f:
+	case 0x35:
+	case 0x6a:
+		if(terrain == 0xff)
+		{
+			dir = (dir==0)? 1 : 2;
+			altdir = -3;
+		}
+		break;
+	case 0x0c:
+	case 0x16:
+	case 0x20:
+	case 0x36:
+	case 0x6b:
+		if(terrain == 0xfe)
+		{
+			dir = (dir==2)? 3 : 0;
+			altdir = -3;
+		}
+		break;
+	case 0x0d:
+	case 0x17:
+	case 0x21:
+	case 0x37:
+	case 0x6c:
+		if(terrain == 0xfd)
+		{
+			dir = (dir==2)? 1 : 0;
+			altdir = -3;
+		}
+		break;
+
+	//Splits:
+	case 0x4b:
+	case 0x7e:
+	case 0x8b:
+		switch(dir)
+		{
+		case 0: altdir=1; break;
+		case 2: altdir=-2; break;
+		case 3: altdir=-2; dir=2; break;
+		};
+		break;
+	case 0x4c:
+	case 0x7f:
+	case 0x8c:
+		switch(dir)
+		{
+		case 1: altdir=2; break;
+		case 3: altdir=-2; break;
+		case 0: altdir=-2; dir=3; break;
+		};
+		break;
+	case 0x4d:
+	case 0x80:
+	case 0x8d:
+		switch(dir)
+		{
+		case 2: altdir=3; break;
+		case 0: altdir=-2; break;
+		case 1: altdir=-2; dir=0; break;
+		};
+		break;
+	case 0x4e:
+	case 0x81:
+	case 0x8e:
+		switch(dir)
+		{
+		case 3: altdir=0; break;
+		case 1: altdir=-2; break;
+		case 2: altdir=-2; dir=1; break;
+		};
+		break;
+	case 0x4f:
+	case 0x82:
+	case 0x8f:
+		switch(dir)
+		{
+		case 0: altdir=3; break;
+		case 1: altdir=-2; dir=2; break;
+		case 2: altdir=-2; break;
+		};
+		break;
+	case 0x50:
+	case 0x83:
+	case 0x90:
+		switch(dir)
+		{
+		case 1: altdir=0; break;
+		case 2: altdir=-2; dir=3; break;
+		case 3: altdir=-2; break;
+		};
+		break;
+	case 0x51:
+	case 0x84:
+	case 0x91:
+		switch(dir)
+		{
+		case 2: altdir=1; break;
+		case 3: altdir=-2; dir=0; break;
+		case 0: altdir=-2; break;
+		};
+		break;
+	case 0x52:
+	case 0x85:
+	case 0x92:
+		switch(dir)
+		{
+		case 3: altdir=2; break;
+		case 0: altdir=-2; dir=1; break;
+		case 1: altdir=-2; break;
+		};
+		break;
+
+	//Wide splits:
+	case 0x57:
+		if(terrain == 0xff)
+		switch(dir)
+		{
+		case 0: altdir=1; break;
+		case 2: altdir=-2; break;
+		case 3: altdir=-2; dir=2; break;
+		};
+		break;
+	case 0x58:
+		if(terrain <= 0x12)
+		switch(dir)
+		{
+		case 1: altdir=2; break;
+		case 3: altdir=-2; break;
+		case 0: altdir=-2; dir=3; break;
+		};
+		break;
+	case 0x59:
+		if(terrain == 0xfe)
+		switch(dir)
+		{
+		case 2: altdir=3; break;
+		case 0: altdir=-2; break;
+		case 1: altdir=-2; dir=0; break;
+		};
+		break;
+	case 0x5a:
+		if(terrain == 0xfd)
+		switch(dir)
+		{
+		case 3: altdir=0; break;
+		case 1: altdir=-2; break;
+		case 2: altdir=-2; dir=1; break;
+		};
+		break;
+	case 0x5b:
+		if(terrain <= 0x12)
+		switch(dir)
+		{
+		case 0: altdir=3; break;
+		case 1: altdir=-2; dir=2; break;
+		case 2: altdir=-2; break;
+		};
+		break;
+	case 0x5c:
+		if(terrain == 0xfe)
+		switch(dir)
+		{
+		case 1: altdir=0; break;
+		case 2: altdir=-2; dir=3; break;
+		case 3: altdir=-2; break;
+		};
+		break;
+	case 0x5d:
+		if(terrain == 0xfd)
+		switch(dir)
+		{
+		case 2: altdir=1; break;
+		case 3: altdir=-2; dir=0; break;
+		case 0: altdir=-2; break;
+		};
+		break;
+	case 0x5e:
+		if(terrain == 0xff)
+		switch(dir)
+		{
+		case 3: altdir=2; break;
+		case 0: altdir=-2; dir=1; break;
+		case 1: altdir=-2; break;
+		};
+		break;
+	};
+
+	//Bridges:
+	switch(item)
+	{
+	case 0x22:
+	case 0x23:
+	case 0x63:
+	case 0x64:
+	case 0x67:
+	case 0x68:
+	case 0x69:
+	case 0x6a:
+	case 0x6b:
+	case 0x6c:
+		height = 1;
+		break;
+
+	//Viaducts
+	case 0x65:
+		height = (dir==0 || dir==2);
+		break;
+	case 0x66:
+		height = (dir==1 || dir==3);
+		break;
+
+	//Start on hill
+	case 0x24:
+	case 0x25:
+	case 0x26:
+	case 0x27:
+	case 0x38:
+	case 0x39:
+	case 0x3a:
+	case 0x3b:
+	case 0x5f:
+	case 0x60:
+	case 0x61:
+	case 0x62:
+		height = (terrain==0x07 || terrain==0x08 || terrain==0x09 || terrain==0x0a);
+		break;
+	}
 }
 
 void CEditTrack::placeItem(unsigned int offset, const CString &item)

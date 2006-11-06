@@ -15,13 +15,16 @@
  *                                                                         *
  ***************************************************************************/
 
+#include <cstdio>
+
 #include "staticreflection.h"
 
 CStaticReflection::CStaticReflection(CDataManager *manager) : CReflection() , CTexture(manager)
 {
 }
 
-CStaticReflection::~CStaticReflection(){
+CStaticReflection::~CStaticReflection()
+{
 }
 
 bool CStaticReflection::load(const CString &filename, const CParamList &list)

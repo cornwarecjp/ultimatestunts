@@ -508,7 +508,18 @@ void CDynamicReflection::update(CRenderer *renderer, CCamera *cam, int side)
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
 	glBindTexture(GL_TEXTURE_2D, m_Texture);
+
+	//Fix for Intel i815 card: DON'T copy alpha values
+	//There should be no alpha values because these are
+	//all RGB textures and blending is disabled, but
+	//this card doesn't seem to care, so we need a
+	//workaround
+	glPixelTransferf(GL_ALPHA_BIAS, 1.0);
+
 	CopyToTexture(m_Size);
+
+	//Back to default value:
+	glPixelTransferf(GL_ALPHA_BIAS, 0.0);
 
 	glClearColor(oldClear[0],oldClear[1],oldClear[2],oldClear[3]);
 	if(zEnabled) glEnable(GL_DEPTH_TEST);

@@ -6,6 +6,9 @@
 #Graphics settings
 [graphics]
 
+#Show a preview of the car in the menu interface
+car_preview = true
+
 #Number of visible tiles
 visible_tiles = 7
 
@@ -21,12 +24,12 @@ texture_maxsize = 512
 background_size = 512
 
 #Shadow map texture size
-#value <= 8: no shadow (NYI!)
+#value <= 4: no shadow
 shadow_size = 256
 
 #Reflection map texture size
-#value <= 8: no reflection (NYI!)
-reflection_size = 64
+#value <= 4: no reflection (NYI, use reflectiondist = 0.0 instead!)
+reflection_size = 256
 
 #Smooth shadows are needed to make round objects look natural.
 #This option also applies to the smoothness fog effect.
@@ -55,8 +58,7 @@ zbuffer = true
 transparency = blend
 
 #Maximum distance for drawing reflection. Transparency must be enabled to get realistic reflection
-reflectiondist = 0.0
-#100.0
+reflectiondist = 100.0
 
 #Reflection update settings:
 #Do you want the reflections to be updated when the objects move?
@@ -86,6 +88,12 @@ movingobjectlod = -3
 #exp2           -> square exponential fog
 fogmode = linear
 
+#Lens flare options
+lensflare_enable = true
+lensflare_files = environment/lensflare/flare1.jpg,environment/lensflare/flare2.jpg,environment/lensflare/flare3.jpg,environment/lensflare/flare4.jpg,environment/lensflare/flare5.jpg,environment/lensflare/flare6.jpg
+lensflare_sizes = 0.1,0.2,0.1,0.1,0.1,0.1
+lensflare_distances = 1.0,0.8,0.6,0.4,0.2,0.1
+
 #Some options that might influence rendering speed:
 
 #Use a display list for the track
@@ -97,10 +105,25 @@ trackdisplaylist = false
 
 
 #Using the openGL compiled vertex array extension can
-#speed up #transformations of highly detailed models,
+#speed up transformations of highly detailed models,
 #so it should be enabled by default. You can disable it
 #if it gives compatibility problems for you.
 compiledvertexarray = true
+
+
+
+#Animation section
+[animation]
+
+#Global tile animation switch:
+enable = true
+
+#Tesselation level of water waves
+#higher numbers will give more polygons, at
+#the cost of rendering speed. Set to 1 for
+#minimum tesselation (e.g. when animation is
+#disabled globally).
+watertesselation = 10
 
 
 #Files section
@@ -132,9 +155,6 @@ subdriver = ThIsIsNoTrEcOgNiSeDaSaDeViCe
 #Volumes [0..255]
 musicvolume = 168
 soundvolume = 128
-
-#Music play list file
-playlist = music/playlist.txt
 
 [simulation]
 
@@ -180,7 +200,7 @@ horn = enter
 camerachange = ralt
 cameratoggle = /
 
-[input_player1]
+[input_player3]
 
 up = joy0up
 down = joy0down
@@ -205,7 +225,7 @@ camerachange = kpenter
 cameratoggle = kp.
 
 
-[input_player3]
+[input_player1]
 
 up = w
 down = s

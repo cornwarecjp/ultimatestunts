@@ -43,7 +43,7 @@ bool CPlayerControl::loadObjects()
 
 bool CPlayerControl::loadOneObject(CObjectChoice &oc, unsigned int ID)
 {
-	CParamList plist;
+	CParamList plist = oc.m_Parameters;
 	SParameter p;
 	p.name = "ID";
 	p.value = (int)ID;

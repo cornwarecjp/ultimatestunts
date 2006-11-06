@@ -63,7 +63,7 @@ int CMenu::getdy()
 	return dy_resizable;
 }
 
-int CMenu::onMouseMove(int x, int y)
+int CMenu::onMouseMove(int x, int y, unsigned int buttons)
 {
 	int numl = m_Lines.size();
 	int yrel = int(float(m_Y + m_H - y) / getdy());
@@ -83,7 +83,7 @@ int CMenu::onMouseMove(int x, int y)
 
 int CMenu::onMouseClick(int x, int y, unsigned int buttons)
 {
-	CMenu::onMouseMove(x, y);
+	CMenu::onMouseMove(x, y, buttons);
 
 	if(buttons == SDL_BUTTON_LEFT)
 		return WIDGET_QUIT;

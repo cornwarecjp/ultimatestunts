@@ -130,9 +130,11 @@ void CMovingObject::correctCollisions()
 		m_Position += dr;
 
 		//set the collision velocity to zero
+		m_Velocity -= col.vmean;
 		float radcomp = m_Velocity.dotProduct(col.nor);
 		if(radcomp < 0.0)
 			m_Velocity -= radcomp * col.nor;
+		m_Velocity += col.vmean;
 	}
 }
 
@@ -191,13 +193,25 @@ bool CMovingObject::setData(const CBinBuffer &b, unsigned int &pos)
 	Instead, we mix it with the current position.
 	This damps out "synchronisation errors"
 	*/
-	float dampFactor = v.abs2() / (10.0 + v.abs2()); //no damping at low speeds
-	float vdif2 = (v - m_Velocity).abs2();
-	dampFactor *= 10.0 / (10.0 + vdif2); //lower damping at higher differences in speed (e.g. collisions)
-	if(dampFactor > 0.95) dampFactor = 0.95; //not too much damping
-	//printf("%.3f\n", dampFactor);
 
-	m_Position = (1.0 - dampFactor) * p + dampFactor * m_Position; //some damping to correct for "synchronisation noise"
+	//no damping at low speeds
+	float dampFactor = v.abs2() / (10.0 + v.abs2());
+
+	//lower damping at higher differences in speed (e.g. collisions)
+	float vdif2 = (v - m_Velocity).abs2();
+	dampFactor *= 10.0 / (10.0 + vdif2);
+
+	if(dampFactor > 0.95) dampFactor = 0.95; //not too much damping
+	if(!(dampFactor >= 0.0 && dampFactor <= 1.0)) dampFactor = 0.0; //you never know
+	//printf("dampFactor = %s\n", CString(dampFactor).c_str());
+
+	 //some damping to correct for "synchronisation noise"
+	//We only do damping in the direction of v
+	CVector vdir = v.normal();
+	CVector p_vdir = p.component(vdir);
+	CVector p_ortho = p - p_vdir;
+	m_Position = p_ortho + (1.0 - dampFactor) * p_vdir + dampFactor * m_Position.component(vdir);
+
 	m_OrientationMatrix.setRotation(o);
 	m_Velocity = v;
 	m_AngularVelocity = w;

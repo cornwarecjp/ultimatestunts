@@ -166,8 +166,13 @@ vector<CString> getDirContents(const CString &dir, const CString &ext)
 			if(entry == NULL) break;
 
 			CString entname = entry->d_name;
+			CString ent_lcase = entname;
+			ent_lcase.toLower();
 			//file extension check:
-			if(ext == "" || (entname.inStr(ext) >= 0 && entname.inStr(ext) == (int)(entname.length() - ext.length()) ))
+			if(ext == "" ||
+				(ent_lcase.inStr(ext) >= 0 &&
+				ent_lcase.inStr(ext) == (int)(ent_lcase.length() - ext.length()) )
+				)
 				ret.push_back(entname);
 		}
 

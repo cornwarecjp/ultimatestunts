@@ -60,12 +60,12 @@ int CGUIPage::onKeyPress(int key)
 	return m_Widgets[m_Widgets.size()-1]->onKeyPress(key);
 }
 
-int CGUIPage::onMouseMove(int x, int y)
+int CGUIPage::onMouseMove(int x, int y, unsigned int buttons)
 {
 	if(m_Widgets.size() == 0) return 0;
 
 	if(m_Widgets[m_Widgets.size()-1]->isInWidget(x, y))
-		return m_Widgets[m_Widgets.size()-1]->onMouseMove(x, y);
+		return m_Widgets[m_Widgets.size()-1]->onMouseMove(x, y, buttons);
 
 	return 0;
 }
@@ -128,6 +128,18 @@ int CGUIPage::onRedraw()
 		m_Widgets[i]->onRedraw();
 
 	return 0;
+}
+
+int CGUIPage::onIdle()
+{
+	if(m_Widgets.size() == 0) return 0;
+
+	int ret = 0;
+
+	for(unsigned int i=0; i < m_Widgets.size(); i++)
+		ret |= m_Widgets[i]->onIdle();
+
+	return ret;
 }
 
 int CGUIPage::onResize(int x, int y, int w, int h)

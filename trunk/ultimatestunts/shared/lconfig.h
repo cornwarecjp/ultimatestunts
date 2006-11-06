@@ -38,7 +38,7 @@ private:
 
 public:
 
-	CStringArray CLCData::findAllFields(CString) const;
+	CStringArray findAllFields(CString) const;
 	CLCData();
 	virtual ~CLCData();
 	bool push(CString, CString, CString, CString);

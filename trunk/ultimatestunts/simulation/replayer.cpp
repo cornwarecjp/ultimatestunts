@@ -17,12 +17,14 @@
 
 #include "replayer.h"
 
-#define MAGICHEADER "Ultimate Stunts replay format 0.6.1"
+#define MAGICHEADER "Ultimate Stunts replay format 0.6.3"
 
 CReplayer::CReplayer(const CPlayerControl *pctrl)
 {
 	m_PlayerControl = pctrl;
-	m_PreviousTime = theWorld->m_LastTime - 1000.0; //to make sure that we read or write on the first update()
+
+	//to make sure that we read or write on the first update():
+	m_PreviousTime = theWorld->m_LastTime - 1000.0;
 }
 
 CReplayer::~CReplayer(){
@@ -107,12 +109,12 @@ void CReplayer::writeHeader()
 	writel(m_TrackFile);
 
 	//object choices
-	writel(m_ObjectList.size());
+	writel((unsigned int)(m_ObjectList.size()));
 	for(unsigned int i=0; i < m_ObjectList.size(); i++)
 	{
 		CBinBuffer b;
 		m_ObjectList[i].getData(b);
-		writel(b.size());
+		writel((unsigned int)(b.size()));
 		writeBytes(b);
 	}
 

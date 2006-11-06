@@ -267,8 +267,10 @@ void CSound::update()
 				unsigned int vol = 0;
 				
 				for(unsigned int w=0; w < 4; w++)
-					vol += int(63 * theCar->m_Wheel[i].m_SkidVolume);
-				
+				{
+					vol += int(63 * theCar->m_Wheel[w].m_SkidVolume);
+				}
+
 				chn->setVolume((vol * m_SoundVolume) >> 8);
 				break;
 			}

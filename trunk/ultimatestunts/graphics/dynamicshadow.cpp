@@ -120,7 +120,7 @@ void CDynamicShadow::disable()
 	*/
 }
 
-void CDynamicShadow::update(const SGraphicSettings *settings)
+void CDynamicShadow::update(const SGraphicSettings *settings, float t)
 {
 	CMovingObject *mo = theWorld->getMovingObject(m_MovObjID);
 	CCollisionModel *collmod = (CCollisionModel *)theWorld->getObject(CDataObject::eBound, mo->m_Bodies[0].m_Body);
@@ -171,7 +171,7 @@ void CDynamicShadow::update(const SGraphicSettings *settings)
 		glMultMatrixf(b.m_OrientationMatrix.gl_mtr());
 
 		//The model
-		m_GraphicWorld->getMovObjBound(b.m_Body)->draw(settings, NULL, lod, false);
+		m_GraphicWorld->getMovObjBound(b.m_Body)->draw(settings, NULL, lod, t, false);
 
 		glPopMatrix();
 	}

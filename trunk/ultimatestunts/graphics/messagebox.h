@@ -37,7 +37,7 @@ public:
 	virtual int onKeyPress(int key);
 	virtual int onRedraw();
 	virtual int onResize(int x, int y, int w, int h);
-	virtual int onMouseMove(int x, int y);
+	virtual int onMouseMove(int x, int y, unsigned int buttons);
 	virtual int onMouseClick(int x, int y, unsigned int buttons);
 
 	void setTitle(const CString &title);

@@ -21,6 +21,7 @@
 #include "gamewinsystem.h"
 #include "gui.h"
 #include "guipage.h"
+#include "carviewer.h"
 
 #include "uscore.h"
 #include "player.h"
@@ -70,6 +71,7 @@ protected:
 		CString name;
 		bool isHuman;
 		unsigned int carIndex; //refers to m_CarFile
+		CVector carColor;
 	};
 	vector<SPlayerDescr> m_PlayerDescr;
 	unsigned int m_SelectedPlayer; //for player menus
@@ -79,6 +81,7 @@ protected:
 	{
 		CString filename;
 		CString fullname;
+		CVector defaultColor;
 	};
 	vector<SCarFile> m_CarFiles;
 
@@ -112,6 +115,8 @@ protected:
 	CGUIPage m_CreditsPage;
 	CGUIPage m_LoadingPage;
 	CGUIPage m_HiscorePage;
+
+	CCarViewer *m_CarViewer;
 };
 
 #endif

@@ -95,6 +95,10 @@ public:
 	CVector m_Position;
 	CMatrix m_OrientationMatrix;
 
+	//static data:
+	float getInvMass() const
+		{return m_InvMass;}
+
 	//Timing of network communication
 	float m_LastUpdateTime, m_LastNetworkUpdateTime;
 

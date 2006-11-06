@@ -81,10 +81,49 @@ void CTERenderer::update()
 	drawTrack();
 
 	//Some line graphics
-	float kleur[] = {1.0, 1.0, 1.0, 1.0};
-	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, kleur);
+	float color[] = {1.0, 1.0, 1.0, 1.0};
+	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, color);
 	glDisable(GL_TEXTURE_2D);
 	glDisable(GL_LIGHTING);
+
+	//The routes
+	vector<CTrack::CRoute> &routes = m_Manager->getTrack()->m_Routes;
+	for(unsigned int r=0; r < routes.size(); r++)
+	{
+		if(routes[r].size() < 2) continue;
+
+		color[2] = 1.0 * !(r & 1);
+		color[0] = 1.0 * !(r & 2);
+		color[1] = 1.0 * !(r & 4);
+		glColor3f(color[0], color[1], color[2]);
+
+		glBegin(GL_LINES);
+
+		for(unsigned int i=1; i < routes[r].size(); i++)
+		{
+			CVector pos1(
+				TILESIZE*routes[r][i-1].x, VERTSIZE*routes[r][i-1].y, TILESIZE*routes[r][i-1].z);
+			CVector pos2(
+				TILESIZE*routes[r][i].x, VERTSIZE*routes[r][i].y, TILESIZE*routes[r][i].z);
+
+			pos1 += CVector(0.0, 0.5*VERTSIZE, 0.0); //in the middle of the tile
+			pos2 += CVector(0.0, 0.5*VERTSIZE, 0.0); //in the middle of the tile
+
+			glVertex3f(pos1.x, pos1.y, pos1.z);
+			glVertex3f(pos2.x, pos2.y, pos2.z);
+
+			glVertex3f(pos2.x-2.0, pos2.y, pos2.z);
+			glVertex3f(pos2.x+2.0, pos2.y, pos2.z);
+			glVertex3f(pos2.x, pos2.y-2.0, pos2.z);
+			glVertex3f(pos2.x, pos2.y+2.0, pos2.z);
+			glVertex3f(pos2.x, pos2.y, pos2.z-2.0);
+			glVertex3f(pos2.x, pos2.y, pos2.z+2.0);
+		}
+
+		glEnd();
+	}
+
+	glColor3f(1,1,1); //back to white
 
 	//The coordinate axes
 	glBegin(GL_LINES);
@@ -292,7 +331,7 @@ void CTERenderer::viewPilaar(int x, int y, int cur_zpos)
 						}
 
 						//draw the model
-						m_Manager->getTile(temp.m_Model)->draw(&m_Settings, NULL, lod);
+						m_Manager->getTile(temp.m_Model)->draw(&m_Settings, NULL, lod, 0.0);
 					}
 				}
 				break;
@@ -310,7 +349,7 @@ void CTERenderer::viewPilaar(int x, int y, int cur_zpos)
 			}
 
 			//tekenen
-			m_Manager->getTile(temp.m_Model)->draw(&m_Settings, NULL, lod);
+			m_Manager->getTile(temp.m_Model)->draw(&m_Settings, NULL, lod, 0.0);
 		}
 
 	glPopMatrix();

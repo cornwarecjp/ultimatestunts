@@ -20,10 +20,11 @@
 
 #include "winsystem.h"
 
-CRenderWidget::CRenderWidget(bool enableDepth, bool enableFog)
+CRenderWidget::CRenderWidget(bool enableDepth, bool enableFog, bool idleRedraw)
 {
 	m_EnableDepth = enableDepth;
 	m_EnableFog = enableFog;
+	m_IdleRedraw = idleRedraw;
 
 	m_Renderer = NULL;
 }
@@ -62,6 +63,14 @@ int CRenderWidget::onRedraw()
 	}
 
 	enter2DMode();
+
+	return 0;
+}
+
+int CRenderWidget::onIdle()
+{
+	if(m_IdleRedraw)
+		return WIDGET_REDRAW;
 
 	return 0;
 }

@@ -257,14 +257,38 @@ bool CWinSystem::runLoop(CWidget *widget)
 				//Keyboard
 				case SDL_KEYDOWN:
 					if(event.key.keysym.mod & KMOD_SHIFT) //shift key
-						{widgetmessages |= widget->onKeyPress(event.key.keysym.sym-32);}
+					{
+						if(event.key.keysym.sym >= 'a' && event.key.keysym.sym <= 'z') //make uppercase
+						{
+							widgetmessages |= widget->onKeyPress(event.key.keysym.sym-32);
+							break;
+						}
+
+						//The following assumes US-style keyboard layout
+						//TODO: find the correct way to do this
+						switch(event.key.keysym.sym)
+						{
+						case ';': widgetmessages |= widget->onKeyPress(':'); break;
+						case '-': widgetmessages |= widget->onKeyPress('_'); break;
+						case '=': widgetmessages |= widget->onKeyPress('+'); break;
+						case ',': widgetmessages |= widget->onKeyPress('<'); break;
+						case '.': widgetmessages |= widget->onKeyPress('>'); break;
+						case '/': widgetmessages |= widget->onKeyPress('?'); break;
+						case '9': widgetmessages |= widget->onKeyPress('('); break;
+						case '0': widgetmessages |= widget->onKeyPress(')'); break;
+						default:
+							widgetmessages |= widget->onKeyPress(event.key.keysym.sym);
+							break;
+						}
+					}
 					else
 						{widgetmessages |= widget->onKeyPress(event.key.keysym.sym);}
 					break;
 
 				//Mouse
 				case SDL_MOUSEMOTION:
-					widgetmessages |= widget->onMouseMove(event.motion.x, m_H - event.motion.y);
+					widgetmessages |= widget->onMouseMove(
+						event.motion.x, m_H - event.motion.y, event.motion.state);
 					break;
 
 				case SDL_MOUSEBUTTONUP:
@@ -273,6 +297,8 @@ bool CWinSystem::runLoop(CWidget *widget)
 
 			}
 		}
+
+		widgetmessages |= widget->onIdle();
 
 		if(widgetmessages & WIDGET_REDRAW)
 		{

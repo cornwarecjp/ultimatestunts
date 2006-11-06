@@ -9,14 +9,14 @@ width
 heigth
 
 BEGIN
-textures/grass2.rgb mu=1.0
-textures/road2.rgb mu=1.0
-textures/concrete1.rgb mu=0.8
-textures/startfinish.rgb mu=0.5
-textures/wall1.rgb
-textures/door1.rgb
-textures/window1.rgb
-textures/fence.rgba scale=16
+textures/grass2.jpg mu=1.0 roll=20
+textures/road2.jpg mu=1.0 roll=1
+textures/concrete1.jpg
+textures/startfinish.jpg
+textures/wall1.jpg
+textures/door1.jpg
+textures/window1.jpg
+textures/fence.png scale=16
 END
 
 BEGIN
@@ -1056,5 +1056,5 @@ BEGIN
 1,  1,0:598
 1,998,0:1196
 2,998,0:1198
-2,997,0:1200
+2,997,0:1200 end
 END

@@ -24,6 +24,7 @@ using namespace std;
 
 #include "simulation.h"
 #include "car.h"
+#include "track.h"
 
 #include "vector.h"
 
@@ -46,7 +47,17 @@ protected:
 	//Car rules:
 	void placeStart();
 	void updateCarRules(unsigned int movObjIndex, CCar *car);
+
+	struct SRoutePos
+	{
+		unsigned int route;
+		unsigned int tile;
+	};
+	float getSmallestDistance(const CCarRuleStatus &status, SRoutePos &from, SRoutePos to);
+	float getDirectDistance(SRoutePos from, SRoutePos to);
+	void reachRouteRecursive(CCarRuleStatus &status, unsigned int route, unsigned int tile);
 	void addPenaltytime(CCar *car, float t);
+
 	void finish(CCar *car);
 	bool checkFinished();
 

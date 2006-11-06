@@ -26,6 +26,7 @@ using namespace std;
 #include "widget.h"
 #include "guipage.h"
 #include "winsystem.h"
+#include "vector.h"
 
 /**
   *@author CJP
@@ -37,11 +38,12 @@ public:
 	CGUI(const CLConfig &conf, CWinSystem *winsys);
 	virtual ~CGUI();
 
-	virtual int onMouseMove(int x, int y);
+	virtual int onMouseMove(int x, int y, unsigned int buttons);
 	virtual int onMouseClick(int x, int y, unsigned int buttons);
 	virtual int onKeyPress(int key);
 	virtual int onResize(int x, int y, int w, int h);
 	virtual int onRedraw();
+	virtual int onIdle();
 
 	virtual void start(); //returns when an exit command is given
 
@@ -55,6 +57,7 @@ protected:
 	CString showInputBox(const CString &title, const CString &deflt="", bool *cancelled=NULL);
 	bool showYNMessageBox(const CString &title);
 	void showMessageBox(const CString &title);
+	CVector showColorSelect(const CString &title, CVector deflt, bool *cancelled=NULL);
 	
 private:
 	bool m_in2DMode;

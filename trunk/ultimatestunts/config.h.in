@@ -151,6 +151,9 @@
 /* SDL Lib */
 #undef HAVE_SDL
 
+/* SDL_image Lib */
+#undef HAVE_SDL_IMAGE
+
 /* Define to 1 if you have the `setenv' function. */
 #undef HAVE_SETENV
 
@@ -265,6 +268,9 @@
 
 /* Define if <inttypes.h> exists and defines unusable PRI* macros. */
 #undef PRI_MACROS_BROKEN
+
+/* SDL_image header */
+#undef SDL_IMAGE_HEADER
 
 /* Define as the maximum value of type 'size_t', if the system doesn't define
    it. */

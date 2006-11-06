@@ -39,9 +39,9 @@ int CLongMenu::onKeyPress(int key)
 	return CMenu::onKeyPress(key);
 }
 
-int CLongMenu::onMouseMove(int x, int y)
+int CLongMenu::onMouseMove(int x, int y, unsigned int buttons)
 {
-	int ret = CMenu::onMouseMove(x, y);
+	int ret = CMenu::onMouseMove(x, y, buttons);
 
 	if(m_Selected == 0 && m_ScreenTop > 0)
 		{m_Selected += m_ScreenTop - 1;} //scroll up

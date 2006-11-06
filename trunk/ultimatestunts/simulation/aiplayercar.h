@@ -19,6 +19,8 @@
 #define AIPLAYERCAR_H
 
 #include "player.h"
+#include "car.h"
+#include "carinput.h"
 
 /**
   *@author CJP
@@ -34,6 +36,14 @@ class CAIPlayerCar : public CPlayer
 
 	protected:
 		bool m_FirstTime;
+
+		CCar *m_Car;
+		CCarInput *m_Carin;
+
+		void setTargetOrientation(CVector nosedir);
+		void setTargetSpeed(float v, float &gas, float &brake);
+
+		CVector findNextTargetPos(bool far=false);
 };
 
 #endif

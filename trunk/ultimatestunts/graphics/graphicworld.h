@@ -77,6 +77,15 @@ public:
 
 	CBackground *m_Background;
 	CStaticReflection *m_EnvMap;
+
+	struct SLensFlare
+	{
+		CTexture *image;
+		float size;
+		float distance;
+	};
+	vector<SLensFlare> m_LensFlare;
+
 protected:
 	virtual CDataObject *createObject(const CString &filename, const CParamList &plist, CDataObject::eDataType type);
 

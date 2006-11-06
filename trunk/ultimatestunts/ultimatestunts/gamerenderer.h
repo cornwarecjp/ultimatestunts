@@ -43,6 +43,8 @@ public:
 
 	virtual void update();
 
+	CGraphicWorld *m_GraphicWorld; //TODO: place in CUSCore
+
 protected:
 	CGameCamera **m_Cameras;
 	unsigned int m_NumCameras;
@@ -60,6 +62,7 @@ protected:
 	void viewMovObj(unsigned int n);
 
 	void viewDashboard(unsigned int n);
+	void viewLensFlare();
 
 	void viewTrack_normal();
 	void viewTrack_displaylist();
@@ -70,9 +73,6 @@ protected:
 		int dx,  int dy,
 		int cur_zpos);
 	void viewPilaar(int x, int y, int cur_zpos);
-
-	const CWorld *m_World;
-	CGraphicWorld *m_GraphicWorld;
 
 	int m_UpdateBodyReflection;
 

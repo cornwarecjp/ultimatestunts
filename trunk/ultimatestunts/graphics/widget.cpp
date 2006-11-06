@@ -28,7 +28,7 @@ CWidget::CWidget()
 CWidget::~CWidget()
 {;}
 
-int CWidget::onMouseMove(int x, int y)
+int CWidget::onMouseMove(int x, int y, unsigned int buttons)
 {
 	return 0;
 }
@@ -72,6 +72,11 @@ int CWidget::onRedraw()
 	glEnd();
 	glColor3f(1,1,1);
 
+	return 0;
+}
+
+int CWidget::onIdle()
+{
 	return 0;
 }
 

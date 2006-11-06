@@ -48,7 +48,7 @@ protected:
 	bool m_FirstUpdate;
 
 	//Object <-> object collisions
-	CCollisionData ObjObjTest(const CBody &body1, const CBody &body2);
+	CCollisionData ObjObjTest(const CBody &body1, const CBody &body2, CVector vmean);
 
 	//Object <-> tile collisions
 	vector<CCollisionData> ObjTileTest(const CMovingObject *theObj, int xtile, int ztile, int htile);

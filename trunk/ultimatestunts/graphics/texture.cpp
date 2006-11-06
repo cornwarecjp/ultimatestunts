@@ -67,7 +67,7 @@ void CTexture::unload()
 
 RGBImageRec *CTexture::loadImage(CString filename)
 {
-	return RGBImageLoad(filename.c_str());
+	return GenericImageLoad(filename.c_str());
 }
 
 /*

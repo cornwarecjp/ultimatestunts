@@ -171,54 +171,16 @@ bool copyDataFile(const CString &source, const CString &destination, bool srcIsD
 
 vector<CString> getDataDirContents(const CString &dir, const CString &ext)
 {
-	vector<CString> ret;
+	vector<CString> ret, ret2;
 
 	CString fullname1 = theFileControl->filecontroldatadir + dir;
 	CString fullname2 = theFileControl->filecontrolsavedir + dir;
 
-	DIR *dir1 = opendir(fullname1.c_str());
-	DIR *dir2 = opendir(fullname2.c_str());
+	ret  = getDirContents(fullname1, ext);
+	ret2 = getDirContents(fullname2, ext);
 
-	if(dir1 != NULL)
-	{
-		while(true)
-		{
-			struct dirent *entry = readdir(dir1);
-			if(entry == NULL) break;
-
-			CString entname = entry->d_name;
-			//file extension check:
-			if(ext == "" || (entname.inStr(ext) >= 0 && entname.inStr(ext) == (int)(entname.length() - ext.length()) ))
-				ret.push_back(entname);
-		}
-
-		closedir(dir1);
-	}
-
-	if(dir2 != NULL)
-	{
-		while(true)
-		{
-			struct dirent *entry = readdir(dir2);
-			if(entry == NULL) break;
-
-			CString entname = entry->d_name;
-			//file extension check:
-			if(ext == "" || (entname.inStr(ext) >= 0 && entname.inStr(ext) == (int)(entname.length() - ext.length()) ))
-			{
-				//extra: make sure that we don't duplicate an existing entry
-				bool duplicate = false;
-				for(unsigned int i=0; i < ret.size(); i++)
-					if(ret[i] == entname)
-						{duplicate = true; break;}
-
-				if(!duplicate)
-					ret.push_back(entname);
-			}
-		}
-
-		closedir(dir2);
-	}
+	for(unsigned int i=0; i<ret2.size(); i++)
+		ret.push_back(ret2[i]);
 
 	return ret;
 }

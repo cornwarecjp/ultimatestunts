@@ -88,6 +88,18 @@ bool CTrack::load(const CString &filename, const CParamList &list)
 			}
 		}
 
+		pos = line.inStr("roll=");
+		if(pos  > 0) //roll is specified
+		{
+			if((unsigned int)pos < line.length()-5)
+			{
+				SParameter p;
+				p.name = "roll";
+				p.value = line.mid(pos+5, line.length()-pos-5);
+				plist.push_back(p);
+			}
+		}
+
 		pos = line.inStr(' ');
 		if(pos  > 0) //there is a space
 			line = line.mid(0, pos);
@@ -182,10 +194,6 @@ bool CTrack::load(const CString &filename, const CParamList &list)
 				t.m_R = line.toInt();
 				line = line.mid(line.inStr('/')+1, line.length());
 				t.m_Z = line.toInt();
-
-				//default values for rule data:
-				t.m_Time = 0.0;
-				t.m_RouteCounter = -1;
 			}
        }
 
@@ -201,9 +209,9 @@ bool CTrack::load(const CString &filename, const CParamList &list)
 
 	//Fourth: loading the possible routes
 	
-	unsigned int counter = 0; //counts how many tiles we've had
-	bool isAlternative = false; //Are we tracking an alternative (not fastest) route?
-	float timeOffset = 0.0; //this is added to tile times
+	//unsigned int counter = 0; //counts how many tiles we've had
+	//bool isAlternative = false; //Are we tracking an alternative (not fastest) route?
+	//float timeOffset = 0.0; //this is added to tile times
 
 	//Find "BEGIN"
 	if(!findBeginTag(tfile))
@@ -218,57 +226,130 @@ bool CTrack::load(const CString &filename, const CParamList &list)
 		if(line == "END") break;
 
 		int pos = line.inStr(':');
-		if(pos > 0)
+		if(pos > 0 && !(line.inStr('#') >=0 && pos > line.inStr('#')) )
 		{
 			CVector p = line.mid(0, pos).toVector();
-			float time = line.mid(pos+1).toFloat();
+			//float time = line.mid(pos+1).toFloat();
 
+			bool isEnd = line.mid(pos+1).toLower().inStr("end") >= 0;
+
+			/*
 			int x = (unsigned int)(p.x+0.1),
 				y = (unsigned int)(p.z+0.1),
 				z = (unsigned int)(p.y+0.1);
-			STile &t = m_Track[y + m_H * (z+m_W*x)];
+			*/
 
-			//This doesn't work with the track editor:
-			//bool isFinish = theWorld->getTileModel(t.m_Model)->m_isFinish;
-			
+			//New route tracker:
+			CCheckpoint newPoint;
+			newPoint.x = (int)(p.x+0.1);
+			newPoint.y = (int)(p.z+0.1);
+			newPoint.z = (int)(p.y+0.1);
+
+			STile &t = m_Track[newPoint.y + m_H * (newPoint.z+m_W*newPoint.x)];
 			CDataObject *tmodel = m_DataManager->getObject(CDataObject::eTileModel, t.m_Model);
-			bool isFinish = tmodel->getParamList().getValue("flags", "").inStr('f') >= 0;
 
-			if(isFinish && counter > 0) //The finish counter and time
-			{
-				m_FinishRouteCounter = counter;
-				m_FinishTime = timeOffset + time;
-			}
+			newPoint.y = t.m_Z; //height translation
+			printf("%.f, %.f, %.f -> %d %d %d\n", p.x, p.y, p.z, newPoint.x,newPoint.y,newPoint.z);
 
-			printf("%d,%d,%d: ", x,y,z);
-			if(t.m_RouteCounter < 0) //Normal new piece of track
+			//Check whether it already exists
+			int exroute=-1, extile=-1;
+			for(unsigned int r=0; r < m_Routes.size(); r++)
+				for(int i=m_Routes[r].size()-1; i >= 0 ; i--)
+					if(m_Routes[r][i] == newPoint)
+					{
+						exroute = (int)r; extile = i;
+						break;
+					}
+
+			if(isEnd)
 			{
-				t.m_RouteCounter = counter;
-				t.m_Time = timeOffset + time;
-				printf("time = %.2f Counter = %d\n", t.m_Time, t.m_RouteCounter);
-			}
-			else //we've already been here: start or end of alternative route, or a loop finish
-			{
-				if(!isFinish)
+				if(m_Routes.size() == 1) //End of basic route
 				{
-					if(isAlternative) //end of alternative route
+					bool isFinish = tmodel->getParamList().getValue("flags", "").inStr('f') >= 0;
+					if(!isFinish)
 					{
-						printf("End of alternative route\n");
-						isAlternative = false;
+						printf("Error: end of first route is not a finish tile\n");
+						return false;
 					}
-					else //start of alternative route
-					{
-						counter = t.m_RouteCounter;
-						timeOffset = t.m_Time;
-						isAlternative = true;
-						printf("New alternative counter=%d\n", counter);
-					}
-				}
-			}
 
-			counter++;
+					printf("End of first route\n");
+				}
+				else
+				{
+					if(exroute < 0)
+					{
+						printf("Error: end of new route is not on an existing route\n");
+						return false;
+					}
+
+					printf("End of new route\n");
+					m_Routes.back().finishRoute = exroute;
+					m_Routes.back().finishTile = extile;
+				}
+
+				//Normal adding to the latest route
+				m_Routes.back().push_back(newPoint);
+
+				//add new route
+				CRoute newr;
+				newr.finishRoute = newr.finishTile = newr.startRoute = newr.startTile = 0;
+				m_Routes.push_back(newr);
+			}
+			else
+			{
+				if(m_Routes.size() == 0) //start of first route
+				{
+					bool isStart = tmodel->getParamList().getValue("flags", "").inStr('s') >= 0;
+					if(!isStart)
+					{
+						printf("Error: start of first route is not a start tile\n");
+						return false;
+					}
+
+					//Add first route:
+					printf("Start of first route\n");
+					CRoute first;
+					first.finishRoute = first.finishTile = first.startRoute = first.startTile = 0;
+					m_Routes.push_back(first);
+				}
+
+				if(m_Routes.back().size() == 0 && m_Routes.size() > 1) //start of a new route
+				{
+					if(exroute < 0)
+					{
+						printf("Error: start of new route is not on an existing route\n");
+						return false;
+					}
+
+					printf("Start of new route\n");
+					m_Routes.back().startRoute = exroute;
+					m_Routes.back().startTile = extile;
+				}
+
+				//Normal adding to the latest route
+				m_Routes.back().push_back(newPoint);
+			}
 		}
 	}
+
+	//Remove last empty track
+	if(m_Routes.back().size() == 0)
+	{
+		m_Routes.resize(m_Routes.size()-1);
+	}
+
+	/*
+	printf("Resulting routes:\n");
+	for(unsigned int r=0; r<m_Routes.size(); r++)
+	{
+		printf("Route %d:\n", r);
+		for(unsigned int i=0; i<m_Routes[r].size(); i++)
+		{
+			CCheckpoint &cp = m_Routes[r][i];
+			printf("  %d, %d, %d\n", cp.x, cp.y, cp.z);
+		}
+	}
+	*/
 
 	printf("   Succesfully loaded the track\n");
 	return true;
@@ -278,6 +359,7 @@ void CTrack::unload()
 {
 	m_L = m_W = m_H = 0;
 	m_Track.clear();
+	m_Routes.clear();
 
 	CDataObject::unload();
 }

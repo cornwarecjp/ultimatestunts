@@ -9,35 +9,35 @@ width
 heigth
 
 BEGIN
-textures/grass2.rgb mu=0.8
-textures/water1.rgb scale=2
-textures/sand1.rgb mu=0.8
-textures/road2.rgb
-textures/concrete1.rgb
-textures/startfinish.rgb
-textures/cornerblocks.rgb
-textures/road1.rgb
-textures/bricks1.rgb scale=4
-textures/metal1.rgba scale=8 mu=0.75
-textures/splits1.rgb
-textures/wood.rgb mu=0.8
-textures/pine.rgba
-textures/metal.rgb mu=0.5
-textures/net.rgba scale=16
-textures/tenniscourt.rgb mu=0.9
-textures/wall1.rgb
-textures/farmdoor1.rgb
-textures/tulips.rgba
-textures/fence.rgba scale=16
-textures/window1.rgb
-textures/door1.rgb
-textures/stonebricks.rgb
-textures/bricks2.rgb scale=2
-textures/joes.rgb
-textures/dirtroad1.rgb mu=0.9
-textures/iceroad1.rgb mu=0.7
-textures/splits1-dirt.rgb mu=0.9
-textures/splits1-ice.rgb mu=0.7
+textures/grass2.jpg mu=0.8 roll=20
+textures/water1.jpg scale=2
+textures/sand1.jpg mu=0.8 roll=40
+textures/road2.jpg mu=1 roll=1
+textures/concrete1.jpg
+textures/startfinish.jpg
+textures/cornerblocks.jpg mu=0.9 roll=1
+textures/road1.jpg mu=1 roll=1
+textures/bricks1.jpg scale=4
+textures/metal1.png scale=8 mu=0.9 roll=1
+textures/splits1.jpg mu=1 roll=1
+textures/wood.jpg
+textures/pine.png
+textures/metal.jpg
+textures/net.png scale=16
+textures/tenniscourt.jpg mu=0.9 roll=20
+textures/wall1.jpg
+textures/farmdoor1.jpg
+textures/tulips.png
+textures/fence.png scale=16
+textures/window1.jpg
+textures/door1.jpg
+textures/stonebricks.jpg
+textures/bricks2.jpg scale=2
+textures/joes.jpg
+textures/dirtroad1.jpg mu=0.9 roll=10
+textures/iceroad1.jpg mu=0.7 roll=0.5
+textures/splits1-dirt.jpg mu=0.9 roll=10
+textures/splits1-ice.jpg mu=0.7 roll=0.5
 END
 
 BEGIN
@@ -109,20 +109,20 @@ tiles/corner.glb 0 25
 tiles/corner2x2_inleft.glb 0 25 6
 tiles/corner2x2_inright.glb 0 25 6
 tiles/corner2x2_mid.glb 0 25 6
-tiles/roadhoriz.glb 0 26
-tiles/roaddiag.glb 0 26
-tiles/corner.glb 0 26
-tiles/corner2x2_inleft.glb 0 26 6
-tiles/corner2x2_inright.glb 0 26 6
-tiles/corner2x2_mid.glb 0 26 6
+tiles/roadhoriz-reflect.glb 0 26
+tiles/roaddiag-reflect.glb 0 26
+tiles/corner-reflect.glb 0 26
+tiles/corner2x2_inleft-reflect.glb 0 26 6
+tiles/corner2x2_inright-reflect.glb 0 26 6
+tiles/corner2x2_mid-reflect.glb 0 26 6
 tiles/crossroad1.glb 0 25
-tiles/crossroad1.glb 0 26
+tiles/crossroad1-reflect.glb 0 26
 tiles/startfinish.glb:sf 0 25 4 5
-tiles/startfinish.glb:sf 0 26 4 5
+tiles/startfinish-reflect.glb:sf 0 26 4 5
 tiles/splitsleft1.glb 0 25 27
 tiles/splitsright1.glb 0 25 27
-tiles/splitsleft1.glb 0 26 28
-tiles/splitsright1.glb 0 26 28
+tiles/splitsleft1-reflect.glb 0 26 28
+tiles/splitsright1-reflect.glb 0 26 28
 tiles/crkbridgeleft1.glb 7 8 4
 tiles/crkbridgeleft2.glb 7 8 4
 tiles/crkbridgeleft3.glb 7 8 4

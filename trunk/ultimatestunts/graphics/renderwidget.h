@@ -23,15 +23,16 @@
 
 class CRenderWidget : public CWidget {
 public:
-	CRenderWidget(bool enableDepth=true, bool enableFog=true);
+	CRenderWidget(bool enableDepth=true, bool enableFog=true, bool idleRedraw=false);
 	virtual ~CRenderWidget();
 
 	virtual int onRedraw();
+	virtual int onIdle();
 
 	CRenderer *m_Renderer;
 
 protected:
-	bool m_EnableDepth, m_EnableFog;
+	bool m_EnableDepth, m_EnableFog, m_IdleRedraw;
 
 private:
 
