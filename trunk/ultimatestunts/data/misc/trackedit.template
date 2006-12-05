@@ -131,6 +131,7 @@ tiles/crkbridgeright1.glb 7 8 4
 tiles/crkbridgeright2.glb 7 8 4
 tiles/crkbridgeright3.glb 7 8 4
 tiles/crkbridgeright4.glb 7 8 4
+tiles/ship.glb 0
 END
 
 #tile_id/rotation/heigth

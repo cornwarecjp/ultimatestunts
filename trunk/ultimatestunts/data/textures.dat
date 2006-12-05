@@ -7,10 +7,11 @@ Syntax:
 
 
 BEGIN
-5
+6
 textures/grass2.jpg
-textures/iceroad1.jpg
-textures/splits1-ice.jpg
+textures/test.rgb
+textures/test.rgb
+textures/test.rgb
 textures/test.rgb
 textures/test.rgb
 END
