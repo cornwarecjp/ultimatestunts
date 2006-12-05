@@ -1,0 +1,272 @@
+<html>
+<body>
+<h1>Car tuning in Ultimate Stunts</h1>
+
+<h3>Inleiding</h3>
+Dit document beschrijft hoe de physics van auto's in Ultimate Stunts
+getuned kan worden. U wilt wellicht een auto tunen als u een nieuwe auto
+toevoegt, of bijvoorbeeld als u niet tevreden bent met de standaardinstellingen.
+<p>
+U moet zich ervan bewust zijn dat Ultimate Stunts niet gemaakt is voor fysisch
+realisme. Als u realisme wilt, kijk dan naar simulators als
+<a href="http://www.racer.nl">Racer</a>. Als u gewoon plezier wilt hebben
+met zelfgemaakte banen en een boel stunts, dan is Ultimate Stunts het spel
+voor u. Binnen de grenzen van de Ultimate Stunts physics engine kunt u
+auto's zo goed of zo slecht maken als u wilt. De gedachte achter
+Ultimate Stunt zelf is om gameplay top-prioriteit te geven. Auto's moeten
+in de eerste plaats leuk zijn om in te rijden. Realistische instellingen
+worden alleen gebruikt waar dat bijdraagt aan het rijplezier. Auto's die te
+moeilijk te besturen zijn zijn slecht, en te gemakkelijke auto's ook. Dit maakt
+car-tuning tot een soort kunst.
+
+<h3>Getting information from the real-world car</h3>
+In many cases, you want to make your Ultimate Stunts car similar to an existing car.
+For most cars, specifications can be found on the internet, and they can be realy
+useful. If possible, try to get as many of the following items as possible. Don't
+forget to look what kind of units are used: miles per hour is different from
+kilometres per hour.
+<ul>
+	<li>Top speed</li>
+	<li>Max. power, max. torque + their RPMs</li>
+	<li>Gear ratios + the final drive ratio (= differential ratio)</li>
+	<li>The traction type (front wheel / rear wheel / four wheel traction)</li>
+	<li>The mass of the car</li>
+	<li>The weight distribution between front wheels and rear wheels</li>
+	<li>The height of the center of gravity above the ground</li>
+</ul>
+Before using them in Ultimate Stunts, you should know that Ultimate Stunts internally
+uses SI units everywhere. So, you should convert everything to SI units. This table
+gives some multiplication factors:
+<table border=2>
+<tr><td>Non-SI units</td><td></td><td>SI units</td></tr>
+<tr><td>1 km/h</td><td>=</td><td>0.2778 m/s</td></tr>
+<tr><td>1 mile/h</td><td>=</td><td>0.4469 m/s</td></tr>
+<tr><td>1 hp</td><td>=</td><td>735.5 W</td></tr>
+<tr><td>1 kW</td><td>=</td><td>1000 W</td></tr>
+<tr><td>1 RPM</td><td>=</td><td>9.549 rad/s</td></tr>
+</table>
+
+<h3>The 3D models of the car</h3>
+The 3D models of the car body and wheels have some influence on the physics of the car,
+so if you want to make the car realistic, then the sizes of these models should be
+correct. Especially the radius of the wheels and the positions of the wheels are
+important. However, making the 3D models is not covered in this document: here, it is
+assumed that you already have the 3D models and a working .conf file for the car, and
+that you only make modifications to that .conf file.
+
+<h3>Important properties of a car</h3>
+In this section, some physics properties of cars are described.
+
+<h5>Top speed</h5>
+A car cannot accelerate forever. As the speed increases, the friction forces increase, and
+at a certain speed, the engine power is no longer sufficient to compensate the friction
+forces. At high velocities, aerodynamic drag is the main friction force, so the aerodynamic
+drag setting <b>cwa</b> is important. A higher <b>cwa</b> setting means a lower top speed.
+Also, engine power and torque are important. Increasing them increases the top speed. Also,
+don't forget the gear ratios. If you want high speed gear settings, then the highest gear
+should be such that the engine reaches maximum power at the top speed. Some formulas:
+<pre>
+#Symbols:
+v = speed of the car
+cwA = aerodynamic drag parameter
+Fdrag = aerodynamic drag force
+Pdrag = power required to compensate drag
+v_max = top speed
+P_max = maximum power of engine
+
+r = radius of wheel
+ratio_g = rear ratio of highest gear
+ratio_d = differential ratio (final drive ratio)
+w_wheel = rotation speed of wheel
+w_engine = rotation speed of engine
+w_engine_P_max = rotation speed of engine @ max power point
+
+#Calculating the top speed
+Fdrag = cwA * v^2
+Pdrag = Fdrag * v = cwA * v^3
+v_max = (P_max / cwA) ^ (1/3)
+cwA = Pdrag / v_max^3
+
+#Calculating optimal gear ratios
+w_wheel = v / r
+w_engine = w_wheel * ratio_g * ratio_d = v * ratio_g * ratio_d / r
+ratio_g * ratio_d = w_engine_P_max * r / v_max
+</pre>
+If you have a car with a certain amount of power, and you want it to have a certain
+top speed, then you can calculate the gear ratio / differential ratio combination,
+and then fine-tune the top speed by changing the <b>cwa</b> value.
+
+<h5>acceleration</h5>
+At velocities near the top speed, cars have a very low acceleration, but at low speeds,
+some cars can accelerate very fast. At low speeds, acceleration is not limited by
+aerodynamic drag. Instead, it is limited by the amount of force that can be supplied by
+the engine, though the tires, compared to the mass of the car. A higher car mass means a
+lower acceleration, and a higher traction force means a higher acceleration.
+<p>
+With the right first gear ratio, any engine can generate enormous traction forces. A higher
+gear ratio means a greater traction force. I can hear you asking: "why don't cars have
+infinitely high gear ratios, if that gives greater traction forces?". Besides the fact that
+there are technical limitations to gear box technology, there are several reasons for this.
+One reason is that with high gear ratios, an engine will very soon reach high RPMs, so that
+the traction force will start to drop, so you will only have an advantage of the gear for a
+very short time, and then you'll have to switch to a higher gear. Another reason is that
+tires can only apply a limited amount of force to the ground. If this force is exceeded, then
+the tires simply start skidding, instead of generating extra force. So, for fast acceleration
+it may be smart to match the first gear ratio with the maximum traction force that can be
+applied by the tires.
+<p>
+The maximum amount of force that can be applied by the tires depends heavily on the vertical
+force on the wheel (here called the normal force). In a neutral situation, this is simply a
+part of the weight of the car: the weight distribution of the car describes how much of the
+weight goes to the front wheels and how much to the rear wheels. This distribution can be
+changed in Ultimate Stunts by moving the <b>centerofmass</b> forward or backward. When
+accelerating, decellerating or turning, this distribution can be different from the neutral
+situation. When the car accelerates, it leans more on the rear wheels, so the normal force on
+the rear wheels will be higher than in the neutral distribution. As a higher normal force
+allows for a greater traction force, this effect is good for rear-driven cars and bad for
+dront-driven cars. Aerodynamic downforce from spoilers also has an influence on the normal
+force, but for acceleration this is less important because downforce is only generated at high
+speeds, and acceleration requires the highest forces at low speeds.
+<p>
+Because the high number of effects, no exact description will be given here, especially because
+the situation is different for front-wheel and for rear-wheel cars. An exact description is
+possible, but would take an extra page of formulas. Here is a description for the situation where
+the acceleration generates no weight transfer, and no aerodynamic downforce is present.
+<pre>
+#Symbols
+m = mass of the car
+g = gravitation constant (9.81 m/s^2)
+Fz = gravity force
+wfrac = fraction of weight on the traction wheels (= percentage / 100), 4WD: wfrac=1
+Fn = total normal force on the traction wheels
+mu = static friction coefficient of traction tires
+Ftr = maximum traction force
+a = acceleration
+a/g = acceleration in G-forces
+M_engine = maximum engine torque
+M_wheel = maximum total torque applied to traction wheels
+ratio_g = rear ratio of first gear
+ratio_d = differential ratio (final drive ratio)
+r = radius of the traction wheels
+
+#Neutral situation normal force
+Fz = m * g
+Fn = wfrac * Fz = wfrac * m * g
+
+#Traction force
+Ftr = mu * Fn
+
+#Acceleration
+a = Ftr / m = mu * Fn / m
+a/g = mu * Fn / Fz
+
+#Neutral situation acceleration
+a/g = mu * wfrac
+
+#Gear ratios
+M_wheel = ratio_g * ratio_d * M_engine
+Ftr = M_wheel / r = ratio_g * ratio_d * M_engine / r
+ratio_g * ratio_d = Ftr * r / M_engine = mu * Fn * r / M_engine
+</pre>
+
+<h5>braking</h5>
+The brakes add a torque to the wheels that will decrease the speed of the car.
+A brake torque that is too high is useless because the tires will simply start
+skidding instead of generating more braking force. As braking also takes place
+through the tires, braking foces are limited in the same way as traction forces.
+Modern cars usually have four-wheel braking, but the braking torque on the front
+wheels is usually a bit stronger, because braking generates some weight transfer
+from the rear wheels to the front wheels, so the front wheels can usually generate
+more braking force. Aerodynamic downforce can add more grip to tires in braking
+situations, especially at high speeds.
+<pre>
+#Symbols
+M_brake = maximum braking torque on a single wheel
+F_brake = maximum braking force on a single wheel
+Fn = normal force on a single wheel
+mu = static friction coefficient of the tire
+r = radius of the wheel
+
+F_brake = mu * Fn
+M_brake = r * F_brake = r * mu * Fn
+</pre>
+
+<h5>jumping</h5>
+Jumping is more important in Ultimate Stunts than in any other racing game. While jumping,
+there is not much that a car can do, however: it is simply not designed to be airborne.
+You cannot steer or brake, as the wheels don't make contact with the gound. There is only
+one thing left in the air: aerodynamics. In theory, you could make a car that starts flying
+at high speeds by giving it a negative downforce, but this is not really useful. A more
+useful purpose of downforce is to make sure that the nose goes down in a jump, so that you
+can see where you land with the in-car camera view. To do this, you need to increase the
+front downforce and/or decrease the rear downforce. Note that this will also affect the
+steering behavior.
+
+<h5>steering</h5>
+The way how a car behaves when taking corners is essential in how the car handling is
+experienced by a driver. Unfortunately, this is a complicated subject, and it is not described
+easily.
+<p>
+If a car needs to follow a circle-shaped path, then it needs to accelerate towards the center
+of that circle. This means that the tires need to generate sideward forces. Also, the car needs
+to rotate, so that it remains aligned with the circle. About the sideward forces, you already
+guessed it: they are limited by the tires, just like engine and brake forces. Also, if engine
+or brake forces are applied on a certain wheel, then there is less force "left" for steering.
+Weight transfer effects are extremely important in corners. Because of the steering, the outer
+wheels get more weight, and the inner wheels less. Also, if the rear wheels get more grip, then
+the car will understeer, and if the front wheels get more grip, the car will oversteer. The
+distribution of normal force between front and rear wheels depends on a lot of things, so it
+can also be tuned in a lot of ways. The weight transfer due to accelerating and braking can be
+increased / reduced by putting the center of gravity lower or higher, the neutral weight
+distribution can be changed by moving the center of gravity forward or backward, the distribution
+at high speeds can be changed with the front and rear downforce, and the grip can be tuned by
+changing the static friction coefficient of the front or rear tires a little bit.
+<p>
+Another thing that needs to be tuned is how fast the car rotates. When turning into a corner,
+the front wheels' rotation is changed, so that a sideward force is generated on the front wheels.
+As this force is initially not present at the rear wheels, the car starts rotating. How fast it
+starts rotating depends on many things, one of them being the moment of inertia of the car.
+The moment of inertia is to rotations what mass is to linear motions. If the moment of inertia is
+extremely high, then the car will respond very slowly to steering forces: it takes a long time
+before the car starts steering, and after the corner it takes a long time before the car drives
+in a straight line again. If the moment of inertia is low, then the car will respond very quickly
+to changes: small changes in steering, gas or braking will cause an overreaction in the orientation
+of the car.
+<p>
+The following formulas give some general information on how fast corners can be taken with a
+given tire quality.
+<pre>
+#Symbols
+R = radius of a corner
+v_max = maximum speed in this corner
+m = mass of the car
+g = gravitation constant (9.81 m/s^2)
+F = maximum total sideways force of the tires
+Fn = total normal force on the tires
+mu = static friction coefficient of the tires
+
+F = m * v_max^2 / R = mu * Fn = mu * m * g
+vmax = sqrt(R * mu * g)
+</pre>
+
+<h3>Physical phenomena</h3>
+aerodynamics
+tires
+weight transfer
+suspension
+oversteer/understeer
+
+<h3>Parameters of an Ultimate Stunts car</h3>
+
+
+<h3>General order of tuning a car</h3>
+
+engine power
+gear ratios
+max speed
+grip
+oversteer/understeer
+
+</body>
+</html>
+

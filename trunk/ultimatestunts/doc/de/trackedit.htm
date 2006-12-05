@@ -1,0 +1,99 @@
+<html>
+<head>
+<title>The Ultimate Stunts track editor</title>
+</head>
+<body>
+
+<h1>The Ultimate Stunts track editor (ustuntstrackedit)</h1>
+
+<h3>Introduction</h3>
+The Ultimate Stunts track editor will allow you to make new tracks and edit
+existing tracks. Currently (version 0.6.2) this is not yet possible, but it
+is possible to view existing tracks, and to import tracks from the original
+Stunts game.
+
+<h3>Usage</h3>
+Currently, the user interface is still quite simple. In the main window, there
+is a 3D view of the track, the name of the track on top of it, and a menu
+on the left. The menu can be used with the mouse. In the 3D view, the position
+of the camera can be changed with the arrow keys and the PgUp/PgDn keys.
+
+<h3>Importing Stunts tracks</h3>
+One of the options in the track editor menu is to import a track from the
+original "Stunts" (4D Sports Driving) game. The first thing you have to do is
+to enter the directory where the Stunts tracks are. This is an absolute path,
+so it is not relative to the Ultimate Stunts data dir. The "." directory is
+the directory from where the track editor is started. In the future, this
+question will probably be replaced with a more user-friendly directory
+browser. After you selected the right directory, you can just click on a
+track file, and it will be imported.
+
+
+<h3>Configuring the Stunts import function</h3>
+The Stunts import function can be configured by modifying a file that is
+located in the Ultimate Stunts data directory: misc/trackedit.conf. In this
+configuration file, almost the entire track import process can be customized
+with the variables in the [trkimport] section.
+This import process has the following steps:
+
+<h5>1: Load a template track</h5>
+Ultimate Stunts loads an ordinary Ultimate Stunts track file, which will act
+as a starting point for the converted track. This track will be modified later
+depending on the contents of the .trk file. The filename of this template
+track can be set with the templatefile variable, for instance:
+<pre>
+templatefile = misc/trackedit.template
+</pre>
+The template track has to be at least 30*30 tiles wide and long, and at least
+2 tiles high, or more, depending on the configuration of the rest of the
+import process. All the tiles and textures that will ever be used in the rest
+of the process should be present in the template track. The initial state of
+the tiles should be a flat, horizontal ground.
+
+<h5>2: Load the terrain</h5>
+next, the terrain and tile item bytes in the .trk file are processed. All the
+byte values here are hexadecimal values, but without the usual 0x prefix.
+What happens here, depends first on the terrain:
+
+<ul>
+	<li>If the terrain byte is 00 (flat ground), only the item byte is
+		processed</li>
+	<li>If the terrain byte is is between (including) 01 and 05
+		(water), then first a water tile is placed by processing the
+		terrain byte, and then the item byte is processed.</li>
+	<li>If the terrain byte is 06 (high flat ground), then the item
+		byte is processed, and afterwards the tile height is
+		increased.</li>
+	<li>If the terrain byte is between (including) 07 and 0a
+		(diagonal ground), then a tile is placed depending on the
+		combination of terrain and tile byte</li>
+	<li>For other tiles, only the terrain byte is processed (on other
+		tiles a Stunts track never has any item</li>
+</ul>
+When a terrain byte with the hexadecimal value <i>xy</i> is processed, it is
+done according to the variable <i>terrain_xy</i> in the conf file. When an
+item byte with the value <i>pq</i> is processed, it is done according to the
+variable <i>tile_pq</i>. Finally, for the terrain bytes between 07 and 0a,
+processing a combination of terrain byte <i>xy</i> and item byte <i>pq</i> is
+done according to the variable <i>terrain_xy_pq</i>.
+<p>
+All values of the variables  <i>terrain_xy</i>, <i>terrain_xy_pq</i> and
+<i>tile_pq</i> have the same format. This value contains zero or more units
+of the following form:
+<pre>
+x,y,z:tileID/rotation/altitude;
+</pre>
+Every of these units causes one tile to be changed. The values x,y,z tell which
+tile will be changed. tileID/rotation/altitude are the new settings of the
+tile, with the same meaning as the three values in the track file format.
+x,y and z are a position relative to the tile that is being processed. x and y
+are the relative horizontal position in the track, and z is the layer in the
+track (the vertical position). So, 0,0,0 is the lowest tile on the processed
+position, 0,0,1 is the second-layer tile on that position, etc.. Positions
+like 1,0,0 or 0,1,2 are outside the tile that is being processed, but changing
+them is allowed to support for large tiles.
+<p>
+The "large tile" item values fd, fe and ff are not processed.
+</body>
+</html>
+

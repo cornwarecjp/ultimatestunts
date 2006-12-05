@@ -1,0 +1,451 @@
+<html>
+<head>
+<title>Tutorial: Een Ultimate Stunts baan maken from scratch</title>
+</head>
+<body>
+
+<h1>Een Ultimate Stunts baan maken from scratch</h1>
+Een essentieel onderdeel van de Stunts gameplay was dat spelers de modelijkheid
+hadden om hun eigen banen te maken met de track editor. Aangezien Ultimate
+Stunts nog niet af is, is de Ultimate Stunts track editor nog niet beschikbaar.
+Voor de mensen die echt hun eigen tracks willen maken, is hier een tutorial
+over hoe dat gedaan kan worden zonder een track editor.
+<p>
+Baanbestanden in Ultimate Stunts zijn eenvoudige tekstbestanden met de extensie
+.track, en ze bevinden zich meestal in de tracks subdirectory van de
+databestanden. U kunt ze eenvoudigweg openen in uw favoriete text editor, ze
+wijzigen en opslaan. Merk op dat de banen die bij de standaard databestanden
+worden geleverd UNIX-stijl tekstbestanden zijn, wat betekent dat het openen in
+windows kladblok problemen kan geven. Windowsgebruikers kunnen ze openen met
+wordpad. Opslaan als DOS-stijl tekst is geen probleem aangezien Ultimate Stunts
+beide typen tekstbestanden kan lezen. Ik denk niet dat het Macintosh-stijl
+tekstbestanden kan lezen, dus Apple-gebruikers moeten opslaan in ofwel
+UNIX-stijl, ofwel in DOS-stijl.
+
+<h3>Bestandsformaat basics</h3>
+Een gedetailleerde beschrijving van het baan-bestandsformaat is 
+<a href="fileformats.htm#track">hier</a> beschikbaar. U zult al die
+informatie nodig hebben, dus ik raad het aan om het te lezen.
+
+<h1>Enkele tiles en textures die we zullen gebruiken</h1>
+Een baan is opgebouwd uit tiles, die textures gebruiken (afbeeldingen die
+op de 3D geometrie geplakt worden). We moeten definiëren welke tiles en
+textures gebruikt zullen worden. Er zijn enkele tiles en textures beschikbaar
+in de standaard databestanden, en we zullen er enkele van gebruiken. Als eerste
+de textures:
+<ul>
+	<li>textures/grass2.jpg: Gras texture</li>
+	<li>textures/road2.jpg: Weg texture</li>
+	<li>textures/concrete1.jpg: Beton texture</li>
+	<li>textures/startfinish.jpg: Start/Finish vlag</li>
+</ul>
+Vervolgens de tiles:
+<ul>
+	<li>tiles/empty.glb: Lege tile</li>
+	<li>tiles/hjoriz.glb: Horizontaal vlak zonder wegen</li>
+	<li>tiles/corner.glb: Scherpe bocht</li>
+	<li>tiles/roadhoriz.glb: Rechte weg</li>
+	<li>tiles/startfinish.glb: Start/Finish tile</li>
+</ul>
+
+<h1>Een eenvoudige baan</h1>
+Ik zal hier een eenvoudig baanbestand beschrijven. Het is beschikbaar in de
+databestanden als tracks/small.track. Laten we beginnen aan het begin van het
+bestand:
+<pre>
+TRACKFILE
+4
+5
+1
+</pre>
+De eerste vier regels van het bestand zouden er altijd zoals dit uit moeten
+zien. De TRACKFILE tekst wordt gebruikt om te controleren of het geladen bestand
+echt een Ultimate Stunts baan is. De volgende drie regels deiniëren de lengte,
+breedte en hoogte van de baan. Deze getallen moeten altijd consistent zijn
+met de rest van het bestand. Als u de afmetingen van de baan verandert, dan
+moet u ook deze getallen veranderen om overeen te komen met de nieuwe grootte.
+<pre>
+#properties:
+length
+width
+heigth
+</pre>
+Dit is slechts een commentaartekst, het wordt genegeerd door de baan-lader.
+Eigenlijk zou u hier alles kunnen schrijven, omdat de lader alles negeert
+totdat het BEGIN leest.
+<pre>
+BEGIN
+textures/grass2.jpg
+textures/road2.jpg
+textures/concrete1.jpg
+textures/startfinish.jpg
+END
+</pre>
+Deze sectie beschrijft welke textures geladen worden. Textures moeten altijd
+van een herkend formaat zijn (bijv. *.jpg of *.png), en hun afmetingen moeten
+altijd machten van 2 zijn (4, 8, 16 etc.). Textures met alphakanaal zijn ook
+ondersteund.
+<pre>
+BEGIN
+environment/sky3-night.rgb
+environment/spheremap.rgb
+-0.69,-0.7,-0.2
+0.2,0.2,0.5
+0.0,0.0,0.0
+END
+</pre>
+In deze sectie worden de omgevings-instellingen geladen. De regels (die
+altijd aanwezig zouden moeten zijn) hebben de volgende betekenissen:
+<ul>
+	<li>Lucht wolken afbeelding texture</li>
+	<li>Reflectie environment map texture</li>
+	<li>Richting waar het zonlicht vandaan komt</li>
+	<li>Kleur van het zonlicht (rood,groen,blauw componenten)</li>
+	<li>Kleur van de diffuse verlichting</li>
+</ul>
+<pre>
+BEGIN
+tiles/empty.glb 0
+tiles/horiz.glb 0
+tiles/corner.glb 0 1
+tiles/roadhoriz.glb 0 1
+tiles/startfinish.glb:sf 0 1 2 3
+END
+</pre>
+Hier worden de tiles geladen. Elke regel bestaat uit de tile-bestandsnaam en
+een lijst van nummers. Deze nummers verwijzen naar de textures die gebruikt
+moeten worden door de tile. 0 is de eerste texture, 1 de tweede etc..
+Bijvoorbeeld, de horizontaal-vlak tile tiles/horiz.glb wordt geladen met de
+gras-texture erop. De rechte-weg tile tiles/roadhoriz.glb wordt geladen met
+een gras- en een weg-texture. De volgorde waarin u verwijst naar de textures is
+belangrijk. Bijvoorbeeld, als u "tiles/roadhoriz.glb 0 1" verandert in
+"tiles/roadhoriz.glb 1 0", dan zou het een compleet geasfalteerde tile worden
+met een band van gras in het midden.
+<p>
+Wees er van bewust dat een geheugen-toegangsfout, of een segmentatiefout, kan
+optreden als u naar te weinig textures verwijst voor een tile. Het zelfde kan
+gebeuren als u naar een texture verwijst die niet bestaat, bijv. als u naar
+nr 10 verwijst terwijl u slechts 5 textures heeft geladen.
+<p>
+De laatste regel van deze sectie laat iets interessants zien: na de tile
+bestandsnaam segt het ":sf". Dit betekent dat deze tile gebruikt wordt als
+start/finish tile.
+<pre>
+#tile_id/rotation/heigth
+</pre>
+Nog een commentaartekst. Zoals u kunt zien, kunt u commentaar schrijven
+tussen END en BEGIN. Nu begint de belangrijkste sectie:
+<pre>
+BEGIN
+	1/0/0	1/0/0	1/0/0	1/0/0
+	1/0/0	2/3/0	2/2/0	1/0/0
+	1/0/0	3/0/0	4/0/0	1/0/0
+	1/0/0	2/0/0	2/1/0	1/0/0
+	1/0/0	1/0/0	1/0/0	1/0/0
+END
+</pre>
+Hier wordt de baan zelf beschreven. Elke tile-locatie wordt beschreven met een
+set van drie nummers. De hele sectie is een "top-view" van de kaart. Zoals u
+kunt zien, heeft deze baan 5 regels van 4 tiles, wat precies overeen komt
+met de grootte aan het begin van het bestand. Het is belangrijk dat er voor elke
+tile een witruimte is die uit precies één tab bestaat. Al het andere, zoals
+spaties, is verkeerd. U zou moeten controleren of uw tekst-editor tabs naar
+spaties converteert, en die feature uitschakelen indien mogelijk.
+<p>
+De eerste van de drie nummers verwijst naar één van de geladen tiles. 0
+verwijst naar de eerste tile, 1 naar de tweede enz.. Zoals u kunt zien hebben
+de tiles aan de randen allemaal een 1, wat een horizontaal vlak zonder weg is.
+In de middelste 3x2 tiles kunt u vier keer een 2 zien, wat een scherpe
+bocht-tile is, één keer een 3 (rechte weg) en een 4 (start/finish). Nu zou u
+een idee moeten hebben van hoe de baan er uit ziet.
+<p>
+Het tweede nummer definieert de rotatie. 0 is een niet-geroteerde tile, 1
+betekent een 90 graden rotatie tegen de klok in, 2 is een 180 graden rotatie,
+en 3 is een 270 graden rotatie tegen de klok in, wat uiteraard overeen komt
+met een 90 graden rotatie met de klok mee. Zoals u kunt zien hebben de rechte
+weg en de start/finish tile hun oorspronkelijke oriëntatie. De bocht tiles
+hebben uiteraard elk een andere oriëntatie. Soms is trial and error de snelste
+manier om de juiste oriëntatie te vinden.
+<p>
+Het derde nummer is de vertikale positie van de tile. Aangezien dit een
+eenvoudige baan is, heeft elke tile de zelfde hoogte.
+<pre>
+
+BEGIN
+2,2,0:
+2,1,0:
+1,1,0:
+1,2,0:
+1,3,0:
+2,3,0:
+2,2,0:
+END
+</pre>
+Deze sectie beschrijft de route die de auto's zouden moeten volgen. Als
+auto's deze route niet volgen krijgen ze penalty-tijd.
+<p>
+Elk item in deze sectie bestaat uit drie indices (gescheiden door komma's),
+een ":", en dan (optioneel) een tijd. De drie indices verwijzen naar een
+bepaalde tile, en de tijd werd in een oudere Ultimate Stunts versie ooit
+gebruikt om de penalty-tijd te berekenen. Zie ook de baan bestandsformaat
+definitie.
+
+<h1>De baan uitbreiden</h1>
+De beschreven baan is een volledig geldig baanbestand, maar het is behoorlijk
+simpel, dus laten we het een beetje uitbreiden. Laten we het om te beginnen
+een beetje langer maken, door de baan sectie te wijzigen:
+<pre>
+BEGIN
+	1/0/0	1/0/0	1/0/0	1/0/0
+	1/0/0	2/3/0	2/2/0	1/0/0
+	1/0/0	3/0/0	3/0/0	1/0/0
+	1/0/0	3/0/0	3/0/0	1/0/0
+	1/0/0	3/0/0	3/0/0	1/0/0
+	1/0/0	3/0/0	3/0/0	1/0/0
+	1/0/0	3/0/0	3/0/0	1/0/0
+	1/0/0	3/0/0	4/0/0	1/0/0
+	1/0/0	2/0/0	2/1/0	1/0/0
+	1/0/0	1/0/0	1/0/0	1/0/0
+END
+</pre>
+Nu moet u ook de getallen aan het begin van het bestand veranderen in:
+<pre>
+TRACKFILE
+4
+10
+1
+</pre>
+Dit voegt enkele rechte weg tiles toe. Dat zou niet te moeilijk moeten
+zijn om te begrijpen. Nu gaan we een niveau hoger werken:
+
+<h3>Hoogteverschillen maken</h3>
+we gaan een heuvel maken. Om dat te doen hebben we wat nieuwe tile-types nodig
+voor de hellingen. Verander de tile sectie in dit:
+<pre>
+BEGIN
+tiles/empty.glb 0
+tiles/horiz.glb 0
+tiles/corner.glb 0 1
+tiles/roadhoriz.glb 0 1
+tiles/startfinish.glb:sf 0 1 2 3
+tiles/diag2.glb 0
+tiles/roaddiag.glb 0 1
+END
+</pre>
+diag2.glb is een helling zonder weg, en roaddiag.glb is een helling met een weg
+erop. Nu veranderen we de baan-sectie in:
+<pre>
+BEGIN
+	1/0/0	1/0/0	1/0/0	1/0/0
+	1/0/0	2/3/0	2/2/0	1/0/0
+	1/0/0	3/0/0	3/0/0	1/0/0
+	5/2/0	6/2/0	6/2/0	5/2/0
+	1/0/1	3/0/1	3/0/1	1/0/1
+	5/0/0	6/0/0	6/0/0	5/0/0
+	1/0/0	3/0/0	3/0/0	1/0/0
+	1/0/0	3/0/0	4/0/0	1/0/0
+	1/0/0	2/0/0	2/1/0	1/0/0
+	1/0/0	1/0/0	1/0/0	1/0/0
+END
+</pre>
+Dit heeft een boel veranderingen vergeleken met het vorige voorbeeld, dus ik
+zal het hier proberen uit te leggen. Als eerste de tile ID nummers. De nieuwe
+nummers 5 en 6 verwijzen naar de nieuwe tiles diag2.glb en roaddiag.glb. U
+ziet dat ik de enen heb vervangen door vijven en de drieën door zessen om de
+hellingen te krijgen. Vervolgens het rotatienummer. De "zuid"-helling heeft
+rotatie 0 omdat de helling-tiles toevallig de juiste oriëntatie hebben voor
+die helling. De "noord"-helling heeft exact de tegenovergestelde oriëntatie, en
+dus wordt de 180 graden oriëntatie gebruikt.
+<p>
+Tot slot zou ik het hoogte-getal willen uitleggen. Alhoewel de hellingen
+hoger liggen dan de grond hebben ze nog steeds een hoogte-getal 0. Dat is zo
+omdat hoogte 0 betekent dat de tile geometrie tussen 0 en 18 meter boven de
+grond is, hoogte 1 betekent tussen de 18 en 36 meter, enzovoort. De helling
+is in het bereik 0..18 meter, dus het hoogtegetal is 0. Het hoogtegetal
+verandert <i>wel</i> voor de tiles in het midden van de heuvel. Aangezien het
+grondniveau van deze tiles op de bodem van de tile ligt, moet het 1 tile eenheid
+(18 meter) opgehoogd worden om overeen te komen met de bovenkant van de
+hellingen. Probeer het op 0 in te stellen als u mij niet begrijpt. U zult zien
+wat er gebeurt.
+
+<h1>Meerdere lagen</h1>
+Tot nu toe is alles vrij duidelijk. Maar wat als je meerdere tiles bovenop
+elkaar wilt plaatsen? U zult dat vaak willen doen in Ultimate Stunts, omdat
+tiles een hoogtebeperking hebben. Ook zal dit u de flexibiliteit geven om
+bruggen boven elkaar te bouwen, en om tunnels onder andere wegen te bouwen.
+De mogelijkheid om tiles boven elkaar te bouwen is één van de voordelen van
+Ultimate Stunts ten opzichte van het originele Stunts-spel.
+<p>
+Dus, hoe wordt dit gedaan? Het basis-idee is om meer dan één track-sectie te
+definiëren. Dit is een voorbeeld:
+<pre>
+TRACKFILE
+4
+10
+2
+
+#properties:
+length
+width
+heigth
+
+BEGIN
+textures/grass2.jpg
+textures/road2.jpg
+textures/concrete1.jpg
+textures/startfinish.jpg
+END
+
+BEGIN
+environment/sky3-night.rgb
+environment/spheremap.rgb
+-0.69,-0.7,-0.2
+0.2,0.2,0.5
+0.0,0.0,0.0
+END
+
+BEGIN
+tiles/empty.glb 0
+tiles/horiz.glb 0
+tiles/corner.glb 0 1
+tiles/roadhoriz.glb 0 1
+tiles/startfinish.glb:sf 0 1 2 3
+END
+
+#tile_id/rotation/heigth
+
+BEGIN
+	1/0/0	1/0/0	1/0/0	1/0/0
+	1/0/0	2/3/0	2/2/0	1/0/0
+	1/0/0	3/0/0	3/0/0	1/0/0
+	1/0/0	3/0/0	3/0/0	1/0/0
+	1/0/0	3/0/0	3/0/0	1/0/0
+	1/0/0	3/0/0	3/0/0	1/0/0
+	1/0/0	3/0/0	3/0/0	1/0/0
+	1/0/0	3/0/0	4/0/0	1/0/0
+	1/0/0	2/0/0	2/1/0	1/0/0
+	1/0/0	1/0/0	1/0/0	1/0/0
+END
+
+BEGIN
+	0/0/10	0/0/10	0/0/10	0/0/10
+	0/0/10	0/0/10	0/0/10	0/0/10
+	0/0/10	0/0/10	0/0/10	0/0/10
+	0/0/10	0/0/10	0/0/10	0/0/10
+	0/0/10	0/0/10	0/0/10	0/0/10
+	0/0/10	0/0/10	0/0/10	0/0/10
+	0/0/10	0/0/10	0/0/10	0/0/10
+	0/0/10	0/0/10	0/0/10	0/0/10
+	0/0/10	0/0/10	0/0/10	0/0/10
+	0/0/10	0/0/10	0/0/10	0/0/10
+END
+</pre>
+Om te beginnen, bekijk eens het hoogte-nummer aan het begin van het bestand.
+Het is nu 2, omdat we 2 lagen hebben. In uw eigen banen kunt u elk willekeurig
+aantal lagen gebruiken, zolang het overeen komt met het getal aan het begin
+van het bestand.
+<p>
+Zoals u kunt zien heb ik de tweede laag gevuld met lege tiles (0, verwijzend
+naar tiles/empty.glb). Als u werkt met meerdere lagen, zult u de lege tile
+vaak gebruiken, omdat u de extra lagen alleen nodig heeft op bepaalde plaatsen.
+Recente Ultimate Stunts versies hebben een optimalisatie die het renderen stopt
+zodra een tile ID 0 wordt gevonden. Dit betekent dat de baan-maker moet zorgen
+voor twee dingen:
+<ul>
+	<li>Tile ID 0 (de eerste tile) moet <u>altijd</u> de lege tile zijn</li>
+	<li>Als niet alle lagen gebruikt worden op een bepaalde plaats, dan
+		zouden alleen de <u>laagste</u> lagen gebruikt moeten worden,
+		en de hoogste lagen zouden de lege tile moeten bevatten.</li>
+</ul>
+Ultimate Stunts neemt aan dat de eerste laag de laagste tiles bevat, de
+tweede laag de tiles die daarboven geplaatst worden, enz.. Dus het
+hoogtegetal van een tile in de tweede laag moet altijd groter of gelijk zijn
+aan het hoogtenummer van de zelfde plek in de eerste laag. Ultimate Stunts
+controleert dit nog niet, dus u zou (rendering) fouten kunnen krijgen als u
+deze regel niet volgt.
+<p>
+We zullen deze kennis gebruiken om een tunnel te bouwen. Maar voordat we dat
+kunnen doen, moeten we een texture voor de muren van de tunnel, en de tunnel
+tiles zelf, laden:
+<pre>
+BEGIN
+textures/grass2.jpg
+textures/road2.jpg
+textures/concrete1.jpg
+textures/startfinish.jpg
+textures/bricks2.jpg
+textures/road1.jpg
+END
+
+BEGIN
+environment/sky3-night.rgb
+environment/spheremap.rgb
+-0.69,-0.7,-0.2
+0.2,0.2,0.5
+0.0,0.0,0.0
+END
+
+BEGIN
+tiles/empty.glb 0
+tiles/horiz.glb 0
+tiles/corner.glb 0 1
+tiles/roadhoriz.glb 0 1
+tiles/startfinish.glb:sf 0 1 2 3
+tiles/tunnelin1.glb 0 5 4 2
+tiles/tunnelhoriz.glb 5 4 2
+tiles/diag2.glb 0
+END
+</pre>
+We hebben een extra texture voor de muren geladen (bricks2.jpg), en één voor
+de weg in de tunnel (road1.jpg), die een klein beetje verschilt van de
+texture die buiten de tunnel gebruikt wordt. De nieuwe tiles zijn tunnelin1.glb,
+wat de tunnelingang is, tunnelhoriz.glb, wat een normale rechte tunnel-tile is,
+en diag2.glb, die we al kennen. Nu kunnen we de eerste laag definiëren:
+<pre>
+BEGIN
+	1/0/0	1/0/0	1/0/0	1/0/0
+	1/0/0	2/3/0	2/2/0	1/0/0
+	1/0/0	3/0/0	3/0/0	1/0/0
+	7/2/0	5/2/0	5/2/0	7/2/0
+	1/0/1	6/0/0	6/0/0	1/0/1
+	7/0/0	5/0/0	5/0/0	7/0/0
+	1/0/0	3/0/0	3/0/0	1/0/0
+	1/0/0	3/0/0	4/0/0	1/0/0
+	1/0/0	2/0/0	2/1/0	1/0/0
+	1/0/0	1/0/0	1/0/0	1/0/0
+END
+</pre>
+We hebben twee hellingen gemaakt met tunnelingangen, en de tunnel aan de
+binnenkant. We hebben ook de horizontale grond bovenop de heuvel toegevoegd,
+aan de linker- en rechterkant. Nu kunt u zien waarom we twee lagen nodig hebben:
+we willen ook gras boven de tunnels. Dat wordt gedaan in de tweede laag:
+<pre>
+BEGIN
+	0/0/10	0/0/10	0/0/10	0/0/10
+	0/0/10	0/0/10	0/0/10	0/0/10
+	0/0/10	0/0/10	0/0/10	0/0/10
+	0/0/10	0/0/10	0/0/10	0/0/10
+	0/0/10	1/0/1	1/0/1	0/0/10
+	0/0/10	0/0/10	0/0/10	0/0/10
+	0/0/10	0/0/10	0/0/10	0/0/10
+	0/0/10	0/0/10	0/0/10	0/0/10
+	0/0/10	0/0/10	0/0/10	0/0/10
+	0/0/10	0/0/10	0/0/10	0/0/10
+END
+</pre>
+Dat is de truc! Nu kunt u viaducten maken, loopings, en alle andere soorten
+dingen die meerdere lagen nodig hebben. Het enige wat u nu uit moet vinden is
+wat voor soorten tiles beschikbaar zijn. Het zou kunnen helpen om in test.track
+te kijken. Test.track wordt gebruikt als een "test-locatie" voor nieuwe tiles,
+dus de meeste tiles worden gebruikt in die baan.
+
+<h1>De baanroute</h1>
+Ik zou graag willen uitleggen hoe het penaltytijd-systeem werkt, maar helaas
+is dit vrij gecompliceerd, en het wordt waarschijnlijk veranderd in de
+toekomst. Dus heb ik besloten dat het te veel tijd zou vragen. Misschien kunt
+u de baan-bestandsformaat definitie lezen, en een beetje experimenteren. Als
+u Ultimate Stunts niet in fullscreen modus draait, kunt u in de console
+berichten lezen over de regel-status.
+</body>
+</html>
+

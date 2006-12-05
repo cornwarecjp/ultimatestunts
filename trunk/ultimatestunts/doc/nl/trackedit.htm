@@ -1,0 +1,101 @@
+<html>
+<head>
+<title>De Ultimate Stunts track editor</title>
+</head>
+<body>
+
+<h1>De Ultimate Stunts track editor (ustuntstrackedit)</h1>
+
+<h3>Inleiding</h3>
+De Ultimate Stunts track editor zal u in staat stellen om nieuwe banen te maken
+en bestaande banen te bewerken. Op dit moment (versie 0.6.3) is dit nog niet
+mogelijk, maar het is mogelijk om bestaande banen te bekijken, en om banen te
+importeren vanuit het originele spel Stunts.
+
+<h3>Gebruik</h3>
+Op dit moment is de gebruikersinterface nog vrij eenvoudig. In het hoofdvenster
+is er een 3D view van de baan, de naam van de baan erboven, en een menu aan
+de linkerkant. Het menu kan gebruikt worden met de muis. In de 3D view kan de
+positie van de camera veranderd worden met de pijltjestoetsen en de
+PgUp/PgDn toetsen.
+
+<h3>Stunts banen importeren</h3>
+Één van de opties in het track editor menu is om banen te importeren vanuit
+het originele "Stunts" (4D Sports Driving) spel. Het eerste dat u moet doen is
+de directory opgeven waar de Stunts banen zich bevinden. Dit is een absoluut
+pad, dus het is niet relatief ten opzichte van de Ultimate Stunts datadir.
+De "." directory is de directory vanwaaruit de track editor gestart is. In de
+toekomst zal deze vraag waarschijnlijk vervangen worden door een
+gebruikersvriendelijkere directory browser. Nadat u de juiste directory
+geselecteerd heeft kunt u op een baanbestand klikken, zodat het geïmporteerd
+wordt.
+
+<h3>Configureren van de Stunts importeer functie</h3>
+De Stunts import functie kan geconfigureerd worden door een bestand te bewerken
+dat zich in de Ultimate Stunts data directory bevindt: misc/trackedit.conf.
+In dit configuratiebestand kan bijna het hele baan-importeer proces aangepast
+worden met de variabelen in de [trkimport] sectie. Dit importeerproces heeft
+de volgende stappen:
+
+<h5>1: Laad een template baan</h5>
+Ultimate Stunts laadt een normaal Ultimate Stunts baanbestand, dat zal dienen
+als uitgangspunt voor de geconverteerde baan. Deze baan zal later bewerkt
+worden, afhankelijk van de inhoud van het .trk bestand. De bestandsnaam van
+deze templatebaan kan ingesteld worden met de templatefile variabele,
+bijvoorbeeld:
+<pre>
+templatefile = misc/trackedit.template
+</pre>
+De template baan moet minimaal 30*30 tiles breed en lang zijn, en minimaal
+2 tiles hoog, of meer, afhankelijk van de configuratie van de rest van
+het importeerproces. Alle tiles en textures die ooit gebruikt zullen worden in
+de rest van het proces moeten aanwezig zijn in de template baan. De
+begintoestand van de tiles moet een vlakke, horizontale grond zijn.
+
+<h5>2: Laad het terrein</h5>
+Vervolgens worden de terrein en tile item bytes in het .trk bestand verwerkt.
+Alle bytewaarden zijn hier hexadecimale waarden, maar zonder de gebruikelijke
+0x prefix. Wat hier gebeurt hangt in de eerste plaats af van het terrein:
+
+<ul>
+	<li>Als de terrein byte 00 is (vlakke grond), wordt alleen de item byte
+		verwerkt</li>
+	<li>Als de terrein byte tussen (inclusief) 01 en 05 zit (water), dan
+		wordt eerst een water tile geplaatst door de terrein byte
+		te verwerken, en dan wordt de item byte verwerkt.</li>
+	<li>Als de terrein byte 06 is (hoge vlakke grond), dan wordt de item
+		byte verwerkt, en daarna wordt de tile hoogte vergroot.</li>
+	<li>Als de terrein byte tussen (inclusief) 07 en 0a zit (diagonale
+		grond), dan wordt een tile geplaatst afhankelijk van de
+		combinatie van terrein en tile bytes.</li>
+	<li>Voor andere tiles wordt alleen de terrein byte verwerkt (op
+		andere tiles heeft een Stunts baan nooit een item)</li>
+</ul>
+Als een terrein byte met hexadecimale waarde <i>xy</i> wordt verwerkt, dan
+wordt dat gedaan volgens de variabele <i>terrain_xy</i> in het
+configuratiebestand. Als een item byte met de waarde <i>pq</i> wordt verwerkt,
+dan wordt dat gedaan volgens de variabele <i>tile_pq</i>. Tot slot, voor de
+terrein bytes tussen 07 en 0a, het verwerken van een combinatie van terrein
+byte <i>xy</i> en item byte <i>pq</i> wordt gedaan volgens de variabele
+<i>terrain_xy_pq</i>.
+<p>
+Alle waarden van de variabelen <i>terrain_xy</i>, <i>terrain_xy_pq</i> en
+<i>tile_pq</i> hebben het zelfde formaat. Deze waarden bevatten nul of meer
+eenheden van de volgende vorm:
+<pre>
+x,y,z:tileID/rotatie/hoogte;
+</pre>
+Elk van deze eenheden zorgt ervoor dat één tile veranderd wordt. De waarden
+x,y,z zeggen welke tile veranderd zal worden. tileID/rotatie/hoogte zijn
+de nieuwe instellingen van de tile, met de zelfde betekenis als de drie waarden
+in het baan-bestandsformaat. x,y en z zijn positie-relatief ten opzichte van de
+tile die verwerkt wordt. x en y zijn de relatieve horizontale positie in de
+baan, en z is de laag in de baan (de vertikale positie). Dus, 0,0,0 is de
+laagste tile op de verwerkte positie, 0,0,1 is de tweede-laag tile op die
+positie, enz.. Posities zoals 1,0,0 of 0,1,2 zijn buiten de tile die verwerkt
+wordt, maar hen veranderen is toegestaan voor grote tiles.
+<p>
+De "grote tile" item waarden fd, fe en ff worden niet verwerkt.
+</body>
+</html>
+

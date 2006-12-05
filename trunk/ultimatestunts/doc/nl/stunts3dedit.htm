@@ -1,0 +1,442 @@
+<html>
+<head>
+<title>UStunts3dedit</title>
+</head>
+<body>
+<h1>UStunts3dedit 0.6.x</h1>
+ustunts3dedit is een eenvoudige 3D editor die geleverd wordt bij Ultimate
+Stunts. Het kan gebruikt worden voor low-level polygoon bewerken, eenvoudige
+3D transformaties en conversie van externe bestandsformaten naar de
+Ultimate Stunts .glt en .glb bestandsformaten.
+
+<h3>Voor het starten van ustunts3dedit</h3>
+Om normaal te kunnen werken moet er minimaal één bestand bestaan in de root
+van ofwel de datadir of de savedir: textures.dat. Ook moet er ergens een correct
+ultimatestunts.conf bestand zijn waar Ultimate Stunts het kan vinden (elders
+beschreven). Met andere woorden: u heeft een werkende Ultimate Stunts
+installatie nodig. Het textures.dat bestand regelt welke textures geladen
+worden.
+
+<h3>textures.dat voorbereiden</h3>
+De eerste regel van textures.dat moet de text "TEDITFILE" bevatten. Als u een
+bestaand bestand bewerkt dat NIET deze text bevat op de eerste regel, dan is
+het waarschijnlijk geen "textures.dat" die geschikt is voor ustunts3dedit.
+<p>
+Na een regel die de text "BEGIN" bevat, heeft textures.dat een regel die
+het aantal textures bevat dat geladen moet worden. De volgende regels bevatten
+de bestandsnamen van de texturebestanden.
+<br><b>
+Belangrijk: het aantal texturebestanden moet ALTIJD overeenkomen met het
+hierboven genoemde nummer!
+</b><br>
+De laatste regel zegt waarschijnlijk "END", maar dat is niet echt belangrijk.
+
+<h3>ustunts3dedit starten</h3>
+Na het starten van ustunts3dedit heeft u twee belangrijke vensters:het OpenGL
+venster en het consolevenster. U kunt commandos geven door toetsen in te drukken
+in het OpenGL venster, en de meeste commando's hebben nog wat extra informatie
+nodig, die ingevoerd kan worden in het consolevenster. Vanwege dit
+consolevenster is het belangrijk om ustunts3dedit <i>NIET</i> in fullscreen
+modus te starten. Als het fullscreen start (u krijgt een zwart scherm), sluit
+dan af met Escape en bewerk ultimatestunts.conf om het op een venstermodus
+in te stellen.
+<img width=75% src="../nolanguage/stunts3dedit.jpg">
+
+<h3>Een bestand laden</h3>
+Nadat u textures.dat heeft ingestend en ustunts3dedit heeft gestart, is het
+tijd om uw eerste commando in te voeren. Toets "h" in het OpenGL venster. Dit
+geeft u een lijst van alle commandos die beschikbaar zijn (u kunt de lijst zien
+in het consolevenster). U kunt zien dat "F" het laden van een bestand betekent,
+en "f" het opslaan van een bestand. Hoofdletters worden (natuurlijk) ingevoerd
+door de shift-toets in te drukken (ik denk niet dat Caps Lock werkt). Dus, om
+een bestand te laden, druk op shift-F.
+<p>
+Nu vraagt het programma enkele vragen in het consolevenster. Het programma zal
+niet doorgaan voordat u deze vragen beantwoord heeft, zelfs het OpenGL venster
+zal niet ververst worden. De eerste vraag, iets over LOD dingen, kan normaal
+gesproken beantwoord worden met "n". Dan vraagt het naar het bestandsformaat,
+en dan de bestandsnaam. De bestandsnaam moet relatief ten opzichte van de
+datadir van Ultimate Stunts gegeven worden. Ik plaats meestal de dingen waar
+ik aan werk in de root van die directory, zodat ik alleen de bestandsnaam hoef
+in te vullen, en niet een lang directory-pad.
+<p>
+Bijvoorbeeld: stel dat u de body geometry van de Formula 1 auto wilt laden.
+Dan beschrijft het volgende exact wat u moet typen in de verschillende
+vensters. C: betekent "consolevenster" en G: betekent OpenGL venster. Een
+hoofdletter F betekent shift-F, [Esc] betekent de escape toets, enzovoort.
+<pre>
+C: F
+G: n[enter]
+G: 2[enter]
+G: cars/f1/body.glb[enter]
+</pre>
+Houd daarna [PgUp] een tijdje ingedrukt in het OpenGL venster om op het model
+in te zoomen, en gebruik de pijltjestoetsen in het OpenGL venster om het vanuit
+verschillende hoeken te bekijken.
+
+<h3>Toetsen</h3>
+Om iets te doen met ustunts3dedit, gebruik gewoon het toetsenbord. Elke toets
+die hieronder genoemd wordt moet gebruikt worden terwijl het OpenGL venster
+de toetsenbordfocus heeft.
+<p>
+De volgende toetsen werken onmiddellijk, zonder gebruikersinvoer in het
+consolevenster:
+<ul>
+	<li>
+		De pijltjestoetsen: gebruikt om het cameragezichtspunt
+		om de tile heen te draaien.
+	</li><li>
+		PgUp/PgDn: Naar de tile toe/ er vanaf bewegen
+	</li><li>
+		Escape: gebruikt om het programma te verlaten
+		(zonder opslaan!)
+	</li><li>
+		End: omschakelen tussen oorsprong en tile-centrum modus
+	</li>
+</ul>
+Andere toetsen, die gaan over bewerken en laden/opslaan, hebben soms wel en
+soms geen console invoer nodig. U drukt altijd de toets in in het OpenGL
+venster, en gaat dan naar het consolevenster om extra informatie in te voeren/
+te bekijken. Om te bekijken welke toetsen met welke functies verbonden zijn in
+uw versie van ustunts3dedit, druk op de 'h' toets. Enkele van deze toetsen zijn
+hier gedocumenteerd:
+<ul>
+	<li><a href="#F2">Laad</a></li>
+        <li><a href="#f">Sla op</a></li>
+        <li><a href="#S2">Instellingen</a></li>
+        <li><a href="#h">help</a></li>
+        <li><a href="#C2">Verander primitieve</a></li>
+        <li><a href="#s">Schaal</a></li>
+        <li><a href="#m">Spiegel</a></li>
+	<li><a href="#a">Vastklampen</a></li>
+	<li><a href="#P2">Splits</a></li>
+        <li><a href="#l">Stel in als botsingsobject</a></li>
+	<li><a href="#g">Genereer normalen, texture vervangingskleuren of
+		texture coördinaten</a></li>
+        <li><a href="#r">Roteer</a></li>
+        <li><a href="#t">Transleer</a></li>
+        <li><a href="#R2">Roteer texture</a></li>
+        <li><a href="#T2">Transleer texture</a></li>
+        <li><a href="#p">Selecteer primitieve</a></li>
+        <li><a href="#v">Selecteer vertex</a></li>
+        <li><a href="#n">Niewe primitieve, vertex of driehoek</a></li>
+	<li><a href="#del">Wis primitieve, vertex of driehoek</a></li>
+        <li><a href="#c">verander vertex of driehoek</a></li>
+        <li><a href="#d">Dupliceer primitieve</a></li>
+</ul>
+
+<h1>Informatie over Ultimate Stunts 3D modellen</h1>
+De 3D modellen die met ustunts3dedit bewerkt kunnen worden hebben enkele
+eigenschappen, en u moet deze eigenschappen begrijpen voordat u gaat werken
+met ustunts3dedit.
+<p>
+Om te beginnen bestaat een 3D model uit verschillende primitieven. Elke
+primitieve heeft zijn eigen materiaaleigenschappen, en verschillende operaties
+kunnen toegepast worden op individuele primitieven. Elke primitieve heeft
+bepaalde vertices en driehoeken in zich. Vertices definiëren een punt op het
+oppervlak van de primitieve: ze hebben een positie, een normaalvector en
+texture coördinaten. Driehoeken verbinden de vertices met elkaar. Elke
+driehoek heeft drie vertex index nummers, die verwijzen naar elementen van de
+vertex array. Positiecoördinaten van vertices zijn globaal: primitieven hebben
+geen eigen coördinatensysteem.
+<p>
+Naar textures wordt verwezen met een indexnummer. 0 is de eerste texture, 1 de
+tweede, enzovoort. -1 betekent "geen texture". Welk texturebestand uiteindelijk
+gebruikt wordt voor een bepaald texturenummer is gedefineerd in textures.dat.
+Ultimate Stunts zelf krijgt deze informatie uit het baanbestand of uit het
+auto-configuratiebestand.
+<p>
+Elke primitieve heeft een LODs parameter. De LODs, of "Levels Of Detail"
+(Detail-Niveaus), zijn "lagen" in de scene. De LODs parameter definieert in
+welke lagen een primitieve "zichtbaar" is. Er zijn op dit moment 6 lagen:
+1, 2, 3, 4, c en s. 1 bevat het meest gedetaileerde graphics model (voor
+dichtbij), en 4 het minst gedetaileerde graphics model (voor ver weg). c
+wordt gebruikt voor botsingsmodellen in auto's en voor botsingsmodellen van
+modellen en muren in tiles. s wordt gebruikt voor grond-oppervlaktes in
+tiles. De combinatie cs wordt gebruikt voor water. 
+
+<h1>UStunts3dedit Commando naslag</h1>
+
+<h3>Algemene functies</h3>
+<a name="F2"></a><u>F: Laden</u>
+<pre>
+Do you want to merge the file as a LOD (y/n)? n
+Opening file. Choose from:
+1: *.glt / *.gl file
+2: *.glb file
+3: 3dto3d smooth *.raw file
+4: 3D Studio *.3ds file
+Your choice: 2
+Enter filename: tiles/tunnelin1.glb
+</pre>
+Laad een geometriebestand. Merge as a LOD betekent dat u een geladen bestand
+kunt samenvoegen met de huidige scene, waar het nieuwe bestand één van de LODs
+van het model wordt. Als u gewoon de huidige scene wilt vervangen met het
+geladen bestand, antwoord dan "n" op die eerste vraag. Oude Ultimate Stunts *.gl
+bestanden kunnen geladen worden met de *.glt loader.
+<p>
+
+<a name="f"></a><u>f: Opslaan</u>
+<pre>
+Saving file. Choose from:
+1: *.glb file
+2: *.glt file
+Your choice: 1
+Saving *.glb file.
+Enter filename: tmp.glb
+</pre>
+Vul gewoon de bestandsnaam in. U kunt opslaan als Ultimate Stunts *.glt of als
+*.glb bestand. *.glt is een text-gebaseerd formaat, backward compatible met het
+oude *.gl formaat, dat het bewerken met een text editor toestaat. *.glb is een
+binair bestandsformaat dat snel laden mogelijk maakt. Beide formaten kunnen
+geladen en opgeslagen worden door het ustunts3dedit programma, maar alleen
+het *.glb formaat kan geladen worden door het spel.
+<p>
+<a name="S2"></a><u>S: Instellingen</u>
+<pre>
+Set visible LODs: 1234sc
+</pre>
+Op dit moment kunt u alleen de zichbare LODs instellen. Nuttig als uk wilt
+zien hoe de LODs er uit zien.
+<p>
+<a name="h"></a><u>h: help</u>
+<p>
+Geef alle functies weer die beschikbaar zijn in deze versie van ustunts3dedit.
+
+<h3>Gereedschapsfuncties</h3>
+<a name="C2"></a><u>C: Verander primitieve</u>
+<pre>
+Name: Weg
+Type: Vertex array
+Texture: 1
+LODs: 1234s
+Modulation color: 1.000000,1.000000,1.000000
+Texture replacement color: 0.615686,0.619608,0.588235
+Opacity: 1.000
+Reflectance: 0.000
+Emissivity: 0.000
+Static friction coefficient: 1.000
+Dynamic friction coefficient: 1.000
+Entering "-" will leave a property unchanged
+Enter new name: Road
+Which texture should be attached? 0
+In which LODs should it be visible? 123c
+Modulation color: 1,1,1
+Texture replacement color: 0.1,0.1,0.1
+Opacity: 1
+Reflectance: 0
+Emissivity: 0
+Static friction coefficient: 1
+Dynamic friction coefficient: 1
+</pre>
+verander de eigenschappen van de op dit moment geselecteerde primitieve:
+naam, LODs en verschillende materiaaleigenschappen.
+<p>
+<a name="s"></a><u>s: Schaal</u>
+<pre>
+Do you want to autoscale the entire scene (y/n)? y
+Do you want to scale around 1:the origin or 2:the CG? 1
+Enter new size: 40
+Scaling with scalefactor 1.000050
+</pre>
+Schaalt de scene of de geselecteerde primitieve naar een gewenste grootte.
+Als u met een bepaalde schaalfactor wilt schalen in plaats van schalen naar
+een bepaalde grootte, dan kunt u beter kijken naar de roteer-functie (ja, de
+<b>roteer</b>-functie!). Schalen kan gedaan worden rond de oorsprong van de
+scene of rond het "zwaartepunt" van de primitieve.
+<p>
+<a name="m"></a><u>m: Spiegelen</u>
+<pre>
+Do you want to mirror the normals? y
+Do you want to mirror the vertices? y
+</pre>
+Polygonen in Ultimate Stunts zijn single-sided. Als u double-sided polygons
+wilt, dan kunt u een primitieve dupliceren, en de spiegel-functie gebruiken.
+Vertices spiegelen inverteert de richting vanwaaruit de primitieve zichtbaar
+is, door de vertices in de omgekeerde richting in de vertex array te zetten.
+Normalen spiegelen kan helpen om de belichting goed te krijgen.
+<p>
+<a name="a"></a><u>a: Vastklampen</u>
+<pre>
+Clamp in value:30
+Clamp out value:30
+</pre>
+Deze functie selecteert alle coördinaten die <i>dicht bij</i> de in value
+zitten, en stelt deze gelijk aan de out value. Dit kan nuttig zijn,
+bijvoorbeeld, om de randen van een tilemodel exact de juiste afmetingen te
+geven, als importeren en exporteren afrondfouten heeft gecreëerd.
+<p>
+<a name="P2"></a><u>P: Splits</u>
+<pre>
+Give axis (x, y or z):y
+Give limit value:12
+Do you want to keep everything above this value? (y/n):n
+</pre>
+Met deze functie kunt u de scene splitsen in twee delen, één deel bewaren
+en het andere wissen. Het splitsen kan gedaan worden door naar de coördinaten
+van de vertices te kijken. Driehoeken die gedeeltelijk in en gedeeltelijk uit
+het geselecteerde gebied liggen worden gewist.
+<p>
+<a name="l"></a><u>l: Instellen als botsingsobject</u>
+<pre>
+Do you want to apply the collision tool on the current primitive? y
+</pre>
+Als u een primitieve heeft met een aantal vlakken die een bounding volume
+botsingsmodel (bijv. voor auto's) en u wilt het passend maken op de andere
+LODs, dan kan deze functie toegepast worden op die primitieve. Deze functie
+moet NIET toegepast worden op tiles, omdat het tile botsingsmodel eenvoudigweg
+kan bestaan uit de zelfde polygonen die gebruikt worden voor graphics. Om te
+zien op wat voor soort primitieven deze functie zou moeten worden gebruikt, laad
+een auto body model: we hebben het over de blauwe doorzichtige vlakken.
+<p>
+<a name="g"></a><u>g: Genereer normalen, texture vervangingskleuren of texture coördinaten</u>
+<pre>
+Generate normal vectors for this primitive (y/n)? y
+</pre>
+Deze functie bevat enkele functies die sommige data automatisch genereren.
+Terwijl sommige van deze nog niet geïmplementeerd zijn, is de
+normaal-genereer-functie dat wel, en deze is erg nuttig als er iets is misgegaan
+met het importeren van een ronde vorm.
+
+<h3>Transformeer functies</h3>
+<a name="r"></a><u>r: Roteer</u>
+<pre>
+Do you want to rotate the entire scene? y
+Do you want to rotate around the x-axis (y/n)? n
+Do you want to rotate around the y-axis (y/n)? n
+Do you want to rotate around the z-axis (y/n)? n
+Enter the new position of the x-axis: 1,0,0
+Enter the new position of the y-axis: 0,1,0
+Enter the new position of the z-axis: 0,0,1
+</pre>
+Roteert een primitieve of de hele scene. U kunt kiezen om te roteren rond de
+x, y of z as. Als u geen van deze kiest, dan kunt u een transformatiematrix
+invoeren door de nieuwe posities van de coördinaatassen te geven. Als u dit
+niet wilt doen, dan laat het invoeren van "1,0,0" voor de x-as, "0,1,0" voor
+de y-as en "0,0,1" voor de z-as uw model onveranderd. U kunt dit
+matrix-gereedschap ook gebruiken voor schalen. Bijvoorbeeld, invoeren van
+"2,0,0" voor de x-as zal de scene of primitieve schalen met een factor 2 in
+de x-richting.
+<p>
+<a name="t"></a><u>t: Transleer</u>
+<pre>
+Do you want to translate the entire scene? y
+Enter translation vector: 0,0.5,0
+</pre>
+Transleer een primitive of de hele scene. U kunt de translatievector geven.
+<p>
+<a name="R2"></a><u>R: Roteer texture</u>
+<pre>
+Enter the new position of the x-axis: 2,0
+Enter the new position of the y-axis: 0,2
+</pre>
+Roteer de texture-coördinaten van de geselecteerde primitieve. Dit kan gedaan
+worden door een 2D transformatiematrix in te voeren (die de nieuwe 2D posities
+van de oude x-as en y-as bevat). Uiteraard kan dit ook gebruikt worden voor
+het schalen van texture-coördinaten. Mijn excuses aan iedereen die nooit
+matrix-wiskunde gehad heeft op school. Ik weet dat dit gewoon eenvoudiger is
+voor mij als programmeur, maar niet voor u als gebruiker.
+<p>
+<a name="T2"></a><u>T: Transleer texture</u>
+<pre>
+Enter translation vector: 0.5,0
+</pre>
+Transleer de texture-coördinaten van de geselecteerde primitieve. U kunt
+gewoon de 2D translatievector invoeren.
+<p>
+<h3>Bewerk functies</h3>
+<a name="p"></a><u>p: Selecteer primitieve</u>
+<p>
+Selecteer een primitieve
+<p>
+<a name="v"></a><u>v: Selecteer vertex</u>
+<p>
+Selecteer één van de vertices van de geselecteerde primitieve
+<p>
+<a name="n"></a><u>n: Niewe primitieve, vertex of driehoek</u>
+<pre>
+Do you want to add a new vertex (y/n)? n
+Do you want to add a new triangle (y/n)? n
+Do you want to add a new primitive (y/n)? y
+Enter the name: Test
+Which texture should be attached? 0
+In which LODs should it be visible? 1234s
+Modulation color: 1,1,1
+Texture replacement color: 0,1,0
+Opacity: 1
+Reflectance: 0
+Emissivity: 0
+Static friction coefficient: 1
+Dynamic friction coefficient: 1
+Deleting old model...
+Generating model...
+Do you want to add a new vertex (y/n)? y
+Give position: -20,0,-20
+Give normal: 0,1,0
+Give texcoord: 0,0
+Deleting old model...
+Generating model...
+Do you want to add a new vertex (y/n)? y
+Give position: -20,0,20
+Give normal: 0,1,0
+Give texcoord: 0,1
+Deleting old model...
+Generating model...
+Do you want to add a new vertex (y/n)? y
+Give position: 20,0,20
+Give normal: 0,1,0
+Give texcoord: 1,1
+Deleting old model...
+Generating model...
+Do you want to add a new vertex (y/n)? y
+Give position: 20,0,-20
+Give normal: 0,1,0
+Give texcoord: 1,0
+Deleting old model...
+Generating model...
+Do you want to add a new vertex (y/n)? n
+Do you want to add a new triangle (y/n)? y
+        0: -20.000000,0.000000,-20.000000
+        1: -20.000000,0.000000,20.000000
+        2: 20.000000,0.000000,20.000000
+        3: 20.000000,0.000000,-20.000000
+Enter the vertex indices: 0,1,2
+Deleting old model...
+Generating model...
+Do you want to add a new vertex (y/n)? n
+Do you want to add a new triangle (y/n)? y
+        0: -20.000000,0.000000,-20.000000
+        1: -20.000000,0.000000,20.000000
+        2: 20.000000,0.000000,20.000000
+        3: 20.000000,0.000000,-20.000000
+Enter the vertex indices: 0,2,3
+</pre>
+Maak een nieuwe primitieve of een nieuwe vertex binnen de huidige primitieve.
+Het voorbeeld dat hier gegeven is maakt een horizontaal grondvlak.
+<p>
+<a name="del"></a><u>del: Wis een primitieve, vertex of driehoek</u>
+<pre>
+</pre>
+Met deze functie kunnen primitieven, vertices of driehoeken verwijderd worden.
+Na te selecteren of een primitieve, een vertex of een driehoek verwijderd
+moet worden, kan men de primitieve, vertex of driehoek kiezen die verwijderd
+moet worden.
+<p>
+<a name="c"></a><u>c: Verander vertex of driehoek</u>
+<pre>
+Do you want to change a vertex (y/n)? n
+Do you want to change the indices of a triangle (y/n)? y
+Triangle 0: 0  1  2
+Triangle 1: 0  2  3
+Select a triangle: 0
+Current indices are: 0  1  2
+Give new indices ("-" = no change): 0,1,2
+</pre>
+Verander de eigenschappen van de geselecteerde vertex, zoals positie en
+normaal, of de vertex indices van een driehoek.
+<p>
+<a name="d"></a><u>d: Dupliceer primitieve</u>
+<p>
+Dupliceer de geselecteerde primitieve.
+</body>
+</html>

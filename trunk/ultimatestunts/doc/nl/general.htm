@@ -1,0 +1,98 @@
+<html><body>
+<h1>Het gebruik van Ultimate Stunts 0.6.x</h1>
+Grijze secties kunnen overgeslagen worden als er geen probleem is dat
+gerelateerd is aan die sectie. Als u problemen heeft, lees dan de grijze
+secties.
+
+<font color="grey">
+<h3>Welke packages?</h3>
+Om Ultimate Stunts te gebruiken heeft u zowel de programmabestanden 
+als de databestanden nodig. Als u al een oudere versie van Ultimate Stunts
+heeft, en u niet veel bandbreedte heeft, dan kan het nuttig zijn om
+handmatig te selecteren wat u wilt downloaden, maar in andere gevallen is het
+gemakkelijker om een package te downloaden dat alles bevat. Er zijn drie
+soorten packages:
+<ul>
+	<li>i386 Linux binaries</li>
+	<li>windows binaries</li>
+	<li>Broncode</li>
+</ul>
+"Binaries" zijn computerprogramma's in een direct uitvoerbare vorm,
+dus dat is wat u wilt als u niet de broncode kunt compileren op uw
+systeem (de meeste windows-gebruikers kunnen dit niet, omdat ze geen C++
+compiler hebben). Aan de andere kant, als u optimale performance wilt in
+Linux, of als u een niet-ondersteund systeem gebruikt (zoals OS X, of
+Linux op een PPC), dan heeft u de broncode nodig.
+<p>
+Er is een data- en een nodata-variant van elk soort package. Zoals eerder
+gezegd, meestal wilt u het data-package hebben.
+De windows binary + data package is een installatie setup programma.
+
+<h3>Compilatie</h3>
+Als u de broncode wilt gebruiken, dan moet u deze compileren. Dit is
+beschreven in de <a href="compile.htm">Compilatie handleiding</a>.
+
+<h3>Locatie van het configuratiebestand</h3>
+U kunt deze sectie overslaan als u Ultimate Stunts op een "standaard"
+manier gebruikt, bijv. met het windows windows binary installatieprogramma.
+Deze sectie is gewoon toegevoegd om u van informatie te voorzien voor de
+gevallen waarin u problemen ervaart met het starten van Ultimate Stunts.
+<p>
+Wanneer Ultimate Stunts gestart wordt zoekt het naar een configuratiebestand
+met de naam "ultimatestunts.conf". Afhankelijk van de compilatie-installingen
+zijn er verschillende locaties waar Ultimate Stunts dit bestand probeert te
+vinden. Er is altijd één hoofdlocatie, en als ultimatestunts.conf daar niet
+gevonden wordt, dan wordt het daar naartoe gekopieerd vanuit één van de andere
+locaties.
+<p>
+De hoofdlocatie van ultimatestunts.conf is ~/.ultimatestunts op UNIX-stijl
+systemen, en "." op windows systemen (. is de directory waar Ultimate Stunts
+vanuit gestart is). Als Ultimate Stunts gestart wordt vanuit de
+broncode-directory, dan is de hoofdlocatie ook ".".
+<p>
+De andere locaties waar ultimatestunts.conf gezocht wordt, zijn (in deze
+volgorde):
+<pre>
+&lt;prefix&gt;/etc  (&lt;prefix&gt; is standaard /usr/share/local)
+/etc
+/usr/local/etc
+.
+</pre>
+</font>
+
+<h3>Ultimate Stunts configureren</h3>
+Het bestand ultimatestunts.conf is een textbestand dat alle opties van
+Ultimate Stunts bevat. Het kan erg nuttig zijn om dit bestand te bewerken,
+bijv. als de standaardwaarden te veel eisen van uw computer, en als u de
+frame rate wilt verbeteren. Alle opties zijn gedocumenteerd in het
+configuratiebestand. Voor windows-gebruikers wordt het aanbevolen om
+Wordpad te gebruiken in plaats van Kladblok, ondat Kladblok geen UNIX-stijl
+textbestanden ondersteunt.
+<p>
+<font color="grey">
+Twee interessante opties in ultimatestunts.conf zijn datadir en savedir
+in de [files] sectie. Beide directories worden gebruikt als locaties waar
+databestanden worden gezocht, maar databestanden worden alleen opgeslagen
+in savedir. Dit betekent dat datadir alleen-lezen kan zijn voor de gebruiker,
+maar dat savedir altijd beschrijfbaar moet zijn. Als een bestand wordt geladen,
+dan wordt het eerst gezocht in savedir, en dan in datadir. Dit betekent dat
+de standaard databestanden die zich in datadir bevinden vervangen kunnen
+worden door een ander bestand met de zelfde naam in savedir te plaatsen.
+<p>
+Windows-gebruikers moeten zich ervan bewust zijn dat windows-stijl
+directorynamen hier problemen zouden kunnen geven. In geval van problemen,
+gebruik locaties zonder spaties in het path, gebruik slashes (/) in plaats van
+backslashes (\), en schrijf "/cygdrive/c/" in plaats van "C:\" in absolute
+paths.
+</font>
+
+<h3>Een spel starten</h3>
+Als u Ultimate Stunts wilt spelen, dan moet u het programm "ustunts" starten
+(windows-gebruikers kunnen het Ultimate Stunts item in het start menu
+gebruiken). De andere programma's kunnen soms nuttig zijn, en ze zijn
+apart gedocumenteerd, maar ustunts is het hoofdprogramma van het spel.
+U kunt <a href="client.htm">hier</a> documentatie vinden over hoe
+Ultimate Stunts gespeeld kan worden.
+
+</body></html>
+

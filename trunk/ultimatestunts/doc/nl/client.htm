@@ -1,0 +1,103 @@
+<html><body>
+<h1>Het gebruik van het Ultimate Stunts versie 0.6.x programma</h1>
+
+Wanneer het Ultimate Stunts programma gestart wordt, start het afspelen van
+de muziek, en verschijnt de menu interface. U kunt direct beginnen met spelen,
+of eerst nog wat dingen veranderen, zoals auto's/spelers, en de baan.
+<br><img src="../nolanguage/menu_main.jpg">
+
+<h1>Spelen</h1>
+Als u er voor kiest om het spelen te starten, dan worden de databestanden
+geladen. Afhankelijk van uw hardware kan dit enige tijd duren.
+Wanneer alle data geladen is, start het spel. De besturing van het spel
+(toetsen, joystick etc.) kan ingesteld worden in het ultimatestunts.conf
+bestand. Dit is de standaardinstelling voor één speler:
+<ul>
+	<li>Pijltjestoetsen: gas geven, remmen en sturen</li>
+	<li>rechter shift/rechter ctrl: versnelling omhoog/omlaag, inclusief
+	achteruit</li>
+	<li>Esc: verlaat het spel</li>
+	<li>rechter alt: verander camera modus</li>
+	<li>/: verander camera doel auto</li>
+	<li>F1: speel de volgende song in de playlist</li>
+</ul>
+Nadat het spel wordt afgesloten, of na crashen of finishen, wordt de
+hiscore van de baan weergegeven, en kunt u er voor kiezen om een replay van
+de afgelopen race te bekijken of op te slaan. Als u de eerste plaats heeft
+bereikt voor deze baan, dan wordt de replay automatisch opgeslagen onder de
+zelfde naam als de track.
+<br><img src="../nolanguage/menu_hiscore.jpg">
+
+<h1>Andere functies</h1>
+<h3>Selecteren van een baan</h3>
+Als u op een andere baan wilt spelen, dan kunt u een baan selecteren met die
+optie in het hoofdmenu.
+
+<h3>Selecteren van spelers en auto's</h3>
+U kunt spelers, en de auto's waar ze in rijden, selecteren in het speler
+selectie menu, dat bereikt kan worden vanuit het hoofdmenu:
+<br><img src="../nolanguage/menu_players.jpg"><br>
+U kunt een speler toevoegen, of een bestaande speler wijzigen in de lijst.
+Het veranderen van de instellingen van een speler, of het verwijderen van de
+speler, kan gedaan worden in het individuele speler menu, dat bereikt kan
+worden door een speler te selecteren in het speler selectie menu:
+<br><img src="../nolanguage/menu_player.jpg"><br>
+Split screen multiplaying (maximaal vier spelers) is mogelijk door meerdere
+menselijke spelers toe te voegen aan de lijst.
+
+<h3>Een replay bekijken</h3>
+U kunt dat doen door deze functie vanuit het hoofdmenu kiezen, en dan
+een replay-bestand selecteren om deze te bekijken.
+
+<h1>Multiplaying over een netwerk</h1>
+Ultimate Stunts gebruikt een client-server model voor netwerk multiplaying.
+Dit betekent dat er ergens een Ultimate Stunts gameserver programma gestart
+moet worden, zodat verschillende computers er op kunnen inloggen. U kunt het
+ustuntsserver programma handmatig starten, en het bedienen met de console
+interface, maar u kunt het ook automatisch laten starten vanuit de spel-menu's.
+We zullen hier alleen die laatste optie bekijken: het server-programma is
+elders gedocumenteerd.
+<p>
+Voor een netwerk multiplaying spel moet het speltype veranderd worden,
+aangezien de standaard instelling "lokaal spel" is. Dit is het speltype menu:
+<br><img src="../nolanguage/menu_gametype.jpg">
+
+<h3>De host speler</h3>
+Als eerste moet één van de spelers (bij voorkeur de gene met de snelste
+computer en netwerkverbinding) een nieuw netwerkspel starten. Nadat enkele
+vragen beantwoord zijn door de gebruiker, wordt er automatisch een serverproces
+gestart. Ultimate Stunts vraagt naar de volgende dingen voor dat een server
+gestart kan worden:
+<ul>
+	<li><b>Het poortnummer</b>. In de meeste gevallen moet de
+	standaarde gewoon werken. Soms moet er een ander poortnummer
+	gekozen worden, bijv. om firewall regels te ontwijken. Als
+	u op zoek bent naar vrije poortnummers op uw machine, zoek dan naar
+	UDP poortnummers, omdat Ultimate Stunts UDP gebruikt in plaats van
+	TCP. Op sommige systemen is het niet mogelijk om poortnummers onder
+	de 1024 te gebruiken. Alle clients moeten inloggen met het zelfde
+	poortnummer als in de server-instellingen.
+	</li><li><b>Een naam voor de server</b>. De naam wordt gebruikt
+	zodat andere spelers de juiste server kunnen selecteren als er meer
+	dan één Ultimate Stunts server draait op het netwerk, bijv. op een
+	LAN-party.
+	</li><li><b>Het minimum aantal spelers</b>. Het spel zal niet starten
+	totdat dit minimum aantal spelers wordt bereikt.
+	</li>
+</ul>
+
+<h3>Alle andere spelers</h3>
+Vervolgens moeten alle andere spelers deelnemen aan het gemaakte spel.
+Nadat het poortnummer geselecteerd is, zoekt Ultimate Stunts naar servers op
+het lokale netwerk. Dit zal enkele seconden duren. Als geen server gevonden
+wordt, dan kunt u proberen handmatig een server te selecteren door de
+hostnaam of het IP-nummer van de server in te vullen. Dit kan nodig zijn
+als de server ergens ver weg op het internet is, of zelfs wanneer de server
+zich in een ander subnet bevindt.
+<p>
+Als één server gevonden wordt, dan verbindt Ultimate Stunts automatisch met
+die server. Als meer dan één server is gevonden, dan kan de gebruiker er één
+kiezen uit een menu.
+
+</body></html>
+

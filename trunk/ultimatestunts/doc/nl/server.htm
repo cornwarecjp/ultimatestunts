@@ -1,0 +1,70 @@
+<html>
+<head>
+<title>Het gebruik van het Ultimate Stunts server programma</title>
+</head>
+<body>
+
+<h1>Het gebruik van het Ultimate Stunts server programma 0.6.x</h1>
+
+<h3>Het programma starten</h3>
+Om de server te gebruiken, start gewoon het "ustuntsserver" programma.
+U kunt start-waarden instellen op de commandline met de syntax
+<i>variabele=waarde</i>. Bijvoorbeeld:
+<pre>
+ustuntsserver port=4302
+</pre>
+Waarden die op de commandline ingesteld kunnen worden kunnen ook binnen het
+programma veranderd worden. Het voordeel van de commandline is dat u de
+startwaarde kent. Bijvoorbeeld, als een andere toepassing al het standaard
+poortnummer 4301 gereserveerd heeft, dan zou het kunnen dat het ustuntsserver
+programma weigert te starten als het poortnummer niet op de commandline
+veranderd wordt.
+
+<h3>Gebruik</h3>
+Meteen na het starten van de server begint het te luisteren op de netwerkpoort,
+zodat clients er verbinding mee kunnen maken. Elke keer dat een client wordt
+toegevoegd, zal dit aan u gemeld worden.<br>
+
+Terwijl u wacht op clients die verbinding moeten maken, kunt u commando's
+geven aan de server. Het "help" commando laat zien welke commando's
+beschikbaar zijn op uw versie van de server.
+<p>
+Normaal gesproken zou u de volgende dingen in deze volgorde moeten doen:
+<ul>
+	<li>Start het server programma. Het wordt aangeraden om de <i>port</i>
+	en <i>serverName</i> variabelen op de commandline in te stellen als
+	u deze moet veranderen.</li>
+
+	<li>Vervolgens (optioneel) stel alle variabelen in die veranderd moeten
+	worden met het set commando. Met het help commando kunt u een lijst
+	zien van variabelen en commando's.</li>
+
+	<li>Nu kunt u alle spelers zeggen dat ze aan het spel deel kunnen
+	nemen</li>
+
+	<li>De meeste variabelen kunnen nog steeds veranderd worden nadat
+	andere spelers toegevoegd zijn. Het is alleen niet aangeraden om
+	het poortnummer of de servernaam te veranderen.</li>
+	<li>U kunt AI spelers toevoegen met het  "addai" commando</li>
+
+	<li>Als alles goed is ingesteld, kunt u het "start" commando geven.
+	Het spel zal niet starten voor:
+	<ul>
+		<li>u het "start" commando heeft gegeven</li>
+		<li>minimaal een <i>minRequests</i> aantal spelers is
+		toegevoegd aan de spelerlijst (ofwel als AI speler, ofwel
+		'remote' over een netwerkverbinding). 'Remote' spelers worden
+		toegevoegd zodra de "Race!" optie in het hoofdmenu wordt
+		geactiveerd op de remote computer.</li>
+	</ul></li>
+
+	<li>Het spel kan gestopt worden met het "stop" commando</li>
+
+	<li>U kunt de laatste stappen herhalen als u wilt, zodat u de server
+	niet hoeft te herstarten als u een nieuw spel wilt spelen.</li>
+
+	<li>U kunt het serverprogramma afsluiten met "exit" of "quit"</li>
+</ul>
+</body>
+</html>
+
