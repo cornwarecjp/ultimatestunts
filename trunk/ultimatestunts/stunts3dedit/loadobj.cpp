@@ -27,8 +27,10 @@ bool loadOBJ(const CString &filename, CEditGraphObj &obj)
 
 	obj.clear();
 
-	vector<CVector> v_arr, vn_arr;
-	vector<unsigned int> v_index, vn_index; //describes per-vertex which v[n]_arr element it uses
+	vector<CVector> v_arr, vn_arr, vt_arr;
+
+	//describes per-vertex which v[n|t]_arr element it uses
+	vector<unsigned int> v_index, vn_index, vt_index;
 
 	while(true)
 	{
@@ -42,7 +44,7 @@ bool loadOBJ(const CString &filename, CEditGraphObj &obj)
 		if(pos < 0) continue;
 		CString lhs = line.mid(0, pos), rhs = line.mid(pos+1);
 
-		if(lhs == "g")
+		if(lhs == "g" || lhs == "o") //I don't know the difference
 		{
 			obj.m_Primitives.push_back(CPrimitive());
 			CPrimitive &pr = obj.m_Primitives.back();
@@ -112,6 +114,31 @@ bool loadOBJ(const CString &filename, CEditGraphObj &obj)
 
 			vn_arr.push_back(v);
 		}
+		else if(lhs == "vt")
+		{
+			CVector v;
+			int pos = rhs.inStr(' ');
+			if(pos < 0)
+				{v.x = rhs.toFloat();}
+			else
+			{
+				v.x = rhs.mid(0, pos).toFloat();
+				rhs = rhs.mid(pos+1);
+
+				pos = rhs.inStr(' ');
+				if(pos < 0)
+					{v.y = rhs.toFloat();}
+				else
+				{
+					v.y = rhs.mid(0, pos).toFloat();
+					rhs = rhs.mid(pos+1);
+
+					v.z = rhs.toFloat();
+				}
+			}
+
+			vt_arr.push_back(v);
+		}
 		else if(lhs == "f")
 		{
 			CPrimitive &pr = obj.m_Primitives.back();
@@ -119,7 +146,7 @@ bool loadOBJ(const CString &filename, CEditGraphObj &obj)
 			unsigned int i=0;
 			while(true)
 			{
-				int pos = rhs.inStr("//");
+				int pos = rhs.inStr("/");
 				if(pos < 0)
 				{
 					if(i < 3)
@@ -129,7 +156,18 @@ bool loadOBJ(const CString &filename, CEditGraphObj &obj)
 				}
 
 				unsigned int vi = rhs.mid(0, pos).toInt() - 1;
-				rhs = rhs.mid(pos+2);
+				rhs = rhs.mid(pos+1);
+
+				pos = rhs.inStr("/");
+				if(pos < 0)
+				{
+					printf("Error in line \"%s\": not an even number of slashes\n", line.c_str());
+					break;
+				}
+
+				unsigned int ti = rhs.mid(0, pos).toInt() - 1;
+				if(pos == 0) ti = 0; //handle missing texture coordinate
+				rhs = rhs.mid(pos+1);
 
 				unsigned int ni = 0;
 				pos = rhs.inStr(' ');
@@ -166,7 +204,7 @@ bool loadOBJ(const CString &filename, CEditGraphObj &obj)
 
 				int vti = -1; //vertex array index, -1 = not found
 				for(unsigned int j=0; j < pr.m_Vertex.size(); j++)
-					if(v_index[j] == vi && vn_index[j] == ni)
+					if(v_index[j] == vi && vn_index[j] == ni && vt_index[j] == ti)
 						{vti = j; break;}
 
 				if(vti < 0) //then create a new array element
@@ -174,9 +212,11 @@ bool loadOBJ(const CString &filename, CEditGraphObj &obj)
 					CVertex vt;
 					vt.pos = v_arr[vi];
 					vt.nor = vn_arr[ni];
+					if(ti < vt_arr.size()) vt.tex = vt_arr[ti];
 					pr.m_Vertex.push_back(vt);
 					v_index.push_back(vi);
 					vn_index.push_back(ni);
+					vt_index.push_back(ti);
 					vti = pr.m_Vertex.size()-1;
 				}
 

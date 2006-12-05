@@ -37,7 +37,7 @@ protected:
 	void placeItem(unsigned int offset, const CString &item);
 	void followTRKRoutes(const CTRKFile &file, CTrack::CCheckpoint start, int dir);
 	bool undoRoutingFromSplit(vector<CTrack::CCheckpoint> &splitpoints);
-	void trackRTKCorners(unsigned char terrain, unsigned char item,
+	void trackTRKCorners(unsigned char terrain, unsigned char item,
 		int &dir, int &height, int &altdir);
 
 	CString hexStr(unsigned char x);

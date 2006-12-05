@@ -1,5 +1,5 @@
 /***************************************************************************
-                          gamewinsystem.h  -  description
+                          gamewinsystem.h  -  Window managing with game key settings
                              -------------------
     begin                : do sep 16 2004
     copyright            : (C) 2004 by CJP
@@ -55,7 +55,9 @@ enum eGlobalKey
 class CGameWinSystem : public CWinSystem  {
 public: 
 	CGameWinSystem(const CString &caption, const CLConfig &conf);
-	~CGameWinSystem();
+	virtual ~CGameWinSystem();
+
+	virtual bool reloadConfiguration();
 
 	float getPlayerControlState(ePlayerControl ctl, unsigned int player);
 	bool getPlayerKeyState(ePlayerKey key, unsigned int player);
@@ -63,6 +65,8 @@ public:
 	bool getGlobalKeyState(eGlobalKey key);
 	bool globalKeyWasPressed(eGlobalKey key);
 
+	//For use in e.g. the menu interface
+	unsigned int getKeyFromGlobalKey(eGlobalKey key);
 protected:
 	/*
 	Key codes are a general way to point to boolean input resources

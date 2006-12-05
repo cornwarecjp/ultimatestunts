@@ -32,10 +32,12 @@
 class CWinSystem {
 public: 
 	CWinSystem(const CString &caption, const CLConfig &conf);
-	~CWinSystem();
+	virtual ~CWinSystem();
 
 	int runLoop( bool (CALLBACKFUN *loopfunc)(), bool swp = false);
 	bool runLoop(CWidget *widget);
+
+	virtual bool reloadConfiguration();
 
 	void swapBuffers();
 

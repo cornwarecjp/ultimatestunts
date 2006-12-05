@@ -31,6 +31,8 @@ public:
 	CHumanPlayer(CGameWinSystem *ws, unsigned int ID);
 	~CHumanPlayer();
 
+	bool m_AutomaticGear;
+
 	virtual bool update();
 protected:
 	CGameWinSystem *m_WinSys;

@@ -36,8 +36,10 @@
 
 class CUSCore : public CGameCore  {
 public: 
-	CUSCore(CGameWinSystem *winsys);
+	CUSCore(CGameWinSystem *winsys, CSound *soundsys);
 	virtual ~CUSCore();
+
+	virtual bool reloadConfiguration();
 
 	bool addCamera(unsigned int objid);
 
@@ -49,13 +51,12 @@ public:
 
 protected:
 	CGameWinSystem *m_WinSys;
+	CSound *m_SoundSystem;
 	CGameRenderer *m_Renderer;
 	CConsole *m_Console;
 
 	CGameCamera *m_Cameras[4]; //max. 4 cameras should be enough
 	unsigned int m_NumCameras;
-
-	CSound *m_SoundSystem;
 
 	virtual void loadTrackData();
 	virtual void loadMovObjData();

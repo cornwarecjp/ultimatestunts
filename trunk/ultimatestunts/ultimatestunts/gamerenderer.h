@@ -33,6 +33,8 @@ public:
 	CGameRenderer(const CWinSystem *winsys);
 	virtual ~CGameRenderer();
 
+	virtual bool reloadConfiguration();
+
 	bool loadTrackData();
 	void unloadTrackData();
 	bool loadObjData();
@@ -51,6 +53,11 @@ protected:
 	unsigned int m_CurrentCamera;
 	int camx, camy, camz;
 
+	//Clipping plane of active camera
+	//Used for faster, object-level clipping
+	//(compared to OpenGL face-based clipping)
+	CVector m_CamPlaneNor;
+	float   m_CamPlaneDist;
 
 	void clearScreen();
 	void updateShadows();

@@ -95,28 +95,22 @@ bool CSndSample::load(const CString &filename, const CParamList &list)
 
 	//data (and default values)
 	void *wave = NULL;
-	ALsizei
-		format = AL_FORMAT_MONO16,
-		size = 0,
-		bits = 0,
-		freq = 44100;
+	ALsizei size = 0;
 
 	CString extension = realfile.mid(realfile.length() - 4);
 	extension.toLower();
 
-	if(extension == ".ogg") //.ogg: load as ogg vorbis file
+	//the loading procs
+	ALboolean (*alutLoadVorbis)(ALuint, ALvoid *, ALint) =
+		(ALboolean (*)(ALuint, ALvoid *, ALint))
+			alGetProcAddress(VORBISFUNC);
+
+	ALboolean (*alutLoadMP3)(ALuint, ALvoid *, ALint) =
+		(ALboolean (*)(ALuint, ALvoid *, ALint))
+			alGetProcAddress(MP3FUNC);
+
+	if(alutLoadVorbis != NULL && extension == ".ogg") //.ogg: load as ogg vorbis file
 	{
-		//the loading proc
-		ALboolean (*alutLoadVorbis)(ALuint, ALvoid *, ALint) =
-			(ALboolean (*)(ALuint, ALvoid *, ALint))alGetProcAddress((ALubyte *) VORBISFUNC);
-
-		if(alutLoadVorbis == NULL)
-		{
-			printf("Error: Could not get ogg loading proc.\n"
-				"Maybe you don't use the Loki openAL implementation?\n");
-			return false;
-		}
-
 		//The data
 		struct stat sbuf;
 		stat(realfile.c_str(), &sbuf);
@@ -130,19 +124,8 @@ bool CSndSample::load(const CString &filename, const CParamList &list)
 		if(alutLoadVorbis(m_Buffer, wave, size) != AL_TRUE)
 			printf("alutLoadVorbis failed\n");
 	}
-	else if(extension == ".mp3") //.mp3: load as MP3 file
+	else if(alutLoadMP3 != NULL && extension == ".mp3") //.mp3: load as MP3 file
 	{
-		//the loading proc
-		ALboolean (*alutLoadMP3)(ALuint, ALvoid *, ALint) =
-			(ALboolean (*)(ALuint, ALvoid *, ALint))alGetProcAddress((ALubyte *) MP3FUNC);
-
-		if(alutLoadMP3 == NULL)
-		{
-			printf("Error: Could not get MP3 loading proc.\n"
-				"Maybe you don't use the Loki openAL implementation?\n");
-			return false;
-		}
-
 		//The data
 		struct stat sbuf;
 		stat(realfile.c_str(), &sbuf);
@@ -156,11 +139,30 @@ bool CSndSample::load(const CString &filename, const CParamList &list)
 		if(alutLoadMP3(m_Buffer, wave, size) != AL_TRUE)
 			printf("alutLoadMP3 failed\n");
 	}
-	else //default: load as wave file
+	else //default ALUT loader
 	{
+		m_Buffer = alutCreateBufferFromFile(realfile.c_str());
+
+		if(m_Buffer == AL_NONE)
+		{
+			printf("    Failed to load %s\n", realfile.c_str());
+			printf("    ALUT error was: %s\n", alutGetErrorString(alutGetError()));
+
+			m_Buffer = 0;
+			m_isLoaded = false;
+			return false;
+		}
+
+		/*
+		ALsizei
+			format = AL_FORMAT_MONO16,
+			bits = 0,
+			freq = 44100;
+
 		alGenBuffers(1, &m_Buffer);
 		alutLoadWAV(realfile.c_str(), &wave, &format, &size, &bits, &freq);
 		alBufferData(m_Buffer, format, wave, size, freq);
+		*/
 	}
 
 	free(wave);

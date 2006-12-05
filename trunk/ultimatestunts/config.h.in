@@ -1,5 +1,8 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
+/* ALUT headers */
+#undef ALUT_HEADER
+
 /* Define to one of `_getb67', `GETB67', `getb67' for Cray-2 and Cray-YMP
    systems. This function is required for `alloca.c' support on those systems.
    */
@@ -105,6 +108,9 @@
 
 /* Define if your <locale.h> file defines LC_MESSAGES. */
 #undef HAVE_LC_MESSAGES
+
+/* ALUT Lib */
+#undef HAVE_LIBALUT
 
 /* FMOD lib */
 #undef HAVE_LIBFMOD

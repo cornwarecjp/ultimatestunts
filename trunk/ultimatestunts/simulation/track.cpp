@@ -117,7 +117,7 @@ bool CTrack::load(const CString &filename, const CParamList &list)
 	}
 	m_BackgroundFilename = tfile.readl();
 	m_EnvMapFilename = tfile.readl();
-	m_LightDirection = tfile.readl().toVector();
+	m_LightDirection = tfile.readl().toVector().normal();
 	m_LightColor = tfile.readl().toVector();
 	m_AmbientColor = tfile.readl().toVector();
 

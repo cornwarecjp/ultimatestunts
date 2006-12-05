@@ -33,6 +33,7 @@ CMessageBox::CMessageBox()
 	m_Type = eOK;
 	m_Selected = 0;
 	m_Title = "Title";
+	m_Cancelled = false;
 }
 
 CMessageBox::~CMessageBox(){
@@ -94,6 +95,7 @@ int CMessageBox::onResize(int x, int y, int w, int h)
 
 int CMessageBox::onKeyPress(int key)
 {
+	if(key == SDLK_ESCAPE) m_Cancelled = true;
 	if(key == SDLK_RETURN || key == SDLK_ESCAPE) return WIDGET_QUIT;
 
 	switch(m_Type)
@@ -152,9 +154,9 @@ int CMessageBox::onRedraw()
 {
 	CWidget::onRedraw();
 
-	glColor4f(0, 0, 0, 0.7);
+	glColor4f(0, 0, 0, 0.8);
 	drawBackground();
-	glColor3f(1,1,1);
+	glColor4f(1,1,1, 1);
 
 	//centered
 	glTranslatef(m_W/2, m_H/2, 0);

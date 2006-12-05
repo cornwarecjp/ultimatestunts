@@ -43,6 +43,8 @@ public:
 
 	const CCollisionFace *getGroundFace(const CVector &pos);
 
+	float getLineCollision(const CVector &pos, const CVector &dir);
+
 protected:
 	CVector m_TrackMin, m_TrackMax;
 	bool m_FirstUpdate;
@@ -61,6 +63,9 @@ protected:
 	//Ground face tests
 	const CCollisionFace *getTileGround(int xtile, int ztile, int htile, const CVector &pos, float &dmax);
 	CCollisionFace m_LastGroundFace;
+
+	//Line tile test
+	float LineTileTest(const CVector &pos, const CVector &dir, int xtile, int ztile, int htile);
 
 	//Generic
 	bool sphereTest(const CVector &p1, const CCollisionModel *b1, const CVector &p2, const CCollisionModel *b2);

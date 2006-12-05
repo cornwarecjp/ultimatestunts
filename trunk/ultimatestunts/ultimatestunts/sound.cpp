@@ -23,22 +23,6 @@
 #include <cmath>
 #include <cstdio> //debugging
 
-#include "sound.h"
-
-#include "vector.h"
-#include "usmacros.h"
-#include "datafile.h"
-#include "car.h"
-
-bool _song_has_ended;
-
-void musicEndCallback()
-{
-	//_theSoundObject->playNextSong();
-	//printf("musicEndCallback done\n");
-	_song_has_ended = true;
-}
-
 #ifdef FMOD_HEADER
 #include <fmod/fmod.h>
 #include <fmod/fmod_errors.h>
@@ -50,17 +34,38 @@ void musicEndCallback()
 #include <AL/alut.h>
 #endif
 
+#include "sound.h"
 
-CSound::CSound(const CLConfig &conf)
+#include "vector.h"
+#include "usmacros.h"
+#include "datafile.h"
+#include "car.h"
+
+#include "lconfig.h"
+
+bool _song_has_ended;
+
+void musicEndCallback()
 {
-	//The world object:
-	m_World = theWorld;
+	//_theSoundObject->playNextSong();
+	//printf("musicEndCallback done\n");
+	_song_has_ended = true;
+}
+
+CSound::CSound()
+{
+	CLConfig &conf = *theMainConfig;
 
 #ifdef HAVE_LIBOPENAL
 	int argc = 1;
 	char *argv[1];
 	argv[0] = "ultimatestunts";
-	alutInit(&argc, argv);
+	ALboolean ret = alutInit(&argc, argv);
+
+	if(ret == AL_FALSE)
+	{
+		printf("    Error: ALUT OpenAL initialization failed\n");
+	}
 
 	alListenerf(AL_GAIN, 1.0);
 	alDopplerFactor(1.0);
@@ -131,7 +136,7 @@ CSound::CSound(const CLConfig &conf)
 
 
 	//The sound world:
-	m_SoundWorld = new CSoundWorld(conf);
+	m_SoundWorld = new CSoundWorld();
 
 	m_MusicVolume = conf.getValue("sound", "musicvolume").toInt();
 	m_SoundVolume = conf.getValue("sound", "soundvolume").toInt();
@@ -152,6 +157,22 @@ CSound::CSound(const CLConfig &conf)
 	m_Music = NULL;
 	m_MusicObject = NULL;
 	playNextSong();
+}
+
+bool CSound::reloadConfiguration()
+{
+	CLConfig &conf = *theMainConfig;
+
+	//TODO: driver settings
+
+	m_MusicVolume = conf.getValue("sound", "musicvolume").toInt();
+	m_SoundVolume = conf.getValue("sound", "soundvolume").toInt();
+
+	if(m_MusicObject != NULL) m_MusicObject->setVolume(m_MusicVolume);
+
+	//TODO: re-check music playlist
+
+	return true;
 }
 
 CSound::~CSound()
@@ -253,7 +274,7 @@ void CSound::update()
 	for(unsigned int i=0; i<m_SoundWorld->m_Channels.size(); i++)
 	{
 		CSoundObj *chn = m_SoundWorld->m_Channels[i];
-		const CMovingObject *o = m_World->getMovingObject(chn->getMovingObjectID());
+		const CMovingObject *o = theWorld->getMovingObject(chn->getMovingObjectID());
 		if(o->getType() == CMessageBuffer::car)
 		{
 			CCar *theCar = (CCar *)o;

@@ -26,6 +26,9 @@ public:
 	CRenderWidget(bool enableDepth=true, bool enableFog=true, bool idleRedraw=false);
 	virtual ~CRenderWidget();
 
+	void setIdleRedraw(bool b)
+		{m_IdleRedraw = b;}
+
 	virtual int onRedraw();
 	virtual int onIdle();
 

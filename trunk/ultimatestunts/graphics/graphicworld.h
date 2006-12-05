@@ -54,6 +54,8 @@ public:
 	CGraphicWorld();
 	virtual ~CGraphicWorld();
 
+	virtual bool reloadConfiguration();
+
 	bool loadWorld();
 	void unloadWorld();
 	bool loadObjects();

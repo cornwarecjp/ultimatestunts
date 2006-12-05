@@ -33,60 +33,23 @@ CWinSystem::CWinSystem(const CString &caption, const CLConfig &conf)
 
 	//Default values:
 	m_Flags = SDL_OPENGL |SDL_RESIZABLE|SDL_ANYFORMAT;
-	m_W = 640;
-	m_H = 480;
+	m_W = 0; m_H = 0; //to make sure that the format is changed the first time
 	m_BPP = 24;
 	m_VisibleTiles = 20;
 
-
-	//Display variable:
-	CString cnf = conf.getValue("graphics","display");
-	printf("   Display variable: \"%s\"\n", cnf.c_str());
-	unsigned int pos = cnf.inStr(':');
-	if(pos > 0 && pos < cnf.length()-1) //There is a ':' in cnf_display
-	{
-		CString s = cnf.mid(pos+1, cnf.length()-pos);
-		cnf = cnf.mid(0, pos);
-		pos = s.inStr('x');
-		if(pos > 0 && pos < s.length()-1)
-		{
-			m_W = s.mid(0, pos).toInt();
-			m_H = s.mid(pos+1, s.length()-pos).toInt();
-			//TODO: support bpp setting
-		}
-	}
-
-	if(cnf == "fullscreen")
-		m_Flags = SDL_OPENGL|SDL_FULLSCREEN|SDL_ANYFORMAT;
-
-
-	//visible_tiles variable
-	cnf = conf.getValue("graphics", "visible_tiles");
-	if(cnf != "")
-		m_VisibleTiles = cnf.toInt();
-
 	//Some code coming from SDL gears
+	//This has to be called before video mode initialization
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_TIMER);
 
 	//Minimum values:
+	//This has to be called before video mode initialization
 	SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 5);
 	SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, 5);
 	SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, 5);
 	SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 16 );
 	SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
 
-	printf("   Setting resolution to %dx%d:%d...\n", m_W, m_H, m_BPP);
-	m_Screen = SDL_SetVideoMode(m_W, m_H, m_BPP, m_Flags);
-	if ( ! m_Screen ) {
-		fprintf(stderr, "   Couldn't set %dx%d GL video mode: %s\n",
-			m_W, m_W, SDL_GetError());
-		SDL_Quit();
-		exit(2);
-	}
-	m_W = m_Screen->w;
-	m_H = m_Screen->h;
-	m_BPP = m_Screen->format->BitsPerPixel;
-	printf("   ...Now working at %dx%d:%d\n", m_W, m_H, m_BPP);
+	reloadConfiguration(); //sets video mode and misc. settings
 
 	SDL_WM_SetCaption(caption.c_str(), "ultimatestunts");
 
@@ -130,6 +93,75 @@ CWinSystem::CWinSystem(const CString &caption, const CLConfig &conf)
 	m_JoyButtonWasPressed = new bool[m_NumJoyBtns];
 	for(int i=0; i<m_NumJoyBtns; i++)
 		m_JoyButtonWasPressed[i] = false;
+}
+
+bool CWinSystem::reloadConfiguration()
+{
+	CLConfig &conf = *theMainConfig;
+
+	//Display variable:
+	unsigned int newW = m_W;
+	unsigned int newH = m_H;
+	unsigned int newFlags = m_Flags;
+
+	CString cnf = conf.getValue("graphics","display");
+	printf("   Display variable: \"%s\"\n", cnf.c_str());
+	unsigned int pos = cnf.inStr(':');
+	if(pos > 0 && pos < cnf.length()-1) //There is a ':' in cnf_display
+	{
+		CString s = cnf.mid(pos+1, cnf.length()-pos);
+		cnf = cnf.mid(0, pos);
+		pos = s.inStr('x');
+		if(pos > 0 && pos < s.length()-1)
+		{
+			newW = s.mid(0, pos).toInt();
+			newH = s.mid(pos+1, s.length()-pos).toInt();
+			newFlags = SDL_OPENGL |SDL_RESIZABLE|SDL_ANYFORMAT;
+			if(cnf == "fullscreen")
+				newFlags = SDL_OPENGL | SDL_FULLSCREEN | SDL_ANYFORMAT;
+
+			//TODO: support bpp setting
+		}
+	}
+
+	if( (newW != m_W) || (newH != m_H) || (newFlags != m_Flags) )
+	{
+		printf("   Setting resolution to %dx%d:%d...\n", newW, newH, m_BPP);
+		m_Screen = SDL_SetVideoMode(newW, newH, m_BPP, newFlags);
+		if ( ! m_Screen )
+		{
+			printf("   Couldn't set new %dx%d GL video mode: %s\n",
+				newW, newH, SDL_GetError());
+
+			//Try to restore old mode
+			m_Screen = SDL_SetVideoMode(m_W, m_H, m_BPP, m_Flags);
+			if ( ! m_Screen )
+			{
+				printf("   Couldn't set back old %dx%d GL video mode: %s\n",
+					m_W, m_H, SDL_GetError());
+				SDL_Quit();
+				exit(2);
+			}
+			m_W = m_Screen->w;
+			m_H = m_Screen->h;
+			m_BPP = m_Screen->format->BitsPerPixel;
+			return false;
+
+		}
+		m_W = m_Screen->w;
+		m_H = m_Screen->h;
+		m_Flags = newFlags;
+		m_BPP = m_Screen->format->BitsPerPixel;
+	}
+	printf("   ...Now working at %dx%d:%d\n", m_W, m_H, m_BPP);
+
+
+	//visible_tiles variable
+	cnf = conf.getValue("graphics", "visible_tiles");
+	if(cnf != "")
+		m_VisibleTiles = cnf.toInt();
+
+	return true;
 }
 
 CWinSystem::~CWinSystem()

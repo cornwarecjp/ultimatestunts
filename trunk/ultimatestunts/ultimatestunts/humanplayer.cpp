@@ -26,6 +26,7 @@ CHumanPlayer::CHumanPlayer(CGameWinSystem *ws, unsigned int ID) : CPlayer()
 {
 	m_WinSys = ws;
 	m_LocalHumanPlayerID = ID;
+	m_AutomaticGear = true;
 }
 
 CHumanPlayer::~CHumanPlayer(){
@@ -54,8 +55,9 @@ bool CHumanPlayer::update()
 		//default
 		carin->m_Gear = ((CCar *)theWorld->getMovingObject(m_MovingObjectId))->m_Engine.m_Gear;
 		
-		//try the automatic gear
-		setAutomaticGear(carin->m_Forward, carin->m_Backward);
+		//try the automatic gear, if requested
+		if(m_AutomaticGear)
+			setAutomaticGear(carin->m_Forward, carin->m_Backward);
 
 		//Try the manual thing
 		if(m_WinSys->playerKeyWasPressed(eShiftUp, m_LocalHumanPlayerID) && carin->m_Gear < 6)

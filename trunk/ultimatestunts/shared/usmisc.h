@@ -34,6 +34,12 @@ sets the datadir up, and initialises internationalisation.
 */
 void shared_main(int argc, char *argv[]);
 
+/*
+Call whenever changes to the configuration options are made
+*/
+void update_shared_configuration();
+
+bool inDevelopmentTree();
 
 vector<CString> getCredits();
 

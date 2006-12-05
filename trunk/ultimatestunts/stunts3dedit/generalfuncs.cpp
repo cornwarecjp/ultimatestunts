@@ -28,7 +28,7 @@ void loadFunc()
 			"3: 3dto3d smooth *.raw file\n"
 			"4: *.lwo file\n"
 			"5: *.3ds file\n"
-			"6: *.obj file\n");
+			"6: Wavefront *.obj file\n");
 		switch(getInput("Your choice: ").toInt())
 		{
 			case 1:
@@ -56,7 +56,7 @@ void loadFunc()
 			"3: 3dto3d smooth *.raw file\n"
 			"4: *.lwo file\n"
 			"5: *.3ds file\n"
-			"6: *.obj file\n");
+			"6: Wavefront *.obj file\n");
 		switch(getInput("Your choice: ").toInt())
 		{
 			case 1:

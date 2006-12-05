@@ -17,12 +17,12 @@
 
 #include "soundworld.h"
 #include "datafile.h"
+#include "lconfig.h"
 
 #include <cstdio>
 
-CSoundWorld::CSoundWorld(const CLConfig &conf)
+CSoundWorld::CSoundWorld()
 {
-	m_World = theWorld;
 }
 
 CSoundWorld::~CSoundWorld()
@@ -40,9 +40,9 @@ bool CSoundWorld::loadObjects()
 
 	unsigned int crashsoundID = loadObject("cars/generic/crash_nonfatal.wav", CParamList(), CDataObject::eSample);
 
-	for(unsigned int i=0; i<m_World->getNumObjects(CDataObject::eMovingObject); i++)
+	for(unsigned int i=0; i<theWorld->getNumObjects(CDataObject::eMovingObject); i++)
 	{
-		const CMovingObject *mo = m_World->getMovingObject(i);
+		const CMovingObject *mo = theWorld->getMovingObject(i);
 
 		{ //engine sound
 			CSoundObj *so = new CSoundObj(i);

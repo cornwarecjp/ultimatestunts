@@ -21,7 +21,6 @@
 #include <vector>
 namespace std {}
 using namespace std;
-#include "lconfig.h"
 
 #include "sndsample.h"
 #include "soundobj.h"
@@ -35,10 +34,8 @@ using namespace std;
 class CSoundWorld : public CDataManager
 {
 public: 
-	CSoundWorld(const CLConfig &conf);
+	CSoundWorld();
 	~CSoundWorld();
-
-	const CWorld *m_World;
 
 	bool loadObjects();
 	void unloadObjects();

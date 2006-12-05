@@ -68,6 +68,8 @@ protected:
 #endif
 
 #ifdef HAVE_LIBOPENAL
+	bool m_WorkaroundPitchBug;
+
 	unsigned int m_Source;
 #endif
 

@@ -16,6 +16,7 @@
  ***************************************************************************/
 
 #include <cstdio>
+#include <cstdlib>
 #include <unistd.h>
 
 #include <libintl.h>
@@ -41,6 +42,7 @@ CGameCore::CGameCore()
 	m_PCtrl = NULL;
 	m_ClientNet = NULL;
 	m_GameType = eLocalGame;
+	m_FPS = 0.0;
 	initLocalGame(""); //just to get it into some state
 }
 
@@ -224,6 +226,9 @@ void CGameCore::setStartTime(float offset)
 	//TODO: some time synchronisation between server and client
 	theWorld->m_LastTime = -3.01 + offset;
 	m_TimerOffset = m_Timer.getTime() - theWorld->m_LastTime;
+	m_FPS = 0.0;
+
+	usleep(1000); //< 1000 fps. Just to avoid getting too high FPS in the first frame
 }
 
 bool CGameCore::update() //true = continue false = leave
@@ -359,7 +364,13 @@ void CGameCore::unloadGame()
 void CGameCore::loadTrackData()
 {
 	printf("---World track data\n");
-	m_World->loadObject(m_TrackFile, CParamList(), CDataObject::eTrack);
+	int ret = m_World->loadObject(m_TrackFile, CParamList(), CDataObject::eTrack);
+
+	if(ret < 0)
+	{
+		printf("Loading the track failed\n");
+		exit(EXIT_FAILURE); //TODO: return to menu
+	}
 }
 
 void CGameCore::loadMovObjData()

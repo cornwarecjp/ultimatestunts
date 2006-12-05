@@ -173,14 +173,25 @@ vector<CString> getDataDirContents(const CString &dir, const CString &ext)
 {
 	vector<CString> ret, ret2;
 
+	//TODO: get contents of server directory
+
 	CString fullname1 = theFileControl->filecontroldatadir + dir;
 	CString fullname2 = theFileControl->filecontrolsavedir + dir;
 
 	ret  = getDirContents(fullname1, ext);
 	ret2 = getDirContents(fullname2, ext);
 
+	//Concatenating, but no doubles
 	for(unsigned int i=0; i<ret2.size(); i++)
+	{
+		bool exists = false;
+		for(unsigned int j=0; j<ret.size(); j++)
+			if(ret2[i] == ret[j])
+				{exists = true; break;}
+		if(exists) continue;
+
 		ret.push_back(ret2[i]);
+	}
 
 	return ret;
 }

@@ -27,6 +27,21 @@ CRenderer::CRenderer(const CWinSystem *winsys)
 	
 	m_FogColor = new float[4];
 
+	reloadConfiguration();
+
+	//And some other settings:
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+	glEnable(GL_LIGHT1);
+	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_CULL_FACE);
+	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+
+	glMateriali(GL_FRONT_AND_BACK, GL_SHININESS, 40);
+}
+
+bool CRenderer::reloadConfiguration()
+{
 	//Default values:
 	m_Settings.m_UseBackground = true;
 	m_Settings.m_ZBuffer = true;
@@ -150,14 +165,7 @@ CRenderer::CRenderer(const CWinSystem *winsys)
 	else
 		glShadeModel( GL_FLAT );
 
-	//And some other settings:
-	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
-	glEnable(GL_TEXTURE_2D);
-	glEnable(GL_CULL_FACE);
-	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-
-	glMateriali(GL_FRONT_AND_BACK, GL_SHININESS, 40);
+	return true;
 }
 
 CRenderer::~CRenderer()

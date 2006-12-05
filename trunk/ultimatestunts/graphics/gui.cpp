@@ -157,7 +157,7 @@ CString CGUI::showInputBox(const CString &title, const CString &deflt, bool *can
 	return ret;
 }
 
-bool CGUI::showYNMessageBox(const CString &title)
+bool CGUI::showYNMessageBox(const CString &title, bool *cancelled)
 {
 	CMessageBox *messagebox = new CMessageBox;
 	messagebox->setTitle(title);
@@ -170,6 +170,9 @@ bool CGUI::showYNMessageBox(const CString &title)
 	m_ChildWidget->m_Widgets.push_back(messagebox);
 	m_WinSys->runLoop(this);
 	bool ret = (messagebox->m_Selected == 0);
+	if(cancelled != NULL)
+		*cancelled = messagebox->m_Cancelled;
+
 	m_ChildWidget->m_Widgets.resize(m_ChildWidget->m_Widgets.size()-1); //removes messagebox
 	delete messagebox;
 

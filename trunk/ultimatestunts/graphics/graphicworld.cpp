@@ -71,6 +71,15 @@ CGraphicWorld::CGraphicWorld()
 {
 	m_World = theWorld;
 
+	reloadConfiguration();
+
+	//Create objects:
+	m_Background = new CBackground(this);
+	m_EnvMap = new CStaticReflection(this);
+}
+
+bool CGraphicWorld::reloadConfiguration()
+{
 	//Defaults:
 	m_TexMaxSize = m_BackgroundSize = m_ReflectionSize = m_ShadowSize = 1024;
 
@@ -93,9 +102,10 @@ CGraphicWorld::CGraphicWorld()
 	cnf = theMainConfig->getValue("graphics", "texture_smooth");
 	m_TexSmooth = (cnf != "false");
 
-	//Create objects:
-	m_Background = new CBackground(this);
-	m_EnvMap = new CStaticReflection(this);
+	//Unload previous lens flare
+	for(unsigned int i=0; i < m_LensFlare.size(); i++)
+		delete m_LensFlare[i].image;
+	m_LensFlare.clear();
 
 	//Load lens flare
 	if(theMainConfig->getValue("graphics", "lensflare_enable") == "true")
@@ -150,6 +160,8 @@ CGraphicWorld::CGraphicWorld()
 			if(comma_files < 0 || comma_sizes < 0 || comma_distances < 0) break;
 		}
 	}
+
+	return true;
 }
 
 CGraphicWorld::~CGraphicWorld()

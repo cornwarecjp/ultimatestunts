@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT([Ultimate Stunts], [0.6.3], [cornware-cjp@users.sourceforge.net], [ultimatestunts])
+AC_INIT([Ultimate Stunts], [0.7.0], [cornware-cjp@users.sourceforge.net], [ultimatestunts])
 AC_CONFIG_SRCDIR([ultimatestunts/main.cpp])
 AM_CONFIG_HEADER(config.h)
 AC_CANONICAL_TARGET
@@ -140,6 +140,9 @@ dnl Check openAL audio library (currently default)
 dnl ------------------------
 AC_CHECK_HEADER(AL/al.h, AC_DEFINE([OPENAL_HEADER], [], [OpenAL headers]))
 AC_CHECK_LIB(openal, alGetError, soundlibs="-lopenal $soundlibs";AC_DEFINE([HAVE_LIBOPENAL], [], [OpenAL Lib]))
+
+AC_CHECK_HEADER(AL/alut.h, AC_DEFINE([ALUT_HEADER], [], [ALUT headers]))
+AC_CHECK_LIB(alut, alutExit, soundlibs="-lalut $soundlibs";AC_DEFINE([HAVE_LIBALUT], [], [ALUT Lib]))
 
 if test "x$soundlibs" = "x" ; then
 

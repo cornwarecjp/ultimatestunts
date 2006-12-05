@@ -23,7 +23,6 @@ namespace std {}
 using namespace std;
 
 #include "gamecamera.h"
-#include "lconfig.h"
 #include "usmacros.h"
 
 #include "soundworld.h"
@@ -36,8 +35,10 @@ using namespace std;
 
 class CSound {
 public: 
-	CSound(const CLConfig &conf);
+	CSound();
 	~CSound();
+
+	bool reloadConfiguration();
 
 	void setCamera(const CCamera *cam)
 		{m_Camera = (CGameCamera *)cam;}
@@ -57,7 +58,6 @@ protected:
 	vector<CString> m_Playlist;
 	unsigned int m_PlaylistItem;
 
-	const CWorld *m_World;
 	CSoundWorld *m_SoundWorld;
 
 	int m_MusicVolume, m_SoundVolume;

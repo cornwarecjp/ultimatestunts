@@ -45,6 +45,7 @@ public:
 	enum {eYesNo, eOK} m_Type;
 	unsigned int m_Selected;
 
+	bool m_Cancelled;
 protected:
 	CString m_Title; //the total text
 	vector<CString> m_Lines; //the text divided into lines

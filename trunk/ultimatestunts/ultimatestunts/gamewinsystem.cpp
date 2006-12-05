@@ -1,5 +1,5 @@
 /***************************************************************************
-                          gamewinsystem.cpp  -  description
+                          gamewinsystem.cpp  -  Window managing with game key settings
                              -------------------
     begin                : do sep 16 2004
     copyright            : (C) 2004 by CJP
@@ -59,6 +59,24 @@ CGameWinSystem::CGameWinSystem(const CString &caption, const CLConfig &conf) : C
 	setupKeys(conf, "input_player3", 3);
 }
 
+bool CGameWinSystem::reloadConfiguration()
+{
+	if(!CWinSystem::reloadConfiguration()) return false;
+
+	CLConfig &conf = *theMainConfig;
+
+	//set default values
+	m_GlobalKeyCode[eExit] = getKeyCodeFromString(conf.getValue("input_global", "exit"));
+	m_GlobalKeyCode[eNextSong] = getKeyCodeFromString(conf.getValue("input_global", "nextsong"));
+
+	setupKeys(conf, "input_player0", 0);
+	setupKeys(conf, "input_player1", 1);
+	setupKeys(conf, "input_player2", 2);
+	setupKeys(conf, "input_player3", 3);
+
+	return true;
+}
+
 CGameWinSystem::~CGameWinSystem()
 {
 }
@@ -104,6 +122,10 @@ bool CGameWinSystem::globalKeyWasPressed(eGlobalKey key)
 	return keyCodeWasPressed(getGlobalKeyCode(key));
 }
 
+unsigned int CGameWinSystem::getKeyFromGlobalKey(eGlobalKey key)
+{
+	return getGlobalKeyCode(key);
+}
 
 //String to keycode conversion
 unsigned int CGameWinSystem::getKeyCodeFromString(const CString &s)

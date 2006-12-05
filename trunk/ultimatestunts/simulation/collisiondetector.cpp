@@ -36,6 +36,46 @@ void CCollisionDetector::reset()
 	m_FirstUpdate = true;
 }
 
+float CCollisionDetector::getLineCollision(const CVector &pos, const CVector &dir)
+{
+	CVector dirnorm = dir.normal();
+
+	int lengte = theWorld->getTrack()->m_L;
+	int breedte = theWorld->getTrack()->m_W;
+	int hoogte = theWorld->getTrack()->m_H;
+
+	int xp = (int)(0.5 + (pos.x)/TILESIZE);
+	int zp = (int)(0.5 + (pos.z)/TILESIZE);
+
+	int xmin=xp, xmax = xp;
+	int zmin=zp, zmax = zp;
+
+	if(dir.x < 0.0) {xmin-=2;} else {xmax+=2;}
+	if(dir.z < 0.0) {zmin-=2;} else {zmax+=2;}
+
+	if(xmin < 0)         xmin = 0;
+	if(xmax > lengte-1)  xmax = lengte-1;
+	if(zmin < 0)         zmin = 0;
+	if(zmax > breedte-1) zmax = breedte-1;
+
+	//TODO: follow line over large area
+
+	for(int x=xmin; x<=xmax; x++)
+		for(int z=zmin; z<=zmax; z++)
+			for(int h=0; h<hoogte; h++)
+			{
+				float ret = LineTileTest(pos, dirnorm, x, z, h);
+				if(ret >= 0.0)
+				{
+					//printf("Line collision (dx,dz)=(%d,%d); h=%d; dist=%.f\n",
+					//	x-xp, z-zp, h, ret);
+					return ret;
+				}
+			}
+
+	return -1.0; //negative = no collision
+}
+
 vector<CCollisionData> CCollisionDetector::getCollisions(const CMovingObject *obj)
 {
 	if(m_FirstUpdate)
@@ -128,6 +168,54 @@ const CCollisionFace *CCollisionDetector::getGroundFace(const CVector &pos)
 	//if(ret == NULL) fprintf(stderr, "ground plane = NULL\n");
 
 	return ret;
+}
+
+float CCollisionDetector::LineTileTest(const CVector &pos, const CVector &dir, int xtile, int ztile, int htile)
+{
+	//Tile data
+	const STile &theTile = theWorld->getTrack()->m_Track[htile + theWorld->getTrack()->m_H*(ztile + theWorld->getTrack()->m_W*xtile)];
+	CVector tilepos = CVector(xtile*TILESIZE, theTile.m_Z*VERTSIZE, ztile*TILESIZE);
+	CTileModel *tilemodel = theWorld->getTileModel(theTile.m_Model);
+
+	//relative to the tile
+	CVector r = pos - tilepos;
+
+	//Test bounding sphere
+	CVector closest = r - r.component(dir);
+	if(closest.abs() > tilemodel->m_BSphere_r)
+		return -1.0; //negative = no collision
+
+	//rotated back
+	CVector d = dir;
+	tileRotate(r, 4 - theTile.m_R);
+	tileRotate(d, 4 - theTile.m_R);
+
+	float mint = -1.0; //negative = not found
+
+	//Per tile-face
+	for(unsigned int tf=0; tf<tilemodel->m_Faces.size(); tf++)
+	{
+		//fprintf(stderr, "Tileface # %d\n", tf);
+		CCollisionFace &theFace = tilemodel->m_Faces[tf];
+
+		float dotpr = d.dotProduct(theFace.nor);
+		if(dotpr > -0.0001)
+			continue; //invalid plane, or oriented backwards or parallel
+
+		//Calculate intersection point
+		float t = (theFace.d - r.dotProduct(theFace.nor)) / dotpr;
+		if(t < 0.0) continue; //intersection point behind start point
+
+		//Test if we have had a closer point
+		if(mint >= 0.0 && mint < t) continue;
+
+		//Test if this point is inside the face
+		if(!theFace.isInside(r + d * t)) continue;
+
+		mint = t;
+	} //for tf
+
+	return mint;
 }
 
 const CCollisionFace *CCollisionDetector::getTileGround(int xtile, int ztile, int htile, const CVector &pos, float &dmax)

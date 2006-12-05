@@ -112,6 +112,21 @@ compiledvertexarray = true
 
 
 
+
+#Various workarounds for compatibility issues
+[workaround]
+
+#Work around a pixel transfer bug in the
+#Linux DRI-driver for the Intel i815
+#cards
+dri_i815_pixeltransfer = false
+
+#Work around a bug in the pitch limits
+#of the OpenAL 0.0.8 implementation
+#from openal.org
+openal_008_pitch = true
+
+
 #Animation section
 [animation]
 
@@ -194,11 +209,11 @@ up = up
 down = down
 left = left
 right = right
-shiftup = rshift
-shiftdown = rctrl
+shiftup = ;
+shiftdown = /
 horn = enter
-camerachange = ralt
-cameratoggle = /
+camerachange = rshift
+cameratoggle = ralt
 
 [input_player3]
 

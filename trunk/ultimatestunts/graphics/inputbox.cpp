@@ -62,9 +62,9 @@ int CInputBox::onRedraw()
 {
 	CWidget::onRedraw();
 
-	glColor4f(0, 0, 0, 0.7);
+	glColor4f(0, 0, 0, 0.9);
 	drawBackground();
-	glColor3f(1,1,1);
+	glColor4f(1,1,1,1);
 
 	//centered
 	glTranslatef(m_W/2, m_H/2, 0);

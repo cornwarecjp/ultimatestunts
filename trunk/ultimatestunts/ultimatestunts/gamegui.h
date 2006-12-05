@@ -41,10 +41,14 @@ public:
 
 	virtual void start(); //returns when an exit command is given
 
+	virtual bool reloadConfiguration();
+
+	virtual int onKeyPress(int key);
 
 protected:
 	//Core things that are to be managed
 	CUSCore *m_GameCore;
+	CSound *m_SoundSystem;
 	vector<CPlayer *> m_Players;
 	CUSServer *m_Server;
 
@@ -72,9 +76,13 @@ protected:
 		bool isHuman;
 		unsigned int carIndex; //refers to m_CarFile
 		CVector carColor;
+		bool automaticGearbox;
 	};
 	vector<SPlayerDescr> m_PlayerDescr;
 	unsigned int m_SelectedPlayer; //for player menus
+
+	CString m_SelectedOptionsSection; //for options menus
+	bool m_OptionsAreChanged;
 
 	//A cache for names of the cars, loaded by constructor
 	struct SCarFile
@@ -100,6 +108,7 @@ protected:
 		CString viewPlayersMenu();
 		CString viewPlayerMenu();
 		CString viewCarMenu();
+		CString viewOptionsMenu();
 		CString viewCreditsMenu();
 		CString viewHiscore();
 
@@ -112,6 +121,7 @@ protected:
 	CGUIPage m_PlayersPage;
 	CGUIPage m_PlayerPage;
 	CGUIPage m_CarPage;
+	CGUIPage m_OptionsPage;
 	CGUIPage m_CreditsPage;
 	CGUIPage m_LoadingPage;
 	CGUIPage m_HiscorePage;

@@ -61,7 +61,11 @@ void loadingCallback(const CString &status, float progress)
 
 CGameGUI::CGameGUI(const CLConfig &conf, CGameWinSystem *winsys) : CGUI(conf, winsys)
 {
-	m_GameCore = new CUSCore(winsys);
+	printf("---Sound system\n");
+	m_SoundSystem = new CSound;
+
+
+	m_GameCore = new CUSCore(winsys, m_SoundSystem);
 
 	m_Server = NULL;
 
@@ -95,6 +99,7 @@ CGameGUI::CGameGUI(const CLConfig &conf, CGameWinSystem *winsys) : CGUI(conf, wi
 	pd.name = _("Anonymous");
 	pd.isHuman = true;
 	pd.carColor = CVector(1, 0, 0); //default: red
+	pd.automaticGearbox = true;
 	for(unsigned int i=0; i < m_CarFiles.size(); i++)
 		if(m_CarFiles[i].filename == "cars/ferrarispider.conf")
 		{
@@ -104,12 +109,13 @@ CGameGUI::CGameGUI(const CLConfig &conf, CGameWinSystem *winsys) : CGUI(conf, wi
 	m_PlayerDescr.push_back(pd);
 	m_SelectedPlayer = 0;
 
+	m_OptionsAreChanged = false;
+
 	//Load an initial state
 	m_GameCore->initLocalGame(m_TrackFile);
 
 	//setting up the menus:
 	//MAIN MENU
-	m_MainPage.m_Title = _("Main menu");
 	m_MainPage.m_DrawBackground = true;
 	CMenu *menu = new CMenu;
 	menu->m_Xrel = 0.1;
@@ -121,7 +127,6 @@ CGameGUI::CGameGUI(const CLConfig &conf, CGameWinSystem *winsys) : CGUI(conf, wi
 	menu->m_AlignLeft = true;
 
 	//GAMETYPE MENU
-	m_GameTypePage.m_Title = _("Select the game type:");
 	m_GameTypePage.m_DrawBackground = true;
 	menu = new CMenu;
 	menu->m_Xrel = 0.1;
@@ -133,7 +138,6 @@ CGameGUI::CGameGUI(const CLConfig &conf, CGameWinSystem *winsys) : CGUI(conf, wi
 	menu->m_AlignLeft = true;
 
 	//SELECT SERVER MENU
-	m_SelectServerPage.m_Title = _("Select a server:");
 	m_SelectServerPage.m_DrawBackground = true;
 	menu = new CMenu;
 	menu->m_Xrel = 0.1;
@@ -145,7 +149,6 @@ CGameGUI::CGameGUI(const CLConfig &conf, CGameWinSystem *winsys) : CGUI(conf, wi
 	menu->m_AlignLeft = false;
 
 	//TRACK MENU
-	m_TrackPage.m_Title = _("Select a track:");
 	m_TrackPage.m_DrawBackground = true;
 	menu = new CLongMenu;
 	menu->m_Xrel = 0.1;
@@ -157,7 +160,6 @@ CGameGUI::CGameGUI(const CLConfig &conf, CGameWinSystem *winsys) : CGUI(conf, wi
 	menu->m_AlignLeft = false;
 
 	//REPLAY MENU
-	m_ReplayPage.m_Title = _("Select a replay file:");
 	m_ReplayPage.m_DrawBackground = true;
 	menu = new CMenu;
 	menu->m_Xrel = 0.1;
@@ -169,7 +171,6 @@ CGameGUI::CGameGUI(const CLConfig &conf, CGameWinSystem *winsys) : CGUI(conf, wi
 	menu->m_AlignLeft = false;
 
 	//PLAYERS MENU
-	m_PlayersPage.m_Title = _("Players menu:");
 	m_PlayersPage.m_DrawBackground = true;
 	menu = new CMenu;
 	menu->m_Xrel = 0.1;
@@ -181,7 +182,6 @@ CGameGUI::CGameGUI(const CLConfig &conf, CGameWinSystem *winsys) : CGUI(conf, wi
 	menu->m_AlignLeft = true;
 
 	//PLAYER MENU
-	m_PlayerPage.m_Title = _("Configure Player:");
 	m_PlayerPage.m_DrawBackground = true;
 	{
 		m_CarViewer = new CCarViewer(m_WinSys, m_GameCore->getGraphicWorld());
@@ -214,7 +214,7 @@ CGameGUI::CGameGUI(const CLConfig &conf, CGameWinSystem *winsys) : CGUI(conf, wi
 	//CAR MENU
 	m_CarPage.m_Title = "Select a car:";
 	m_CarPage.m_DrawBackground = true;
-	menu = new CMenu;
+	menu = new CLongMenu;
 	menu->m_Xrel = 0.1;
 	menu->m_Yrel = 0.2;
 	menu->m_Wrel = 0.8;
@@ -223,8 +223,18 @@ CGameGUI::CGameGUI(const CLConfig &conf, CGameWinSystem *winsys) : CGUI(conf, wi
 	menu->m_Selected = 0;
 	menu->m_AlignLeft = false;
 
+	//OPTIONS MENU
+	m_OptionsPage.m_DrawBackground = true;
+	menu = new CLongMenu;
+	menu->m_Xrel = 0.1;
+	menu->m_Yrel = 0.2;
+	menu->m_Wrel = 0.8;
+	menu->m_Hrel = 0.6;
+	m_OptionsPage.m_Widgets.push_back(menu);
+	menu->m_Selected = 0;
+	menu->m_AlignLeft = true;
+
 	//CREDITS MENU
-	m_CreditsPage.m_Title = _("Credits and License");
 	m_CreditsPage.m_DrawBackground = true;
 	menu = new CLongMenu;
 	menu->m_Xrel = 0.1;
@@ -234,10 +244,8 @@ CGameGUI::CGameGUI(const CLConfig &conf, CGameWinSystem *winsys) : CGUI(conf, wi
 	m_CreditsPage.m_Widgets.push_back(menu);
 	menu->m_Selected = 0;
 	menu->m_AlignLeft = true;
-	menu->m_Lines = getCredits();
 
 	//LOADING MENU
-	m_LoadingPage.m_Title = _("Loading");
 	m_LoadingPage.m_DrawBackground = true;
 	menu = new CMenu;
 	menu->m_Xrel = 0.1;
@@ -277,7 +285,6 @@ CGameGUI::CGameGUI(const CLConfig &conf, CGameWinSystem *winsys) : CGUI(conf, wi
 	menu->m_AlignLeft = true;
 	m_HiscorePage.m_Widgets.push_back(menu);
 
-	m_HiscorePage.m_Title = _("Hiscore");
 	m_HiscorePage.m_DrawBackground = true;
 	menu = new CMenu;
 	menu->m_Xrel = 0.1;
@@ -291,9 +298,64 @@ CGameGUI::CGameGUI(const CLConfig &conf, CGameWinSystem *winsys) : CGUI(conf, wi
 	updateMenuTexts();
 }
 
+bool CGameGUI::reloadConfiguration()
+{
+	if(!m_WinSys->reloadConfiguration()) return false;
+	if(!m_SoundSystem->reloadConfiguration()) return false;
+
+	leave2DMode();
+	if(!m_GameCore->reloadConfiguration()) return false;
+	if(!m_CarViewer->reloadConfiguration()) return false;
+	enter2DMode();
+
+	//Set car preview
+	CRenderWidget *render = (CRenderWidget *)(m_PlayerPage.m_Widgets[0]);
+	if(theMainConfig->getValue("graphics", "car_preview") == "true")
+	{
+		render->setIdleRedraw(true);
+		render->m_Renderer = m_CarViewer;
+	}
+	else
+	{
+		render->setIdleRedraw(false);
+		render->m_Renderer = NULL;
+	}
+
+	//First check the validity of the datadir, before changing it
+	{
+		CString DataDir;
+		CString cnf = theMainConfig->getValue("files", "datadir");
+		if(cnf != "")
+		{
+			if(cnf[cnf.length()-1] != '/') cnf += '/';
+			DataDir = cnf;
+		}
+
+#ifdef UNIX_TREE
+		//fill in home dir for "~/"
+		CString homedir = getenv("HOME");
+		if(DataDir.mid(0, 2) == "~/")
+			DataDir = homedir + DataDir.mid(1);
+#endif
+
+		if(inDevelopmentTree())
+			DataDir = "./data/";
+
+		CString testfile = DataDir + "misc/iso8859-1.rgba";
+		if(!fileExists(testfile)) return false;
+	}
+
+	update_shared_configuration(); //sets data dir and language
+
+	updateMenuTexts();
+
+	return true;
+}
+
 CGameGUI::~CGameGUI()
 {
 	delete m_GameCore;
+	delete m_SoundSystem;
 	delete m_CarViewer;
 
 	if(m_Server != NULL)
@@ -302,6 +364,15 @@ CGameGUI::~CGameGUI()
 		delete m_Server;
 		m_Server = NULL;
 	}
+}
+
+int CGameGUI::onKeyPress(int key)
+{
+	CGameWinSystem *winsys = (CGameWinSystem *)m_WinSys;
+	if((unsigned int)key == winsys->getKeyFromGlobalKey(eNextSong))
+		m_SoundSystem->playNextSong();
+
+	return CGUI::onKeyPress(key);
 }
 
 void CGameGUI::updateMenuTexts()
@@ -313,6 +384,7 @@ void CGameGUI::updateMenuTexts()
 
 	//setting up the menus:
 	//MAIN MENU
+	m_MainPage.m_Title = _("Main menu");
 	CMenu *menu = (CMenu *)(m_MainPage.m_Widgets[0]);
 	menu->m_Lines.clear();
 	menu->m_Lines.push_back(_("Drive!"));
@@ -348,6 +420,7 @@ void CGameGUI::updateMenuTexts()
 
 
 	//GAMETYPE MENU
+	m_GameTypePage.m_Title = _("Select the game type:");
 	menu = (CMenu *)(m_GameTypePage.m_Widgets[0]);
 	menu->m_Lines.clear();
 	menu->m_Lines.push_back(_("Local game"));
@@ -355,20 +428,24 @@ void CGameGUI::updateMenuTexts()
 	menu->m_Lines.push_back(_("Start a new network game"));
 
 	//SELECT SERVER MENU
+	m_SelectServerPage.m_Title = _("Select a server:");
 	menu = (CMenu *)(m_SelectServerPage.m_Widgets[0]);
 	menu->m_Lines.clear();
 	for(unsigned int i=0; i < m_ServerList.size(); i++)
 		menu->m_Lines.push_back(m_ServerList[i].hostName + " : " + m_ServerList[i].serverName);
 
 	//TRACK MENU
+	m_TrackPage.m_Title = _("Select a track:");
 	menu = (CMenu *)(m_TrackPage.m_Widgets[0]);
 	menu->m_Lines = getDataDirContents("tracks", ".track");
 
 	//REPLAY MENU
+	m_ReplayPage.m_Title = _("Select a replay file:");
 	menu = (CMenu *)(m_ReplayPage.m_Widgets[0]);
 	menu->m_Lines = getDataDirContents("tracks", ".repl");
 
 	//PLAYERS MENU
+	m_PlayersPage.m_Title = _("Players menu:");
 	menu = (CMenu *)(m_PlayersPage.m_Widgets[0]);
 	menu->m_Lines.clear();
 	for(unsigned int i=0; i < m_PlayerDescr.size(); i++)
@@ -385,14 +462,22 @@ void CGameGUI::updateMenuTexts()
 	menu->m_Lines.push_back(_("Return to main menu"));
 
 	//PLAYER MENU
-	menu = (CMenu *)(m_PlayerPage.m_Widgets[1]);
-	menu->m_Lines.clear();
-	menu->m_Lines.push_back(_("Player type: ") + txtPlayertype[m_PlayerDescr[m_SelectedPlayer].isHuman]);
-	menu->m_Lines.push_back(_("Name       : ") + m_PlayerDescr[m_SelectedPlayer].name);
-	menu->m_Lines.push_back(_("Car        : ") + m_CarFiles[m_PlayerDescr[m_SelectedPlayer].carIndex].fullname);
-	menu->m_Lines.push_back(_("Choose a car color"));
-	menu->m_Lines.push_back(_("Delete this player"));
-	menu->m_Lines.push_back(_("Ready"));
+	m_PlayerPage.m_Title = _("Configure Player:");
+	{
+		CString gearbox = _("manual");
+		if(m_PlayerDescr[m_SelectedPlayer].automaticGearbox)
+			gearbox = _("automatic");
+
+		menu = (CMenu *)(m_PlayerPage.m_Widgets[1]);
+		menu->m_Lines.clear();
+		menu->m_Lines.push_back(_("Player type: ") + txtPlayertype[m_PlayerDescr[m_SelectedPlayer].isHuman]);
+		menu->m_Lines.push_back(_("Name       : ") + m_PlayerDescr[m_SelectedPlayer].name);
+		menu->m_Lines.push_back(_("Car        : ") + m_CarFiles[m_PlayerDescr[m_SelectedPlayer].carIndex].fullname);
+		menu->m_Lines.push_back(_("Gearbox    : ") + gearbox);
+		menu->m_Lines.push_back(_("Choose a car color"));
+		menu->m_Lines.push_back(_("Delete this player"));
+		menu->m_Lines.push_back(_("Ready"));
+	}
 
 	//CAR MENU
 	m_CarPage.m_Title.format(_("Select a car for %s:"), 256, m_PlayerDescr[m_SelectedPlayer].name.c_str());
@@ -401,7 +486,23 @@ void CGameGUI::updateMenuTexts()
 	for(unsigned int i=0; i < m_CarFiles.size(); i++)
 		menu->m_Lines.push_back(m_CarFiles[i].fullname);
 
+	//OPTIONS MENU
+	m_OptionsPage.m_Title = _("Options menu:");
+	CLongMenu *lmenu = (CLongMenu *)(m_OptionsPage.m_Widgets[0]);
+	lmenu->m_Lines = theMainConfig->getSections();
+	lmenu->m_Lines.push_back(_("Return to main menu"));
+	lmenu->m_AlignLeft = true;
+
+	//CREDITS MENU
+	m_CreditsPage.m_Title = _("Credits and License");
+	lmenu = (CLongMenu *)(m_CreditsPage.m_Widgets[0]);
+	lmenu->m_Lines = getCredits();
+
+	//LOADING MENU
+	m_LoadingPage.m_Title = _("Loading");
+
 	//HISCORE MENU
+	m_HiscorePage.m_Title = _("Hiscore");
 	menu = (CMenu *)(m_HiscorePage.m_Widgets[3]);
 	menu->m_Lines.clear();
 	menu->m_Lines.push_back(_("View replay"));
@@ -437,6 +538,8 @@ void CGameGUI::start()
 			section = viewPlayerMenu();
 		else if(section=="carmenu")
 			section = viewCarMenu();
+		else if(section=="optionsmenu")
+			section = viewOptionsMenu();
 		else if(section=="creditsmenu")
 			section = viewCreditsMenu();
 		else if(section=="playgame")
@@ -483,8 +586,8 @@ CString CGameGUI::viewMainMenu()
 		case 4:
 			return "replaymenu";
 		case 5:
-			showMessageBox(_("Please edit ultimatestunts.conf manually"));
-			return "mainmenu";
+			//showMessageBox(_("Please edit ultimatestunts.conf manually"));
+			return "optionsmenu";
 		case 6:
 			return "creditsmenu";
 		case 7:
@@ -641,6 +744,7 @@ CString CGameGUI::viewPlayersMenu()
 		SPlayerDescr newpl;
 		newpl.name = "AI Player";
 		newpl.isHuman = false;
+		newpl.automaticGearbox = true;
 		for(unsigned int i=0; i < m_CarFiles.size(); i++)
 			if(m_CarFiles[i].filename == "cars/ferrarispider.conf")
 			{
@@ -685,13 +789,16 @@ CString CGameGUI::viewPlayerMenu()
 		return "playermenu";
 	case 2: //car
 		return "carmenu";
-	case 3: //car color
+	case 3: //Gearbox
+		m_PlayerDescr[m_SelectedPlayer].automaticGearbox ^= true;
+		return "playermenu";
+	case 4: //car color
 		//m_PlayerDescr[m_SelectedPlayer].carColor = showInputBox(_("Enter the car color:"),
 		//	m_PlayerDescr[m_SelectedPlayer].carColor).toVector();
 		m_PlayerDescr[m_SelectedPlayer].carColor = showColorSelect(_("Car color:"),
 			m_PlayerDescr[m_SelectedPlayer].carColor);
 		return "playermenu";
-	case 4: //delete
+	case 5: //delete
 		if(m_PlayerDescr.size() == 1)
 		{
 			showMessageBox(_("Can't delete: there needs to be at least one player"));
@@ -704,7 +811,7 @@ CString CGameGUI::viewPlayerMenu()
 			return "playersmenu";
 		}
 		return "playermenu";
-	case 5: //return
+	case 6: //return
 		return "playersmenu";
 	}
 
@@ -722,6 +829,130 @@ CString CGameGUI::viewCarMenu()
 	}
 
 	return "playermenu";
+}
+
+CString CGameGUI::viewOptionsMenu()
+{
+	CMenu *menu = (CMenu *)(m_OptionsPage.m_Widgets[0]);
+	if(m_SelectedOptionsSection != "")
+	{
+		m_OptionsPage.m_Title.format(_("Options: %s"), 80, m_SelectedOptionsSection.c_str());
+
+		vector<CString> options = theMainConfig->getFieldsInSection(m_SelectedOptionsSection);
+		for(unsigned int i=0; i < options.size(); i++)
+		{
+			CString value = theMainConfig->getValue(m_SelectedOptionsSection, options[i]);
+
+			//Force them to be the same length, for alignment
+			unsigned int vlen = value.length(), olen = options[i].length();
+			if(vlen > olen)
+			{
+				options[i] = CString().forceLength(vlen - olen) + options[i];
+			}
+			else
+			{
+				value = value.forceLength(olen);
+			}
+
+			options[i] = options[i] + " = " + value;
+		}
+
+		menu->m_Lines = options;
+		menu->m_Lines.push_back(_("Ready"));
+		menu->m_AlignLeft = false;
+	}
+
+	m_ChildWidget = &m_OptionsPage;
+	if(!m_WinSys->runLoop(this)) //cancelling returns false
+	{
+		if(m_SelectedOptionsSection == "")
+		{
+			if(m_OptionsAreChanged)
+			{
+				bool cancelled = false;
+				bool ans = showYNMessageBox(
+					_("Some options are changed. Do you wish to save the options?"), &cancelled);
+				if(cancelled) return "optionsmenu";
+				if(ans)
+				{
+					//save options
+					if(!theMainConfig->saveFile())
+					{
+						showMessageBox(_("Saving failed"));
+					}
+					else
+					{
+						m_OptionsAreChanged = false;
+					}
+				}
+			}
+
+			return "mainmenu";
+		}
+
+		m_SelectedOptionsSection = "";
+		menu->m_Selected = 0; //scroll back to the start
+		return "optionsmenu";
+	}
+
+	if(m_SelectedOptionsSection == "")
+	{
+		if(menu->m_Selected == menu->m_Lines.size()-1)
+		{
+			if(m_OptionsAreChanged)
+			{
+				bool cancelled = false;
+				bool ans = showYNMessageBox(
+					_("Some options are changed. Do you wish to save the options?"), &cancelled);
+				if(cancelled) return "optionsmenu";
+				if(ans)
+				{
+					//save options
+					if(!theMainConfig->saveFile())
+					{
+						showMessageBox(_("Saving failed"));
+					}
+					else
+					{
+						m_OptionsAreChanged = false;
+					}
+				}
+			}
+
+			return "mainmenu";
+		}
+
+		m_SelectedOptionsSection = menu->m_Lines[menu->m_Selected];
+		return "optionsmenu";
+	}
+	
+	if(menu->m_Selected == menu->m_Lines.size()-1)
+	{
+		m_SelectedOptionsSection = "";
+		menu->m_Selected = 0; //scroll back to the start
+		return "optionsmenu";
+	}
+
+	CString option = theMainConfig->getFieldsInSection(m_SelectedOptionsSection)[menu->m_Selected];
+	CString oldValue = theMainConfig->getValue(m_SelectedOptionsSection, option);
+	bool cancelled = false;
+	CString newValue = showInputBox(option, oldValue, &cancelled);
+	if(!cancelled)
+	{
+		theMainConfig->setValue(m_SelectedOptionsSection, option, newValue);
+
+		if(!reloadConfiguration())
+		{
+			showMessageBox(_("Applying the new value failed"));
+			theMainConfig->setValue(m_SelectedOptionsSection, option, oldValue);
+		}
+		else
+		{
+			m_OptionsAreChanged = true;
+		}
+	}
+
+	return "optionsmenu";
 }
 
 CString CGameGUI::viewCreditsMenu()
@@ -919,9 +1150,15 @@ void CGameGUI::load()
 			}
 
 			if(m_PlayerDescr[i].isHuman)
-				p = new CHumanPlayer((CGameWinSystem *)m_WinSys, numHumanPlayers);
+			{
+				CHumanPlayer *hp = new CHumanPlayer((CGameWinSystem *)m_WinSys, numHumanPlayers);
+				hp->m_AutomaticGear = m_PlayerDescr[i].automaticGearbox;
+				p = hp;
+			}
 			else
+			{
 				p = new CAIPlayerCar();
+			}
 
 			if(!m_GameCore->addPlayer(p, choice))
 			{
@@ -998,4 +1235,3 @@ void CGameGUI::unload()
 
 	//do not yet unload the server: we might want to play again
 }
-

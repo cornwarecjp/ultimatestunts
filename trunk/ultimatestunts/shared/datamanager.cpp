@@ -36,7 +36,21 @@ CDataObject *CDataManager::getObject(CDataObject::eDataType type, unsigned int I
 {
 	if(ID >= (m_Objects[type]).size())
 	{
-		printf("Errror in CDataManager::getObject: %d >= %d\n", ID, (m_Objects[type]).size());
+		CString name;
+		if(type == CDataObject::eNone)           name = "None";
+		if(type == CDataObject::eTrack)          name = "Track";
+		if(type == CDataObject::eCollisionModel) name = "CollisionModel";
+		if(type == CDataObject::eBound)          name = "Bound";
+		if(type == CDataObject::eTileModel)      name = "TileModel";
+		if(type == CDataObject::eMaterial)       name = "Material";
+		if(type == CDataObject::eMovingObject)   name = "MovingObject";
+		if(type == CDataObject::eGraphObj)       name = "GraphObj";
+		if(type == CDataObject::eTexture)        name = "Texture";
+		if(type == CDataObject::eSample)         name = "Sample";
+		printf("Errror in CDataManager::getObject (shared/datamanager.cpp):\n"
+			"  Object requested with ID %d, but there are only %d"
+			"  objects of type %d (%s)\n",
+			ID, (m_Objects[type]).size(), type, name.c_str());
 		return NULL;
 	}
 
@@ -46,7 +60,21 @@ const CDataObject *CDataManager::getObject(CDataObject::eDataType type, unsigned
 {
 	if(ID >= (m_Objects[type]).size())
 	{
-		printf("Errror in CDataManager::getObject: %d >= %d\n", ID, (m_Objects[type]).size());
+		CString name;
+		if(type == CDataObject::eNone)           name = "None";
+		if(type == CDataObject::eTrack)          name = "Track";
+		if(type == CDataObject::eCollisionModel) name = "CollisionModel";
+		if(type == CDataObject::eBound)          name = "Bound";
+		if(type == CDataObject::eTileModel)      name = "TileModel";
+		if(type == CDataObject::eMaterial)       name = "Material";
+		if(type == CDataObject::eMovingObject)   name = "MovingObject";
+		if(type == CDataObject::eGraphObj)       name = "GraphObj";
+		if(type == CDataObject::eTexture)        name = "Texture";
+		if(type == CDataObject::eSample)         name = "Sample";
+		printf("Errror in CDataManager::getObject (shared/datamanager.cpp):\n"
+			"  Object requested with ID %d, but there are only %d"
+			"  objects of type %d (%s)\n",
+			ID, (m_Objects[type]).size(), type, name.c_str());
 		return NULL;
 	}
 

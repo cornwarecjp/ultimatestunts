@@ -17,6 +17,7 @@
 #include <stdlib.h>
 
 #include "soundobj.h"
+#include "lconfig.h"
 
 #ifdef HAVE_LIBFMOD
 
@@ -52,6 +53,9 @@ CSoundObj::CSoundObj(int movingobjectID, bool looping)
 		{alSourcei(m_Source, AL_LOOPING, AL_TRUE);}
 	else
 		{alSourcei(m_Source, AL_LOOPING, AL_FALSE);}
+
+	m_WorkaroundPitchBug =
+		theMainConfig->getValue("workaround", "openal_008_pitch") == "true";
 #endif
 }
 
@@ -150,9 +154,13 @@ void CSoundObj::setFrequency(float f)
 #endif
 
 #ifdef HAVE_LIBOPENAL
-	//F***ing openAL only supports pitch from 0.5 to 2.0!!!
-	if(f < 0.5) f = 0.5;
-	if(f > 2.0) f = 2.0;
+	if(m_WorkaroundPitchBug)
+	{
+		//Workaround for OpenAL 0.0.8, which doesn't meet it's own OpenAL 1.1 specs
+		if(f > 1.999) f = 1.999;
+		if(f < 0.001) f = 0.001;
+	}
+
 	alSourcef(m_Source, AL_PITCH, f);
 #endif
 }

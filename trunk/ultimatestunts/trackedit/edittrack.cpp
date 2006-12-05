@@ -320,8 +320,6 @@ bool CEditTrack::import(const CString &filename)
 				m_Track[offset+i].m_Z++;
 	}
 
-	printf("test\n");
-
 	//delete all existing routes
 	m_Routes.clear();
 
@@ -364,25 +362,25 @@ void CEditTrack::followTRKRoutes(const CTRKFile &file, CTrack::CCheckpoint start
 		switch(item)
 		{
 		case 0xfd:
-			trackRTKCorners(
+			trackTRKCorners(
 				item,
 				file.m_Track[start.z-1][start.x-1].item,
 				dir, start.y, altdir);
 			break;
 		case 0xfe:
-			trackRTKCorners(
+			trackTRKCorners(
 				item,
 				file.m_Track[start.z-1][start.x].item,
 				dir, start.y, altdir);
 			break;
 		case 0xff:
-			trackRTKCorners(
+			trackTRKCorners(
 				item,
 				file.m_Track[start.z][start.x-1].item,
 				dir, start.y, altdir);
 			break;
 		default:
-			trackRTKCorners(
+			trackTRKCorners(
 				file.m_Track[start.z][start.x].terrain,
 				item,
 				dir, start.y, altdir);
@@ -491,7 +489,7 @@ void CEditTrack::followTRKRoutes(const CTRKFile &file, CTrack::CCheckpoint start
 			newItem == 0xb3 || newItem == 0xb4 || newItem == 0xb5
 			)
 		{
-			if(file.m_Track[start.z][start.x].terrain==0x06) start.y++;
+			start.y = (file.m_Track[start.z][start.x].terrain==0x06);
 			printf("Stopping route %d on finish %d %d %d\n", m_Routes.size()-1,
 				start.x, start.y, start.z);
 			m_Routes.back().push_back(start);
@@ -537,7 +535,7 @@ bool CEditTrack::undoRoutingFromSplit
 	return false;
 }
 
-void CEditTrack::trackRTKCorners(unsigned char terrain, unsigned char item, int &dir, int &height, int &altdir)
+void CEditTrack::trackTRKCorners(unsigned char terrain, unsigned char item, int &dir, int &height, int &altdir)
 {
 	//default:
 	height = 0;
@@ -861,18 +859,21 @@ void CEditTrack::trackRTKCorners(unsigned char terrain, unsigned char item, int 
 
 	//Start on hill
 	case 0x24:
-	case 0x25:
-	case 0x26:
-	case 0x27:
 	case 0x38:
-	case 0x39:
-	case 0x3a:
-	case 0x3b:
 	case 0x5f:
+
+	case 0x25:
+	case 0x39:
 	case 0x60:
+
+	case 0x26:
+	case 0x3a:
 	case 0x61:
+
+	case 0x27:
+	case 0x3b:
 	case 0x62:
-		height = (terrain==0x07 || terrain==0x08 || terrain==0x09 || terrain==0x0a);
+		height = (terrain == 0x07 || terrain == 0x08 || terrain == 0x09 || terrain == 0x0a);
 		break;
 	}
 }

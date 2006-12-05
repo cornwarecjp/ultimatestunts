@@ -39,6 +39,15 @@ CGameRenderer::CGameRenderer(const CWinSystem *winsys) : CRenderer(winsys)
 	m_UpdateBodyReflection = -1;
 }
 
+bool CGameRenderer::reloadConfiguration()
+{
+	if(!CRenderer::reloadConfiguration()) return false;
+
+	if(!m_GraphicWorld->reloadConfiguration()) return false;
+
+	return true;
+}
+
 CGameRenderer::~CGameRenderer()
 {
 	unloadTrackData();
@@ -71,7 +80,7 @@ bool CGameRenderer::loadTrackData()
 
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_color);
 	glLightfv(GL_LIGHT0, GL_SPECULAR, specular_color);
-	glLightfv(GL_LIGHT0, GL_AMBIENT, ambient_color);
+	glLightfv(GL_LIGHT1, GL_AMBIENT, ambient_color);
 
 	return true;
 }
@@ -340,9 +349,14 @@ void CGameRenderer::renderScene()
 
 	glTranslatef (-camera.x, -camera.y, -camera.z);
 
+	//Camera position in tile units
 	camx = (int)(0.5 + (camera.x)/TILESIZE);
 	camy = (int)(0.5 + (camera.y)/VERTSIZE);
 	camz = (int)(0.5 + (camera.z)/TILESIZE);
+
+	//Camera clipping plane
+	m_CamPlaneNor  = cammat * CVector(0.0,0.0,-1.0);
+	m_CamPlaneDist = camera.dotProduct(m_CamPlaneNor);
 
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_NORMAL_ARRAY);
@@ -512,12 +526,17 @@ void CGameRenderer::viewPilaar(int x, int y, int cur_zpos)
 	int  breedte = theWorld->getTrack()->m_W;
 	int hoogte = theWorld->getTrack()->m_H;
 
+	CVector tilepos;
+
+
 	glPushMatrix();
 
 		int lod;
-		int d=abs(camx-x);
-		int dy=abs(camz-y); //Dit (camz) is geen typefout!!!
-		if(dy>d) d=dy; //d is de grootste van de 2
+		int dx=abs(camx-x);
+		int dy=abs(camz-y); //This (camz) is not a typo!!!
+
+		int d = dx;
+		if(dy>d) d=dy; //d is the largest of the 2
 
 		if(d>7)
 			lod = 4;
@@ -528,34 +547,47 @@ void CGameRenderer::viewPilaar(int x, int y, int cur_zpos)
 		else
 			lod = 1;
 
+		float dist = TILESIZE*sqrt(dx*dx+dy*dy);
+		CReflection *refl = NULL;
+		if(dist < m_Settings.m_ReflectionDist)
+			refl = m_GraphicWorld->m_EnvMap;
+
 		int pilaar_index = hoogte * y + hoogte * breedte * x;
 		int ynu = 0;
 		int rnu = 0;
 
 		for (int i = 0; i < hoogte; i++) //bottom to top
 		{
-			STile temp = theWorld->getTrack()->m_Track[pilaar_index + i]; //welke tile?
+			STile temp = theWorld->getTrack()->m_Track[pilaar_index + i]; //which tile?
 
 			if(temp.m_Model == 0) break; //0 = empty tile
 
-			//goede hoogte
+			//right height
 			int ystrax = temp.m_Z;
+
+			tilepos = CVector(x*TILESIZE, ystrax*VERTSIZE, y*TILESIZE);
+			if(tilepos.dotProduct(m_CamPlaneNor) < m_CamPlaneDist-TILESIZE)
+				continue; //behind clipping plane
 
 			if(ystrax >= camy)
 			{
 				for(int j = hoogte-1; j >= i; j--) //top to bottom
 				{
-					temp = theWorld->getTrack()->m_Track[pilaar_index + j]; //welke tile?
+					temp = theWorld->getTrack()->m_Track[pilaar_index + j]; //which tile?
 
 					if(temp.m_Model > 0) //0 = empty tile
 					{
-						//goede hoogte
+						//right height
 						ystrax = temp.m_Z;
+
+						tilepos = CVector(x*TILESIZE, ystrax*VERTSIZE, y*TILESIZE);
+						if(tilepos.dotProduct(m_CamPlaneNor) < m_CamPlaneDist-TILESIZE)
+							continue; //behind clipping plane
 
 						glTranslatef(0, VERTSIZE*(ystrax-ynu),0);
 						ynu = ystrax;
 
-						//goede orientatie
+						//right orientatie
 						int rstrax = temp.m_R;
 						if (rstrax != rnu)
 						{
@@ -565,7 +597,7 @@ void CGameRenderer::viewPilaar(int x, int y, int cur_zpos)
 
 						//draw the model
 						m_GraphicWorld->getTile(temp.m_Model)->draw(
-							&m_Settings, m_GraphicWorld->m_EnvMap, lod, theWorld->m_LastTime);
+							&m_Settings, refl, lod, theWorld->m_LastTime);
 					}
 				}
 				break;
@@ -574,7 +606,7 @@ void CGameRenderer::viewPilaar(int x, int y, int cur_zpos)
 			glTranslatef(0, VERTSIZE*(ystrax-ynu),0);
 			ynu = ystrax;
 
-			//goede orientatie
+			//right orientatie
 			int rstrax = temp.m_R;
 			if (rstrax != rnu)
 			{
@@ -582,9 +614,9 @@ void CGameRenderer::viewPilaar(int x, int y, int cur_zpos)
 				rnu = rstrax;
 			}
 
-			//tekenen
+			//draw
 			m_GraphicWorld->getTile(temp.m_Model)->draw(
-				&m_Settings, m_GraphicWorld->m_EnvMap, lod, theWorld->m_LastTime);
+				&m_Settings, refl, lod, theWorld->m_LastTime);
 		}
 
 	glPopMatrix();
@@ -593,6 +625,20 @@ void CGameRenderer::viewPilaar(int x, int y, int cur_zpos)
 void CGameRenderer::viewMovObj(unsigned int n)
 {
 	CMovingObject *mo = theWorld->getMovingObject(n);
+
+	//Determine lighting
+	//TODO: cache the results of this for split screen
+	bool inShadow = false;
+	{
+		CVector lightdir = -(theWorld->getTrack()->m_LightDirection);
+
+		//Check whether we are in the shadow of something
+		CCollisionDetector &detector = theWorld->m_Detector;
+		float colDist = detector.getLineCollision(mo->m_Position, lightdir);
+		if(colDist > 0.0) inShadow = true;
+	}
+
+	if(inShadow) glDisable(GL_LIGHT0);
 
 	for(unsigned int i=mo->m_Bodies.size(); i > 0; i--) //TODO: depth sorting?
 	{
@@ -640,9 +686,11 @@ void CGameRenderer::viewMovObj(unsigned int n)
 		glPopMatrix();
 	}
 
+	if(inShadow) glEnable(GL_LIGHT0);
+
 
 	//The shadow
-	if(m_Settings.m_ShadowSize > 4)
+	if(!inShadow && m_Settings.m_ShadowSize > 4)
 	{
 		CVector r = mo->m_Bodies[0].m_Position;
 		const CCollisionFace *plane = theWorld->m_Detector.getGroundFace(r);
@@ -743,29 +791,36 @@ void CGameRenderer::viewDashboard(unsigned int n)
 
 void CGameRenderer::viewLensFlare()
 {
+	//No lens flare if no images are specified
 	if(m_GraphicWorld->m_LensFlare.size() == 0) return;
 
-	CVector lightpos = -(theWorld->getTrack()->m_LightDirection);
+	CVector lightdir = -(theWorld->getTrack()->m_LightDirection);
+
+	//Check whether we are in the shadow of something
+	CCollisionDetector &detector = theWorld->m_Detector;
+	float colDist = detector.getLineCollision(m_Camera->getPosition(), lightdir);
+	if(colDist > 0.0) return; //collision: we are in a shadow
+
 	CVector lightcol = theWorld->getTrack()->m_LightColor;
 	const CMatrix &cammat = m_Camera->getOrientation();
 
-	lightpos /= cammat;
+	lightdir /= cammat;
 
-	if(lightpos.z > -0.01) return; //behind camera
-	lightpos.z = -lightpos.z;
+	if(lightdir.z > -0.01) return; //behind camera
+	lightdir.z = -lightdir.z;
 
-	lightpos.x /= lightpos.z;
-	lightpos.y /= lightpos.z;
-	lightpos.z = 0.0;
+	lightdir.x /= lightdir.z;
+	lightdir.y /= lightdir.z;
+	lightdir.z = 0.0;
 
-	lightpos *= 0.5 / FOV_MULTIPLIER;
-	lightpos.x *= float(m_ViewportH) / m_ViewportW;
+	lightdir *= 0.5 / FOV_MULTIPLIER;
+	lightdir.x *= float(m_ViewportH) / m_ViewportW;
 
-	float distance = lightpos.abs();
+	float distance = lightdir.abs();
 	if(distance >= 2.0) return; //out of view
 	float intensity = 0.5 * (2.0 - distance);
 
-	float angle = atan2f(lightpos.y, lightpos.x) * (180.0/M_PI);
+	float angle = atan2f(lightdir.y, lightdir.x) * (180.0/M_PI);
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE); //additive blending
 
@@ -773,11 +828,12 @@ void CGameRenderer::viewLensFlare()
 	glTranslatef(0.5*m_ViewportW, 0.5*m_ViewportH, 0.0);
 	glScalef(m_ViewportW, m_ViewportW, 1.0);
 
+	//Flare images
 	for(unsigned int i=0; i < m_GraphicWorld->m_LensFlare.size(); i++)
 	{
 		const CGraphicWorld::SLensFlare &flare = m_GraphicWorld->m_LensFlare[i];
 
-		CVector flarepos = flare.distance * lightpos;
+		CVector flarepos = flare.distance * lightdir;
 
 		float flaresize = flare.size;
 		float flareintensity = intensity;
@@ -803,6 +859,11 @@ void CGameRenderer::viewLensFlare()
 
 		glPopMatrix();
 	}
+
+	//Whitening
+	glColor4f(lightcol.x, lightcol.y, lightcol.z, 0.5*intensity);
+	glBindTexture(GL_TEXTURE_2D, 0); //no texture
+	glRectf(-0.5,-0.5,0.5,0.5);
 
 	glPopMatrix();
 

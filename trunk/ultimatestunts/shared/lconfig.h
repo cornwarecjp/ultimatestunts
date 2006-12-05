@@ -38,12 +38,15 @@ private:
 
 public:
 
+	CStringArray findAllSections() const;
 	CStringArray findAllFields(CString) const;
+
 	CLCData();
 	virtual ~CLCData();
 	bool push(CString, CString, CString, CString);
-	CString find(CString, CString) const;
 
+	CString find(CString, CString) const;
+	void set(CString, CString, CString);
 
 	CStringArray findAll(CString) const;
 
@@ -59,16 +62,23 @@ private:
 	CString m_szFilename;
 
 	bool readFile();
+	bool writeFile();
+
 	CLCData m_data;
 
 
 public:
+	void setValue(const CString &, const CString &, const CString &);
 
 	CString getValue(const CString, const CString) const;
+	vector<CString> getSections() const;
 	vector<CString> getSection(CString) const;
 	vector<CString> getFieldsInSection(CString) const;
 	bool setFilename(CString);
 	bool setArgs(int argc, char *argv[]);
+
+	bool saveFile(const CString &fn = "");
+
 	CLConfig();
 	CLConfig(CString);
 	CLConfig(int argc, char *argv[]);

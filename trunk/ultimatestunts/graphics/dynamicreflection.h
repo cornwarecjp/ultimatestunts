@@ -37,6 +37,7 @@ protected:
 
 	void initialiseReflections();
 
+	bool m_WorkaroundTransferbug;
 	unsigned int m_Size;
 };
 

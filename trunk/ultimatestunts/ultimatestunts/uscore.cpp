@@ -25,16 +25,14 @@
 
 #include "car.h"
 
-CUSCore::CUSCore(CGameWinSystem *winsys)
+CUSCore::CUSCore(CGameWinSystem *winsys, CSound *soundsys)
 {
 	m_WinSys = winsys;
+	m_SoundSystem = soundsys;
 
 	printf("---Renderer\n");
 	m_Renderer = new CGameRenderer(winsys);
 	m_Console = new CConsole(winsys);
-
-	printf("---Sound system\n");
-	m_SoundSystem = new CSound(*theMainConfig);
 
 	m_NumCameras = 0;
 	m_Cameras[0] = NULL;
@@ -43,10 +41,16 @@ CUSCore::CUSCore(CGameWinSystem *winsys)
 	m_Cameras[3] = NULL;
 }
 
+bool CUSCore::reloadConfiguration()
+{
+	if(!m_Renderer->reloadConfiguration()) return false;
+
+	resetGame(); //to reload CPhysics etc.
+	return true;
+}
+
 CUSCore::~CUSCore()
 {
-	printf("---Sound system\n");
-	delete m_SoundSystem;
 	printf("---Renderer\n");
 	delete m_Renderer;
 	delete m_Console;

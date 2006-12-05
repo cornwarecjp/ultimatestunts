@@ -55,7 +55,7 @@ protected:
 	void leave2DMode();
 
 	CString showInputBox(const CString &title, const CString &deflt="", bool *cancelled=NULL);
-	bool showYNMessageBox(const CString &title);
+	bool showYNMessageBox(const CString &title, bool *cancelled=NULL);
 	void showMessageBox(const CString &title);
 	CVector showColorSelect(const CString &title, CVector deflt, bool *cancelled=NULL);
 	

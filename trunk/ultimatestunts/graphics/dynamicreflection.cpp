@@ -21,6 +21,8 @@
 #include <cstdio>
 
 #include "usmacros.h"
+#include "lconfig.h"
+
 #include "dynamicreflection.h"
 
 
@@ -329,6 +331,9 @@ CDynamicReflection::CDynamicReflection(unsigned int size) : CReflection()
 {
 	m_Size = size;
 
+	m_WorkaroundTransferbug =
+		theMainConfig->getValue("workaround", "dri_i815_pixeltransfer") == "true";
+
 	if(!_spheremapInitialised)
 		initialiseSpheremap();
 
@@ -509,17 +514,14 @@ void CDynamicReflection::update(CRenderer *renderer, CCamera *cam, int side)
 
 	glBindTexture(GL_TEXTURE_2D, m_Texture);
 
-	//Fix for Intel i815 card: DON'T copy alpha values
-	//There should be no alpha values because these are
-	//all RGB textures and blending is disabled, but
-	//this card doesn't seem to care, so we need a
-	//workaround
-	glPixelTransferf(GL_ALPHA_BIAS, 1.0);
+
+	if(m_WorkaroundTransferbug)
+		glPixelTransferf(GL_ALPHA_BIAS, 1.0);
 
 	CopyToTexture(m_Size);
 
-	//Back to default value:
-	glPixelTransferf(GL_ALPHA_BIAS, 0.0);
+	if(m_WorkaroundTransferbug)
+		glPixelTransferf(GL_ALPHA_BIAS, 0.0); //Back to default value:
 
 	glClearColor(oldClear[0],oldClear[1],oldClear[2],oldClear[3]);
 	if(zEnabled) glEnable(GL_DEPTH_TEST);

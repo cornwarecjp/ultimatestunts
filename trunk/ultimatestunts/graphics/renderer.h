@@ -32,6 +32,8 @@ public:
 	CRenderer(const CWinSystem *winsys);
 	virtual ~CRenderer();
 
+	virtual bool reloadConfiguration();
+
 	void setCamera(const CCamera *cam)
 		{m_Camera = cam;}
 

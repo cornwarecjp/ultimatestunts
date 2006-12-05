@@ -5,7 +5,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Ultimate Stunts 0.6.2\n"
+"Project-Id-Version: Ultimate Stunts 0.6.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2006-10-30 20:46+0100\n"
 "PO-Revision-Date: 2005-02-03 14:11+0100\n"
@@ -136,7 +136,7 @@ msgstr "Juntar-se a um jogo de rede existente"
 
 #: ultimatestunts/gamegui.cpp:355
 msgid "Start a new network game"
-msgstr "Iniciar um novo jogo de rede"
+msgstr "Iniciar um novo jogo por rede"
 
 #: ultimatestunts/gamegui.cpp:384
 msgid "Add a player"
@@ -160,7 +160,7 @@ msgstr "Carro        : "
 
 #: ultimatestunts/gamegui.cpp:393
 msgid "Choose a car color"
-msgstr ""
+msgstr "Selecione uma cor de carro"
 
 #: ultimatestunts/gamegui.cpp:394
 msgid "Delete this player"
@@ -230,7 +230,7 @@ msgstr "Escreva o nome:"
 
 #: ultimatestunts/gamegui.cpp:682
 msgid "Car color:"
-msgstr ""
+msgstr "Cor do carro"
 
 #: ultimatestunts/gamegui.cpp:688
 msgid "Can't delete: there needs to be at least one player"
@@ -311,7 +311,7 @@ msgstr "OK"
 
 #: graphics/colorselect.cpp:195
 msgid "Cancel"
-msgstr ""
+msgstr "Cancela"
 
 #: graphics/messagebox.cpp:184
 msgid "Yes"
@@ -419,14 +419,8 @@ msgstr "Escreva o nome do arquivo:"
 msgid "Saving of %s failed"
 msgstr "Salvamento de %s falhou"
 
-#~ msgid "Credits"
-#~ msgstr "Créditos"
-
 #~ msgid "Load"
 #~ msgstr "Carrega"
-
-#~ msgid "Is this player an AI computer player?"
-#~ msgstr "Ele é um jogador de Inteligência Artificial?"
 
 #~ msgid "please wait..."
 #~ msgstr "por favor aguarde..."
@@ -442,6 +436,3 @@ msgstr "Salvamento de %s falhou"
 
 #~ msgid "Enter your name:"
 #~ msgstr "Escreva seu nome:"
-
-#~ msgid "Do you want to add another player?"
-#~ msgstr "Você deseja adicionar um novo jogador?"
