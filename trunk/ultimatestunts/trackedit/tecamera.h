@@ -29,19 +29,17 @@ public:
 	CTECamera();
 	~CTECamera();
 
-	void moveForward(float dist);
-	void resetPosition();
 	void turnRight(float angle);
 	void turnUp(float angle);
+	void zoomOut(float factor);
 
-	CVector getTargetPos()
-		{return m_TargetPos;}
+	void setTargetPos(CVector p);
 
 protected:
 	void updatePosition();
 
 	CVector m_TargetPos;
-	float m_XAngle, m_YAngle;
+	float m_XAngle, m_YAngle, m_Distance;
 };
 
 #endif

@@ -26,63 +26,20 @@
 #include "lconfig.h"
 #include "usmacros.h"
 #include "datafile.h"
+#include "trackdocument.h"
 
 #include "tegui.h"
 
-#include "renderwidget.h"
 #include "longmenu.h"
-
 #include "edittrack.h"
 
 CTEGUI::CTEGUI(const CLConfig &conf, CWinSystem *winsys) : CGUI(conf, winsys)
 {
-	m_ImportDir = "./";
-
-	m_DataManager = new CTEManager;
-
-	m_Trackname = "default.track";
-	if(!load())
-	{
-		printf("Error: %s could not be loaded\n", m_Trackname.c_str());
-		exit(1);
-	}
-
-	printf("\nInitialising the rendering engine\n");
-	m_Renderer = new CTERenderer(winsys);
-	m_Camera = new CTECamera();
-	m_Renderer->setCamera(m_Camera);
-	m_Renderer->setManager(m_DataManager);
-
-
-	m_ChildWidget = &m_MainPage;
-
-
-	m_MainPage.m_Title = m_Trackname;
-	m_MainPage.m_DrawBackground = false;
-
-	CRenderWidget *render = new CRenderWidget;
-	render->m_Xrel = 0.3;
-	render->m_Yrel = 0.0;
-	render->m_Wrel = 0.7;
-	render->m_Hrel = 0.8;
-	render->m_Renderer = m_Renderer;
-	m_MainPage.m_Widgets.push_back(render);
-
-	CMenu *menu = new CMenu;
-	menu->m_Xrel = 0.0;
-	menu->m_Yrel = 0.0;
-	menu->m_Wrel = 0.3;
-	menu->m_Hrel = 0.8;
-	menu->m_Lines.push_back(_("Load track"));
-	menu->m_Lines.push_back(_("Save track"));
-	menu->m_Lines.push_back(_("Import Stunts track"));
-	menu->m_Lines.push_back(_("Exit"));
-	menu->m_AlignLeft = false;
-	m_MainPage.m_Widgets.push_back(menu);
+	m_MainPage.m_Title = theTrackDocument->m_Trackname;
 
 	m_LoadPage.m_Title = _("Select a track:");
 	m_LoadPage.m_DrawBackground = true;
-	menu = new CLongMenu;
+	CLongMenu *menu = new CLongMenu;
 	menu->m_Xrel = 0.1;
 	menu->m_Yrel = 0.2;
 	menu->m_Wrel = 0.8;
@@ -91,29 +48,16 @@ CTEGUI::CTEGUI(const CLConfig &conf, CWinSystem *winsys) : CGUI(conf, winsys)
 	menu->m_Selected = 0;
 	menu->m_AlignLeft = false;
 
-	m_ImportPage.m_Title = _("Select a track:");
-	m_ImportPage.m_DrawBackground = true;
-	menu = new CLongMenu;
-	menu->m_Xrel = 0.1;
-	menu->m_Yrel = 0.2;
-	menu->m_Wrel = 0.8;
-	menu->m_Hrel = 0.6;
-	m_ImportPage.m_Widgets.push_back(menu);
-	menu->m_Selected = 0;
-	menu->m_AlignLeft = false;
+	m_ChildWidget = &m_MainPage;
 }
 
 CTEGUI::~CTEGUI()
 {
-	delete m_Renderer;
-	delete m_Camera;
-
-	delete m_DataManager;
 }
 
 void CTEGUI::updateMenuTexts()
 {
-	m_MainPage.m_Title = m_Trackname;
+	m_MainPage.m_Title = theTrackDocument->m_Trackname;
 
 	CMenu *menu = (CMenu *)(m_LoadPage.m_Widgets[0]);
 	menu->m_Lines = getDataDirContents("tracks", ".track");
@@ -155,10 +99,7 @@ CString CTEGUI::viewMainMenu()
 	if(!m_WinSys->runLoop(this))
 		return "exit";
 
-
-	CMenu *menu = (CMenu *)(m_MainPage.m_Widgets[1]);
-
-	switch(menu->m_Selected)
+	switch(m_MainPage.getMenuSelection())
 	{
 		case 0:
 			return "loadmenu";
@@ -168,6 +109,14 @@ CString CTEGUI::viewMainMenu()
 			return "importmenu";
 		case 3:
 			return "exit";
+		case 5:
+			theTrackDocument->undo();
+			return "mainmenu";
+		case 6:
+			theTrackDocument->redo();
+			return "mainmenu";
+		default:
+			return "mainmenu"; //unknown: do nothing
 	}
 
 	return "";
@@ -181,57 +130,46 @@ CString CTEGUI::viewLoadMenu()
 
 	CMenu *menu = (CMenu *)(m_LoadPage.m_Widgets[0]);
 
-	m_Trackname = menu->m_Lines[menu->m_Selected];
-	if(!load())
+	theTrackDocument->m_Trackname = menu->m_Lines[menu->m_Selected];
+	if(!theTrackDocument->load())
 	{
 		CString msg;
-		msg.format(_("Error: %s could not be loaded"), 256, m_Trackname.c_str());
+		msg.format(_("Error: %s could not be loaded"), 256, theTrackDocument->m_Trackname.c_str());
 		showMessageBox(msg);
 		exit(1);
 	}
 
-	m_Camera->resetPosition();
+	m_MainPage.resetCameraPosition();
 
 	return "mainmenu";
 }
 
 CString CTEGUI::viewImportMenu()
 {
+	//Let user select a file
 	bool cancelled = false;
-	CString newDir = showInputBox(
-		_("Enter the directory with Stunts tracks:"), m_ImportDir, &cancelled);
-
+	CString importedfile = showFileSelect(_("Select the Stunts track"), ".trk", &cancelled);
 	if(cancelled) return "mainmenu";
 
-	if(newDir[newDir.length()-1] != '/') newDir += '/';
+	//Set trackname to filename without directory
+	int lastSlash = -1;
+	for(unsigned int i=0; i < importedfile.length(); i++)
+		if(importedfile[i] == '/') lastSlash = i;
+	if(lastSlash < 0)
+		{theTrackDocument->m_Trackname = importedfile;}
+	else
+		{theTrackDocument->m_Trackname = importedfile.mid(lastSlash+1);}
 
-	if(!dirExists(newDir))
+	//Load the file
+	if(!theTrackDocument->import(importedfile))
 	{
 		CString msg;
-		msg.format(_("The directory %s does not exist"), 256, newDir.c_str());
-		showMessageBox(msg);
-		return "mainmenu";
-	}
-
-	m_ImportDir = newDir;
-
-	CMenu *menu = (CMenu *)(m_ImportPage.m_Widgets[0]);
-	menu->m_Lines = getDirContents(m_ImportDir, ".trk");
-
-	m_ChildWidget = &m_ImportPage;
-	if(!m_WinSys->runLoop(this))
-		return "mainmenu";
-
-	m_Trackname = menu->m_Lines[menu->m_Selected];
-	if(!import(m_ImportDir + m_Trackname))
-	{
-		CString msg;
-		msg.format(_("Error: %s could not be loaded"), 256, m_Trackname.c_str());
+		msg.format(_("Error: %s could not be loaded"), 256, theTrackDocument->m_Trackname.c_str());
 		showMessageBox(msg);
 		exit(1);
 	}
 
-	m_Camera->resetPosition();
+	m_MainPage.resetCameraPosition();
 
 	return "mainmenu";
 }
@@ -242,101 +180,32 @@ CString CTEGUI::viewSaveAsMenu()
 	m_ChildWidget = &m_LoadPage;
 
 	bool cancelled = false;
-	CString name = showInputBox(_("Enter the filename:"), m_Trackname, &cancelled);
+	CString name = showInputBox(_("Enter the filename:"), theTrackDocument->m_Trackname, &cancelled);
 
 	if(!cancelled)
 	{
-		CString oldname = m_Trackname;
+		CString oldname = theTrackDocument->m_Trackname;
 
 		if(name.mid(name.length()-6) != ".track")
 				name += ".track";
-		m_Trackname = name;
+		theTrackDocument->m_Trackname = name;
 
-		if(dataFileExists(CString("tracks/") + m_Trackname, true)) //search only locally
+		if(dataFileExists(CString("tracks/") + theTrackDocument->m_Trackname, true)) //search only locally
 		{
 			CString q;
-			q.format(_("File %s already exists. Overwrite?"), 256, m_Trackname.c_str());
+			q.format(_("File %s already exists. Overwrite?"), 256, theTrackDocument->m_Trackname.c_str());
 			if(!showYNMessageBox(q)) return "mainmenu"; //and don't save
 		}
 
-		if(!save())
+		if(!theTrackDocument->save())
 		{
 			CString msg;
-			msg.format(_("Saving of %s failed"), 256, m_Trackname.c_str());
+			msg.format(_("Saving of %s failed"), 256, theTrackDocument->m_Trackname.c_str());
 			showMessageBox(msg);
-			m_Trackname = oldname;
+			theTrackDocument->m_Trackname = oldname;
 		}
 	}
 
 	return "mainmenu";
 }
 
-int CTEGUI::onKeyPress(int key)
-{
-	if(m_ChildWidget == &m_MainPage && m_MainPage.m_Widgets.size()==2)
-	{
-		switch(key)
-		{
-		case SDLK_PAGEUP:
-			m_Camera->turnUp(0.05);
-			break;
-		case SDLK_PAGEDOWN:
-			m_Camera->turnUp(-0.05);
-			break;
-		case SDLK_LEFT:
-			m_Camera->turnRight(-0.05);
-			break;
-		case SDLK_RIGHT:
-			m_Camera->turnRight(0.05);
-			break;
-		case SDLK_UP:
-			m_Camera->moveForward(50.0);
-			break;
-		case SDLK_DOWN:
-			m_Camera->moveForward(-50.0);
-			break;
-		}
-
-		return WIDGET_REDRAW;
-	}
-
-	return CGUI::onKeyPress(key);
-}
-
-int CTEGUI::onMouseClick(int x, int y, unsigned int buttons)
-{
-	return CGUI::onMouseClick(x, y, buttons);
-
-	//TODO: maybe mouse-dragging in main menu
-}
-
-bool CTEGUI::load()
-{
-	m_DataManager->unloadAll();
-
-	unsigned int ID = m_DataManager->loadObject(
-		CString("tracks/") + m_Trackname,
-		CParamList(), CDataObject::eTrack);
-
-	if(ID < 0) return false; //loading failed
-
-	return true;
-}
-
-bool CTEGUI::import(const CString &filename)
-{
-	CEditTrack *track = m_DataManager->getTrack();
-
-	if(track == NULL) return false;
-
-	return track->import(filename);
-}
-
-bool CTEGUI::save()
-{
-	const CEditTrack *track = m_DataManager->getTrack();
-
-	if(track == NULL) return false;
-
-	return track->save(CString("tracks/") + m_Trackname);
-}

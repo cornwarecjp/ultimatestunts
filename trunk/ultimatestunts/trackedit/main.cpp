@@ -28,6 +28,8 @@
 #include "cstring.h"
 #include "usmisc.h"
 
+#include "trackdocument.h"
+
 //Graphics stuff
 #include "winsystem.h"
 #include "tegui.h"
@@ -38,8 +40,13 @@ int main(int argc, char *argv[])
 
 	shared_main(argc, argv);
 
+	//Do some settings cheating
+	theMainConfig->setValue("animation", "watertesselation", "1");
+
 	printf("\nCreating a window\n");
 	CWinSystem *winsys = new CWinSystem("Ultimate Stunts Track Editor", *theMainConfig);
+
+	theTrackDocument = new CTrackDocument;
 
 	CTEGUI *gui = new CTEGUI(*theMainConfig, winsys);
 
@@ -47,6 +54,8 @@ int main(int argc, char *argv[])
 	gui->start();
 
 	delete gui;
+
+	delete theTrackDocument;
 
 	delete winsys; //Important; don't remove: this calls SDL_Quit!!!
 

@@ -22,23 +22,21 @@
 #include "usmacros.h"
 #include "datafile.h"
 
+#include "trackdocument.h"
+
 CTERenderer::CTERenderer(const CWinSystem *winsys) : CRenderer(winsys)
 {
-	m_Manager = NULL;
 	camx = camy = camz = 0;
 	tgtx = tgty = tgtz = 0;
 
 	m_X = m_Y = m_W = m_H = 0;
+	m_TrackCache = NULL;
+
+	m_Settings.m_VisibleTiles = 100; //make sure that a lot of tiles are visible
 }
 
 CTERenderer::~CTERenderer()
 {
-}
-
-void CTERenderer::setManager(CTEManager *manager)
-{
-	m_Manager = manager;
-	m_Settings.m_VisibleTiles = 100; //make sure that a lot of tiles are visible
 }
 
 void CTERenderer::updateScreenSize()
@@ -68,11 +66,13 @@ void CTERenderer::update()
 	camx = (int)(0.5 + (camera.x)/TILESIZE);
 	camy = (int)(0.5 + (camera.y)/VERTSIZE);
 	camz = (int)(0.5 + (camera.z)/TILESIZE);
-	CVector target = ((CTECamera *)m_Camera)->getTargetPos();
-	tgtx = (int)(0.5 + (target.x)/TILESIZE);
-	tgty = (int)(0.5 + (target.y)/VERTSIZE);
-	tgtz = (int)(0.5 + (target.z)/TILESIZE);
+	tgtx = theTrackDocument->getCursorX();
+	tgty = theTrackDocument->getCursorY();
+	tgtz = theTrackDocument->getCursorZ();
 	//printf ("x,y,z = %d,%d,%d\n",camx,camy,camz);
+
+	m_TrackCache = theTrackDocument->getDisplayedTrack();
+	if(m_TrackCache == NULL) return; //error: don't continue
 
 	glColor3f(1,1,1);
 
@@ -87,7 +87,7 @@ void CTERenderer::update()
 	glDisable(GL_LIGHTING);
 
 	//The routes
-	vector<CTrack::CRoute> &routes = m_Manager->getTrack()->m_Routes;
+	vector<CTrack::CRoute> &routes = m_TrackCache->m_Routes;
 	for(unsigned int r=0; r < routes.size(); r++)
 	{
 		if(routes[r].size() < 2) continue;
@@ -141,17 +141,17 @@ void CTERenderer::update()
 
 	
 	//The active tile
-	int  lengte = m_Manager->getTrack()->m_L;
-	int  breedte = m_Manager->getTrack()->m_W;
+	int  lengte = m_TrackCache->m_L;
+	int  breedte = m_TrackCache->m_W;
 	if(tgtx>=0 && tgtx<lengte && tgtz>=0 && tgtz<breedte)
 	{
-		int hoogte = m_Manager->getTrack()->m_H;
+		int hoogte = m_TrackCache->m_H;
 		int pilaar_index = hoogte * tgtz + hoogte * breedte * tgtx;
 
 		int ymin = 1000, ymax = -1000;
 		for (int i = 0; i < hoogte; i++) //bottom to top
 		{
-			STile temp = m_Manager->getTrack()->m_Track[pilaar_index + i]; //welke tile?
+			STile temp = m_TrackCache->m_Track[pilaar_index + i]; //welke tile?
 
 			if(temp.m_Model == 0) break; //0 = empty tile
 
@@ -159,6 +159,11 @@ void CTERenderer::update()
 			if(temp.m_Z < ymin) ymin = temp.m_Z;
 		}
 		ymax++;
+
+		if(ymax < ymin) //no tiles on this place
+		{
+			ymin = ymax = 0;
+		}
 
 		glPushMatrix();
 		glTranslatef(TILESIZE*tgtx, 0.0, TILESIZE*tgtz);
@@ -206,8 +211,8 @@ void CTERenderer::drawTrack()
 	glPushMatrix();
 
 	//Nu volgt de weergave-routine
-	int lengte = m_Manager->getTrack()->m_L;
-	int  breedte = m_Manager->getTrack()->m_W;
+	int lengte = m_TrackCache->m_L;
+	int  breedte = m_TrackCache->m_W;
 
 	//Nu: de dynamische begrenzing om weergavesnelheid te vergroten
 	/*
@@ -241,8 +246,8 @@ void CTERenderer::viewTrackPart(
 	int dx,  int dy,
 	int cur_zpos)
 {
-	int lengte = m_Manager->getTrack()->m_L;
-	int  breedte = m_Manager->getTrack()->m_W;
+	int lengte = m_TrackCache->m_L;
+	int  breedte = m_TrackCache->m_W;
 
 	glPushMatrix();
 	glTranslatef(xmin * TILESIZE, 0, ymin * TILESIZE);
@@ -273,8 +278,8 @@ void CTERenderer::viewTrackPart(
 
 void CTERenderer::viewPilaar(int x, int y, int cur_zpos)
 {
-	int  breedte = m_Manager->getTrack()->m_W;
-	int hoogte = m_Manager->getTrack()->m_H;
+	int  breedte = m_TrackCache->m_W;
+	int hoogte = m_TrackCache->m_H;
 
 	glPushMatrix();
 
@@ -301,7 +306,7 @@ void CTERenderer::viewPilaar(int x, int y, int cur_zpos)
 
 		for (int i = 0; i < hoogte; i++) //bottom to top
 		{
-			STile temp = m_Manager->getTrack()->m_Track[pilaar_index + i]; //welke tile?
+			STile temp = m_TrackCache->m_Track[pilaar_index + i]; //welke tile?
 
 			if(temp.m_Model == 0) break; //0 = empty tile
 
@@ -312,7 +317,7 @@ void CTERenderer::viewPilaar(int x, int y, int cur_zpos)
 			{
 				for(int j = hoogte-1; j >= i; j--) //top to bottom
 				{
-					temp = m_Manager->getTrack()->m_Track[pilaar_index + j]; //welke tile?
+					temp = m_TrackCache->m_Track[pilaar_index + j]; //welke tile?
 
 					if(temp.m_Model > 0) //0 = empty tile
 					{
@@ -331,7 +336,7 @@ void CTERenderer::viewPilaar(int x, int y, int cur_zpos)
 						}
 
 						//draw the model
-						m_Manager->getTile(temp.m_Model)->draw(&m_Settings, NULL, lod, 0.0);
+						theTrackDocument->m_DataManager->getTile(temp.m_Model)->draw(&m_Settings, NULL, lod, 0.0);
 					}
 				}
 				break;
@@ -349,7 +354,7 @@ void CTERenderer::viewPilaar(int x, int y, int cur_zpos)
 			}
 
 			//tekenen
-			m_Manager->getTile(temp.m_Model)->draw(&m_Settings, NULL, lod, 0.0);
+			theTrackDocument->m_DataManager->getTile(temp.m_Model)->draw(&m_Settings, NULL, lod, 0.0);
 		}
 
 	glPopMatrix();

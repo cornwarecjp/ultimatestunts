@@ -1,8 +1,8 @@
 /***************************************************************************
-                          terenderer.h  -  Rendering class of the track editor
+                          replaceaction.h  -  Replace tiles with other tiles
                              -------------------
-    begin                : ma mei 23 2005
-    copyright            : (C) 2005 by CJP
+    begin                : vr dec 15 2006
+    copyright            : (C) 2006 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
 
@@ -15,41 +15,29 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TERENDERER_H
-#define TERENDERER_H
+#ifndef REPLACEACTION_H
+#define REPLACEACTION_H
 
-#include "renderer.h"
-#include "winsystem.h"
-#include "temanager.h"
-#include "edittrack.h"
+#include "action.h"
 
 /**
   *@author CJP
   */
 
-class CTERenderer : public CRenderer  {
-public: 
-	CTERenderer(const CWinSystem *winsys);
-	~CTERenderer();
+class CReplaceAction : public CAction
+{
+public:
+	CReplaceAction();
+	virtual ~CReplaceAction();
 
-	void update();
+	virtual bool doAction(CEditTrack *track) const;
+
+	bool m_ClearTile;
+	STile m_Tile;
 
 protected:
-	virtual void updateScreenSize();
-
-	int camx, camy, camz; //tile position of the camera
-	int tgtx, tgty, tgtz; //tile position of the target
-
-	CEditTrack *m_TrackCache;
-
-	void drawTrack();
-	void viewTrackPart(
-		int xmin,int ymin,
-		int xmax,int ymax,
-		int dx,  int dy,
-		int cur_zpos);
-
-	void viewPilaar(int x, int y, int cur_zpos);
+	void insertTile(CEditTrack *track, unsigned int offset, int h, STile &tile) const;
+	void removeTile(CEditTrack *track, unsigned int offset, int h) const;
 };
 
 #endif

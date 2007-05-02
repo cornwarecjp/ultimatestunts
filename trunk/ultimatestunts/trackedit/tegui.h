@@ -23,11 +23,7 @@
 #include "lconfig.h"
 
 #include "guipage.h"
-
-#include "terenderer.h"
-#include "tecamera.h"
-
-#include "temanager.h"
+#include "mainpage.h"
 
 /**
   *@author CJP
@@ -40,9 +36,6 @@ public:
 
 	virtual void start(); //returns when an exit command is given
 
-	virtual int onKeyPress(int key);
-	virtual int onMouseClick(int x, int y, unsigned int buttons);
-
 protected:
 	void updateMenuTexts();
 
@@ -53,22 +46,8 @@ protected:
 	CString viewImportMenu();
 
 	//The menu pages
-	CGUIPage m_MainPage;
+	CMainPage m_MainPage;
 	CGUIPage m_LoadPage;
-	CGUIPage m_ImportPage;
-
-	//Data
-	CTERenderer *m_Renderer;
-	CTECamera *m_Camera;
-
-	CTEManager *m_DataManager;
-	CString m_Trackname;
-
-	CString m_ImportDir;
-
-	bool load();
-	bool import(const CString &filename);
-	bool save();
 };
 
 #endif

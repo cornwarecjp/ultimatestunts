@@ -1,8 +1,8 @@
 /***************************************************************************
-                          terenderer.h  -  Rendering class of the track editor
+                          action.h  -  An action that can be applied to a track
                              -------------------
-    begin                : ma mei 23 2005
-    copyright            : (C) 2005 by CJP
+    begin                : vr dec 15 2006
+    copyright            : (C) 2006 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
 
@@ -15,41 +15,22 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TERENDERER_H
-#define TERENDERER_H
+#ifndef ACTION_H
+#define ACTION_H
 
-#include "renderer.h"
-#include "winsystem.h"
-#include "temanager.h"
 #include "edittrack.h"
 
 /**
   *@author CJP
   */
 
-class CTERenderer : public CRenderer  {
-public: 
-	CTERenderer(const CWinSystem *winsys);
-	~CTERenderer();
+class CAction
+{
+public:
+	CAction(){;}
+	virtual ~CAction(){;}
 
-	void update();
-
-protected:
-	virtual void updateScreenSize();
-
-	int camx, camy, camz; //tile position of the camera
-	int tgtx, tgty, tgtz; //tile position of the target
-
-	CEditTrack *m_TrackCache;
-
-	void drawTrack();
-	void viewTrackPart(
-		int xmin,int ymin,
-		int xmax,int ymax,
-		int dx,  int dy,
-		int cur_zpos);
-
-	void viewPilaar(int x, int y, int cur_zpos);
+	virtual bool doAction(CEditTrack *track) const =0;
 };
 
 #endif

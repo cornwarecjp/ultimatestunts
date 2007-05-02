@@ -51,8 +51,9 @@ am__installdirs = "$(DESTDIR)$(bindir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
 am_ustuntstrackedit_OBJECTS = edittrack.$(OBJEXT) main.$(OBJEXT) \
-	tecamera.$(OBJEXT) tegui.$(OBJEXT) temanager.$(OBJEXT) \
-	terenderer.$(OBJEXT) trkfile.$(OBJEXT)
+	mainpage.$(OBJEXT) replaceaction.$(OBJEXT) tecamera.$(OBJEXT) \
+	tegui.$(OBJEXT) temanager.$(OBJEXT) terenderer.$(OBJEXT) \
+	trackdocument.$(OBJEXT) trkfile.$(OBJEXT)
 ustuntstrackedit_OBJECTS = $(am_ustuntstrackedit_OBJECTS)
 ustuntstrackedit_DEPENDENCIES = ../graphics/libgraphics.a \
 	../simulation/libsimulation.a ../shared/libshared.a
@@ -204,9 +205,9 @@ target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
 usdatadir = @usdatadir@
-ustuntstrackedit_SOURCES = edittrack.cpp main.cpp tecamera.cpp tegui.cpp temanager.cpp terenderer.cpp trkfile.cpp
+ustuntstrackedit_SOURCES = edittrack.cpp main.cpp mainpage.cpp replaceaction.cpp tecamera.cpp tegui.cpp temanager.cpp terenderer.cpp trackdocument.cpp trkfile.cpp
 ustuntstrackedit_LDADD = ../graphics/libgraphics.a ../simulation/libsimulation.a ../shared/libshared.a @sdllibs@ @graphlibs@ @LIBINTL@
-EXTRA_DIST = edittrack.cpp edittrack.h main.cpp tecamera.cpp tecamera.h tegui.cpp tegui.h temanager.cpp temanager.h terenderer.cpp terenderer.h trkfile.cpp trkfile.h
+EXTRA_DIST = action.h edittrack.cpp edittrack.h main.cpp mainpage.cpp mainpage.h replaceaction.cpp replaceaction.h tecamera.cpp tecamera.h tegui.cpp tegui.h temanager.cpp temanager.h terenderer.cpp terenderer.h trackdocument.cpp trackdocument.h trkfile.cpp trkfile.h
 
 # set the include path found by configure
 INCLUDES = $(all_includes) -I../intl -I../shared -I../simulation -I../graphics
@@ -226,9 +227,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  trackedit/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  trackedit/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign  trackedit/Makefile
+	  $(AUTOMAKE) --gnu  trackedit/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -281,10 +282,13 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/edittrack.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mainpage.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/replaceaction.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tecamera.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tegui.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/temanager.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/terenderer.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/trackdocument.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/trkfile.Po@am__quote@
 
 .cpp.o:

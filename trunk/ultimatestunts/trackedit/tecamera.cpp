@@ -18,11 +18,15 @@
 #include "tecamera.h"
 #include "usmacros.h"
 
+#include <cmath>
+#include "pi.h"
+
 CTECamera::CTECamera()
 {
-	m_XAngle = -0.5;
+	m_XAngle = -3.5;
 	m_YAngle = 0.3;
-	CVector m_TargetPos = TILESIZE * CVector(10,0,10);
+	m_Distance = 10.0*TILESIZE;
+	CVector m_TargetPos = CVector(m_Distance, 0, m_Distance);
 
 	updatePosition();
 }
@@ -30,24 +34,32 @@ CTECamera::CTECamera()
 CTECamera::~CTECamera(){
 }
 
-void CTECamera::moveForward(float dist)
+void CTECamera::setTargetPos(CVector p)
 {
-	CVector dx = m_Orientation * CVector(0,0,-dist);
-	m_TargetPos += (dx - dx.component(CVector(0,1,0)));
+	m_TargetPos = p;
 	updatePosition();
 }
-void CTECamera::resetPosition()
-{
-	m_TargetPos = CVector(0,0,0);
-}
+
 void CTECamera::turnRight(float angle)
 {
 	m_XAngle -= angle;
 	updatePosition();
 }
+
 void CTECamera::turnUp(float angle)
 {
 	m_YAngle += angle;
+
+	if(m_YAngle < 0.0) m_YAngle = 0.0;
+	if(m_YAngle > 0.5*M_PI) m_YAngle = 0.5*M_PI;
+
+	updatePosition();
+}
+
+void CTECamera::zoomOut(float factor)
+{
+	m_Distance *= factor;
+
 	updatePosition();
 }
 
@@ -60,7 +72,7 @@ void CTECamera::updatePosition()
 	m_Orientation = vertmat * hormat;
 
 	//Distance
-	m_Position = CVector(0.0, 0.0, 10.0*TILESIZE);
+	m_Position = CVector(0.0, 0.0, m_Distance);
 	m_Position *= m_Orientation;
 	m_Position += m_TargetPos;
 }

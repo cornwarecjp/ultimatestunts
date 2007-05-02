@@ -1,8 +1,8 @@
 /***************************************************************************
-                          terenderer.h  -  Rendering class of the track editor
+                          mainpage.h  -  The main page of the trackedit interface
                              -------------------
-    begin                : ma mei 23 2005
-    copyright            : (C) 2005 by CJP
+    begin                : do dec 12 2006
+    copyright            : (C) 2006 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
 
@@ -15,41 +15,42 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TERENDERER_H
-#define TERENDERER_H
+#ifndef MAINPAGE_H
+#define MAINPAGE_H
 
-#include "renderer.h"
-#include "winsystem.h"
+#include "guipage.h"
+
 #include "temanager.h"
+
+#include "terenderer.h"
+#include "tecamera.h"
 #include "edittrack.h"
 
 /**
   *@author CJP
   */
 
-class CTERenderer : public CRenderer  {
+class CMainPage : public CGUIPage  {
 public: 
-	CTERenderer(const CWinSystem *winsys);
-	~CTERenderer();
+	CMainPage();
+	~CMainPage();
 
-	void update();
+	virtual int onKeyPress(int key);
+	virtual int onMouseClick(int x, int y, unsigned int buttons);
+	virtual int onMouseMove(int x, int y, unsigned int buttons);
+	virtual int onIdle();
+
+	void resetCameraPosition();
+
+	unsigned int getMenuSelection();
 
 protected:
-	virtual void updateScreenSize();
-
-	int camx, camy, camz; //tile position of the camera
-	int tgtx, tgty, tgtz; //tile position of the target
+	CTERenderer *m_Renderer;
+	CTECamera *m_Camera;
 
 	CEditTrack *m_TrackCache;
 
-	void drawTrack();
-	void viewTrackPart(
-		int xmin,int ymin,
-		int xmax,int ymax,
-		int dx,  int dy,
-		int cur_zpos);
-
-	void viewPilaar(int x, int y, int cur_zpos);
+	int m_PrevMouseX, m_PrevMouseY;
 };
 
 #endif
