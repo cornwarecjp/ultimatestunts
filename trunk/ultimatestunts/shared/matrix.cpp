@@ -17,9 +17,7 @@
 #include "matrix.h"
 #include <cmath>
 
-#ifndef M_PI
-#define M_PI 3.1415926536
-#endif
+#include "pi.h"
 
 //#include <cstdio>
 //#include "cstring.h" //debugging

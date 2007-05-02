@@ -152,34 +152,62 @@ bool dirExists(const CString &dirname)
 	return true;
 }
 
-vector<CString> getDirContents(const CString &dir, const CString &ext)
+vector<CString> getDirContents(const CString &dir, const CString &ext, bool sort)
 {
 	vector<CString> ret;
 
 	DIR *dir1 = opendir(dir.c_str());
 
-	if(dir1 != NULL)
+	if(dir1 == NULL) return ret;
+
+	while(true)
 	{
-		while(true)
-		{
-			struct dirent *entry = readdir(dir1);
-			if(entry == NULL) break;
+		struct dirent *entry = readdir(dir1);
+		if(entry == NULL) break;
 
-			CString entname = entry->d_name;
-			CString ent_lcase = entname;
-			ent_lcase.toLower();
-			//file extension check:
-			if(ext == "" ||
-				(ent_lcase.inStr(ext) >= 0 &&
-				ent_lcase.inStr(ext) == (int)(ent_lcase.length() - ext.length()) )
-				)
-				ret.push_back(entname);
-		}
-
-		closedir(dir1);
+		CString entname = entry->d_name;
+		CString ent_lcase = entname;
+		ent_lcase.toLower();
+		//file extension check:
+		if(ext == "" || ent_lcase.right(ext.length()) == ext)
+			//(ent_lcase.inStr(ext) >= 0 &&
+			//ent_lcase.inStr(ext) == (int)(ent_lcase.length() - ext.length()) )
+			//)
+			ret.push_back(entname);
 	}
 
+	closedir(dir1);
+
+	//Now sort
+	if(sort && ret.size() > 1)
+		for(unsigned int i=0; i < ret.size()-1; i++)
+		{
+			CString &item = ret[i];
+	
+			//Find earlier item
+			for(unsigned int j=i+1; j < ret.size(); j++)
+			{
+				CString &newitem = ret[j];
+				if(newitem.compare(item) < 0)
+				{
+					//Swap if found
+					item.swap(newitem);
+				}
+			}
+		}
+
 	return ret;
+}
+
+CString getAbsDir(const CString &dir)
+{
+	CString absdir;
+	char absdirbuffer[4096];
+	if(realpath(dir.c_str(), absdirbuffer) != NULL)
+	{
+		absdir = CString(absdirbuffer) + "/";
+	}
+	return absdir;
 }
 
 bool makeDir(const CString &dirname)

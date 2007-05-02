@@ -290,6 +290,15 @@ CString CString::mid(unsigned int i, int l) const
 	*/
 }
 
+CString CString::right(unsigned int len) const
+{
+	if(len >= length()) return *this;
+
+	CString ret;
+	ret.assign(*this, length()-len, len);
+	return ret;
+}
+
 //actually the same as mid:
 CString & CString::subStr(const int unsigned pos, const int n) const
 {

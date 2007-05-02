@@ -49,6 +49,7 @@ bool CGLBFile::load(const CString &filename)
 	m_Primitives.clear();
 
 	//read objects
+	bool ret = true;
 	while(true)
 	{
 		unsigned int pos=0;
@@ -66,101 +67,200 @@ bool CGLBFile::load(const CString &filename)
 		pos = namelen;
 		Uint32 datalen = namebuf.getUint32(pos);
 
-		switch(type)
-		{
-		case 0:
-		{
-			m_Primitives.push_back(SPrimitive());
-			SPrimitive &pr = m_Primitives.back();
+		CBinBuffer objectdata = f.readBytes(datalen);
+		if(!processObject(type, name, objectdata)) ret = false;
+	}
 
-			pr.Name = name;
-			CBinBuffer dataheader = f.readBytes(12);
-			pos = 0;
-			Uint32 materialsize = dataheader.getUint32(pos);
-			Uint32 numVertices = dataheader.getUint32(pos);
-			Uint32 numIndices = dataheader.getUint32(pos);
+	return ret;
+}
 
-			//printf("Object %s: %d vertices, %d indices\n", pr.Name.c_str(), numVertices, numIndices);
-
-			//Material
-			CBinBuffer matbuf = f.readBytes(materialsize);
-			pos = 0;
-			pr.ModulationColor.x = float(matbuf.getUint8(pos)) / 255;
-			pr.ModulationColor.y = float(matbuf.getUint8(pos)) / 255;
-			pr.ModulationColor.z = float(matbuf.getUint8(pos)) / 255;
-			pr.Opacity = float(matbuf.getUint8(pos)) / 255;
-			pr.ReplacementColor.x = float(matbuf.getUint8(pos)) / 255;
-			pr.ReplacementColor.y = float(matbuf.getUint8(pos)) / 255;
-			pr.ReplacementColor.z = float(matbuf.getUint8(pos)) / 255;
-			matbuf.getUint8(pos); //replacement alpha, not yet used
-			pr.LODs = matbuf.getUint8(pos);
-			pr.Reflectance = float(matbuf.getUint8(pos)) / 255;
-			pr.Emissivity = float(matbuf.getUint8(pos)) / 255;
-			pr.StaticFriction = matbuf.getFloat8(pos, 16.0/256);
-			pr.DynamicFriction = matbuf.getFloat8(pos, 16.0/256);
-			matbuf.getUint8(pos); //unused
-			matbuf.getUint8(pos); //unused
-			matbuf.getUint8(pos); //unused
-			CString texname;
-			for(unsigned int i=pos; i < matbuf.size(); i++)
-			{
-				if(matbuf[i] == '\0') break;
-				texname += char(matbuf[i]);
-			}
-			if(texname == "")
-				{pr.Texture = -1;}
-			else
-				{pr.Texture = texname.toInt();} //TODO: texture names
-
-			CBinBuffer vertices = f.readBytes(32 * numVertices);
-			if(vertices.size() < 32 * numVertices)
-			{
-				printf("EOF before end of vertex data\n");
-				return false;
-			}
-			pos = 0;
-			for(unsigned int i=0; i < numVertices; i++)
-			{
-				SVertex v;
-				v.pos = vertices.getVector32(pos, 0.001);
-				v.nor = vertices.getVector32(pos, (1.0 / 128.0) / 65536.0);
-				v.tex.x = vertices.getFloat32(pos, 1.0 / 65536.0);
-				v.tex.y = vertices.getFloat32(pos, 1.0 / 65536.0);
-
-				pr.vertex.push_back(v);
-			}
-
-			CBinBuffer indices = f.readBytes(4 * numIndices);
-			if(indices.size() < 4 * numIndices)
-			{
-				printf("EOF before end of index data\n");
-				return false;
-			}
-			pos = 0;
-			for(unsigned int i=0; i < numIndices; i++)
-			{
-				unsigned int index = indices.getUint32(pos);
-				if(index >= pr.vertex.size())
-				{
-					printf("Index %d exceeds vertex array size %d in %s\n",
-						index, pr.vertex.size(), pr.Name.c_str());
-					
-					return false;
-				}
-				
-				pr.index.push_back(index);
-			}
-
-			break;
-		}
-		default: //unknown object type
-			printf("Unknown object %s\n", name.c_str());
-			f.readBytes(datalen);
-		}
+bool CGLBFile::processObject(unsigned int type, const CString &name, CBinBuffer &data)
+{
+	switch(type)
+	{
+	case 0x0:
+		return processGeometry_05(name, data);
+		break;
+	case 0x1:
+		return processGeometry_07(name, data);
+		break;
+	default:
+		printf("Unknown object: type=%x, name=%s\n", type, name.c_str());
+		return false;
 	}
 
 	return true;
 }
+
+bool CGLBFile::processGeometry_05(const CString &name, CBinBuffer &data)
+{
+	m_Primitives.push_back(SPrimitive());
+	SPrimitive &pr = m_Primitives.back();
+
+	unsigned int datapos = 0, pos = 0;
+
+	pr.Name = name;
+	CBinBuffer dataheader = data.getBuffer(datapos, 12);
+	Uint32 materialsize = dataheader.getUint32(pos);
+	Uint32 numVertices = dataheader.getUint32(pos);
+	Uint32 numIndices = dataheader.getUint32(pos);
+
+	//printf("Object %s: %d vertices, %d indices\n", pr.Name.c_str(), numVertices, numIndices);
+
+	//Animation settings
+	//Default values
+	pr.animation.AnimationFlags = 0x0;
+	pr.animation.rotationOrigin = CVector();
+	pr.animation.rotationVelocity = CVector();
+
+	//Material
+	CBinBuffer matbuf = data.getBuffer(datapos, materialsize);
+	pos = 0;
+	pr.material.ModulationColor.x = float(matbuf.getUint8(pos)) / 255;
+	pr.material.ModulationColor.y = float(matbuf.getUint8(pos)) / 255;
+	pr.material.ModulationColor.z = float(matbuf.getUint8(pos)) / 255;
+	pr.material.Opacity = float(matbuf.getUint8(pos)) / 255;
+	pr.material.ReplacementColor.x = float(matbuf.getUint8(pos)) / 255;
+	pr.material.ReplacementColor.y = float(matbuf.getUint8(pos)) / 255;
+	pr.material.ReplacementColor.z = float(matbuf.getUint8(pos)) / 255;
+	matbuf.getUint8(pos); //replacement alpha, not yet used
+	pr.material.LODs = matbuf.getUint8(pos);
+	pr.material.Reflectance = float(matbuf.getUint8(pos)) / 255;
+	pr.material.Emissivity = float(matbuf.getUint8(pos)) / 255;
+	matbuf.getFloat8(pos, 16.0/256); //unused pr.material.StaticFriction
+	matbuf.getFloat8(pos, 16.0/256); //unused pr.material.DynamicFriction
+	matbuf.getUint8(pos); //unused
+	matbuf.getUint8(pos); //unused
+	matbuf.getUint8(pos); //unused
+	CString texname;
+	for(unsigned int i=pos; i < matbuf.size(); i++)
+	{
+		if(matbuf[i] == '\0') break;
+		texname += char(matbuf[i]);
+	}
+	if(texname == "")
+		{pr.material.Texture = -1;}
+	else
+		{pr.material.Texture = texname.toInt();} //TODO: texture names
+
+	CBinBuffer vertices = data.getBuffer(datapos, 32 * numVertices);
+	if(!processVertices(pr, vertices, numVertices)) return false;
+
+	CBinBuffer indices = data.getBuffer(datapos, 4 * numIndices);
+	if(!processIndices(pr, indices, numIndices)) return false;
+
+	return true;
+}
+
+bool CGLBFile::processGeometry_07(const CString &name, CBinBuffer &data)
+{
+	m_Primitives.push_back(SPrimitive());
+	SPrimitive &pr = m_Primitives.back();
+
+	unsigned int datapos = 0, pos = 0;
+
+	pr.Name = name;
+	CBinBuffer dataheader = data.getBuffer(datapos, 16);
+	Uint32 animationsize = dataheader.getUint32(pos);
+	Uint32 materialsize = dataheader.getUint32(pos);
+	Uint32 numVertices = dataheader.getUint32(pos);
+	Uint32 numIndices = dataheader.getUint32(pos);
+
+	//printf("Object %s: %d animation bytes, %d material bytes, %d vertices, %d indices\n",
+	//	pr.Name.c_str(), animationsize, materialsize, numVertices, numIndices);
+
+	//Animation
+	CBinBuffer anibuf = data.getBuffer(datapos, animationsize);
+	pos = 0;
+	pr.animation.AnimationFlags = anibuf.getUint32(pos);
+	pr.animation.rotationOrigin = anibuf.getVector32(pos, 0.001);
+	pr.animation.rotationVelocity = anibuf.getVector32(pos, (1000.0 / 128.0) / 65536.0);
+
+	//Material
+	CBinBuffer matbuf = data.getBuffer(datapos, materialsize);
+	pos = 0;
+	pr.material.ModulationColor.x = float(matbuf.getUint8(pos)) / 255;
+	pr.material.ModulationColor.y = float(matbuf.getUint8(pos)) / 255;
+	pr.material.ModulationColor.z = float(matbuf.getUint8(pos)) / 255;
+	pr.material.Opacity = float(matbuf.getUint8(pos)) / 255;
+	pr.material.ReplacementColor.x = float(matbuf.getUint8(pos)) / 255;
+	pr.material.ReplacementColor.y = float(matbuf.getUint8(pos)) / 255;
+	pr.material.ReplacementColor.z = float(matbuf.getUint8(pos)) / 255;
+	matbuf.getUint8(pos); //replacement alpha, not yet used
+	pr.material.LODs = matbuf.getUint8(pos);
+	pr.material.Reflectance = float(matbuf.getUint8(pos)) / 255;
+	pr.material.Emissivity = float(matbuf.getUint8(pos)) / 255;
+	matbuf.getUint8(pos); //unused
+	CString texname;
+	for(unsigned int i=pos; i < matbuf.size(); i++)
+	{
+		if(matbuf[i] == '\0') break;
+		texname += char(matbuf[i]);
+	}
+	if(texname == "")
+		{pr.material.Texture = -1;}
+	else
+		{pr.material.Texture = texname.toInt();} //TODO: texture names
+
+
+	CBinBuffer vertices = data.getBuffer(datapos, 32 * numVertices);
+	if(!processVertices(pr, vertices, numVertices)) return false;
+
+	CBinBuffer indices = data.getBuffer(datapos, 4 * numIndices);
+	if(!processIndices(pr, indices, numIndices)) return false;
+
+	return true;
+}
+
+bool CGLBFile::processVertices(SPrimitive &pr, CBinBuffer &data, unsigned int numVertices)
+{
+	if(data.size() < 32 * numVertices)
+	{
+		printf("End Of Object before end of vertex data\n");
+		return false;
+	}
+
+	unsigned int pos = 0;
+	for(unsigned int i=0; i < numVertices; i++)
+	{
+		SVertex v;
+		v.pos = data.getVector32(pos, 0.001);
+		v.nor = data.getVector32(pos, (1.0 / 128.0) / 65536.0);
+		v.tex.x = data.getFloat32(pos, 1.0 / 65536.0);
+		v.tex.y = data.getFloat32(pos, 1.0 / 65536.0);
+
+		pr.vertex.push_back(v);
+	}
+
+	return true;
+}
+
+bool CGLBFile::processIndices(SPrimitive &pr, CBinBuffer &data, unsigned int numIndices)
+{
+	if(data.size() < 4 * numIndices)
+	{
+		printf("End Of Object before end of index data\n");
+		return false;
+	}
+	
+	unsigned int pos = 0;
+	for(unsigned int i=0; i < numIndices; i++)
+	{
+		unsigned int index = data.getUint32(pos);
+		if(index >= pr.vertex.size())
+		{
+			printf("Index %d exceeds vertex array size %d in %s\n",
+				index, pr.vertex.size(), pr.Name.c_str());
+			
+			return false;
+		}
+		
+		pr.index.push_back(index);
+	}
+
+	return true;
+}
+
 
 void CGLBFile::save(const CString &filename)
 {
@@ -181,43 +281,50 @@ void CGLBFile::save(const CString &filename)
 		CBinBuffer ObjHeader, ObjData;
 
 		{
+			CBinBuffer animationdata;
+			{
+				animationdata += Uint32(pr.animation.AnimationFlags);
+				animationdata.addVector32(pr.animation.rotationOrigin, 0.001);
+				animationdata.addVector32(pr.animation.rotationVelocity, (1000.0 / 128.0) / 65536.0);
+			}
+
 			CBinBuffer materialdata;
-			materialdata += Uint8(255*pr.ModulationColor.x);
-			materialdata += Uint8(255*pr.ModulationColor.y);
-			materialdata += Uint8(255*pr.ModulationColor.z);
-			materialdata += Uint8(255*pr.Opacity);
-			materialdata += Uint8(255*pr.ReplacementColor.x);
-			materialdata += Uint8(255*pr.ReplacementColor.y);
-			materialdata += Uint8(255*pr.ReplacementColor.z);
-			materialdata += Uint8(255);
-			materialdata += Uint8(pr.LODs);
-			materialdata += Uint8(255*pr.Reflectance);
-			materialdata += Uint8(255*pr.Emissivity);
-			materialdata.addFloat8(pr.StaticFriction, 16.0/256);
-			materialdata.addFloat8(pr.DynamicFriction, 16.0/256);
-			materialdata += (Uint8)'\0';
-			materialdata += (Uint8)'\0';
-			materialdata += (Uint8)'\0';
+			{
+				materialdata += Uint8(255*pr.material.ModulationColor.x);
+				materialdata += Uint8(255*pr.material.ModulationColor.y);
+				materialdata += Uint8(255*pr.material.ModulationColor.z);
+				materialdata += Uint8(255*pr.material.Opacity);
+				materialdata += Uint8(255*pr.material.ReplacementColor.x);
+				materialdata += Uint8(255*pr.material.ReplacementColor.y);
+				materialdata += Uint8(255*pr.material.ReplacementColor.z);
+				materialdata += Uint8(255);
+				materialdata += Uint8(pr.material.LODs);
+				materialdata += Uint8(255*pr.material.Reflectance);
+				materialdata += Uint8(255*pr.material.Emissivity);
+				materialdata += (Uint8)'\0';
 
-			if(pr.Texture < 0)
-			{
-				materialdata += (Uint8)'\0';
-				materialdata += (Uint8)'\0';
-				materialdata += (Uint8)'\0';
-				materialdata += (Uint8)'\0';
-			}
-			else
-			{
-				//TODO: more than 10 textures
-				materialdata += (Uint8)('0' + pr.Texture);
-				materialdata += (Uint8)'\0';
-				materialdata += (Uint8)'\0';
-				materialdata += (Uint8)'\0';
+				if(pr.material.Texture < 0)
+				{
+					materialdata += (Uint8)'\0';
+					materialdata += (Uint8)'\0';
+					materialdata += (Uint8)'\0';
+					materialdata += (Uint8)'\0';
+				}
+				else
+				{
+					//TODO: more than 10 textures
+					materialdata += (Uint8)('0' + pr.material.Texture);
+					materialdata += (Uint8)'\0';
+					materialdata += (Uint8)'\0';
+					materialdata += (Uint8)'\0';
+				}
 			}
 
+			ObjData += Uint32(animationdata.size());
 			ObjData += Uint32(materialdata.size());
 			ObjData += Uint32(pr.vertex.size());
 			ObjData += Uint32(pr.index.size());
+			ObjData += animationdata;
 			ObjData += materialdata;
 
 			//vertex array
@@ -234,7 +341,7 @@ void CGLBFile::save(const CString &filename)
 				ObjData += Uint32(pr.index[j]);
 		}
 
-		ObjHeader += Uint32(0); //type
+		ObjHeader += Uint32(0x1); //type
 
 		//Object name
 		unsigned int numPadding = 1 + (4 - (1+pr.Name.length()) % 4);

@@ -12,6 +12,7 @@
 	ret.push_back("");
 	ret.push_back(_("Music:"));
 	ret.push_back("  Pronobozo");
+	ret.push_back("  Symsonic");
 	ret.push_back("  Yllusion");
 	ret.push_back("");
 	ret.push_back(_("Translations:"));

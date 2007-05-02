@@ -211,12 +211,7 @@ void update_shared_configuration()
 
 	//find the absolute path
 	//very long paths might cause segfaults
-	CString absdir;
-	char datadirbuffer[4096];
-	if(realpath(DataDir.c_str(), datadirbuffer) != NULL)
-	{
-		absdir = CString(datadirbuffer) + "/";
-	}
+	CString absdir = getAbsDir(DataDir);
 	printf("DataDir is \"%s\"\n", DataDir.c_str());
 	printf("SaveDir is \"%s\"\n", SaveDir.c_str());
 	if(fctl == NULL) fctl = new CFileControl; //TODO: find a way to delete this object

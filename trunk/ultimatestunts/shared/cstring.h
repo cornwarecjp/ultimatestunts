@@ -66,6 +66,7 @@
 
 	//Don't know how to do these with std::string:
 	CString mid(unsigned int i, int l=-1) const; //-1 means as long as possible
+	CString right(unsigned int len) const;
 	int inStr(char c) const;
 	int inStr(const CString &s) const;
 	CString forceLength(unsigned int l) const;

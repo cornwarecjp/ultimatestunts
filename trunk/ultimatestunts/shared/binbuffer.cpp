@@ -44,6 +44,24 @@ CBinBuffer & CBinBuffer::operator += (const CBinBuffer & bb) {
 	return (*this);
 }
 
+CBinBuffer CBinBuffer::getBuffer(int unsigned &pos, unsigned int maxlen) const
+{
+	unsigned int s = size();
+	if(s==0) return CBinBuffer();
+	
+	if(maxlen >= s) maxlen = s-1;
+
+	CBinBuffer ret;
+	ret.resize(maxlen);
+	for (int unsigned i=0;i<maxlen;i++)
+	{
+		ret[i] = (*this)[pos];   // FIXME: slow
+		pos++;
+	}
+
+	return ret;
+}
+
 //Uint8:
 CBinBuffer & CBinBuffer::operator += (const Uint8 & i)
 {

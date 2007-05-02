@@ -24,6 +24,8 @@ using namespace std;
 
 #include "vector.h"
 #include "cstring.h"
+#include "binbuffer.h"
+
 /**
   *@author CJP
   */
@@ -47,14 +49,34 @@ public:
 		vector<SVertex> vertex;
 		vector<unsigned int> index;
 
-		int Texture;
 		CString Name;
-		unsigned int LODs;
-		CVector ModulationColor, ReplacementColor;
-		float Opacity, Reflectance, Emissivity;
-		float StaticFriction, DynamicFriction;
+
+		//Material data
+		struct
+		{
+			int Texture;
+			unsigned int LODs;
+			CVector ModulationColor, ReplacementColor;
+			float Opacity, Reflectance, Emissivity;
+		} material;
+
+		//Animation data
+		struct
+		{
+			unsigned int AnimationFlags;
+			CVector rotationOrigin, rotationVelocity;
+		} animation;
 	};
 	vector<SPrimitive> m_Primitives;
+
+protected:
+	bool processObject(unsigned int type, const CString &name, CBinBuffer &data);
+
+	bool processGeometry_05(const CString &name, CBinBuffer &data);
+	bool processGeometry_07(const CString &name, CBinBuffer &data);
+
+	bool processVertices(SPrimitive &pr, CBinBuffer &data, unsigned int numVertices);
+	bool processIndices (SPrimitive &pr, CBinBuffer &data, unsigned int numIndices );
 };
 
 void tesselateSquare(CGLBFile::SPrimitive &pr, unsigned int tess);

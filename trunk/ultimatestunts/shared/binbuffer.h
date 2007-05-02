@@ -60,6 +60,7 @@ public:
 	Uint16 getUint16(int unsigned &pos) const;
 	Uint32 getUint32(int unsigned &pos) const;
 	CString getCString(int unsigned &pos) const;
+	CBinBuffer getBuffer(int unsigned &pos, unsigned int maxlen) const;
 	float getFloat8(int unsigned &pos, float unit=0.001) const;  //range -unit to unit;  8 bit precision
 	float getFloat16(int unsigned &pos, float unit=0.001) const; //range -unit to unit; 16 bit precision
 	float getFloat32(int unsigned &pos, float unit=0.001) const; //range -unit to unit; 32 bit precision
