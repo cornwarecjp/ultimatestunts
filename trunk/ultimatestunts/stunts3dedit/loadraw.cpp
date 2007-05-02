@@ -34,9 +34,9 @@ bool loadRAW(const CString &filename, CEditGraphObj &obj)
 		{
 				CPrimitive pr;
 				pr.m_Name = line;
-				pr.m_Texture = -1;
+				pr.m_Material.texture = -1;
 				pr.m_Type = CPrimitive::Triangles;
-				pr.m_LODs = "1234c";
+				pr.m_Material.LODs = "1234c";
 				obj.m_Primitives.push_back(pr);
 		}
 		else

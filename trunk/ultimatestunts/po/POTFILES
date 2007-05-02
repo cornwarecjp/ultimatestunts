@@ -3,8 +3,10 @@
      ../stuntsserver/gamecorethread.cpp \
      ../graphics/colorselect.cpp \
      ../graphics/messagebox.cpp \
+     ../shared/credits.h \
      ../shared/hello.cpp \
      ../shared/usmisc.cpp \
      ../simulation/rulecontrol.cpp \
      ../simulation/gamecore.cpp \
-     ../trackedit/tegui.cpp
+     ../trackedit/tegui.cpp \
+     ../trackedit/mainpage.cpp

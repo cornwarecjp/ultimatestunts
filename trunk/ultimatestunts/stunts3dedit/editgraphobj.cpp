@@ -56,22 +56,26 @@ bool CEditGraphObj::loadGLBFile(CString filename)
 		CPrimitive &pr2 = m_Primitives.back();
 		CGLBFile::SPrimitive &pr1 = f.m_Primitives[p];
 
-		pr2.m_Type = CPrimitive::VertexArray;
-		pr2.m_DynamicFriction = pr1.DynamicFriction;
-		pr2.m_Emissivity = pr1.Emissivity;
-		if(pr1.LODs & 1) pr2.m_LODs += '1';
-		if(pr1.LODs & 2) pr2.m_LODs += '2';
-		if(pr1.LODs & 4) pr2.m_LODs += '3';
-		if(pr1.LODs & 8) pr2.m_LODs += '4';
-		if(pr1.LODs & 16) pr2.m_LODs += 'c';
-		if(pr1.LODs & 32) pr2.m_LODs += 's';
-		pr2.m_ModulationColor = pr1.ModulationColor;
 		pr2.m_Name = pr1.Name;
-		pr2.m_Opacity = pr1.Opacity;
-		pr2.m_Reflectance = pr1.Reflectance;
-		pr2.m_ReplacementColor = pr1.ReplacementColor;
-		pr2.m_StaticFriction = pr1.StaticFriction;
-		pr2.m_Texture = pr1.Texture;
+		pr2.m_Type = CPrimitive::VertexArray;
+
+		pr2.m_Material.LODs = "";
+		if(pr1.material.LODs & 1) pr2.m_Material.LODs += '1';
+		if(pr1.material.LODs & 2) pr2.m_Material.LODs += '2';
+		if(pr1.material.LODs & 4) pr2.m_Material.LODs += '3';
+		if(pr1.material.LODs & 8) pr2.m_Material.LODs += '4';
+		if(pr1.material.LODs & 16) pr2.m_Material.LODs += 'c';
+		if(pr1.material.LODs & 32) pr2.m_Material.LODs += 's';
+		pr2.m_Material.texture = pr1.material.Texture;
+		pr2.m_Material.modulationColor = pr1.material.ModulationColor;
+		pr2.m_Material.replacementColor = pr1.material.ReplacementColor;
+		pr2.m_Material.opacity = pr1.material.Opacity;
+		pr2.m_Material.reflectance = pr1.material.Reflectance;
+		pr2.m_Material.emissivity = pr1.material.Emissivity;
+
+		pr2.m_Animation.rotationEnabled = (pr1.animation.AnimationFlags & 0x1) != 0;
+		pr2.m_Animation.rotationOrigin = pr1.animation.rotationOrigin;
+		pr2.m_Animation.rotationVelocity = pr1.animation.rotationVelocity;
 
 		for(unsigned int v=0; v < pr1.vertex.size(); v++)
 		{
@@ -146,7 +150,7 @@ void CEditGraphObj::merge(const CEditGraphObj &obj, const CString &lods)
 		CPrimitive thePrimitive = obj.m_Primitives[i];
 
 		//Correct CG position
-		thePrimitive.m_LODs = lods;
+		thePrimitive.m_Material.LODs = lods;
 		for(unsigned int j=0; j < thePrimitive.m_Vertex.size(); j++)
 			thePrimitive.m_Vertex[j].pos += CG1 - CG2;
 
@@ -217,9 +221,9 @@ void CEditGraphObj::saveGLTFile(const CString &filename)
 			name = pr.m_Name;
 			f.writel("#Tedit-name " + name);
 		}
-		if(!(pr.m_LODs == LODs))
+		if(!(pr.m_Material.LODs == LODs))
 		{
-			LODs = pr.m_LODs;
+			LODs = pr.m_Material.LODs;
 			f.writel("Lod " + LODs);
 
 			//rewrite the entire state (set the current state totally invalid)
@@ -228,99 +232,32 @@ void CEditGraphObj::saveGLTFile(const CString &filename)
 			state.col = state.nor = state.tex = CVector(2,2,2);
 			state.opacity = state.reflectance = 2;
 		}
-		if(!(pr.m_Texture == texid))
+		if(!(pr.m_Material.texture == texid))
 		{
-			texid = pr.m_Texture;
+			texid = pr.m_Material.texture;
 			if(texid < 0)
 				f.writel("Notex");
 			else
 				f.writel(CString("Texture ") + texid);
 		}
 
-		//special code for vertex arrays
-		if(pr.m_Type == CPrimitive::VertexArray)
+		f.writel("VertexArray");
+		f.writel(CString("Color ") + pr.m_Material.modulationColor);
+		f.writel(CString("Opacity ") + pr.m_Material.opacity);
+		f.writel(CString("ReplacementColor ") + pr.m_Material.replacementColor);
+		f.writel(CString("Reflectance ") + pr.m_Material.reflectance);
+		f.writel(CString("Emissivity ") + pr.m_Material.emissivity);
+
+		if(pr.m_Animation.rotationEnabled)
 		{
-			f.writel("VertexArray");
-			f.writel(CString("Color ") + pr.m_ModulationColor);
-			f.writel(CString("Opacity ") + pr.m_Opacity);
-			f.writel(CString("ReplacementColor ") + pr.m_ReplacementColor);
-			f.writel(CString("Reflectance ") + pr.m_Reflectance);
-			f.writel(CString("Emissivity ") + pr.m_Emissivity);
-			f.writel(CString("DynamicFriction ") + pr.m_DynamicFriction);
-			f.writel(CString("StaticFriction ") + pr.m_StaticFriction);
-			
-			for(unsigned int j=0; j<pr.m_Vertex.size(); j++)
-			{
-				CVertex &vt = pr.m_Vertex[j];
-
-				//normal
-				if((vt.nor-state.nor).abs2() > 0.0001)
-				{
-					f.writel(CString("Normal ")+vt.nor.x+", "+vt.nor.y+", "+vt.nor.z);
-					state.nor = vt.nor;
-				}
-
-				//texcoord
-				if((vt.tex-state.tex).abs2() > 0.000001)
-				{
-					f.writel(CString("TexCoord ")+vt.tex.x+", "+vt.tex.y);
-					state.tex = vt.tex;
-				}
-
-				//vertex
-				f.writel(CString("Vertex ")+vt.pos.x+", "+vt.pos.y+", "+vt.pos.z);
-			}
-			for(unsigned int j=0; j<pr.m_Index.size(); j++)
-				f.writel(CString("Index ") + pr.m_Index[j]);
-			f.writel("End");
-			continue;
+			f.writel(CString("RotationAnimation ") +
+				pr.m_Animation.rotationOrigin + ";" +
+				pr.m_Animation.rotationVelocity);
 		}
 		
-		int numvert = 1; //spacing property
-		switch(pr.m_Type)
-		{
-			case CPrimitive::Quads:
-				f.writel("Quads"); numvert = 4; break;
-			case CPrimitive::Triangles:
-				f.writel("Triangles"); numvert = 3; break;
-			case CPrimitive::TriangleStrip:
-				f.writel("Trianglestrip"); break;
-			case CPrimitive::QuadStrip:
-				f.writel("Quadstrip"); break;
-			case CPrimitive::Polygon:
-				f.writel("Polygon"); break;
-			case CPrimitive::VertexArray:
-				f.writel("#Vertex array not yet supported");
-				break;
-		}
-
 		for(unsigned int j=0; j<pr.m_Vertex.size(); j++)
 		{
-			if((j % numvert) == 0)
-				f.writel(""); //empty line
-
 			CVertex &vt = pr.m_Vertex[j];
-
-			//color
-			if((vt.col-state.col).abs2() > 0.0001)
-			{
-				f.writel(CString("Color ")+vt.col.x+", "+vt.col.y+", "+vt.col.z);
-				state.col = vt.col;
-			}
-
-			//opacity
-			if(fabs(vt.opacity - state.opacity) > 0.01)
-			{
-				f.writel(CString("Opacity ")+vt.opacity);
-				state.opacity = vt.opacity;
-			}
-
-			//reflectance
-			if(fabs(vt.reflectance - state.reflectance) > 0.01)
-			{
-				f.writel(CString("Reflectance ")+vt.reflectance);
-				state.reflectance = vt.reflectance;
-			}
 
 			//normal
 			if((vt.nor-state.nor).abs2() > 0.0001)
@@ -339,6 +276,8 @@ void CEditGraphObj::saveGLTFile(const CString &filename)
 			//vertex
 			f.writel(CString("Vertex ")+vt.pos.x+", "+vt.pos.y+", "+vt.pos.z);
 		}
+		for(unsigned int j=0; j<pr.m_Index.size(); j++)
+			f.writel(CString("Index ") + pr.m_Index[j]);
 
 		f.writel("End");
 	}
@@ -355,23 +294,30 @@ void CEditGraphObj::saveGLBFile(const CString &filename)
 		f.m_Primitives.push_back(CGLBFile::SPrimitive());
 		CGLBFile::SPrimitive &pr2 = f.m_Primitives.back();
 
-		pr2.DynamicFriction = pr1.m_DynamicFriction;
-		pr2.Emissivity = pr1.m_Emissivity;
-		pr2.LODs = 0;
-		if(pr1.m_LODs.inStr('1') >= 0) pr2.LODs += 1;
-		if(pr1.m_LODs.inStr('2') >= 0) pr2.LODs += 2;
-		if(pr1.m_LODs.inStr('3') >= 0) pr2.LODs += 4;
-		if(pr1.m_LODs.inStr('4') >= 0) pr2.LODs += 8;
-		if(pr1.m_LODs.inStr('c') >= 0) pr2.LODs += 16;
-		if(pr1.m_LODs.inStr('s') >= 0) pr2.LODs += 32;
-		pr2.ModulationColor = pr1.m_ModulationColor;
 		pr2.Name = pr1.m_Name;
-		pr2.Opacity = pr1.m_Opacity;
-		pr2.Reflectance = pr1.m_Reflectance;
-		pr2.ReplacementColor = pr1.m_ReplacementColor;
-		pr2.StaticFriction = pr1.m_StaticFriction;
-		pr2.Texture = pr1.m_Texture;
 
+		//Animation
+		pr2.animation.AnimationFlags = 0;
+		if(pr1.m_Animation.rotationEnabled) pr2.animation.AnimationFlags |= 0x1;
+		pr2.animation.rotationOrigin   = pr1.m_Animation.rotationOrigin;
+		pr2.animation.rotationVelocity = pr1.m_Animation.rotationVelocity;
+
+		//Material
+		pr2.material.LODs = 0;
+		if(pr1.m_Material.LODs.inStr('1') >= 0) pr2.material.LODs += 1;
+		if(pr1.m_Material.LODs.inStr('2') >= 0) pr2.material.LODs += 2;
+		if(pr1.m_Material.LODs.inStr('3') >= 0) pr2.material.LODs += 4;
+		if(pr1.m_Material.LODs.inStr('4') >= 0) pr2.material.LODs += 8;
+		if(pr1.m_Material.LODs.inStr('c') >= 0) pr2.material.LODs += 16;
+		if(pr1.m_Material.LODs.inStr('s') >= 0) pr2.material.LODs += 32;
+		pr2.material.Emissivity = pr1.m_Material.emissivity;
+		pr2.material.ModulationColor = pr1.m_Material.modulationColor;
+		pr2.material.Opacity = pr1.m_Material.opacity;
+		pr2.material.Reflectance = pr1.m_Material.reflectance;
+		pr2.material.ReplacementColor = pr1.m_Material.replacementColor;
+		pr2.material.Texture = pr1.m_Material.texture;
+
+		//Vertices
 		for(unsigned int v=0; v < pr1.m_Vertex.size(); v++)
 		{
 			CGLBFile::SVertex vt2;
@@ -384,6 +330,7 @@ void CEditGraphObj::saveGLBFile(const CString &filename)
 			pr2.vertex.push_back(vt2);
 		}
 
+		//Indices
 		pr2.index = pr1.m_Index;
 	}
 
@@ -396,21 +343,19 @@ void CEditGraphObj::convertToVertexArrays()
 	{
 		CPrimitive &pr = m_Primitives[p];
 
-		pr.m_ModulationColor = pr.m_Vertex[0].col;
-		pr.m_Opacity = pr.m_Vertex[0].opacity;
-		pr.m_Reflectance = pr.m_Vertex[0].reflectance;
-		if(pr.m_Texture >= 0)
+		pr.m_Material.modulationColor = pr.m_Vertex[0].col;
+		pr.m_Material.opacity = pr.m_Vertex[0].opacity;
+		pr.m_Material.reflectance = pr.m_Vertex[0].reflectance;
+		if(pr.m_Material.texture >= 0)
 		{
-			pr.m_ReplacementColor = m_MatArray[pr.m_Texture]->getColor();
-			pr.m_ReplacementColor.x *= pr.m_ModulationColor.x;
-			pr.m_ReplacementColor.y *= pr.m_ModulationColor.y;
-			pr.m_ReplacementColor.z *= pr.m_ModulationColor.z;
+			pr.m_Material.replacementColor = m_MatArray[pr.m_Material.texture]->getColor();
+			pr.m_Material.replacementColor.x *= pr.m_Material.modulationColor.x;
+			pr.m_Material.replacementColor.y *= pr.m_Material.modulationColor.y;
+			pr.m_Material.replacementColor.z *= pr.m_Material.modulationColor.z;
 		}
 		else
-			{pr.m_ReplacementColor = pr.m_ModulationColor;}
-		pr.m_Emissivity = 0;
-		pr.m_StaticFriction = 1.0;
-		pr.m_DynamicFriction = 1.0;
+			{pr.m_Material.replacementColor = pr.m_Material.modulationColor;}
+		pr.m_Material.emissivity = 0;
 
 		unsigned int maxIndex = pr.m_Vertex.size() - 1;
 		unsigned int writeIndex = 0;
@@ -564,7 +509,7 @@ void CEditGraphObj::render(const CString &visibleLODs)
 	{
 		CPrimitive &pr = m_Primitives[i];
 
-		CString LODs = pr.m_LODs;
+		CString LODs = pr.m_Material.LODs;
 		bool doit = false;
 		for(unsigned int j=0; j < LODs.length(); j++)
 			if(visibleLODs.inStr( (LODs[j]) ) >= 0)
@@ -572,25 +517,27 @@ void CEditGraphObj::render(const CString &visibleLODs)
 		if(!doit) continue;
 
 		//Standard colors
-		m_OpacityState = pr.m_Opacity;
-		m_ColorState = pr.m_ModulationColor;
+		m_OpacityState = pr.m_Material.opacity;
+		m_ColorState = pr.m_Material.modulationColor;
 
 		//Apply texture
-		if(pr.m_Texture < 0)
+		if(pr.m_Material.texture < 0)
 		{ //no texture
-			glDisable(GL_TEXTURE_2D); 
+			glDisable(GL_TEXTURE_2D);
 		}
-		else if(m_MatArray[pr.m_Texture]->getSizeX(1) <= 4 || m_MatArray[pr.m_Texture]->getSizeY(1) <= 4)
+		else if(
+			m_MatArray[pr.m_Material.texture]->getSizeX(1) <= 4 ||
+			m_MatArray[pr.m_Material.texture]->getSizeY(1) <= 4)
 		{ //too small texture
 			glDisable(GL_TEXTURE_2D);
-			m_ColorState.x *= pr.m_ReplacementColor.x;
-			m_ColorState.y *= pr.m_ReplacementColor.y;
-			m_ColorState.z *= pr.m_ReplacementColor.z;
+			m_ColorState.x *= pr.m_Material.replacementColor.x;
+			m_ColorState.y *= pr.m_Material.replacementColor.y;
+			m_ColorState.z *= pr.m_Material.replacementColor.z;
 		}
 		else
 		{ //a good texture
 			glEnable(GL_TEXTURE_2D);
-			m_MatArray[pr.m_Texture]->draw(1);
+			m_MatArray[pr.m_Material.texture]->draw(1);
 		}
 
 		//Set the color
@@ -609,6 +556,25 @@ void CEditGraphObj::render(const CString &visibleLODs)
 			glVertex3f(pos.x, pos.y, pos.z);
 		}
 		glEnd();
+
+		//Rotation axis
+		if(pr.m_Animation.rotationEnabled)
+		{
+			CVector p1 = pr.m_Animation.rotationOrigin;
+			CVector p2 = p1 + pr.m_Animation.rotationVelocity;
+
+			glDisable(GL_TEXTURE_2D);
+			glDisable(GL_LIGHTING);
+			glColor4f(0,1,1,1);
+
+			glBegin(GL_LINES);
+			glVertex3f(p1.x, p1.y, p1.z);
+			glVertex3f(p2.x, p2.y, p2.z);
+			glEnd();
+
+			glColor4f(1,1,1,1);
+			glEnable(GL_LIGHTING);
+		}
 	}
 
 	glEndList();
@@ -621,11 +587,11 @@ void CEditGraphObj::render(const CString &visibleLODs)
 	for(unsigned int i=0; i<m_Primitives.size(); i++)
 	{
 		CPrimitive &pr = m_Primitives[i];
-		if(pr.m_LODs.inStr('1') < 0) continue; //reflection model = LOD 1
+		if(pr.m_Material.LODs.inStr('1') < 0) continue; //reflection model = LOD 1
 
 		if(pr.m_Type == CPrimitive::VertexArray)
 		{
-			m_OpacityState = pr.m_Reflectance;
+			m_OpacityState = pr.m_Material.reflectance;
 			setMaterialColor();
 
 			glBegin(GL_TRIANGLES);

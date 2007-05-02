@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT([Ultimate Stunts], [0.7.0], [cornware-cjp@users.sourceforge.net], [ultimatestunts])
+AC_INIT([Ultimate Stunts], [0.7.1], [cornware-cjp@users.sourceforge.net], [ultimatestunts])
 AC_CONFIG_SRCDIR([ultimatestunts/main.cpp])
 AM_CONFIG_HEADER(config.h)
 AC_CANONICAL_TARGET
@@ -47,7 +47,7 @@ if test "x$ac_cv_header_windows_h" != "xyes" ; then
 
   AC_PATH_XTRA
 
-  x_suffix="$X_LIBS $X_PRE_LIBS -lX11 -lXi -lXext $X_EXTRA_LIBS -lm"
+  x_suffix="$X_LIBS $X_PRE_LIBS $X_EXTRA_LIBS -lm"
   graphlibs=$x_suffix
 
   CFLAGS="$CFLAGS $X_CFLAGS"

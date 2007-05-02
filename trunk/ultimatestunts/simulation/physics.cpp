@@ -17,13 +17,11 @@
 #include <cstdio>
 #include <cmath>
 
+#include "pi.h"
+
 #include "physics.h"
 #include "car.h"
 #include "usmacros.h"
-
-#ifndef M_PI
-#define M_PI 3.1415926536
-#endif
 
 /*
 It is wrong to think that the task of physics is

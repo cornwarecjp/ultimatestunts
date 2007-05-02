@@ -18,9 +18,7 @@
 #include <cstdio>
 #include <cmath>
 
-#ifndef M_PI
-#define M_PI 3.1415926536
-#endif
+#include "pi.h"
 #define DBLPI (2.0*M_PI)
 
 #include "bound.h"
@@ -756,6 +754,8 @@ void CCar::simulateGeneral(CPhysics *simulator, float dt)
 	//Engine simulation
 	//----------------------
 	m_Engine.m_Gear = ((CCarInput *)m_InputData)->m_Gear;
+	if(m_Engine.m_Gear >= m_Engine.m_GearRatios.size())
+		m_Engine.m_Gear = m_Engine.m_GearRatios.size() - 1;
 	m_Engine.m_Gas = ((CCarInput *)m_InputData)->m_Forward;
 	m_Engine.update(dt, m_Wheel[0].m_w, m_Wheel[1].m_w, m_Wheel[2].m_w, m_Wheel[3].m_w);
 
@@ -855,15 +855,6 @@ void CCar::doSteering(float dt)
 	//fixing straight road driving:
 	if(fabsf(steer) < 0.05 && fabsf(m_DesiredSteering) < 0.05)
 		m_DesiredSteering = 0.0;
-
-	/*
-	//Old exponential function:
-	float factor = exp(-0.5*dt);
-	if(fabsf(steer) < fabsf(m_DesiredSteering))
-		factor = exp(-25.0*dt);
-
-	m_DesiredSteering = factor * m_DesiredSteering + (1.0-factor) * steer;
-	*/
 
 	//if the wheels were in the middle of the car
 	float desiredfront = m_FrontSteerMax * m_DesiredSteering;

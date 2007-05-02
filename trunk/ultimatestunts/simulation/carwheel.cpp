@@ -20,11 +20,6 @@
 #include <cstdio>
 #include <cmath>
 
-#ifndef M_PI
-#define M_PI 3.1415926536
-#endif
-#define DBLPI (2.0*M_PI)
-
 CCarWheel::CCarWheel()
 {
 	m_a = 0.0;

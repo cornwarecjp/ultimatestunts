@@ -56,17 +56,20 @@ bool loadGLT(const CString &filename, CEditGraphObj &obj)
 			if(lhs == "Color")
 			{
 				state.col = rhs.toVector();
-				if(obj.m_Primitives.size()>0) obj.m_Primitives.back().m_ModulationColor = state.col;
+				if(obj.m_Primitives.size()>0)
+					obj.m_Primitives.back().m_Material.modulationColor = state.col;
 			}
 			if(lhs == "Opacity")
 			{
 				state.opacity = rhs.toFloat();
-				if(obj.m_Primitives.size()>0) obj.m_Primitives.back().m_Opacity = state.opacity;
+				if(obj.m_Primitives.size()>0)
+					obj.m_Primitives.back().m_Material.opacity = state.opacity;
 			}
 			if(lhs == "Reflectance")
 			{
 				state.reflectance = rhs.toFloat();
-				if(obj.m_Primitives.size()>0) obj.m_Primitives.back().m_Reflectance = state.reflectance;
+				if(obj.m_Primitives.size()>0)
+					obj.m_Primitives.back().m_Material.reflectance = state.reflectance;
 			}
 			if(lhs == "Normal")
 				state.nor = rhs.toVector();
@@ -78,70 +81,82 @@ bool loadGLT(const CString &filename, CEditGraphObj &obj)
 				if(obj.m_Primitives.size()>0) obj.m_Primitives.back().m_Vertex.push_back(state);
 			}
 			if(lhs == "ReplacementColor")
-				if(obj.m_Primitives.size()>0) obj.m_Primitives.back().m_ReplacementColor = rhs.toVector();
+				if(obj.m_Primitives.size()>0)
+					obj.m_Primitives.back().m_Material.replacementColor = rhs.toVector();
 			if(lhs == "Emissivity")
-				if(obj.m_Primitives.size()>0) obj.m_Primitives.back().m_Emissivity = rhs.toFloat();
-			if(lhs == "StaticFriction")
-				if(obj.m_Primitives.size()>0) obj.m_Primitives.back().m_StaticFriction = rhs.toFloat();
-			if(lhs == "DynamicFriction")
-				if(obj.m_Primitives.size()>0) obj.m_Primitives.back().m_DynamicFriction = rhs.toFloat();
+				if(obj.m_Primitives.size()>0)
+					obj.m_Primitives.back().m_Material.emissivity = rhs.toFloat();
 
 			if(lhs == "Index")
 				if(obj.m_Primitives.size()>0)
 					obj.m_Primitives.back().m_Index.push_back((unsigned int)rhs.toInt());
 
+			if(lhs == "RotationAnimation")
+				if(obj.m_Primitives.size()>0)
+				{
+					int scpos = rhs.inStr(';');
+					if(scpos > 0)
+					{
+						CVector origin   = rhs.mid(0, scpos).toVector();
+						CVector velocity = rhs.mid(scpos+1 ).toVector();
+						obj.m_Primitives.back().m_Animation.rotationEnabled  = true;
+						obj.m_Primitives.back().m_Animation.rotationOrigin   = origin;
+						obj.m_Primitives.back().m_Animation.rotationVelocity = velocity;
+					}
+				}
+
 			if(lhs == "Quads")
 			{
 				CPrimitive pr;
 				pr.m_Name = name;
-				pr.m_Texture = texid;
+				pr.m_Material.texture = texid;
 				pr.m_Type = CPrimitive::Quads;
-				pr.m_LODs = LODs;
+				pr.m_Material.LODs = LODs;
 				obj.m_Primitives.push_back(pr);
 			}
 			if(lhs == "Triangles")
 			{
 				CPrimitive pr;
 				pr.m_Name = name;
-				pr.m_Texture = texid;
+				pr.m_Material.texture = texid;
 				pr.m_Type = CPrimitive::Triangles;
-				pr.m_LODs = LODs;
+				pr.m_Material.LODs = LODs;
 				obj.m_Primitives.push_back(pr);
 			}
 			if(lhs == "Trianglestrip")
 			{
 				CPrimitive pr;
 				pr.m_Name = name;
-				pr.m_Texture = texid;
+				pr.m_Material.texture = texid;
 				pr.m_Type = CPrimitive::TriangleStrip;
-				pr.m_LODs = LODs;
+				pr.m_Material.LODs = LODs;
 				obj.m_Primitives.push_back(pr);
 			}
 			if(lhs == "Quadstrip")
 			{
 				CPrimitive pr;
 				pr.m_Name = name;
-				pr.m_Texture = texid;
+				pr.m_Material.texture = texid;
 				pr.m_Type = CPrimitive::QuadStrip;
-				pr.m_LODs = LODs;
+				pr.m_Material.LODs = LODs;
 				obj.m_Primitives.push_back(pr);
 			}
 			if(lhs == "Polygon")
 			{
 				CPrimitive pr;
 				pr.m_Name = name;
-				pr.m_Texture = texid;
+				pr.m_Material.texture = texid;
 				pr.m_Type = CPrimitive::Polygon;
-				pr.m_LODs = LODs;
+				pr.m_Material.LODs = LODs;
 				obj.m_Primitives.push_back(pr);
 			}
 			if(lhs == "VertexArray")
 			{
 				CPrimitive pr;
 				pr.m_Name = name;
-				pr.m_Texture = texid;
+				pr.m_Material.texture = texid;
 				pr.m_Type = CPrimitive::VertexArray;
-				pr.m_LODs = LODs;
+				pr.m_Material.LODs = LODs;
 				obj.m_Primitives.push_back(pr);
 			}
 
@@ -159,54 +174,54 @@ bool loadGLT(const CString &filename, CEditGraphObj &obj)
 			{
 				CPrimitive pr;
 				pr.m_Name = name;
-				pr.m_Texture = texid;
+				pr.m_Material.texture = texid;
 				pr.m_Type = CPrimitive::Quads;
-				pr.m_LODs = LODs;
+				pr.m_Material.LODs = LODs;
 				obj.m_Primitives.push_back(pr);
 			}
 			if(lhs == "Triangles")
 			{
 				CPrimitive pr;
 				pr.m_Name = name;
-				pr.m_Texture = texid;
+				pr.m_Material.texture = texid;
 				pr.m_Type = CPrimitive::Triangles;
-				pr.m_LODs = LODs;
+				pr.m_Material.LODs = LODs;
 				obj.m_Primitives.push_back(pr);
 			}
 			if(lhs == "Trianglestrip")
 			{
 				CPrimitive pr;
 				pr.m_Name = name;
-				pr.m_Texture = texid;
+				pr.m_Material.texture = texid;
 				pr.m_Type = CPrimitive::TriangleStrip;
-				pr.m_LODs = LODs;
+				pr.m_Material.LODs = LODs;
 				obj.m_Primitives.push_back(pr);
 			}
 			if(lhs == "Quadstrip")
 			{
 				CPrimitive pr;
 				pr.m_Name = name;
-				pr.m_Texture = texid;
+				pr.m_Material.texture = texid;
 				pr.m_Type = CPrimitive::QuadStrip;
-				pr.m_LODs = LODs;
+				pr.m_Material.LODs = LODs;
 				obj.m_Primitives.push_back(pr);
 			}
 			if(lhs == "Polygon")
 			{
 				CPrimitive pr;
 				pr.m_Name = name;
-				pr.m_Texture = texid;
+				pr.m_Material.texture = texid;
 				pr.m_Type = CPrimitive::Polygon;
-				pr.m_LODs = LODs;
+				pr.m_Material.LODs = LODs;
 				obj.m_Primitives.push_back(pr);
 			}
 			if(lhs == "VertexArray")
 			{
 				CPrimitive pr;
 				pr.m_Name = name;
-				pr.m_Texture = texid;
+				pr.m_Material.texture = texid;
 				pr.m_Type = CPrimitive::VertexArray;
-				pr.m_LODs = LODs;
+				pr.m_Material.LODs = LODs;
 				obj.m_Primitives.push_back(pr);
 			}
 

@@ -44,19 +44,17 @@ bool loadLWO(const CString &filename, CEditGraphObj &obj)
 
 		pr.m_Name = lwo->material[i].name;
 		pr.m_Type = CPrimitive::VertexArray;
-		pr.m_LODs = "1234c";
-		pr.m_Emissivity = 0.0;
-		pr.m_Opacity = 1.0;
-		pr.m_Reflectance = 0.0;
-		pr.m_ModulationColor = CVector(
+		pr.m_Material.LODs = "1234c";
+		pr.m_Material.emissivity = 0.0;
+		pr.m_Material.opacity = 1.0;
+		pr.m_Material.reflectance = 0.0;
+		pr.m_Material.modulationColor = CVector(
 			lwo->material[i].r,
 			lwo->material[i].g,
 			lwo->material[i].b
 			);
-		pr.m_Texture = -1;
-		pr.m_ReplacementColor = pr.m_ModulationColor;
-		pr.m_DynamicFriction = 1.0;
-		pr.m_StaticFriction = 1.0;
+		pr.m_Material.texture = -1;
+		pr.m_Material.replacementColor = pr.m_Material.modulationColor;
 
 		//copy the entire vertex array to every primitive
 		for(int j=0; j < lwo->vertex_cnt; j++)

@@ -113,7 +113,7 @@ void CLoad3DS::CleanUp()
 void CLoad3DS::ProcessNextChunk(t3DModel *pModel, tChunk *pPreviousChunk)
 {
     t3DObject newObject = {0};                  // This is used to add to our object list
-    tMaterialInfo newTexture = {0};             // This is used to add to our material list
+    tMaterialInfo newTexture = {{0}};             // This is used to add to our material list
     unsigned int version = 0;                   // This will hold the file version
     int buffer[50000] = {0};                    // This is used to read past unwanted data
 

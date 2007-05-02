@@ -262,13 +262,13 @@
 #define PACKAGE_NAME "Ultimate Stunts"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "Ultimate Stunts 0.7.0"
+#define PACKAGE_STRING "Ultimate Stunts 0.7.1"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "ultimatestunts"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "0.7.0"
+#define PACKAGE_VERSION "0.7.1"
 
 /* Prefix dir */
 #define PREFIXDIR "/usr/local"
@@ -295,7 +295,7 @@
 #define STDC_HEADERS 1
 
 /* Version number of package */
-#define VERSION "0.7.0"
+#define VERSION "0.7.1"
 
 /* Define to 1 if the X Window System is missing or not being used. */
 /* #undef X_DISPLAY_MISSING */

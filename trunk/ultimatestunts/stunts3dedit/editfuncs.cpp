@@ -65,15 +65,13 @@ void newFunc()
 		CPrimitive p;
 		p.m_Type = CPrimitive::VertexArray;
 		p.m_Name = getInput("Enter the name: ");
-		p.m_Texture = getInput("Which texture should be attached? ").toInt();
-		p.m_LODs = getInput("In which LODs should it be visible? ");
-		p.m_ModulationColor = getInput("Modulation color: ").toVector();
-		p.m_ReplacementColor = getInput("Texture replacement color: ").toVector();
-		p.m_Opacity = getInput("Opacity: ").toFloat();
-		p.m_Reflectance = getInput("Reflectance: ").toFloat();
-		p.m_Emissivity = getInput("Emissivity: ").toFloat();
-		p.m_StaticFriction = getInput("Static friction coefficient: ").toFloat();
-		p.m_DynamicFriction = getInput("Dynamic friction coefficient: ").toFloat();
+		p.m_Material.texture = getInput("Which texture should be attached? ").toInt();
+		p.m_Material.LODs = getInput("In which LODs should it be visible? ");
+		p.m_Material.modulationColor = getInput("Modulation color: ").toVector();
+		p.m_Material.replacementColor = getInput("Texture replacement color: ").toVector();
+		p.m_Material.opacity = getInput("Opacity: ").toFloat();
+		p.m_Material.reflectance = getInput("Reflectance: ").toFloat();
+		p.m_Material.emissivity = getInput("Emissivity: ").toFloat();
 		graphobj->m_Primitives.push_back(p);
 		curr_primitive = graphobj->m_Primitives.size()-1;
 	}

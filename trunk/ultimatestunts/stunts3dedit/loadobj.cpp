@@ -51,15 +51,13 @@ bool loadOBJ(const CString &filename, CEditGraphObj &obj)
 
 			pr.m_Name = rhs;
 			pr.m_Type = CPrimitive::VertexArray;
-			pr.m_LODs = "1234c";
-			pr.m_Emissivity = 0.0;
-			pr.m_Opacity = 1.0;
-			pr.m_Reflectance = 0.0;
-			pr.m_ModulationColor = CVector(1,1,1);
-			pr.m_Texture = -1;
-			pr.m_ReplacementColor = pr.m_ModulationColor;
-			pr.m_DynamicFriction = 1.0;
-			pr.m_StaticFriction = 1.0;
+			pr.m_Material.LODs = "1234c";
+			pr.m_Material.emissivity = 0.0;
+			pr.m_Material.opacity = 1.0;
+			pr.m_Material.reflectance = 0.0;
+			pr.m_Material.modulationColor = CVector(1,1,1);
+			pr.m_Material.texture = -1;
+			pr.m_Material.replacementColor = pr.m_Material.modulationColor;
 
 			v_index.clear();
 			vn_index.clear();

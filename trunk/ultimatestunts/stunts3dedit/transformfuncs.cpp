@@ -22,17 +22,17 @@ void rotateFunc()
 	CMatrix m;
 	if(getInput("Do you want to rotate around the x-axis (y/n)? ")=="y")
 	{
-		float angle = getInput("Enter the angle in degrees: ").toFloat() * (3.1415926536/180.0);
+		float angle = getInput("Enter the angle in degrees: ").toFloat() * (M_PI/180.0);
 		m.rotX(angle);
 	}
 	else if(getInput("Do you want to rotate around the y-axis (y/n)? ")=="y")
 	{
-		float angle = getInput("Enter the angle in degrees: ").toFloat() * (3.1415926536/180.0);
+		float angle = getInput("Enter the angle in degrees: ").toFloat() * (M_PI/180.0);
 		m.rotY(angle);
 	}
 	else if(getInput("Do you want to rotate around the z-axis (y/n)? ")=="y")
 	{
-		float angle = getInput("Enter the angle in degrees: ").toFloat() * (3.1415926536/180.0);
+		float angle = getInput("Enter the angle in degrees: ").toFloat() * (M_PI/180.0);
 		m.rotZ(angle);
 	}
 	else

@@ -66,25 +66,23 @@ bool load3DS(const CString &filename, CEditGraphObj &obj)
 		CPrimitive pr;
 		pr.m_Name = pObject->strName;
 		pr.m_Type = CPrimitive::VertexArray;
-		pr.m_LODs = "1234c";
-		pr.m_Emissivity = 0.0;
-		pr.m_Opacity = 1.0;
-		pr.m_Reflectance = 0.0;
-		pr.m_ModulationColor = CVector(1,1,1);
-		pr.m_ReplacementColor = CVector(1,1,1);
-		pr.m_DynamicFriction = 1.0;
-		pr.m_StaticFriction = 1.0;
+		pr.m_Material.LODs = "1234c";
+		pr.m_Material.emissivity = 0.0;
+		pr.m_Material.opacity = 1.0;
+		pr.m_Material.reflectance = 0.0;
+		pr.m_Material.modulationColor = CVector(1,1,1);
+		pr.m_Material.replacementColor = CVector(1,1,1);
 
 		// Check to see if this object has a texture map, if so bind the texture to it.
 		if(pObject->bHasTexture)
 		{
-			pr.m_Texture = -1;
+			pr.m_Material.texture = -1;
 		}
 		else
 		{
 			//default to no texture even if there is a texture
-			pr.m_Texture = -1;
-			//pr.m_Texture = pObject->materialID;
+			pr.m_Material.texture = -1;
+			//pr.m_Material.texture = pObject->materialID;
 		}
 
 		//Position and orientation matrix:
@@ -130,9 +128,9 @@ bool load3DS(const CString &filename, CEditGraphObj &obj)
 					BYTE *pColor = g_3DModel.pMaterials[pObject->materialID].color;
 
 					// Assign the current color to this model
-					pr.m_ModulationColor.x = (float)(pColor[0]) / 255.0;
-					pr.m_ModulationColor.y = (float)(pColor[1]) / 255.0;
-					pr.m_ModulationColor.z = (float)(pColor[2]) / 255.0;
+					pr.m_Material.modulationColor.x = (float)(pColor[0]) / 255.0;
+					pr.m_Material.modulationColor.y = (float)(pColor[1]) / 255.0;
+					pr.m_Material.modulationColor.z = (float)(pColor[2]) / 255.0;
 				}
 			}
 

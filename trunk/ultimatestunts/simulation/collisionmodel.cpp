@@ -45,7 +45,9 @@ bool CCollisionModel::loadGLB(const CString &filename, const CParamList &list)
 	if(!f.load(filename)) return false;
 
 	m_Subset = m_ParamList.getValue("subset", "");
-	vector<CDataObject *> matarray = m_DataManager->getSubset(CDataObject::eMaterial, m_Subset);
+	vector<CDataObject *> matarray;
+	if(m_Subset != "")
+		matarray = m_DataManager->getSubset(CDataObject::eMaterial, m_Subset);
 
 	//Initial bounding volume state
 	m_BSphere_r = 0.0;
@@ -59,17 +61,20 @@ bool CCollisionModel::loadGLB(const CString &filename, const CParamList &list)
 	{
 		CGLBFile::SPrimitive &pr = f.m_Primitives[p];
 
-		if((pr.LODs & (16+32)) == 0) continue; //only collision+surface primitives
+		if((pr.material.LODs & (16+32)) == 0) continue; //only collision+surface primitives
 
 		//printf("    Processing primitive %s\n", pr.Name.c_str());
 
-		if(pr.Texture < 0)
+		if(pr.material.Texture < 0)
 		{
 			mat = NULL;
 		} //TODO: assign a number for non-texturised materials
 		else
 		{
-			mat = (CMaterial *)(matarray[pr.Texture]);
+			if(pr.material.Texture < int(matarray.size()))
+				{mat = (CMaterial *)(matarray[pr.material.Texture]);}
+			else
+				{mat = NULL;}
 		}
 
 		for(unsigned int t=0; t < pr.index.size()/3; t++)
@@ -85,9 +90,9 @@ bool CCollisionModel::loadGLB(const CString &filename, const CParamList &list)
 			theFace.push_back(v2);
 			theFace.push_back(v3);
 
-			theFace.isSurface = (pr.LODs & 32) != 0;
+			theFace.isSurface = (pr.material.LODs & 32) != 0;
 			//if(theFace.isSurface) printf("%d is is a surface\n", t);
-			theFace.isWater = (pr.LODs & 32) != 0 && (pr.LODs & 16) != 0;
+			theFace.isWater = (pr.material.LODs & 32) != 0 && (pr.material.LODs & 16) != 0;
 			if(theFace.isWater) theFace.isSurface = false;
 
 			theFace.material = mat;

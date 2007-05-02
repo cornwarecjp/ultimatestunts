@@ -18,16 +18,25 @@
 void changePrimitiveFunc()
 {
 	CPrimitive &p = graphobj->m_Primitives[curr_primitive];
-	printf("Name: %s\n", p.m_Name.c_str());
-	printf("Texture: %d\n", p.m_Texture);
-	printf("LODs: %s\n", p.m_LODs.c_str());
-	printf("Modulation color: %s\n", CString(p.m_ModulationColor).c_str());
-	printf("Texture replacement color: %s\n", CString(p.m_ReplacementColor).c_str());
-	printf("Opacity: %.3f\n", p.m_Opacity);
-	printf("Reflectance: %.3f\n", p.m_Reflectance);
-	printf("Emissivity: %.3f\n", p.m_Emissivity);
-	printf("Static friction coefficient: %.3f\n", p.m_StaticFriction);
-	printf("Dynamic friction coefficient: %.3f\n", p.m_DynamicFriction);
+	printf("Name                     : %s\n", p.m_Name.c_str());
+	printf("Texture                  : %d\n", p.m_Material.texture);
+	printf("LODs                     : %s\n", p.m_Material.LODs.c_str());
+	printf("Modulation color         : %s\n", CString(p.m_Material.modulationColor).c_str());
+	printf("Texture replacement color: %s\n", CString(p.m_Material.replacementColor).c_str());
+	printf("Opacity                  : %.3f\n", p.m_Material.opacity);
+	printf("Reflectance              : %.3f\n", p.m_Material.reflectance);
+	//printf("Emissivity               : %.3f\n", p.m_Material.emissivity);
+	if(p.m_Animation.rotationEnabled)
+	{
+		printf("Rotation animation enabled:\n");
+		printf("  origin  : %s\n", CString(p.m_Animation.rotationOrigin  ).c_str());
+		printf("  velocity: %s\n", CString(p.m_Animation.rotationVelocity).c_str());
+	}
+	else
+	{
+		printf("Rotation animation disabled\n");
+	}
+	printf("\n");
 	printf("Entering \"-\" will leave a property unchanged\n");
 
 	CString answ = getInput("Enter new name: ");
@@ -36,42 +45,49 @@ void changePrimitiveFunc()
 
 	answ = getInput("Which texture should be attached? ");
 	if(answ != "-")
-		p.m_Texture = answ.toInt();
+		p.m_Material.texture = answ.toInt();
 
 	answ = getInput("In which LODs should it be visible? ");
 	if(answ != "-")
-		p.m_LODs = answ;
+		p.m_Material.LODs = answ;
 
 	answ = getInput("Modulation color: ");
 	if(answ != "-")
-		p.m_ModulationColor = answ.toVector();
+		p.m_Material.modulationColor = answ.toVector();
 
 	answ = getInput("Texture replacement color: ");
 	if(answ != "-")
-		p.m_ReplacementColor = answ.toVector();
+		p.m_Material.replacementColor = answ.toVector();
 
 	answ = getInput("Opacity: ");
 	if(answ != "-")
-		p.m_Opacity = answ.toFloat();
+		p.m_Material.opacity = answ.toFloat();
 
 	answ = getInput("Reflectance: ");
 	if(answ != "-")
-		p.m_Reflectance = answ.toFloat();
+		p.m_Material.reflectance = answ.toFloat();
 
 	//Not yet used:
 	/*
 	answ = getInput("Emissivity: ");
 	if(answ != "-")
-		p.m_Emissivity = answ.toFloat();
-
-	answ = getInput("Static friction coefficient: ");
-	if(answ != "-")
-		p.m_StaticFriction = answ.toFloat();
-
-	answ = getInput("Dynamic friction coefficient: ");
-	if(answ != "-")
-		p.m_DynamicFriction = answ.toFloat();
+		p.m_Material.emissivity = answ.toFloat();
 	*/
+
+	answ = getInput("Enable rotation animation (y/n): ");
+	if(answ != "-")
+		p.m_Animation.rotationEnabled = answ == "y";
+
+	if(p.m_Animation.rotationEnabled)
+	{
+		answ = getInput("Rotation animation origin: ");
+		if(answ != "-")
+			p.m_Animation.rotationOrigin = answ.toVector();
+
+		answ = getInput("Rotation animation velocity: ");
+		if(answ != "-")
+			p.m_Animation.rotationVelocity = answ.toVector();
+	}
 
 	graphobj->render(VisibleLODs);
 }
@@ -206,7 +222,7 @@ void setCollisionFunc()
 
 	CPrimitive &pr = graphobj->m_Primitives[curr_primitive];
 
-	if(pr.m_LODs != "c")
+	if(pr.m_Material.LODs != "c")
 	{
 		printf("This primitive is not collision-LOD only (LOD must be \"c\")\n");
 		return;
@@ -329,14 +345,14 @@ void generateFunc()
 		for(unsigned int p=0; p<graphobj->m_Primitives.size(); p++)
 		{
 			CPrimitive &thePrimitive = graphobj->m_Primitives[p];
-			if(thePrimitive.m_Texture >= 0)
+			if(thePrimitive.m_Material.texture >= 0)
 			{
-				CLODTexture *texture = graphobj->m_MatArray[thePrimitive.m_Texture];
-				thePrimitive.m_ReplacementColor = texture->getColor();
+				CLODTexture *texture = graphobj->m_MatArray[thePrimitive.m_Material.texture];
+				thePrimitive.m_Material.replacementColor = texture->getColor();
 			}
 			else
 			{
-				thePrimitive.m_ReplacementColor = CVector(1,1,1);
+				thePrimitive.m_Material.replacementColor = CVector(1,1,1);
 			}
 		}
 	}

@@ -7,18 +7,18 @@
 
 #---------------------------
 #Torque in Nm of a non-rotating engine (@ 0 RPM)
-zerotorque = 290
+zerotorque = 400
 
 #Max torque point. Torque in Nm, engine speed in rad/s
-maxtorque = 310
-w_maxtorque = 502.6
+maxtorque = 575
+w_maxtorque = 419
 
 #Max power point. Power in W, engine speed in rad/s
-maxpower = 183400
-w_maxpower = 638.8
+maxpower = 352000
+w_maxpower = 733
 
 #Engine speed in rad/s where the engine doesn't generate torque anymore
-w_zero = 800
+w_zero = 850
 #---------------------------
 
 M0=zerotorque;M1=maxtorque;w1=w_maxtorque;p2=maxpower;w2=w_maxpower;w3=w_zero

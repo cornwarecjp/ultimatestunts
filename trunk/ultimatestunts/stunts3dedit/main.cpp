@@ -22,6 +22,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cmath>
+#include "pi.h"
 
 //Common files
 #include "lconfig.h"

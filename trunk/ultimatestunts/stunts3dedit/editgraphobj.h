@@ -42,6 +42,20 @@ public:
 
 class CPrimitive {
 public:
+	CPrimitive()
+	{
+		m_Type = VertexArray;
+		m_Name = "New primitive";
+
+		m_Material.texture = -1;
+		m_Material.LODs = "1234cs";
+		m_Material.modulationColor = m_Material.replacementColor = CVector(1,1,1);
+		m_Material.opacity = 1.0;
+		m_Material.reflectance = m_Material.emissivity = 0.0;
+
+		m_Animation.rotationEnabled = false;
+	}
+
 	enum eType
 	{
 		Triangles = GL_TRIANGLES,
@@ -52,15 +66,23 @@ public:
 		VertexArray
 	} m_Type;
 	
-	int m_Texture;
-	CString m_Name, m_LODs;
+	CString m_Name;
 	vector<CVertex> m_Vertex;
-
 	//For vertex array objects:
 	vector<unsigned int> m_Index;
-	CVector m_ModulationColor, m_ReplacementColor;
-	float m_Opacity, m_Reflectance, m_Emissivity;
-	float m_StaticFriction, m_DynamicFriction;
+
+	//Material:
+	struct {
+		int texture;
+		CString LODs;
+		CVector modulationColor, replacementColor;
+		float opacity, reflectance, emissivity;
+	} m_Material;
+
+	//Animation:
+	struct {
+		bool rotationEnabled; CVector rotationOrigin, rotationVelocity;
+	} m_Animation;
 };
 
 class CEditGraphObj  { //no longer derived from CGraphObj
