@@ -1,0 +1,2944 @@
+This file contains license and copyright information for the Ultimate Stunts data files. For every file, the following things are listed:
+
+Original author:
+	the original author of the data
+
+Original project:
+	the project (software / website / ...) where the data was taken from. For some files, the data was not taken anywhere, but created "from scratch" for Ultimate Stunts. In these cases, Ultimate Stunts is listed as the original project.
+
+Original license:
+	the license of the original data.
+
+UStunts author:
+	the person who included this file in Ultimate Stunts. Not listed when the original project is Ultimate Stunts.
+
+UStunts modifications:
+	modifications made to the file when importing it into Ultimate Stunts. Not listed when the original project is Ultimate Stunts.
+
+As the task of listing these things started long after the first data files were created, it is extremely hard to find this legal information. Therefore, this information is incomplete. The intention of creating this file is to make this information more complete by collecting it and writing it down.
+
+For the names of Ultimate Stunts developers, the following abbreviations are used:
+	CJP:    	Corné Plooy
+	BBalazs:	Borbola Balazs
+
+In any case, Ultimate Stunts releases these files under a GPL-compatible license, which means that you can use them as a part of GPL-licensed packages. If it is discovered that this is not allowed by the original license, either the original author will be contacted to ask for permission, or the file will be replaced/removed.
+
+textures.dat
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+./cars:
+diablo.conf
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+f1.conf
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+ferrarif40.conf
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+ferrarispider.conf
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+jeep.conf
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+lego.conf
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+porsche911.conf
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+porsche928.conf
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+super.conf
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+tford.conf
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+
+./cars/diablo:
+body.glb
+------------------------
+Original author:
+	??
+Original project:
+	?? (3DCafe?)
+Original license:
+	??
+UStunts author:
+	CJP
+UStunts modifications:
+	Fileformat conversion
+	Separated wheels from body
+	Different material settings
+	"Texturized" the rear lights
+------------------------
+
+dashboard.png
+------------------------
+Original author:
+	??
+Original project:
+	[none]
+Original license:
+	??
+UStunts author:
+	CJP
+UStunts modifications:
+	Image resolution change
+	Separated gauges and steer from dashboard
+------------------------
+
+rpm.png
+------------------------
+Original author:
+	??
+Original project:
+	[none]
+Original license:
+	??
+UStunts author:
+	CJP
+UStunts modifications:
+	Image resolution change
+	Separated gauges and steer from dashboard
+------------------------
+
+steer.png
+------------------------
+Original author:
+	??
+Original project:
+	[none]
+Original license:
+	??
+UStunts author:
+	CJP
+UStunts modifications:
+	Image resolution change
+	Separated gauges and steer from dashboard
+------------------------
+
+textures.jpg
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+vel.png
+------------------------
+Original author:
+	??
+Original project:
+	[none]
+Original license:
+	??
+UStunts author:
+	CJP
+UStunts modifications:
+	Image resolution change
+	Separated gauges and steer from dashboard
+------------------------
+
+wheel.glb
+------------------------
+Original author:
+	??
+Original project:
+	?? (3DCafe?)
+Original license:
+	??
+UStunts author:
+	CJP
+UStunts modifications:
+	Fileformat conversion
+	Separated wheels from body
+	Different material settings
+------------------------
+
+./cars/f1:
+body.glb
+------------------------
+Original author:
+	??
+Original project:
+	?? (3DCafe?)
+Original license:
+	??
+UStunts author:
+	CJP
+UStunts modifications:
+	Fileformat conversion
+	Separated wheels from body
+	Different material settings
+------------------------
+
+frontwheel.glb
+------------------------
+Original author:
+	??
+Original project:
+	?? (3DCafe?)
+Original license:
+	??
+UStunts author:
+	CJP
+UStunts modifications:
+	Fileformat conversion
+	Separated wheels from body
+	Different material settings
+------------------------
+
+rearwheel.glb
+------------------------
+Original author:
+	??
+Original project:
+	?? (3DCafe?)
+Original license:
+	??
+UStunts author:
+	CJP
+UStunts modifications:
+	Fileformat conversion
+	Separated wheels from body
+	Different material settings
+------------------------
+
+rpm.png
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+steer.png
+------------------------
+Original author:
+	??
+Original project:
+	[none]
+Original license:
+	??
+UStunts author:
+	CJP
+UStunts modifications:
+	Image resolution change
+	Alpha channel created
+------------------------
+
+textures.jpg
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+./cars/ferrarif40:
+body.glb
+------------------------
+Original author:
+	??
+Original project:
+	stuntsGL
+Original license:
+	?? (GPL?)
+UStunts author:
+	CJP
+UStunts modifications:
+	Fileformat conversion
+	Separated wheels from body
+	Different material settings
+------------------------
+
+wheel.glb
+------------------------
+Original author:
+	??
+Original project:
+	stuntsGL
+Original license:
+	?? (GPL?)
+UStunts author:
+	CJP
+UStunts modifications:
+	Fileformat conversion
+	Separated wheels from body
+	Different material settings
+------------------------
+
+
+./cars/ferrarispider:
+body.glb
+------------------------
+Original author:
+	??
+Original project:
+	?? (3DCafe?)
+Original license:
+	??
+UStunts author:
+	CJP
+UStunts modifications:
+	Fileformat conversion
+	Separated wheels from body
+	Different material settings
+------------------------
+
+dashboard.png
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+rpm.png
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+steer.png
+------------------------
+Original author:
+	??
+Original project:
+	[none]
+Original license:
+	??
+UStunts author:
+	CJP
+UStunts modifications:
+	Steer separated from picture
+	Compensation for perspective in image
+	Image resolution change
+------------------------
+
+wheel.glb
+------------------------
+Original author:
+	??
+Original project:
+	?? (3DCafe?)
+Original license:
+	??
+UStunts author:
+	CJP
+UStunts modifications:
+	Fileformat conversion
+	Separated wheels from body
+	Different material settings
+------------------------
+
+./cars/generic:
+bodycollision.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+crash_fatal.wav
+------------------------
+Original author:
+	??
+Original project:
+	?? (Search And Rescue?)
+Original license:
+	?? (Open Source)
+UStunts author:
+	CJP
+UStunts modifications:
+	None, or very small ones
+------------------------
+
+crash_nonfatal.wav
+------------------------
+Original author:
+	??
+Original project:
+	?? (Search And Rescue?)
+Original license:
+	?? (Open Source)
+UStunts author:
+	CJP
+UStunts modifications:
+	None, or very small ones
+------------------------
+
+engine.wav
+------------------------
+Original author:
+	?? (Andrew Mustun?)
+Original project:
+	Trophy
+Original license:
+	?? (Open Source)
+UStunts author:
+	CJP
+UStunts modifications:
+	Increased pitch
+------------------------
+
+license.jpg
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+rpm.png
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+skid.wav
+------------------------
+Original author:
+	??
+Original project:
+	??
+Original license:
+	??
+UStunts author:
+	CJP
+UStunts modifications:
+	None, or very small ones
+------------------------
+
+vel.png
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+wheelcollision.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+./cars/jeep:
+body.glb
+------------------------
+Original author:
+	??
+Original project:
+	?? (3DCafe?)
+Original license:
+	??
+UStunts author:
+	CJP
+UStunts modifications:
+	Fileformat conversion
+	Separated wheels from body
+	Different material settings
+------------------------
+
+wheel.glb
+------------------------
+Original author:
+	??
+Original project:
+	?? (3DCafe?)
+Original license:
+	??
+UStunts author:
+	CJP
+UStunts modifications:
+	Fileformat conversion
+	Separated wheels from body
+	Different material settings
+------------------------
+
+
+./cars/lego:
+body.glb
+------------------------
+Original author:
+	??
+Original project:
+	?? (3DCafe?)
+Original license:
+	??
+UStunts author:
+	CJP
+UStunts modifications:
+	Fileformat conversion
+	Separated wheels from body
+	Different material settings
+------------------------
+
+wheel.glb
+------------------------
+Original author:
+	??
+Original project:
+	?? (3DCafe?)
+Original license:
+	??
+UStunts author:
+	CJP
+UStunts modifications:
+	Fileformat conversion
+	Separated wheels from body
+	Different material settings
+------------------------
+
+
+./cars/porsche911:
+body.glb
+------------------------
+Original author:
+	??
+Original project:
+	stuntsGL
+Original license:
+	?? (GPL?)
+UStunts author:
+	CJP
+UStunts modifications:
+	Fileformat conversion
+	Separated wheels from body
+	Different material settings
+------------------------
+
+dashboard.png
+------------------------
+Original author:
+	??
+Original project:
+	[none]
+Original license:
+	??
+UStunts author:
+	CJP
+UStunts modifications:
+	Image resolution change
+	Separated gauges and steer from dashboard
+------------------------
+
+rpm.png
+------------------------
+Original author:
+	??
+Original project:
+	[none]
+Original license:
+	??
+UStunts author:
+	CJP
+UStunts modifications:
+	Image resolution change
+	Separated gauges and steer from dashboard
+------------------------
+
+steer.png
+------------------------
+Original author:
+	??
+Original project:
+	[none]
+Original license:
+	??
+UStunts author:
+	CJP
+UStunts modifications:
+	Image resolution change
+	Separated gauges and steer from dashboard
+------------------------
+
+vel.png
+------------------------
+Original author:
+	??
+Original project:
+	[none]
+Original license:
+	??
+UStunts author:
+	CJP
+UStunts modifications:
+	Image resolution change
+	Separated gauges and steer from dashboard
+------------------------
+
+wheel.glb
+------------------------
+Original author:
+	??
+Original project:
+	stuntsGL
+Original license:
+	?? (GPL?)
+UStunts author:
+	CJP
+UStunts modifications:
+	Fileformat conversion
+	Separated wheels from body
+	Different material settings
+------------------------
+
+
+./cars/porsche928:
+body.glb
+------------------------
+Original author:
+	??
+Original project:
+	?? (3DCafe?)
+Original license:
+	??
+UStunts author:
+	CJP
+UStunts modifications:
+	Fileformat conversion
+	Separated wheels from body
+	Different material settings
+------------------------
+
+wheel.glb
+------------------------
+Original author:
+	??
+Original project:
+	?? (3DCafe?)
+Original license:
+	??
+UStunts author:
+	CJP
+UStunts modifications:
+	Fileformat conversion
+	Separated wheels from body
+	Different material settings
+------------------------
+
+
+./cars/tford:
+body.glb
+------------------------
+Original author:
+	Jonathan Bijl
+Original project:
+	[none]
+Original license:
+	Donated by author to Ultimate Stunts project
+UStunts author:
+	CJP
+UStunts modifications:
+	Fileformat conversion
+	Separated wheels from body
+	Different material settings
+------------------------
+
+frontwheel.glb
+------------------------
+Original author:
+	Jonathan Bijl
+Original project:
+	[none]
+Original license:
+	Donated by author to Ultimate Stunts project
+UStunts author:
+	CJP
+UStunts modifications:
+	Fileformat conversion
+	Separated wheels from body
+	Different material settings
+------------------------
+
+rearwheel.glb
+------------------------
+Original author:
+	Jonathan Bijl
+Original project:
+	[none]
+Original license:
+	Donated by author to Ultimate Stunts project
+UStunts author:
+	CJP
+UStunts modifications:
+	Fileformat conversion
+	Separated wheels from body
+	Different material settings
+------------------------
+
+./environment:
+sky3-night.rgb
+------------------------
+Original author:
+	??
+Original project:
+	ODE (www.q12.org/ode)
+Original license:
+	?? (Open Source)
+UStunts author:
+	CJP
+UStunts modifications:
+	Fileformat conversion
+	Image resolution change
+	Color changes
+------------------------
+
+sky3.rgb
+------------------------
+Original author:
+	??
+Original project:
+	ODE (www.q12.org/ode)
+Original license:
+	?? (Open Source)
+UStunts author:
+	CJP
+UStunts modifications:
+	Fileformat conversion
+	Image resolution change
+	Color changes
+------------------------
+
+spheremap.rgb
+------------------------
+Original author:
+	??
+Original project:
+	?? (Mesa demos?)
+Original license:
+	?? (Open Source)
+UStunts author:
+	CJP
+UStunts modifications:
+	Fileformat conversion
+------------------------
+
+
+./environment/lensflare:
+blende.png
+------------------------
+Original author:
+	??
+Original project:
+	?? (Some snooker game?)
+Original license:
+	?? (Open Source)
+UStunts author:
+	CJP
+UStunts modifications:
+	Fileformat conversion
+------------------------
+
+flare1.jpg
+------------------------
+Original author:
+	??
+Original project:
+	?? (Vegastrike?)
+Original license:
+	?? (Open Source)
+UStunts author:
+	CJP
+UStunts modifications:
+	Fileformat conversion
+------------------------
+
+flare2.jpg
+------------------------
+Original author:
+	??
+Original project:
+	?? (Vegastrike?)
+Original license:
+	?? (Open Source)
+UStunts author:
+	CJP
+UStunts modifications:
+	Fileformat conversion
+------------------------
+
+flare3.jpg
+------------------------
+Original author:
+	??
+Original project:
+	?? (Vegastrike?)
+Original license:
+	?? (Open Source)
+UStunts author:
+	CJP
+UStunts modifications:
+	Fileformat conversion
+------------------------
+
+flare4.jpg
+------------------------
+Original author:
+	??
+Original project:
+	?? (Vegastrike?)
+Original license:
+	?? (Open Source)
+UStunts author:
+	CJP
+UStunts modifications:
+	Fileformat conversion
+------------------------
+
+flare5.jpg
+------------------------
+Original author:
+	??
+Original project:
+	?? (Vegastrike?)
+Original license:
+	?? (Open Source)
+UStunts author:
+	CJP
+UStunts modifications:
+	Fileformat conversion
+------------------------
+
+flare6.jpg
+------------------------
+Original author:
+	??
+Original project:
+	?? (Vegastrike?)
+Original license:
+	?? (Open Source)
+UStunts author:
+	CJP
+UStunts modifications:
+	Fileformat conversion
+------------------------
+
+lensflare0.jpg
+------------------------
+Original author:
+	??
+Original project:
+	??
+Original license:
+	?? (Open Source)
+UStunts author:
+	CJP
+UStunts modifications:
+	Fileformat conversion
+------------------------
+
+lensflare1.jpg
+------------------------
+Original author:
+	??
+Original project:
+	??
+Original license:
+	?? (Open Source)
+UStunts author:
+	CJP
+UStunts modifications:
+	Fileformat conversion
+------------------------
+
+lensflare2.jpg
+------------------------
+Original author:
+	??
+Original project:
+	??
+Original license:
+	?? (Open Source)
+UStunts author:
+	CJP
+UStunts modifications:
+	Fileformat conversion
+------------------------
+
+lensflare3.jpg
+------------------------
+Original author:
+	??
+Original project:
+	??
+Original license:
+	?? (Open Source)
+UStunts author:
+	CJP
+UStunts modifications:
+	Fileformat conversion
+------------------------
+
+lensflare4.jpg
+------------------------
+Original author:
+	??
+Original project:
+	??
+Original license:
+	?? (Open Source)
+UStunts author:
+	CJP
+UStunts modifications:
+	Fileformat conversion
+------------------------
+
+
+./lang:
+de
+------------------------
+Original author:
+	Michael Kronsteiner
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+fr_FR
+------------------------
+Original author:
+	Vincent Knecht
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+hu
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+nl
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+pt_BR
+------------------------
+Original author:
+	Marcelo De Nardin
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+
+./misc:
+iso8859-1.rgba
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+menubackground.rgb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+showroom.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+trackedit.conf
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+trackedit.template
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+
+./music:
+pronobozo-ReformedCycle.ogg
+------------------------
+Original author:
+	??
+Original project:
+	Pronobozo
+Original license:
+	Donated by author to Ultimate Stunts project
+UStunts author:
+	CJP
+UStunts modifications:
+	Fileformat conversion
+------------------------
+
+pronobozo-ReInvent.ogg
+------------------------
+Original author:
+	??
+Original project:
+	Pronobozo
+Original license:
+	Donated by author to Ultimate Stunts project
+UStunts author:
+	CJP
+UStunts modifications:
+	Fileformat conversion
+------------------------
+
+so.ogg
+------------------------
+Original author:
+	?? ("Symsonic")
+Original project:
+	[none]
+Original license:
+	Donated by author to Ultimate Stunts project
+UStunts author:
+	CJP
+UStunts modifications:
+	Fileformat conversion
+------------------------
+
+yllusion-Stunts-v1.ogg
+------------------------
+Original author:
+	?? ("Yllusion")
+Original project:
+	[none]
+Original license:
+	Donated by author to Ultimate Stunts project
+UStunts author:
+	CJP
+UStunts modifications:
+	Fileformat conversion
+------------------------
+
+
+./textures:
+bricks1.jpg
+------------------------
+Original author:
+	??
+Original project:
+	??
+Original license:
+	??
+UStunts author:
+	CJP
+UStunts modifications:
+	Fileformat conversion
+	Image resolution change
+------------------------
+
+bricks2.jpg
+------------------------
+Original author:
+	??
+Original project:
+	??
+Original license:
+	??
+UStunts author:
+	CJP
+UStunts modifications:
+	Fileformat conversion
+	Image resolution change
+------------------------
+
+concrete1.jpg
+------------------------
+Original author:
+	??
+Original project:
+	??
+Original license:
+	??
+UStunts author:
+	CJP
+UStunts modifications:
+	Fileformat conversion
+	Image resolution change
+------------------------
+
+concrete2.jpg
+------------------------
+Original author:
+	??
+Original project:
+	??
+Original license:
+	??
+UStunts author:
+	BBalazs
+UStunts modifications:
+	Fileformat conversion
+	Image resolution change
+------------------------
+
+cornerblocks.jpg
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+dirtroad1.jpg
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+door1.jpg
+------------------------
+Original author:
+	??
+Original project:
+	??
+Original license:
+	??
+UStunts author:
+	BBalazs
+UStunts modifications:
+	Fileformat conversion
+	Image resolution change
+------------------------
+
+farmdoor1.jpg
+------------------------
+Original author:
+	??
+Original project:
+	??
+Original license:
+	??
+UStunts author:
+	BBalazs
+UStunts modifications:
+	Fileformat conversion
+	Image resolution change
+------------------------
+
+farmhouse1.jpg
+------------------------
+Original author:
+	??
+Original project:
+	??
+Original license:
+	??
+UStunts author:
+	BBalazs
+UStunts modifications:
+	Fileformat conversion
+	Image resolution change
+------------------------
+
+fence.png
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+glass.jpg
+------------------------
+Original author:
+	??
+Original project:
+	??
+Original license:
+	??
+UStunts author:
+	BBalazs
+UStunts modifications:
+	Fileformat conversion
+	Image resolution change
+------------------------
+
+grass2.jpg
+------------------------
+Original author:
+	??
+Original project:
+	??
+Original license:
+	??
+UStunts author:
+	CJP
+UStunts modifications:
+	Fileformat conversion
+	Image resolution change
+------------------------
+
+iceroad1.jpg
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+joes.jpg
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+metal1.png
+------------------------
+Original author:
+	??
+Original project:
+	??
+Original license:
+	??
+UStunts author:
+	CJP
+UStunts modifications:
+	Fileformat conversion
+	Image resolution change
+	Alpha channel added
+------------------------
+
+metal.jpg
+------------------------
+Original author:
+	??
+Original project:
+	??
+Original license:
+	??
+UStunts author:
+	BBalazs
+UStunts modifications:
+	Fileformat conversion
+	Image resolution change
+------------------------
+
+net.png
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+pine.png
+------------------------
+Original author:
+	??
+Original project:
+	??
+Original license:
+	??
+UStunts author:
+	BBalazs
+UStunts modifications:
+	Fileformat conversion
+	Image resolution change
+------------------------
+
+road1.jpg
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+road2.jpg
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+road2-snow.rgb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+rock1.jpg
+------------------------
+Original author:
+	??
+Original project:
+	??
+Original license:
+	??
+UStunts author:
+	CJP
+UStunts modifications:
+	Fileformat conversion
+	Made tile-able
+	Image resolution change
+------------------------
+
+sand1.jpg
+------------------------
+Original author:
+	??
+Original project:
+	??
+Original license:
+	??
+UStunts author:
+	CJP
+UStunts modifications:
+	Fileformat conversion
+	Image resolution change
+------------------------
+
+splits1-dirt.jpg
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+splits1-ice.jpg
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+splits1.jpg
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+splits1-snow.rgb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+startfinish.jpg
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+stonebricks.jpg
+------------------------
+Original author:
+	??
+Original project:
+	??
+Original license:
+	??
+UStunts author:
+	BBalazs
+UStunts modifications:
+	Fileformat conversion
+	Image resolution change
+------------------------
+
+tenniscourt.jpg
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+test.rgb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+tulips.png
+------------------------
+Original author:
+	??
+Original project:
+	??
+Original license:
+	??
+UStunts author:
+	BBalazs
+UStunts modifications:
+	Fileformat conversion
+	Image resolution change
+	Alpha channel added
+------------------------
+
+wall1.jpg
+------------------------
+Original author:
+	??
+Original project:
+	??
+Original license:
+	??
+UStunts author:
+	BBalazs
+UStunts modifications:
+	Fileformat conversion
+	Image resolution change
+------------------------
+
+water1.jpg
+------------------------
+Original author:
+	??
+Original project:
+	??
+Original license:
+	?? (Open Source)
+UStunts author:
+	CJP
+UStunts modifications:
+	Fileformat conversion
+	Image resolution change
+------------------------
+
+whitetexture.jpg
+------------------------
+Original author:
+	??
+Original project:
+	??
+Original license:
+	??
+UStunts author:
+	BBalazs
+UStunts modifications:
+	Fileformat conversion
+	Image resolution change
+------------------------
+
+window1.jpg
+------------------------
+Original author:
+	??
+Original project:
+	??
+Original license:
+	??
+UStunts author:
+	BBalazs
+UStunts modifications:
+	Fileformat conversion
+	Image resolution change
+------------------------
+
+wood.jpg
+------------------------
+Original author:
+	??
+Original project:
+	??
+Original license:
+	??
+UStunts author:
+	BBalazs
+UStunts modifications:
+	Fileformat conversion
+	Image resolution change
+------------------------
+
+
+./tiles:
+ad.glb
+bankedcorner_inleft.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+bankedcorner_inright.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+bankedcorner_mid.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+bankedroad1.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+bankedroad_in1.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+bankedroad_in2.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+bridgediag1.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+bridgehoriz1.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+bridgeroad1.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+bridgeroad2.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+bridgeroadcorner2x2_inleft.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+bridgeroadcorner2x2_inright.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+bridgeroadcorner2x2_mid.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+canyonc.glb
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+canyone.glb
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+canyon.glb
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+canyoni.glb
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+church.glb
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+cliffroadbottom.glb
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+cliffroadc2.glb
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+cliffroadcb2.glb
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+cliffroadcb.glb
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+cliffroadc.glb
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+cliffroade2.glb
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+cliffroadeb2.glb
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+cliffroadeb.glb
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+cliffroade.glb
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+cliffroad.glb
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+climb.glb
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+corklr.glb
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+corner2x2_inleft.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+corner2x2_inleft-reflect.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+corner2x2_inright.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+corner2x2_inright-reflect.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+corner2x2_mid.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+corner2x2_mid-reflect.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+corner.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+corner-reflect.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+crencorner.glb
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+cren.glb
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+crkbridgeleft1.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+crkbridgeleft2.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+crkbridgeleft3.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+crkbridgeleft4.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+crkbridgeright1.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+crkbridgeright2.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+crkbridgeright3.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+crkbridgeright4.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+crossroad1.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+crossroad1-reflect.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+diag1.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+diag2.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+diag3.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+diag4.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+diag5.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+empty.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+farmhouse.glb
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+flag.glb
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+greek.glb
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+heroade.glb
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+heroad.glb
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+horiz.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+hotel.glb
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+hroade.glb
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+hroad.glb
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+hroadj.glb
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+joes.glb
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+jump1.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+jump2.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+looping-bottom.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+looping-mid.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+looping-top.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+mill.glb
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+obelisks.glb
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+palmtree.glb
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+pillars.glb
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+pinetree.glb
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+pipe1.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+pipein1.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+pyramide.glb
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+pyramidhoriz.glb
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+pyramids.glb
+------------------------
+Original author:
+	Bbalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+pyramidw.glb
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+roaddiag.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+roaddiag-reflect.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+roadhoriz.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+roadhoriz-reflect.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+ship.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+slalom.glb
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+splitsleft1.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+splitsleft1-reflect.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+splitsright1.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+splitsright1-reflect.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+startfinish.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+startfinish-reflect.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+tenniscourt.glb
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+trench1c.glb
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+trench1.glb
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+trench2c.glb
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+trench2.glb
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+trench3c.glb
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+trench3.glb
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+trenche.glb
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+tunnelhoriz.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+tunnelin1.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+tunnels.glb
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+viaduct1.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+wallcorner.glb
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+wallgate.glb
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+wall.glb
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+water1.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+wateredge1.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+wateredge2.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+wateredge3.glb
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+
+./tracks:
+acropolis.track
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+clifftest.track
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+corners.track
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+default.track
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+downhill.track
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+DragRace.repl
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+hill2.track
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+hill.track
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+mcp.track
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+mountain.track
+------------------------
+Original author:
+	BBalazs
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+nocorners.track
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+Porsche911-on-test.repl
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+small.track
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+StuntsImportExample.track
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+test.track
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+wheeltest.track
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+

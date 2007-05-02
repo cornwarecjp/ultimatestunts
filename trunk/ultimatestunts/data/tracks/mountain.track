@@ -32,6 +32,7 @@ textures/tulips.png
 textures/net.png scale=16
 textures/tenniscourt.jpg mu=0.9 roll=20
 textures/metal1.png mu=0.9 roll=1
+textures/rock1.jpg
 END
 
 BEGIN
@@ -64,9 +65,9 @@ tiles/trench3.glb 0 8 9
 tiles/trench1c.glb 0 8 9
 tiles/trench2c.glb 0 8 9
 tiles/trench3c.glb 0 8 9
-tiles/canyone.glb 0 1
-tiles/canyon.glb 0 1
-tiles/canyoni.glb 0 1 4 2
+tiles/canyone.glb 0 1 23
+tiles/canyon.glb 0 1 23
+tiles/canyoni.glb 0 1 23 4 2
 tiles/hotel.glb 0 8 10 11 12
 tiles/hroade.glb 0 4 8
 tiles/hroad.glb 0 4 8 13 14

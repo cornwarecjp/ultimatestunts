@@ -9,8 +9,8 @@ Syntax:
 BEGIN
 6
 textures/grass2.jpg
-textures/test.rgb
-textures/test.rgb
+textures/road2.jpg
+textures/rock1.jpg
 textures/test.rgb
 textures/test.rgb
 textures/test.rgb
