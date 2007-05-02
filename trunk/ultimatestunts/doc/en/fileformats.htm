@@ -486,6 +486,12 @@ Object C
 Here, in all LODs the objects A and C are visible, and object B is also visible
 in LOD 1 and it is used for collision detection. The default LOD is 1234c.
 
+<h3>RotationAnimation <i>origin</i>;<i>velocity</i></h3>
+Enables the rotation animation for the most recently added primitive. This
+is <i>not</i> a state variable, so rotation animation is not enabled
+automatically for following primitives. Origin and velocity are settings
+for the rotation animation.
+
 <a name="glb"></a>
 <h1>The new 3D model (*.glb) format</h1>
 This fileformat has replaced the *.gl file format since version 0.5.3. It is
@@ -533,12 +539,15 @@ type ID is placed within brackets.
 <h3>Geometry object data 0.5 (type 0x00000000)</h3>
 <pre>
 material data size (4 byte)
-number of vertices (4 bytes)
-number of indices (4 bytes)
+number of vertices (4 byte)
+number of indices (4 byte)
 material data
 vertex array
 index array
 </pre>
+This object type is used in Ultimate Stunts prior to version 0.7.0. It is
+still supported, but its use is discouraged. Please use the Geometry
+object data 0.7 instead.
 
 <h4>Material data</h4>
 <pre>
@@ -560,7 +569,7 @@ the replacement color is used if the texture is disabled.
 If the texture name is a number, then it can be set in the track file as a
 parameter. Colors can also be set as a parameter: if a==0 and b==255, then
 r is the number of the parameter. (this does not reduce the number of colors
-that can be set: if a==0 then the values of r,g,b don't matter.
+that can be set: if a==0 then the values of r,g,b don't matter.)
 
 <h4>vertex element data</h4>
 <pre>
@@ -575,6 +584,76 @@ i (4 byte)
 </pre>
 The index refers to an element in the vertex array of the object.
 
+<h3>Geometry object data 0.7 (type 0x00000001)</h3>
+<pre>
+animation data size (4 byte)
+material data size (4 byte)
+number of vertices (4 byte)
+number of indices (4 byte)
+animation data
+material data
+vertex array
+index array
+</pre>
+This is the replacement of the Geometry object data 0.5 type. Animation data
+is added, and animation and material data is made extensible, so that
+later versions won't need a new object type too soon. Also, friction
+coefficients have been removed from the material data.
+
+<h4>Animation data</h4>
+<pre>
+Animation flags (4 byte)
+Rotation origin x,y,z (3*4 byte, signed int, unit = millimeter)
+Rotation velocity x,y,z (3*4 byte, signed int, range -1000..1000)
+future additions (aligned to 4 byte size)
+</pre>
+The animation flags contain a number of flags to describe which animation
+types are enabled for this object. The rest of the animation data contains
+parameters for these animation types. The flags variable is an OR'ed combination
+of values that correspond to animation types in the following way:
+<ul>
+    <li>0x1: rotation animation</li>
+    <li>0x2, 0x4, etc..: future animation types</li>
+</ul>
+<p>
+The rotation animation has the rotation origin and velocity as parameters. The
+object is rotated around the axis that goes through the rotation origin
+point, and has the direction of the rotation velocity. The rotation speed
+(in rad/second) is equal to the size of the velocity vector.
+
+<h4>Material data</h4>
+<pre>
+material modulation color r,g,b,a (4 byte)
+material replacement color r,g,b,a (4 byte)
+LODs (1 byte)
+material reflectance (1 byte)
+material emissivity (1 byte)
+unused (1 byte)
+texture name (null-terminated, aligned to 4 byte size)
+future additions (aligned to 4 byte size)
+</pre>
+LODs contains a set of flags that describe in which LODs the object should be
+visible. The texture name can be a filename (relative to the Ultimate Stunts
+datadir), or a number. The modulation color is used to modulate the texture,
+the replacement color is used if the texture is disabled.
+<p>
+If the texture name is a number, then it can be set in the track file as a
+parameter. Colors can also be set as a parameter: if a==0 and b==255, then
+r is the number of the parameter. (this does not reduce the number of colors
+that can be set: if a==0 then the values of r,g,b don't matter.)
+
+<h4>vertex element data</h4>
+<pre>
+x,y,z (3*4 byte, signed int, unit = millimeter)
+nx,ny,nz (3*4 byte, signed int, range -1..1)
+tx, ty (2*4 byte, signed int, range -128..128)
+</pre>
+
+<h4>index element data</h4>
+<pre>
+i (4 byte)
+</pre>
+The index refers to an element in the vertex array of the object.
 
 <a name="repl"></a>
 <h1>Replay (*.repl) format</h1>

@@ -1,6 +1,6 @@
 <html>
 <body>
-<h1>Compilatie van Ultimate Stunts 0.6.x</h1>
+<h1>Compilatie van Ultimate Stunts</h1>
 
 <h3>Vereisten</h3>
 
@@ -24,9 +24,29 @@ u beide heeft zal Ultimate Stunts standaard openAL gebruiken.<br>
 U kunt hier de vereiste bibliotheken vinden:
 <ul>
 	<li><a href="http://www.fmod.org/ifmoddownload.html">FMOD</a></li>
-	<li><a href="http://www.openal.org/downloads.html">openAL</a></li>
+	<li><a href="http://www.openal.org/downloads.html">OpenAL</a></li>
 	<li><a href="http://www.libsdl.org/download-1.2.php">SDL</a></li>
 	<li><a href="http://www.libsdl.org/projects/SDL_image/">SDL_image</a></li>
+</ul>
+Als u OpenAL wilt gebruiken, vergeet dan niet om ook de ALUT bibliotheek te
+installeren.
+<p>
+De meeste Linux-distributies leveren de benodigde bibliotheken als packages. Normaal
+gesproken wordt FMOD niet geleverd (doordat het geen vrije software is), maar u kunt
+altijd OpenAL gebruiken als alternatief. Als u deze bibliotheken installeert door een
+package-management systeem, vergeet dan niet om de development packages te installeren:
+deze zijn nodig voor het compileren van Ultimate Stunts (om het te draaien heeft u
+alleen de runtime packages nodig). Om u een idee te geven van wat voor packages u
+moet installeren, dit zijn de package-namen in Kubuntu 6.06:
+<ul>
+	<li>libsdl1.2debian</li>
+	<li>libsdl1.2-dev</li>
+	<li>libsdl-image1.2</li>
+	<li>libsdl-image1.2-dev</li>
+	<li>libopenal0a</li>
+	<li>libopenal-dev</li>
+	<li>libalut0</li>
+	<li>libalut-dev</li>
 </ul>
 
 <h3>Bibliotheken voor Cygwin</h3>

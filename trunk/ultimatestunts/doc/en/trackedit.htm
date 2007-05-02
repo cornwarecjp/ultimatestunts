@@ -8,15 +8,54 @@
 
 <h3>Introduction</h3>
 The Ultimate Stunts track editor will allow you to make new tracks and edit
-existing tracks. Currently (version 0.6.2) this is not yet possible, but it
-is possible to view existing tracks, and to import tracks from the original
-Stunts game.
+existing tracks. Currently (version 0.7.0), the track editor is still very
+limited: it is only possible to place/remove tiles on the track,
+and to import tracks from the original Stunts game.
 
 <h3>Usage</h3>
 Currently, the user interface is still quite simple. In the main window, there
 is a 3D view of the track, the name of the track on top of it, and a menu
-on the left. The menu can be used with the mouse. In the 3D view, the position
-of the camera can be changed with the arrow keys and the PgUp/PgDn keys.
+on the left. The menu can be used with the mouse. For moving around in the 3D
+view, the following controls can be used:
+<ul>
+	<li>"Dragging" with the left mouse button: rotate the camera view</li>
+	<li>Arrow keys: move the cursor left/right/forward/backward</li>
+	<li>PgUp/PgDn keys: move the cursor up/down</li>
+</ul>
+The "cursor" position is visible as the position of the blinking tile. The
+vertical column of tiles on the cursor position is also visible as a white box
+of lines:
+<br>
+<img src="../nolanguage/trackedit1.jpg">
+
+<h3>Track editing</h3>
+The "blinking" of the cursor shows two states of the track: the current state,
+and what it will look like when you press the Enter key. Sometimes there will
+be no difference, and in those cases, you won't see the blinking. The default
+edit mode is to insert individual tiles (in fact, it's the only edit mode in
+version 0.7.0). So, when you press Enter, the selected tile is inserted on the
+cursor position. Any existing tile on that position will be removed in the
+action. The following keys can be used:
+<ul>
+	<li><b>Enter</b>: place the tile. Existing tiles on that position will
+		be removed.</li>
+	<li><b>Insert</b>: place the tile. Existing tiles on that position will
+		<i>not</i> be removed.</li>
+	<li><b>Delete</b>: remove all existing tiles on the cursor position.
+		</li>
+	<li><b>Tab</b>: select another tile model.</li>
+	<li><b>Shift</b>+<b>Tab</b>: select another tile model (browses tile
+		models in opposite direction).</li>
+	<li><b>r</b>: rotate the tile model.</li>
+	<li><b>Ctrl</b>+<b>z</b>: undo the last action (replace/insert/delete).
+		</li>
+	<li><b>Ctrl</b>+<b>Shift</b>+<b>z</b>: redo the last undone action.</li>
+</ul>
+Currently, the available set of tile models is limited by the selection of
+tiles that is already used in the track. Also, the sizes of the track cannot
+be changed, route information cannot be changed, and environment settings
+(background, lighting etc.) cannot be edited. Currently, all those things need
+to be done manually.
 
 <h3>Importing Stunts tracks</h3>
 One of the options in the track editor menu is to import a track from the

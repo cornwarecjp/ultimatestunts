@@ -8,16 +8,58 @@
 
 <h3>Inleiding</h3>
 De Ultimate Stunts track editor zal u in staat stellen om nieuwe banen te maken
-en bestaande banen te bewerken. Op dit moment (versie 0.6.3) is dit nog niet
-mogelijk, maar het is mogelijk om bestaande banen te bekijken, en om banen te
-importeren vanuit het originele spel Stunts.
+en bestaande banen te bewerken. Op dit moment (versie 0.7.0) is de track editor
+nog erg beperkt: het is slechts mogelijk om tiles te plaatsen/verwijderen op
+de baan, en om banen te importeren vanuit het originele spel Stunts.
 
 <h3>Gebruik</h3>
 Op dit moment is de gebruikersinterface nog vrij eenvoudig. In het hoofdvenster
 is er een 3D view van de baan, de naam van de baan erboven, en een menu aan
-de linkerkant. Het menu kan gebruikt worden met de muis. In de 3D view kan de
-positie van de camera veranderd worden met de pijltjestoetsen en de
-PgUp/PgDn toetsen.
+de linkerkant. Het menu kan gebruikt worden met de muis. Voor het rondbewegen
+in de 3D view kunnen de volgende controls gebruikt worden:
+<ul>
+	<li>"Slepen" met de linker muisknop: roteren van de camerapositie</li>
+	<li>Pijltjestoetsen: verplaats de cursor naar
+		links/rechts/voor/achter</li>
+	<li>PgUp/PgDn toetsen: verplaats de cursor naar boven/beneden</li>
+</ul>
+De "cursor"positie is zichtbaar als de positie van de knipperende tile. De
+vertikale kolom van tiles op de cursorpositie is ook zichtbaar als een
+witte balk van lijnen:
+<br>
+<img src="../nolanguage/trackedit1.jpg">
+
+<h3>De baan bewerken</h3>
+Het "knipperen" van de cursor laat twee toestanden van de baan zien: de
+huidige toestand, en hoe het er uit ziet als u op de Enter toets drukt. Soms
+is er geen verschil, en in deze gevallen zult u geen geknipper zien. De
+standaard bewerkmodus is om individuele tiles in te voegen (eigenlijk is dit
+de enige bewerkmodus in versie 0.7.0). Dus, als u op Enter drukt, wordt de
+geselecteerde tile ingevoegd op de cursorpositie. Bestaande tiles op die
+positie worden daarbij verwijderd. De volgende toetsen kunnen gebruikt
+worden:
+<ul>
+	<li><b>Enter</b>: plaats de tile. Bestaande tiles op die positie zullen
+		verwijderd worden.</li>
+	<li><b>Insert</b>: plaats de tile. Bestaande tiles op die positie zullen
+		<i>niet</i> verwijderd worden.</li>
+	<li><b>Delete</b>: verwijder alle bestaande tiles op de cursorpositie.
+		</li>
+	<li><b>Tab</b>: selecteer een ander tilemodel.</li>
+	<li><b>Shift</b>+<b>Tab</b>: selecteer een ander tilemodel (doorloopt
+		tilemodellen in omgekeerde volgorde).</li>
+	<li><b>r</b>: roteer het tilemodel.</li>
+	<li><b>Ctrl</b>+<b>z</b>: maak de laatste actie (vervangen/invoegen/
+		verwijderen) ongedaan.</li>
+	<li><b>Ctrl</b>+<b>Shift</b>+<b>z</b>: doe de laatste ongedaan gemaakte
+		actie opnieuw.</li>
+</ul>
+Op dit moment is de beschikbare set tilemodellen beperkt tot de selectie van
+tiles die al gebruikt worden in de baan. Ook kunnen de afmetingen van de baan
+niet veranderd worden, route informatie kan niet veranderd worden, en
+omgevings-instellingen (achtergrond, belichting etc.) kunnen niet bewerkt
+worden. Op dit moment moeten deze dingen allemaal handmatig gedaan worden.
+
 
 <h3>Stunts banen importeren</h3>
 …Èn van de opties in het track editor menu is om banen te importeren vanuit

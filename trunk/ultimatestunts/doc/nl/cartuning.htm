@@ -19,26 +19,29 @@ worden alleen gebruikt waar dat bijdraagt aan het rijplezier. Auto's die te
 moeilijk te besturen zijn zijn slecht, en te gemakkelijke auto's ook. Dit maakt
 car-tuning tot een soort kunst.
 
-<h3>Getting information from the real-world car</h3>
-In many cases, you want to make your Ultimate Stunts car similar to an existing car.
-For most cars, specifications can be found on the internet, and they can be realy
-useful. If possible, try to get as many of the following items as possible. Don't
-forget to look what kind of units are used: miles per hour is different from
-kilometres per hour.
+<h3>Informatie verkrijgen van de auto in de echte wereld</h3>
+In veel gevallen wilt u uw Ultimate Stunts auto vergelijkbaar maken met een
+bestaande auto. Voor de meeste auto's kunnen specificaties gevonden worden
+op het internet, en die kunnen erg nuttig zijn. Indien mogelijk, probeer zo
+veel mogelijk van de volgende items te verkrijgen. Vergeet niet te kijken
+naar wat voor eenheden gebruikt worden: mijl per uur verschilt van kilometer
+per uur.
 <ul>
-	<li>Top speed</li>
-	<li>Max. power, max. torque + their RPMs</li>
-	<li>Gear ratios + the final drive ratio (= differential ratio)</li>
-	<li>The traction type (front wheel / rear wheel / four wheel traction)</li>
-	<li>The mass of the car</li>
-	<li>The weight distribution between front wheels and rear wheels</li>
-	<li>The height of the center of gravity above the ground</li>
+	<li>Maximum snelheid</li>
+	<li>Max. vermogen, max. koppel + hun RPMs</li>
+	<li>Versnellingsverhoudingen + de final drive ratio
+		(= differential ratio)</li>
+	<li>Het aandrijftype (voorwiel / achterwiel / vierwiel aandrijving)</li>
+	<li>De massa van de auto</li>
+	<li>De gewichtsverdeling tussen voorwielen en achterwielen</li>
+	<li>De hoogte van het zwaartepunt boven de grond</li>
 </ul>
-Before using them in Ultimate Stunts, you should know that Ultimate Stunts internally
-uses SI units everywhere. So, you should convert everything to SI units. This table
-gives some multiplication factors:
+Voordat u deze gegevens gaat gebruiken in Ultimate Stunts, moet u weten dat
+Ultimate Stunts intern overal SI-eenheden gebruikt. Dus, u moet alles
+converteren naar SI-eenheden. Deze tabel geeft enkele
+vermenigvuldigingsfactoren:
 <table border=2>
-<tr><td>Non-SI units</td><td></td><td>SI units</td></tr>
+<tr><td>Niet-SI eenheden</td><td></td><td>SI eenheden</td></tr>
 <tr><td>1 km/h</td><td>=</td><td>0.2778 m/s</td></tr>
 <tr><td>1 mile/h</td><td>=</td><td>0.4469 m/s</td></tr>
 <tr><td>1 hp</td><td>=</td><td>735.5 W</td></tr>
@@ -46,161 +49,182 @@ gives some multiplication factors:
 <tr><td>1 RPM</td><td>=</td><td>9.549 rad/s</td></tr>
 </table>
 
-<h3>The 3D models of the car</h3>
-The 3D models of the car body and wheels have some influence on the physics of the car,
-so if you want to make the car realistic, then the sizes of these models should be
-correct. Especially the radius of the wheels and the positions of the wheels are
-important. However, making the 3D models is not covered in this document: here, it is
-assumed that you already have the 3D models and a working .conf file for the car, and
-that you only make modifications to that .conf file.
+<h3>De 3D-modellen van de auto</h3>
+De 3D-modellen van de auto-body en -wielen hebben enige invloed op de physics
+van de auto, dus als u de auto realistisch wilt maken, dan moeten de afmetingen
+van deze modellen correct zijn. Vooral de straal van de wielen en de posities
+van de wielen zijn belangrijk. Het maken van 3D modellen wordt echter niet
+behandeld in dit document: het wordt hier aangenomen dat u de 3D-modellen
+heeft, en een werkend .conf-bestand voor de auto, en dat u alleen aanpassingen
+maakt aan dat .conf-bestand.
 
-<h3>Important properties of a car</h3>
-In this section, some physics properties of cars are described.
+<h3>Belangrijke eigenschappen van een auto</h3>
+In deze sectie worden enkele fysische eigenschappen van auto's beschreven.
 
-<h5>Top speed</h5>
-A car cannot accelerate forever. As the speed increases, the friction forces increase, and
-at a certain speed, the engine power is no longer sufficient to compensate the friction
-forces. At high velocities, aerodynamic drag is the main friction force, so the aerodynamic
-drag setting <b>cwa</b> is important. A higher <b>cwa</b> setting means a lower top speed.
-Also, engine power and torque are important. Increasing them increases the top speed. Also,
-don't forget the gear ratios. If you want high speed gear settings, then the highest gear
-should be such that the engine reaches maximum power at the top speed. Some formulas:
+<h5>Maximum snelheid</h5>
+Een auto kan niet altijd door blijven versnellen. Bij toenemende snelheid
+neemt de wrijvingskracht toe, en bij een bepaalde snelheid is het motorvermogen
+niet meer voldoende om de wrijvingskrachten te compenseren. Bij hoge
+snelheden is luchtweerstand de belangrijkste wrijvingskracht, dus de
+luchtweerstands-instelling <b>cwa</b> is belangrijk. Een hogere <b>cwa</b>
+instelling betekent een lagere maximum snelheid. Motorvermogen en -koppel zijn
+ook belangrijk. Het verhogen van deze verhoogt de maximum snelheid. Vergeet
+ook niet de versnellings-verhoudingen. Als u
+hoge-snelheids-versnellingsinstellingen wilt, dan moet de hoogste versnelling
+zodanig zijn dat de motor maximum vermogen bereikt bij de maximum
+snelheid. Enkele formules:
 <pre>
-#Symbols:
-v = speed of the car
-cwA = aerodynamic drag parameter
-Fdrag = aerodynamic drag force
-Pdrag = power required to compensate drag
-v_max = top speed
-P_max = maximum power of engine
+#Symbolen:
+v = snelheid van de auto
+cwA = luchtweerstandsparameter
+Fdrag = luchtweerstandskracht
+Pdrag = Vereist vermogen om weerstand te compenseren
+v_max = maximum snelheid
+P_max = maximum vermogen van de motor
 
-r = radius of wheel
-ratio_g = rear ratio of highest gear
+r = straal van het wiel
+ratio_g = versnellingsverhouding van hoogste versnelling
 ratio_d = differential ratio (final drive ratio)
-w_wheel = rotation speed of wheel
-w_engine = rotation speed of engine
-w_engine_P_max = rotation speed of engine @ max power point
+w_wheel = rotatiesnelheid van het wiel
+w_engine = rotatiesnelheid van de motor
+w_engine_P_max = rotatiesnelheid van motor @ max vermogenspunt
 
-#Calculating the top speed
+#Berekenen van maximum snelheid
 Fdrag = cwA * v^2
 Pdrag = Fdrag * v = cwA * v^3
 v_max = (P_max / cwA) ^ (1/3)
 cwA = Pdrag / v_max^3
 
-#Calculating optimal gear ratios
+#berekenen van optimale versnellingsverhoudingen
 w_wheel = v / r
 w_engine = w_wheel * ratio_g * ratio_d = v * ratio_g * ratio_d / r
 ratio_g * ratio_d = w_engine_P_max * r / v_max
 </pre>
-If you have a car with a certain amount of power, and you want it to have a certain
-top speed, then you can calculate the gear ratio / differential ratio combination,
-and then fine-tune the top speed by changing the <b>cwa</b> value.
+Als u een auto heeft met een bepaald vermogen, en u wilt het een bepaalde
+maximum snelheid laten hebben, dan kunt u de versnellingsverhouding /
+differential ratio combinatie berekenen, en dan de maximum snelheid
+fine-tunen door de <b>cwa</b> waarde te veranderen.
 
-<h5>acceleration</h5>
-At velocities near the top speed, cars have a very low acceleration, but at low speeds,
-some cars can accelerate very fast. At low speeds, acceleration is not limited by
-aerodynamic drag. Instead, it is limited by the amount of force that can be supplied by
-the engine, though the tires, compared to the mass of the car. A higher car mass means a
-lower acceleration, and a higher traction force means a higher acceleration.
+<h5>acceleratie</h5>
+Bij snelheden in de buurt van de maximum snelheid hebben auto's een erg lage
+acceleratie, maar bij lage snelheden kunnen sommige auto's erg snel
+optrekken. Bij lage snelheden wordt acceleratie niet beperkt door
+luchtweerstand. In plaats daarvan wordt het beperkt door de hoeveelheid
+kracht die geleverd kan worden door de motor, via de banden, vergeleken met
+de massa van de auto. Een grotere auto-massa betekent minder acceleratie, en
+een hogere aandrijfkracht betekent meer acceleratie.
 <p>
-With the right first gear ratio, any engine can generate enormous traction forces. A higher
-gear ratio means a greater traction force. I can hear you asking: "why don't cars have
-infinitely high gear ratios, if that gives greater traction forces?". Besides the fact that
-there are technical limitations to gear box technology, there are several reasons for this.
-One reason is that with high gear ratios, an engine will very soon reach high RPMs, so that
-the traction force will start to drop, so you will only have an advantage of the gear for a
-very short time, and then you'll have to switch to a higher gear. Another reason is that
-tires can only apply a limited amount of force to the ground. If this force is exceeded, then
-the tires simply start skidding, instead of generating extra force. So, for fast acceleration
-it may be smart to match the first gear ratio with the maximum traction force that can be
-applied by the tires.
+Met de juiste eerste versnellings-verhouding kan elke motor enorme
+aandrijfkrachten genereren. Een hogere versnellingsverhouding betekent een
+grotere aandrijfkracht. I kan u horen denken: "waarom hebben auto's geen
+oneindig hoge versnellingsverhoudingen, als dat grotere aandrijfkrachten
+geeft?". Naast het feit dat er technische beperkingen zijn aan
+versnellingsbak-techniek, zal een motor erg snel hoge RPMs bereiken, zodat
+de aandrijfkracht begint te dalen, dus u zult slechts voor korte tijd voordeel
+hebben bij de versnelling, en daarna zult u moeten overschakelen naar een
+hogere versnelling. Een andere reden is dat banden slechts een beperkte
+hoeveelheid kracht kunnen overbrengen op de grond. Als deze kracht
+overschreden wordt, dan beginnen de banden te slippen in plaats van extra
+kracht te leveren. Dus, voor snelle acceleratie kan het slim zijn om de
+eerste versnelling overeen te laten komen met de maximale aandrijfkracht die
+door de banden geleverd kan worden.
 <p>
-The maximum amount of force that can be applied by the tires depends heavily on the vertical
-force on the wheel (here called the normal force). In a neutral situation, this is simply a
-part of the weight of the car: the weight distribution of the car describes how much of the
-weight goes to the front wheels and how much to the rear wheels. This distribution can be
-changed in Ultimate Stunts by moving the <b>centerofmass</b> forward or backward. When
-accelerating, decellerating or turning, this distribution can be different from the neutral
-situation. When the car accelerates, it leans more on the rear wheels, so the normal force on
-the rear wheels will be higher than in the neutral distribution. As a higher normal force
-allows for a greater traction force, this effect is good for rear-driven cars and bad for
-dront-driven cars. Aerodynamic downforce from spoilers also has an influence on the normal
-force, but for acceleration this is less important because downforce is only generated at high
-speeds, and acceleration requires the highest forces at low speeds.
+De maximale kracht die door banden geleverd kan worden hangt sterk af van de
+vertikale kracht op het wiel (die hier de normaalkracht wordt genoemd). In
+een neutrale situatie is dit eenvoudigweg een deel van het gewicht van de auto:
+de gewichtsverdeling van de auto beschrijft hoeveel gewicht naar de voorwielen
+gaat, en hoeveel naar de achterwielen. Deze verdeling kan in Ultimate Stunts
+veranderd worden door het zwaartepunt (<b>centerofmass</b>) naar voren of
+naar achteren te verplaatsen. Bij accelereren, decellereren of draaien kan
+deze verdeling verschillen van de neutrale situatie. Als de auto accelereert,
+leunt het meer op de achterwielen, dus de normaalkracht op de achterwielen
+zal groter zijn dan in de neutrale distributie. Aangezien een grotere
+normaalkracht een grotere aandrijfkracht toestaat, is dit effect goed voor
+auto's met achterwielaandrijving, en slecht voor voorwiel-aangedreven auto's.
+Aerodynamische downforce van spoilers heeft ook invloed op de normaalkracht,
+maar voor acceleratie is dit minder belangrijk, doordat downforce gegenereerd
+wordt bij hoge snelheden, terwijl acceleratie de grootste krachten vereist bij
+lage snelheden.
 <p>
-Because the high number of effects, no exact description will be given here, especially because
-the situation is different for front-wheel and for rear-wheel cars. An exact description is
-possible, but would take an extra page of formulas. Here is a description for the situation where
-the acceleration generates no weight transfer, and no aerodynamic downforce is present.
+Vanwege het grote aantal effecten zal hier geen exacte beschrijving gegeven
+worden, vooral omdat de situatie verschillend is voor voorwiel- en
+achterwiel-aangedreven auto's. Een exacte beschrijving is mogelijk, maar het
+zou een extra pagina aan formules nodig hebben. Hier is een beschrijving van
+de situatie waar de acceleratie geen "weight transfer" genereert, en geen
+aerodynamische downforce aanwezig is.
 <pre>
-#Symbols
-m = mass of the car
-g = gravitation constant (9.81 m/s^2)
-Fz = gravity force
-wfrac = fraction of weight on the traction wheels (= percentage / 100), 4WD: wfrac=1
-Fn = total normal force on the traction wheels
-mu = static friction coefficient of traction tires
-Ftr = maximum traction force
-a = acceleration
-a/g = acceleration in G-forces
-M_engine = maximum engine torque
-M_wheel = maximum total torque applied to traction wheels
-ratio_g = rear ratio of first gear
+#Symbolen
+m = massa van de auto
+g = zwaartekrachtsconstante (9.81 m/s^2)
+Fz = zwaartekracht
+wfrac = fractie van gewicht op aangedreven wielen (= percentage / 100), 4WD: wfrac=1
+Fn = totale normaalkracht op de aangedreven wielen
+mu = statische wrijvingscoefficient van aangedreven banden
+Ftr = maximum aandrijfkracht
+a = acceleratie
+a/g = acceleratie in G-krachten
+M_engine = maximum motorkoppel
+M_wheel = maximum totale koppel uitgeoefend op aangedreven wielen
+ratio_g = versnellingsverhouding van eerste versnelling
 ratio_d = differential ratio (final drive ratio)
-r = radius of the traction wheels
+r = straal van de aangedreven wielen
 
-#Neutral situation normal force
+#Neutrale situatie normaalkracht
 Fz = m * g
 Fn = wfrac * Fz = wfrac * m * g
 
-#Traction force
+#Aandrijfkracht
 Ftr = mu * Fn
 
-#Acceleration
+#Acceleratie
 a = Ftr / m = mu * Fn / m
 a/g = mu * Fn / Fz
 
-#Neutral situation acceleration
+#Neutrale situatie acceleratie
 a/g = mu * wfrac
 
-#Gear ratios
+#Versnellingsverhoudingen
 M_wheel = ratio_g * ratio_d * M_engine
 Ftr = M_wheel / r = ratio_g * ratio_d * M_engine / r
 ratio_g * ratio_d = Ftr * r / M_engine = mu * Fn * r / M_engine
 </pre>
 
-<h5>braking</h5>
-The brakes add a torque to the wheels that will decrease the speed of the car.
-A brake torque that is too high is useless because the tires will simply start
-skidding instead of generating more braking force. As braking also takes place
-through the tires, braking foces are limited in the same way as traction forces.
-Modern cars usually have four-wheel braking, but the braking torque on the front
-wheels is usually a bit stronger, because braking generates some weight transfer
-from the rear wheels to the front wheels, so the front wheels can usually generate
-more braking force. Aerodynamic downforce can add more grip to tires in braking
-situations, especially at high speeds.
+<h5>remmen</h5>
+De remmen oefenen een koppel uit op de wielen die de snelheid van de auto
+zal verlagen. Een remkoppel dat te hoog is is nutteloos, omdat de banden
+zullen beginnen te slippen in plaats van meer remkracht te leveren. Aangezien
+remmen ook plaats vindt door de banden, zijn remkrachten op de zelfde manier
+beperkt als aandrijfkrachten. Moderne auto's hebben meestal vierwiel-remmen,
+maar het remkoppel op de voorwielen is meestal wat sterker, aangezien remmen
+wat "weight-transfer" genereert van de achterwielen naar de voorwielen, dus
+de voorwielen kunnen meestal meer remkracht genereren. Aerodynamische
+downforce kan meer grip toevoegen aan de banden in rem-situaties, vooral bij
+hoge snelheden.
 <pre>
-#Symbols
-M_brake = maximum braking torque on a single wheel
-F_brake = maximum braking force on a single wheel
-Fn = normal force on a single wheel
-mu = static friction coefficient of the tire
-r = radius of the wheel
+#Symbolen
+M_brake = maximum remkoppel op een enkel wiel
+F_brake = maximum remkracht op een enkel wiel
+Fn = normaalkracht op een enkel wiel
+mu = statische wrijvingscoefficient van de band
+r = straal van het wiel
 
 F_brake = mu * Fn
 M_brake = r * F_brake = r * mu * Fn
 </pre>
 
-<h5>jumping</h5>
-Jumping is more important in Ultimate Stunts than in any other racing game. While jumping,
-there is not much that a car can do, however: it is simply not designed to be airborne.
-You cannot steer or brake, as the wheels don't make contact with the gound. There is only
-one thing left in the air: aerodynamics. In theory, you could make a car that starts flying
-at high speeds by giving it a negative downforce, but this is not really useful. A more
-useful purpose of downforce is to make sure that the nose goes down in a jump, so that you
-can see where you land with the in-car camera view. To do this, you need to increase the
-front downforce and/or decrease the rear downforce. Note that this will also affect the
-steering behavior.
+<h5>springen</h5>
+Springen is belangrijker in Ultimate Stunts dan in elk ander racespel. Tijdens
+een sprong is er echter niet veel wat een auto kan doen: het is eenvoudigweg
+niet ontworpen om te zweven. U kunt niet sturen of remmen, doordat de wielen
+geen contact maken met de grond. Er is slechts één ding over in de lucht:
+aerodynamica. In theorie zou u een auto kunnen maken die begint te vliegen
+bij hoge snelheden door het een negatieve downforce te geven, maar dat is niet
+echt nuttig. Een nuttiger doel van downforce is om er voor te zorgen dat de
+neus neer gaat in een sprong, zodat u kunt zien waar u landt met het
+in-de-auto-camerastandpunt. Om dit te doen moet u de voor-downforce vergroten
+en/of de achter-downforce verkleinen. Merk op dat dit ook stuurgedrag zal
+beinvloeden.
+
 
 <h5>steering</h5>
 The way how a car behaves when taking corners is essential in how the car handling is

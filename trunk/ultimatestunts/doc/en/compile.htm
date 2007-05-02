@@ -1,6 +1,6 @@
 <html>
 <body>
-<h1>Compilation of Ultimate Stunts 0.6.x</h1>
+<h1>Compilation of Ultimate Stunts</h1>
 
 <h3>Requirements</h3>
 
@@ -17,16 +17,34 @@ Of course you should also have the right library's and development-packages
 installed. The programs that use graphics need the openGL, SDL and SDL_image libraries
 (and things needed by openGL and SDL). The non-graphical programs (such as the
 server) can also use SDL, but it may be possible to compile them without SDL.
-Sound support using the FMOD or the openAL library is optional: if you don't
+Sound support using the FMOD or the OpenAL library is optional: if you don't
 have FMOD or openAL, Ultimate Stunts will compile without sound support. if you
-have both, Ultimate Stunts will use openAL by default.<br>
+have both, Ultimate Stunts will use OpenAL by default.<br>
 <p>
 You can find the necessary libraries here:
 <ul>
 	<li><a href="http://www.fmod.org/ifmoddownload.html">FMOD</a></li>
-	<li><a href="http://www.openal.org/downloads.html">openAL</a></li>
+	<li><a href="http://www.openal.org/downloads.html">OpenAL</a></li>
 	<li><a href="http://www.libsdl.org/download-1.2.php">SDL</a></li>
 	<li><a href="http://www.libsdl.org/projects/SDL_image/">SDL_image</a></li>
+</ul>
+If you want to use OpenAL, don't forget to install the ALUT library too.
+<p>
+Most Linux distributions provide the necessary libraries as packages. Usually,
+FMOD is not included (as it is non-free software), but you can always use OpenAL
+as an alternative. If you install these libraries through a package-management system,
+don't forget to install the development packages: they are necessary for compiling
+Ultimate Stunts (for running it, you only need the runtime packages). To give you an
+idea of what kind of packages to install, these are the package names in Kubuntu 6.06:
+<ul>
+	<li>libsdl1.2debian</li>
+	<li>libsdl1.2-dev</li>
+	<li>libsdl-image1.2</li>
+	<li>libsdl-image1.2-dev</li>
+	<li>libopenal0a</li>
+	<li>libopenal-dev</li>
+	<li>libalut0</li>
+	<li>libalut-dev</li>
 </ul>
 
 <h3>Libraries for Cygwin</h3>

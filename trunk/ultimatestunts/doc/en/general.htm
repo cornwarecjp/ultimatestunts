@@ -1,5 +1,5 @@
 <html><body>
-<h1>How to use Ultimate Stunts 0.6.x</h1>
+<h1>How to use Ultimate Stunts</h1>
 Grey sections can be skipped if there is no problem related
 to that section. If you are having problems, please read
 the grey sections.
@@ -59,16 +59,31 @@ The other locations where ultimatestunts.conf is searched, are (in this order):
 </pre>
 </font>
 
+<h3>Starting a game</h3>
+If you want to play Ultimate Stunts, then you need to start the "ustunts"
+program (windows users can use the Ultimate Stunts item in the start
+menu). The other programs can be useful sometimes, and they are documented
+separately, but ustunts is the main game program. You can find
+documentation on how to play Ultimate Stunts
+<a href="client.htm">here</a>.
+
 <h3>Configuring Ultimate Stunts</h3>
-The file ultimatestunts.conf is a text file that contains all options of
-Ultimate Stunts. It can be very useful to edit this file, e.g. if the
+The behavior and performance of Ultimate Stunts can be configured
+extensively. Ultimate Stunts loads and stores its settings in a file
+with the name "ultimatestunts.conf". These settings can be edited in the
+settings menus in the game, but they can also be changed manually because
+ultimatestunts.conf is a simple text file (.ini-style syntax).
+It can be very useful to modify the settings, e.g. if the
 default values require too much of your computer, and you want to
-improve the frame rate. All options are documented in the configuration
-file. For windows users I reccomend to use Wordpad instead of
-Notepad, as Notepad does not support UNIX-style text files.
+improve the frame rate.
+<p>
+All options are documented in the configuration
+file. For windows users who wish to edit ultimatestunts.conf manually,
+I reccomend to use Wordpad instead of Notepad, as Notepad does not support
+UNIX-style text files.
 <p>
 <font color="grey">
-Two interesting options in ultimatestunts.conf are datadir and savedir
+Two interesting options are datadir and savedir
 in the [files] section. Both directories are used as locations where
 data files are searched, but data files are only saved in savedir. This
 means that datadir can be read-only for the user, but savedir always needs
@@ -81,14 +96,6 @@ problems here. In case of problems, use locations with no spaces in the path,
 use slashes (/) instead of backslashes (\), and write "/cygdrive/c/" instead
 of "C:\" in absolute paths.
 </font>
-
-<h3>Starting a game</h3>
-If you want to play Ultimate Stunts, then you need to start the "ustunts"
-program (windows users can use the Ultimate Stunts item in the start
-menu). The other programs can be useful sometimes, and they are documented
-separately, but ustunts is the main game program. You can find
-documentation on how to play Ultimate Stunts
-<a href="client.htm">here</a>.
 
 </body></html>
 
