@@ -16,14 +16,12 @@
  ***************************************************************************/
 #include <cstdio>
 #include <cmath>
-
-#ifndef M_PI
-#define M_PI 3.1415926536
-#endif
+#include "pi.h"
 
 #include "carviewer.h"
 
 #include "datafile.h"
+#include "bound.h"
 #include "lconfig.h"
 #include "timer.h"
 
@@ -70,6 +68,26 @@ void CCarViewer::loadCar(const CString &carfile, CVector color)
 	addTexture(carconf.getValue("skin", "texture"));
 	int texID = m_Textures[0].textureID;
 
+	CString frontGeometry, rearGeometry;
+	CVector frontPos, rearPos;
+	frontGeometry = carconf.getValue("frontwheels", "geometry");
+	frontPos = carconf.getValue("frontwheels", "position").toVector();
+	rearGeometry = carconf.getValue("rearwheels", "geometry");
+	rearPos = carconf.getValue("rearwheels", "position").toVector();
+
+	//Determine wheel heights
+	float frontRadius = 0.35, rearRadius = 0.35;
+	{
+		CBound wheel(NULL);
+
+		wheel.load(frontGeometry, CParamList());
+		frontRadius = wheel.m_CylinderRadius;
+
+		wheel.load(rearGeometry, CParamList());
+		rearRadius = wheel.m_CylinderRadius;
+	}
+
+	CVector hOffset(0.0, 0.5 * (frontRadius-frontPos.y + rearRadius-rearPos.y), 0.0);
 
 	CParamList params;
 	SParameter p;
@@ -83,28 +101,32 @@ void CCarViewer::loadCar(const CString &carfile, CVector color)
 	CMatrix mleft, mright;
 	mright.rotY(M_PI);
 	CVector pos;
-	CString geometry;
+
+	//Showroom:
+	addObject(
+		"misc/showroom.glb", params, CVector(),
+		CMatrix(), false, 0);
 
 	//Body:
-	addObject(carconf.getValue("body", "geometry"), params, CVector(), CMatrix(), 0);
+	addObject(
+		carconf.getValue("body", "geometry"), params, hOffset,
+		CMatrix(), true, 1);
 
 	//Right front wheel
-	pos = carconf.getValue("frontwheels", "position").toVector();
-	geometry = carconf.getValue("frontwheels", "geometry");
-	addObject(geometry, params, pos, mright, 1);
+	pos = frontPos + hOffset;
+	addObject(frontGeometry, params, pos, mright, true, 2);
 
 	//Left front wheel
 	pos.x = -pos.x;
-	addObject(geometry, params, pos, mleft, 2);
+	addObject(frontGeometry, params, pos, mleft, true, 3);
 
 	//Right rear wheel
-	pos = carconf.getValue("rearwheels", "position").toVector();
-	geometry = carconf.getValue("rearwheels", "geometry");
-	addObject(geometry, params, pos, mright, 3);
+	pos = rearPos + hOffset;
+	addObject(rearGeometry, params, pos, mright, true, 4);
 
 	//Left rear wheel
 	pos.x = -pos.x;
-	addObject(geometry, params, pos, mleft, 4);
+	addObject(rearGeometry, params, pos, mleft, true, 5);
 }
 
 void CCarViewer::reloadData()

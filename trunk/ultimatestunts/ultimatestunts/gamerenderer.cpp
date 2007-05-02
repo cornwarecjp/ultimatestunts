@@ -17,16 +17,13 @@
 #include <GL/gl.h>
 #include <cstdio>
 #include <cmath>
+#include "pi.h"
 
 #include "gamerenderer.h"
 #include "console.h"
 #include "timer.h"
 
 #define FOV_MULTIPLIER (0.25)
-
-#ifndef M_PI
-#define M_PI 3.1415926536
-#endif
 
 //TODO: remove this when not debugging
 CTimer _DebugTimer;
@@ -547,7 +544,7 @@ void CGameRenderer::viewPilaar(int x, int y, int cur_zpos)
 		else
 			lod = 1;
 
-		float dist = TILESIZE*sqrt(dx*dx+dy*dy);
+		float dist = TILESIZE*sqrt((double)(dx*dx+dy*dy));
 		CReflection *refl = NULL;
 		if(dist < m_Settings.m_ReflectionDist)
 			refl = m_GraphicWorld->m_EnvMap;
@@ -837,7 +834,7 @@ void CGameRenderer::viewLensFlare()
 
 		float flaresize = flare.size;
 		float flareintensity = intensity;
-		if(i > 0) flareintensity *= 0.5; //Everything half the intensity of the sun
+		//if(i > 0) flareintensity *= 0.5; //Everything half the intensity of the sun
 
 		glColor4f(lightcol.x, lightcol.y, lightcol.z, flareintensity);
 		flare.image->draw();

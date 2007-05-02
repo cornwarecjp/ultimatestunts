@@ -392,7 +392,7 @@ void CGameGUI::updateMenuTexts()
 	menu->m_Lines.push_back(_("Select the track"));
 	menu->m_Lines.push_back(_("Select the players"));
 	menu->m_Lines.push_back(_("View a replay"));
-	menu->m_Lines.push_back(_("Options"));
+	menu->m_Lines.push_back(_("Settings"));
 	menu->m_Lines.push_back(_("Credits and License"));
 	menu->m_Lines.push_back(_("Exit"));
 	//add some information
@@ -487,7 +487,7 @@ void CGameGUI::updateMenuTexts()
 		menu->m_Lines.push_back(m_CarFiles[i].fullname);
 
 	//OPTIONS MENU
-	m_OptionsPage.m_Title = _("Options menu:");
+	m_OptionsPage.m_Title = _("Settings menu:");
 	CLongMenu *lmenu = (CLongMenu *)(m_OptionsPage.m_Widgets[0]);
 	lmenu->m_Lines = theMainConfig->getSections();
 	lmenu->m_Lines.push_back(_("Return to main menu"));
@@ -836,7 +836,7 @@ CString CGameGUI::viewOptionsMenu()
 	CMenu *menu = (CMenu *)(m_OptionsPage.m_Widgets[0]);
 	if(m_SelectedOptionsSection != "")
 	{
-		m_OptionsPage.m_Title.format(_("Options: %s"), 80, m_SelectedOptionsSection.c_str());
+		m_OptionsPage.m_Title.format(_("Settings: %s"), 80, m_SelectedOptionsSection.c_str());
 
 		vector<CString> options = theMainConfig->getFieldsInSection(m_SelectedOptionsSection);
 		for(unsigned int i=0; i < options.size(); i++)
@@ -871,7 +871,7 @@ CString CGameGUI::viewOptionsMenu()
 			{
 				bool cancelled = false;
 				bool ans = showYNMessageBox(
-					_("Some options are changed. Do you wish to save the options?"), &cancelled);
+					_("Some settings are changed. Do you wish to save the settings?"), &cancelled);
 				if(cancelled) return "optionsmenu";
 				if(ans)
 				{
@@ -903,7 +903,7 @@ CString CGameGUI::viewOptionsMenu()
 			{
 				bool cancelled = false;
 				bool ans = showYNMessageBox(
-					_("Some options are changed. Do you wish to save the options?"), &cancelled);
+					_("Some settings are changed. Do you wish to save the settings?"), &cancelled);
 				if(cancelled) return "optionsmenu";
 				if(ans)
 				{

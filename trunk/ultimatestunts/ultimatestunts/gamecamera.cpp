@@ -18,9 +18,7 @@
 #include <cstdio>
  
 #include <cmath>
-#ifndef M_PI
-#define M_PI 3.141592653
-#endif
+#include "pi.h"
 
 #include "gamecamera.h"
 #include "usmacros.h"

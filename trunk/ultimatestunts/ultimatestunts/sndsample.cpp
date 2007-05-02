@@ -109,6 +109,17 @@ bool CSndSample::load(const CString &filename, const CParamList &list)
 		(ALboolean (*)(ALuint, ALvoid *, ALint))
 			alGetProcAddress(MP3FUNC);
 
+	//Now remove AL errors from previous calls
+	{
+		ALenum err = alGetError();
+		if(err != AL_NO_ERROR)
+		{
+			printf("An OpenAL error occurred before loading %s:\n", filename.c_str());
+			printf("  %s\n", alGetString(err));
+		}
+	}
+
+
 	if(alutLoadVorbis != NULL && extension == ".ogg") //.ogg: load as ogg vorbis file
 	{
 		//The data
@@ -167,6 +178,17 @@ bool CSndSample::load(const CString &filename, const CParamList &list)
 
 	free(wave);
 	m_isLoaded = true;
+
+	//Check for errors
+	{
+		ALenum err = alGetError();
+		if(err != AL_NO_ERROR)
+		{
+			printf("An OpenAL error occurred when loading %s:\n", filename.c_str());
+			printf("  %s\n", alGetString(err));
+		}
+	}
+
 #endif
 
 	return true;
