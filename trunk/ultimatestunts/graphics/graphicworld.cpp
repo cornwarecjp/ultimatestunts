@@ -16,6 +16,8 @@
  ***************************************************************************/
 #include <cstdio>
 
+#include <GL/gl.h>
+
 #include "bound.h"
 #include "graphicworld.h"
 #include "datafile.h"
@@ -46,7 +48,7 @@ bool CGraphicMovObj::load(const CString &filename, const CParamList &list)
 	if(shads > 4)
 		m_Shadow = new CDynamicShadow(shads, (CGraphicWorld *)m_DataManager, ID);
 
-	m_Dashboard = new CDashboard(m_DataManager, ID);
+	m_Dashboard = new CDashboard((CGraphicWorld *)m_DataManager, ID);
 
 	return true;
 }
@@ -70,6 +72,7 @@ void CGraphicMovObj::unload()
 CGraphicWorld::CGraphicWorld()
 {
 	m_World = theWorld;
+	m_TrackMapDisplayList = 0;
 
 	reloadConfiguration();
 
@@ -101,6 +104,9 @@ bool CGraphicWorld::reloadConfiguration()
 
 	cnf = theMainConfig->getValue("graphics", "texture_smooth");
 	m_TexSmooth = (cnf != "false");
+
+	cnf = theMainConfig->getValue("graphics", "draw_map");
+	m_DrawMap = (cnf != "false");
 
 	//Unload previous lens flare
 	for(unsigned int i=0; i < m_LensFlare.size(); i++)
@@ -230,6 +236,7 @@ bool CGraphicWorld::loadWorld()
 		loadObject(m_World->getTileModel(i)->getFilename(), m_World->getTileModel(i)->getParamList(), CDataObject::eTileModel);
 
 
+	printf("  Loading background and environment map:\n");
 	//params for background and envmap
 	CParamList plist;
 	SParameter p;
@@ -243,11 +250,11 @@ bool CGraphicWorld::loadWorld()
 	p.value = m_TexSmooth;
 	plist.push_back(p);
 
-	//printf("  Loading background %s:\n", fb.getName().c_str());
 	m_Background->load(m_World->getTrack()->m_BackgroundFilename, plist);
-
-	//printf("  Loading environment map %s:\n", fe.getName().c_str());
 	m_EnvMap->load(m_World->getTrack()->m_EnvMapFilename, plist);
+
+	printf("  Loading track map\n");
+	loadTrackMap();
 
 	return true;
 }
@@ -330,4 +337,45 @@ bool CGraphicWorld::loadObjects()
 	}
 
 	return true;
+}
+
+void CGraphicWorld::loadTrackMap()
+{
+	if(m_TrackMapDisplayList == 0)
+		m_TrackMapDisplayList = glGenLists(1);
+
+	glNewList(m_TrackMapDisplayList, GL_COMPILE);
+
+	const CTrack *track = theWorld->getTrack();
+	if(track != NULL)
+	{
+		float size = (track->m_L > track->m_W) ? track->m_L : track->m_W;
+		glScalef(1.0 / size, 1.0 / size, 1.0);
+
+		for(unsigned int i=0; i < track->m_Routes.size(); i++)
+		{
+			const CTrack::CRoute &route = track->m_Routes[i];
+			if(route.size() < 2) continue;
+
+			glBegin(GL_LINE_STRIP);
+
+			for(unsigned int j=1; j < route.size(); j++)
+			{
+				const CTrack::CCheckpoint &c1 = route[j-1];
+				const CTrack::CCheckpoint &c2 = route[j  ];
+
+				glVertex2f(c1.x, c1.z);
+				glVertex2f(c2.x, c2.z);
+			}
+
+			glEnd();
+		}
+	}
+
+	glEndList();
+}
+
+void CGraphicWorld::drawTrackMap()
+{
+	glCallList(m_TrackMapDisplayList);
 }

@@ -58,6 +58,7 @@ protected:
 	bool showYNMessageBox(const CString &title, bool *cancelled=NULL);
 	void showMessageBox(const CString &title);
 	CVector showColorSelect(const CString &title, CVector deflt, bool *cancelled=NULL);
+	CString showFileSelect(const CString &title, CString extension, bool *cancelled=NULL);
 	
 private:
 	bool m_in2DMode;

@@ -17,10 +17,7 @@
 
 #include <cstdio>
 #include <cmath>
-
-#ifndef M_PI
-#define M_PI 3.1415926536
-#endif
+#include "pi.h"
 
 #include <GL/gl.h>
 
@@ -28,18 +25,20 @@
 #include "console.h"
 
 #include "world.h"
+#include "graphicworld.h"
 #include "car.h"
 #include "carinput.h"
 
 #include "dashboard.h"
 
-CDashboard::CDashboard(CDataManager *manager, unsigned int movObjID) :
+CDashboard::CDashboard(CGraphicWorld *manager, unsigned int movObjID) :
 	m_BackgroundTexture(manager),
 	m_SteerTexture(manager),
 	m_VelGaugeTex(manager),
 	m_RPMGaugeTex(manager)
 {
 	m_MovObjID = movObjID;
+	m_GraphicWorld = manager;
 
 	CMovingObject *mo = theWorld->getMovingObject(movObjID);
 	if(mo->getType() == CMessageBuffer::car)
@@ -302,4 +301,48 @@ void CDashboard::draw(unsigned int w, unsigned int h, eShowMode mode)
 	}
 
 	theConsoleFont->disable();
+
+	//The map
+	if(m_GraphicWorld->m_DrawMap)
+	{
+		glPushMatrix();
+		glTranslatef(0.79*w, h - 0.01*w, 0);
+	
+		glBindTexture(GL_TEXTURE_2D, 0); //no texture
+
+		glPushMatrix();
+		glTranslatef(1,1,0);
+		glScalef(0.2*w,-0.2*w, 1.0);
+		glColor3f(0.25,0.25,0.25);
+		m_GraphicWorld->drawTrackMap();
+		glPopMatrix();
+
+		glScalef(0.2*w,-0.2*w, 1.0);
+		glColor3f(1,1,1);
+		m_GraphicWorld->drawTrackMap();
+
+		glPointSize(4.0);
+		glBegin(GL_POINTS);
+
+		unsigned int num_objs = theWorld->getNumObjects(CDataObject::eMovingObject);
+		for(unsigned int i=0; i < num_objs; i++)
+		{
+			CVector pos = theWorld->getMovingObject(i)->m_Position;
+			pos *= 1.0/TILESIZE;
+
+			if(i == m_MovObjID)
+				{glColor3f(1,0,0);}
+			else
+				{glColor3f(0,0,1);}
+
+			glVertex2f(pos.x, pos.z);
+		}
+
+		glEnd();
+		glPointSize(1.0);
+
+		glPopMatrix();
+
+		glColor3f(1,1,1);
+	}
 }

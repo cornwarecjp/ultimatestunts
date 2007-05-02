@@ -1,5 +1,5 @@
 /***************************************************************************
-                          background.h  -  description
+                          background.h  -  A sky box
                              -------------------
     begin                : di feb 4 2003
     copyright            : (C) 2003 by CJP
@@ -31,9 +31,15 @@ public:
 	CBackground(CDataManager *manager);
 	virtual ~CBackground();
 
+	virtual bool load(const CString &filename, const CParamList &list);
+	virtual void unload();
+
+
 	void draw() const;
 protected:
 	CTimer m_Timer;
+
+	unsigned int m_HorizonTex;
 };
 
 #endif

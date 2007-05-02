@@ -1,5 +1,5 @@
 /***************************************************************************
-                          background.cpp  -  description
+                          background.cpp  -  A sky box
                              -------------------
     begin                : di feb 4 2003
     copyright            : (C) 2003 by CJP
@@ -18,11 +18,7 @@
 #include <GL/gl.h>
 
 #include <cmath>
-
-/* Some <cmath> files do not define M_PI... */
-#ifndef M_PI
-#define M_PI 3.14159265358979323846
-#endif
+#include "pi.h"
 
 #include "background.h"
 
@@ -30,6 +26,19 @@ CBackground::CBackground(CDataManager *manager) : CTexture(manager)
 {}
 
 CBackground::~CBackground(){
+}
+
+bool CBackground::load(const CString &filename, const CParamList &list)
+{
+	if(!CTexture::load(filename, list)) return false;
+
+	m_HorizonTex = m_Texture;
+	return true;
+}
+
+void CBackground::unload()
+{
+	CTexture::unload();
 }
 
 void CBackground::draw() const
@@ -56,7 +65,9 @@ void CBackground::draw() const
 	glDisable(GL_LIGHTING);
 	glDisable(GL_CULL_FACE);
 
-	glNormal3f(0.0, -1.0, 0.0);
+	glNormal3f(0.0, -1.0, 0.0); //not really necessary, because there's no lighting
+
+	//Clouds
 	glBegin(GL_TRIANGLE_FAN);
 
 	glTexCoord2f(drift, drift);
@@ -90,7 +101,24 @@ void CBackground::draw() const
 	glVertex3f(0.0, vmax, -hmax);
 
 	glEnd();
-	
+
+	//Horizon
+	bool fogEnabled = glIsEnabled(GL_FOG);
+	glDisable(GL_FOG);
+	glBegin(GL_QUADS);
+
+	glTexCoord2f(0,0);
+	glVertex3f(-hmax,-vmax,-hmax);
+	glTexCoord2f(1,0);
+	glVertex3f( hmax,-vmax,-hmax);
+	glTexCoord2f(1,1);
+	glVertex3f( hmax, vmax,-hmax);
+	glTexCoord2f(0,1);
+	glVertex3f(-hmax, vmax,-hmax);
+
+	glEnd();
+	if(fogEnabled) glEnable(GL_FOG);
+
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_LIGHTING);
 }

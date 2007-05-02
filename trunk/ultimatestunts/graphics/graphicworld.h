@@ -18,6 +18,8 @@
 #ifndef GRAPHICWORLD_H
 #define GRAPHICWORLD_H
 
+class CGraphicWorld;
+
 #include "lodtexture.h"
 #include "graphobj.h"
 #include "background.h"
@@ -32,8 +34,6 @@
 /**
   *@author CJP
   */
-
-class CGraphicWorld;
 
 class CGraphicMovObj : public CDataObject
 {
@@ -77,6 +77,8 @@ public:
 	CDashboard *getMovObjDashboard(unsigned int n)
 		{return ((CGraphicMovObj *)getObject(CDataObject::eMovingObject, n))->m_Dashboard;}
 
+	void drawTrackMap();
+
 	CBackground *m_Background;
 	CStaticReflection *m_EnvMap;
 
@@ -88,15 +90,21 @@ public:
 	};
 	vector<SLensFlare> m_LensFlare;
 
-protected:
-	virtual CDataObject *createObject(const CString &filename, const CParamList &plist, CDataObject::eDataType type);
-
-	const CWorld *m_World;
+	//Some settings
 	int m_TexMaxSize;
 	int m_BackgroundSize;
 	int m_ReflectionSize;
 	int m_ShadowSize;
 	bool m_TexSmooth;
+	bool m_DrawMap;
+
+protected:
+	virtual CDataObject *createObject(const CString &filename, const CParamList &plist, CDataObject::eDataType type);
+
+	const CWorld *m_World;
+
+	void loadTrackMap();
+	unsigned int m_TrackMapDisplayList;
 };
 
 #endif

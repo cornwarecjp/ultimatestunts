@@ -45,7 +45,8 @@ void CObjectViewer::setReflection(const CString &filename)
 }
 
 void CObjectViewer::addObject(
-	const CString &filename, CParamList list, CVector pos, CMatrix ori, int replace)
+	const CString &filename, CParamList list, CVector pos,
+	CMatrix ori, bool reflect, int replace)
 {
 	if(replace >= 0 && replace < int(m_Objects.size()))
 	{
@@ -59,6 +60,7 @@ void CObjectViewer::addObject(
 		m_Objects[replace].parameters = list;
 		m_Objects[replace].position = pos;
 		m_Objects[replace].orientation = ori;
+		m_Objects[replace].reflectInGround = reflect;
 		reloadData();
 	}
 	else
@@ -69,6 +71,7 @@ void CObjectViewer::addObject(
 		obj.parameters = list;
 		obj.position = pos;
 		obj.orientation = ori;
+		obj.reflectInGround = reflect;
 		m_Objects.push_back(obj);
 		reloadData();
 	}
@@ -105,8 +108,8 @@ void CObjectViewer::update()
 
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_color);
 	glLightfv(GL_LIGHT0, GL_SPECULAR, specular_color);
-	glLightfv(GL_LIGHT0, GL_AMBIENT, ambient_color);
 	glLightfv(GL_LIGHT0, GL_POSITION, light_direction);
+	glLightfv(GL_LIGHT1, GL_AMBIENT, ambient_color);
 
 
 	//Set the camera
@@ -117,11 +120,29 @@ void CObjectViewer::update()
 
 	glColor3f(1,1,1);
 
-	//View objects:
+	glPushMatrix();
+	glScalef(1.0,-1.0,1.0);
+	glCullFace(GL_FRONT);
+
+	//The reflection
+	viewObjects(true);
+
+	glCullFace(GL_BACK); //back to default
+	glPopMatrix();
+
+	//The object itself:
+	viewObjects(false);
+}
+
+void CObjectViewer::viewObjects(bool isReflection)
+{
 	for(unsigned int i=0; i < m_Objects.size(); i++)
 	{
 		CGraphObj *obj = m_World->getMovObjBound(m_Objects[i].objectID);
 		if(obj == NULL) continue; //error
+
+		if(isReflection && !(m_Objects[i].reflectInGround))
+			continue; //not in reflection
 
 		glPushMatrix();
 		glTranslatef(m_Objects[i].position.x, m_Objects[i].position.y, m_Objects[i].position.z);

@@ -1,8 +1,8 @@
 /***************************************************************************
-                          longmenu.h  -  menu with scrolling ability
+                          fileselect.h  -  A File Selection tool
                              -------------------
-    begin                : ma jan 2 2006
-    copyright            : (C) 2006 by CJP
+    begin                : zo feb 04 2007
+    copyright            : (C) 2007 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
 
@@ -15,33 +15,54 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef LONGMENU_H
-#define LONGMENU_H
+#ifndef FILESELECT_H
+#define FILESELECT_H
 
-#include "menu.h"
+#include <vector>
+namespace std {}
+using namespace std;
+
+#include "widget.h"
+#include "cstring.h"
+#include "longmenu.h"
 
 /**
   *@author CJP
   */
 
-class CLongMenu : public CMenu  {
+class CFileSelect : public CWidget  {
 public: 
-	CLongMenu();
-	virtual ~CLongMenu();
+	CFileSelect();
+	virtual ~CFileSelect();
 
 	virtual int onKeyPress(int key);
+	virtual int onRedraw();
+	virtual int onResize(int x, int y, int w, int h);
 	virtual int onMouseMove(int x, int y, unsigned int buttons);
 	virtual int onMouseClick(int x, int y, unsigned int buttons);
-	virtual int onRedraw();
+
+	void setTitle(const CString &title);
+
+	void setExtension(const CString &ext)
+		{m_Extension = ext; updateDirListing();}
+	CString getFullName()
+		{return m_Directory + m_File;}
+
+	bool m_Cancelled;
 
 protected:
-	virtual int getdy();
-	unsigned int getNumVisibleLines();
+	CString m_Title; //the total text
+	CLongMenu m_Menu;
 
-	unsigned int m_ScreenTop;
+	static CString m_Directory; //Value stays in memory for next file selector
+	CString m_File;
+	CString m_Extension;
 
-	int m_ScrollStartPos;
-	float m_ScrollDistance;
+	void updateDirListing();
+	int selectEntry();
+	void enterDirectory(const CString &dirname);
+
+	enum {eCancel, eNone} m_Selected;
 };
 
 #endif

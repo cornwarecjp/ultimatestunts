@@ -25,13 +25,13 @@
 
 #include "car.h"
 
-#include "datamanager.h"
+#include "graphicworld.h"
 #include "texture.h"
 #include "vector.h"
 
 class CDashboard {
 public: 
-	CDashboard(CDataManager *manager, unsigned int movObjID);
+	CDashboard(CGraphicWorld *manager, unsigned int movObjID);
 	~CDashboard();
 
 	enum eShowMode
@@ -46,6 +46,8 @@ protected:
 	SCarDashboardInfo m_Info;
 
 	unsigned int m_MovObjID;
+
+	CGraphicWorld *m_GraphicWorld;
 };
 
 #endif

@@ -97,6 +97,7 @@ int CMenu::onRedraw()
 
 	if(m_Lines.size() == 0) return 0; //we're ready then
 
+	glPushMatrix();
 	theConsoleFont->enable();
 
 	int dy = getdy();
@@ -129,6 +130,7 @@ int CMenu::onRedraw()
 
 
 	theConsoleFont->disable();
+	glPopMatrix();
 
 	return 0;
 }

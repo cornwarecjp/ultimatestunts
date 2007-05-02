@@ -46,10 +46,12 @@ public:
 		int objectID; //updated by reloadData
 		CVector position;
 		CMatrix orientation;
+		bool reflectInGround;
 	};
 	vector<SObject> m_Objects;
 	void addObject(
-		const CString &filename, CParamList list, CVector pos, CMatrix ori, int replace=-1);
+		const CString &filename, CParamList list, CVector pos,
+		CMatrix ori, bool reflect, int replace=-1);
 
 	struct STexture
 	{
@@ -66,6 +68,9 @@ protected:
 	CStaticReflection *m_Reflection;
 
 	CGraphicWorld *m_World;
+
+private:
+	void viewObjects(bool isReflection);
 };
 
 #endif

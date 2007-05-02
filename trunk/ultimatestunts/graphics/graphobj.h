@@ -56,11 +56,20 @@ class CGraphObj : public CDataObject
 			CVector color[4];
 			float opacity, reflectance, emissivity;
 			
+			//Original position+normal, for animation purposes
+			vector<CVector> originalPos, originalNor;
+			
 			void *vertex;
 			unsigned int numVertices;
 
 			void *index;
 			unsigned int numIndices;
+
+			//Animation
+			struct
+			{
+				bool rotationEnabled; CVector rotationOrigin, rotationVelocity;
+			} animation;
 		};
 		vector<SPrimitive> m_Primitives;
 
@@ -74,7 +83,11 @@ class CGraphObj : public CDataObject
 
 		//Animates the primitives
 		virtual void animate(float t);
+
+		void animateWater(SPrimitive &pr, float t);
 		float m_WaterLevel;
+
+		void animateRotation(SPrimitive &pr, float t);
 };
 
 #endif

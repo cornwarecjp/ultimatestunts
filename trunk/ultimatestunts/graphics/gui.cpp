@@ -22,6 +22,7 @@
 #include "inputbox.h"
 #include "messagebox.h"
 #include "colorselect.h"
+#include "fileselect.h"
 
 
 CGUI::CGUI(const CLConfig &conf, CWinSystem *winsys)
@@ -220,3 +221,31 @@ CVector CGUI::showColorSelect(const CString &title, CVector deflt, bool *cancell
 
 	return ret;
 }
+
+CString CGUI::showFileSelect(const CString &title, CString extension, bool *cancelled)
+{
+	CFileSelect *selector = new CFileSelect;
+	selector->setTitle(title);
+
+	selector->setExtension(extension);
+
+	selector->m_Wrel = 0.5;
+	selector->m_Hrel = 0.6;
+	selector->m_Xrel = 0.25;
+	selector->m_Yrel = 0.2;
+	m_ChildWidget->m_Widgets.push_back(selector);
+	m_WinSys->runLoop(this);
+
+	CString ret = selector->getFullName();
+	if(cancelled != NULL)
+		*cancelled = selector->m_Cancelled;
+
+	if(selector->m_Cancelled)
+		ret = "";
+
+	m_ChildWidget->m_Widgets.resize(m_ChildWidget->m_Widgets.size()-1); //removes selector
+	delete selector;
+
+	return ret;
+}
+
