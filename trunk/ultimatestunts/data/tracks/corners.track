@@ -17,11 +17,13 @@ textures/cornerblocks.jpg mu=0.9 roll=1
 END
 
 BEGIN
-environment/sky3.rgb
-environment/spheremap.rgb
--0.01,-0.3,0.90
-1.0,0.8,0.5
-0.0,0.0,0.0
+sky = environment/sky3.rgb
+horizon = environment/kyoto-horizon.png
+envmap = environment/spheremap.rgb
+lightdir = -0.01,-0.3,0.90
+lightcol = 1.0,0.8,0.3
+ambientcol = 0.0,0.0,0.0
+skycol = 1.0,1.0,1.0
 END
 
 BEGIN

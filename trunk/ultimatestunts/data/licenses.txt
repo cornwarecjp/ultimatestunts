@@ -18,7 +18,7 @@ UStunts modifications:
 As the task of listing these things started long after the first data files were created, it is extremely hard to find this legal information. Therefore, this information is incomplete. The intention of creating this file is to make this information more complete by collecting it and writing it down.
 
 For the names of Ultimate Stunts developers, the following abbreviations are used:
-	CJP:    	CornÃ© Plooy
+	CJP:    	Corné Plooy
 	BBalazs:	Borbola Balazs
 
 In any case, Ultimate Stunts releases these files under a GPL-compatible license, which means that you can use them as a part of GPL-licensed packages. If it is discovered that this is not allowed by the original license, either the original author will be contacted to ask for permission, or the file will be replaced/removed.
@@ -779,6 +779,16 @@ UStunts modifications:
 ------------------------
 
 ./environment:
+kyoto-horizon.png
+------------------------
+Original author:
+	CJP
+Original project:
+	[none]
+Original license:
+	GPL
+------------------------
+
 sky3-night.rgb
 ------------------------
 Original author:

@@ -11,22 +11,22 @@ TRACKFILE
 #This track file is created by the Ultimate Stunts track editor
 
 BEGIN
-textures/grass2.jpg mu=0.8 roll=20 roll=20 roll=20 roll=20 roll=20 roll=20 roll=20 roll=20
+textures/grass2.jpg mu=0.800000 roll=20.000000
 textures/water1.jpg scale=2
-textures/sand1.jpg mu=0.8 roll=40 roll=40 roll=40 roll=40 roll=40 roll=40 roll=40 roll=40
-textures/road2.jpg mu=1 roll=1 roll=1 roll=1 roll=1 roll=1 roll=1 roll=1 roll=1
+textures/sand1.jpg mu=0.800000 roll=40.000000
+textures/road2.jpg mu=1.000000 roll=1.000000
 textures/concrete1.jpg
 textures/startfinish.jpg
-textures/cornerblocks.jpg mu=0.9 roll=1 roll=1 roll=1 roll=1 roll=1 roll=1 roll=1 roll=1
-textures/road1.jpg mu=1 roll=1 roll=1 roll=1 roll=1 roll=1 roll=1 roll=1 roll=1
+textures/cornerblocks.jpg mu=0.900000 roll=1.000000
+textures/road1.jpg mu=1.000000 roll=1.000000
 textures/bricks1.jpg scale=4
-textures/metal1.png scale=8 mu=0.9 roll=1 mu=0.9 roll=1 roll=1 mu=0.9 roll=1 mu=0.9 roll=1 roll=1 roll=1 mu=0.9 roll=1 roll=1 mu=0.9 roll=1 mu=0.9 roll=1 roll=1 mu=0.9 roll=1 mu=0.9 roll=1 roll=1 roll=1 mu=0.9 roll=1 roll=1 roll=1 mu=0.9 roll=1 roll=1 mu=0.9 roll=1 mu=0.9 roll=1 roll=1 roll=1 mu=0.9 roll=1 roll=1
-textures/splits1.jpg mu=1 roll=1 roll=1 roll=1 roll=1 roll=1 roll=1 roll=1 roll=1
+textures/metal1.png scale=8 mu=0.900000 roll=1.000000
+textures/splits1.jpg mu=1.000000 roll=1.000000
 textures/wood.jpg
 textures/pine.png
 textures/metal.jpg
 textures/net.png scale=16
-textures/tenniscourt.jpg mu=0.9 roll=20 roll=20 roll=20 roll=20 roll=20 roll=20 roll=20 roll=20
+textures/tenniscourt.jpg mu=0.900000 roll=20.000000
 textures/wall1.jpg
 textures/farmdoor1.jpg
 textures/tulips.png
@@ -36,18 +36,20 @@ textures/door1.jpg
 textures/stonebricks.jpg
 textures/bricks2.jpg scale=2
 textures/joes.jpg
-textures/dirtroad1.jpg mu=0.9 roll=10 roll=10 roll=10 roll=10 roll=10 roll=10 roll=10 roll=10
-textures/iceroad1.jpg mu=0.7 roll=0.5 roll=0.5 roll=0.5 roll=0.5 roll=0.5 roll=0.5 roll=0.5 roll=0.5
-textures/splits1-dirt.jpg mu=0.9 roll=10 roll=10 roll=10 roll=10 roll=10 roll=10 roll=10 roll=10
-textures/splits1-ice.jpg mu=0.7 roll=0.5 roll=0.5 roll=0.5 roll=0.5 roll=0.5 roll=0.5 roll=0.5 roll=0.5
+textures/dirtroad1.jpg mu=0.900000 roll=10.000000
+textures/iceroad1.jpg mu=0.700000 roll=0.500000
+textures/splits1-dirt.jpg mu=0.900000 roll=10.000000
+textures/splits1-ice.jpg mu=0.700000 roll=0.500000
 END
 
 BEGIN
-environment/sky3.rgb
-environment/spheremap.rgb
--0.687905,-0.697875,-0.199393
-1.000000,1.000000,0.900000
-0.000000,0.000000,0.000000
+sky = environment/sky3.rgb
+horizon = environment/kyoto-horizon.png
+envmap = environment/spheremap.rgb
+lightdir = -0.690000,-0.700000,-0.200000
+lightcol = 1.000000,1.000000,0.900000
+ambientcol = 0.000000,0.000000,0.000000
+skycol = 1.000000,1.000000,1.000000
 END
 
 BEGIN

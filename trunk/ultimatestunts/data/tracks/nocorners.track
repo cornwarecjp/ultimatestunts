@@ -16,11 +16,13 @@ textures/startfinish.jpg
 END
 
 BEGIN
-environment/sky3.rgb
-environment/spheremap.rgb
--0.69,-0.2,-0.7
-1.0,0.8,0.3
-0.0,0.0,0.0
+sky = environment/sky3.rgb
+horizon = environment/kyoto-horizon.png
+envmap = environment/spheremap.rgb
+lightdir = -0.69,-0.2,-0.7
+lightcol = 1.0,0.8,0.3
+ambientcol = 0.0,0.0,0.0
+skycol = 1.0,1.0,1.0
 END
 
 BEGIN
