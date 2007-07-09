@@ -87,21 +87,25 @@ altijd machten van 2 zijn (4, 8, 16 etc.). Textures met alphakanaal zijn ook
 ondersteund.
 <pre>
 BEGIN
-environment/sky3-night.rgb
-environment/spheremap.rgb
--0.69,-0.7,-0.2
-0.2,0.2,0.5
-0.0,0.0,0.0
+sky = environment/sky3.rgb
+horizon = environment/kyoto-horizon.png
+envmap = environment/spheremap.rgb
+lightdir = -0.69,-0.7,-0.2
+lightcol = 0.2,0.2,0.5
+ambientcol = 0.0,0.0,0.0
+skycol = 0.1,0.1,0.5
 END
 </pre>
 In deze sectie worden de omgevings-instellingen geladen. De regels (die
 altijd aanwezig zouden moeten zijn) hebben de volgende betekenissen:
 <ul>
-	<li>Lucht wolken afbeelding texture</li>
-	<li>Reflectie environment map texture</li>
-	<li>Richting waar het zonlicht vandaan komt</li>
-	<li>Kleur van het zonlicht (rood,groen,blauw componenten)</li>
-	<li>Kleur van de diffuse verlichting</li>
+	<li>sky: Lucht wolken afbeelding texture</li>
+	<li>horizon: Horizon afbeelding texture</li>
+	<li>envmap: Reflectie environment map texture</li>
+	<li>lightdir: Richting waar het zonlicht vandaan komt</li>
+	<li>lightcol: Kleur van het zonlicht (rood,groen,blauw componenten)</li>
+	<li>ambientcol: Kleur van de diffuse verlichting</li>
+	<li>skycol: Kleur van de lucht en horizon</li>
 </ul>
 <pre>
 BEGIN
@@ -297,11 +301,13 @@ textures/startfinish.jpg
 END
 
 BEGIN
-environment/sky3-night.rgb
-environment/spheremap.rgb
--0.69,-0.7,-0.2
-0.2,0.2,0.5
-0.0,0.0,0.0
+sky = environment/sky3.rgb
+horizon = environment/kyoto-horizon.png
+envmap = environment/spheremap.rgb
+lightdir = -0.69,-0.7,-0.2
+lightcol = 0.2,0.2,0.5
+ambientcol = 0.0,0.0,0.0
+skycol = 0.1,0.1,0.5
 END
 
 BEGIN
@@ -378,11 +384,13 @@ textures/road1.jpg
 END
 
 BEGIN
-environment/sky3-night.rgb
-environment/spheremap.rgb
--0.69,-0.7,-0.2
-0.2,0.2,0.5
-0.0,0.0,0.0
+sky = environment/sky3.rgb
+horizon = environment/kyoto-horizon.png
+envmap = environment/spheremap.rgb
+lightdir = -0.69,-0.7,-0.2
+lightcol = 0.2,0.2,0.5
+ambientcol = 0.0,0.0,0.0
+skycol = 0.1,0.1,0.5
 END
 
 BEGIN

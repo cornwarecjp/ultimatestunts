@@ -5,7 +5,7 @@ About this document
 <p>
 This document describes the file formats as used by UltimateStunts.
 The information described here applies to the most recent version,
-which is 0.6.2 at the time of writing, but many things also apply
+which is 0.7.1 at the time of writing, but many things also apply
 to older and newer versions.
 This document does NOT describe the configuration files (*.conf);
 for these files, please have a look at the documentation of the
@@ -131,14 +131,17 @@ textureless surfaces with the average color of the texture are used.
 
 <h3>The background section</h3>
 This section contains a description of the environment. This section should
-contain the following lines:
-<ul>
-	<li>The sky texture filename</li>
-	<li>The reflection map filename</li>
-	<li>The direction where the light goes to (three coordinates separated by commas, vector length should be 1)</li>
-	<li>The light color ("diffuse light") (red, green, blue components between 0.0 and 1.0)</li>
-	<li>The shadow color ("ambient light") (red, green, blue components between 0.0 and 1.0)</li>
-</ul>
+contain a number of "<i>name</i> = <i>value</i>" pairs, with the following meanings:
+<table border=2>
+	<tr><td><b>name</b></td><td><b>meaning</b></td></tr>
+	<tr><td>sky</td><td>The sky texture filename</td></tr>
+	<tr><td>horizon</td><td>The horizon texture filename</td></tr>
+	<tr><td>envmap</td><td>The reflection map filename</td></tr>
+	<tr><td>lightdir</td><td>The direction where the light goes to (three coordinates separated by commas, vector length should be 1)</td></tr>
+	<tr><td>lightcol</td><td>The light color ("diffuse light") (red, green, blue components between 0.0 and 1.0)</td></tr>
+	<tr><td>ambientcol</td><td>The shadow color ("ambient light") (red, green, blue components between 0.0 and 1.0)</td></tr>
+	<tr><td>skycol</td><td>The sky and horizon color (red, green, blue components between 0.0 and 1.0)</td></tr>
+</table>
 
 <h3>The tile section</h3>
 Each line in the tile section has the following syntax:
