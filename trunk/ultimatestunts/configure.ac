@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT([Ultimate Stunts], [0.7.1], [cornware-cjp@users.sourceforge.net], [ultimatestunts])
+AC_INIT([Ultimate Stunts], [0.7.2], [cornware-cjp@users.sourceforge.net], [ultimatestunts])
 AC_CONFIG_SRCDIR([ultimatestunts/main.cpp])
 AM_CONFIG_HEADER(config.h)
 AC_CANONICAL_TARGET
@@ -43,15 +43,18 @@ AC_CHECK_HEADER(windows.h)
 
 if test "x$ac_cv_header_windows_h" != "xyes" ; then
 
+  dnl (Disabled):
   dnl Check for X11
 
-  AC_PATH_XTRA
+  dnl AC_PATH_XTRA
 
-  x_suffix="$X_LIBS $X_PRE_LIBS $X_EXTRA_LIBS -lm"
-  graphlibs=$x_suffix
+  dnl x_suffix="$X_LIBS $X_PRE_LIBS $X_EXTRA_LIBS -lm"
+  dnl graphlibs=$x_suffix
 
-  CFLAGS="$CFLAGS $X_CFLAGS"
-  CXXFLAGS="$CXXFLAGS $X_CFLAGS"
+  dnl CFLAGS="$CFLAGS $X_CFLAGS"
+  dnl CXXFLAGS="$CXXFLAGS $X_CFLAGS"
+  dnl (End Of Disabled)
+
 
   dnl Reasonable stuff non-windoze variants ... :-)
 
@@ -133,21 +136,36 @@ dnl AC_CHECK_HEADER(joystick.h, AC_DEFINE(JOYSTICK_IS_PRESENT))
 dnl AC_CHECK_HEADER(linux/joystick.h, AC_DEFINE(LINUX_JOYSTICK_IS_PRESENT))
 
 
+try_openal="yes"
+try_fmod="yes"
 
-dnl TODO: set audio lib with configure command line
-dnl ------------------------
-dnl Check openAL audio library (currently default)
-dnl ------------------------
-AC_CHECK_HEADER(AL/al.h, AC_DEFINE([OPENAL_HEADER], [], [OpenAL headers]))
-AC_CHECK_LIB(openal, alGetError, soundlibs="-lopenal $soundlibs";AC_DEFINE([HAVE_LIBOPENAL], [], [OpenAL Lib]))
+AC_ARG_WITH([openal],
+    AC_HELP_STRING([--with-openal], [Only use OpenAL (don't try to use FMOD)]),
+    [try_fmod="no"], [])
+AC_ARG_WITH([fmod],
+    AC_HELP_STRING([--with-fmod], [Only use FMOD (don't try to use OpenAL)]),
+    [try_openal="no"], [])
 
-AC_CHECK_HEADER(AL/alut.h, AC_DEFINE([ALUT_HEADER], [], [ALUT headers]))
-AC_CHECK_LIB(alut, alutExit, soundlibs="-lalut $soundlibs";AC_DEFINE([HAVE_LIBALUT], [], [ALUT Lib]))
-
-if test "x$soundlibs" = "x" ; then
-
+if test "$try_openal" = "yes" ; then
   dnl ------------------------
-  dnl Check fmod audio library (if openal not present)
+  dnl Check openAL audio library
+  dnl ------------------------
+  AC_CHECK_HEADER(AL/al.h, AC_DEFINE([OPENAL_HEADER], [], [OpenAL headers]))
+  AC_CHECK_LIB(openal, alGetError, soundlibs="-lopenal $soundlibs";AC_DEFINE([HAVE_LIBOPENAL], [], [OpenAL Lib]))
+
+  AC_CHECK_HEADER(AL/alut.h, AC_DEFINE([ALUT_HEADER], [], [ALUT headers]))
+  AC_CHECK_LIB(alut, alutExit, soundlibs="-lalut $soundlibs";AC_DEFINE([HAVE_LIBALUT], [], [ALUT Lib]))
+
+  dnl Don't try FMOD when OpenAL is found
+  dnl TODO: check whether either OpenAL or ALUT is not present
+  if test "x$soundlibs" != "x" ; then
+    try_fmod="no"
+  fi
+fi
+
+if test "$try_fmod" = "yes" ; then
+  dnl ------------------------
+  dnl Check fmod audio library
   dnl ------------------------
   AC_CHECK_HEADER(fmod/fmod.h, AC_DEFINE([FMOD_HEADER], [], [FMOD headers]))
 

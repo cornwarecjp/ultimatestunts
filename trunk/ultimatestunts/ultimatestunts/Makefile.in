@@ -57,8 +57,10 @@ am_ustunts_OBJECTS = carviewer.$(OBJEXT) gamecamera.$(OBJEXT) \
 	soundobj.$(OBJEXT) soundworld.$(OBJEXT) uscore.$(OBJEXT) \
 	usserver.$(OBJEXT)
 ustunts_OBJECTS = $(am_ustunts_OBJECTS)
-ustunts_DEPENDENCIES = ../graphics/libgraphics.a \
-	../simulation/libsimulation.a ../shared/libshared.a
+ustunts_DEPENDENCIES = $(top_builddir)/trackedit/libtrackedit.a \
+	$(top_builddir)/graphics/libgraphics.a \
+	$(top_builddir)/simulation/libsimulation.a \
+	$(top_builddir)/shared/libshared.a
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -153,10 +155,6 @@ USE_INCLUDED_LIBINTL = @USE_INCLUDED_LIBINTL@
 USE_NLS = @USE_NLS@
 VERSION = @VERSION@
 XGETTEXT = @XGETTEXT@
-X_CFLAGS = @X_CFLAGS@
-X_EXTRA_LIBS = @X_EXTRA_LIBS@
-X_LIBS = @X_LIBS@
-X_PRE_LIBS = @X_PRE_LIBS@
 ac_ct_CC = @ac_ct_CC@
 ac_ct_CXX = @ac_ct_CXX@
 ac_ct_RANLIB = @ac_ct_RANLIB@
@@ -208,10 +206,15 @@ target_os = @target_os@
 target_vendor = @target_vendor@
 usdatadir = @usdatadir@
 ustunts_SOURCES = carviewer.cpp gamecamera.cpp gamegui.cpp gamerenderer.cpp gamewinsystem.cpp humanplayer.cpp main.cpp music.cpp sndsample.cpp sound.cpp soundobj.cpp soundworld.cpp uscore.cpp usserver.cpp
-ustunts_LDADD = ../graphics/libgraphics.a ../simulation/libsimulation.a ../shared/libshared.a @sdllibs@ @graphlibs@ @soundlibs@ @netlibs@ @LIBINTL@
+ustunts_LDADD = $(top_builddir)/trackedit/libtrackedit.a \
+	$(top_builddir)/graphics/libgraphics.a $(top_builddir)/simulation/libsimulation.a \
+	$(top_builddir)/shared/libshared.a @sdllibs@ @graphlibs@ @soundlibs@ @netlibs@ @LIBINTL@
+
 EXTRA_DIST = carviewer.cpp carviewer.h gamecamera.cpp gamecamera.h gamegui.cpp gamegui.h gamerenderer.cpp gamerenderer.h gamewinsystem.cpp gamewinsystem.h humanplayer.cpp humanplayer.h main.cpp music.cpp music.h sndsample.cpp sndsample.h sound.cpp sound.h soundobj.cpp soundobj.h soundworld.cpp soundworld.h uscore.cpp uscore.h usserver.cpp usserver.h
 # set the include path found by configure
-INCLUDES = $(all_includes) -I../intl -I../shared -I../simulation -I../graphics
+INCLUDES = -I$(top_srcdir)/graphics -I$(top_srcdir)/intl -I$(top_srcdir)/shared \
+	-I$(top_srcdir)/simulation -I$(top_srcdir)/trackedit $(all_includes)
+
 
 # the library search path.
 ustunts_LDFLAGS = $(all_libraries) 
@@ -228,9 +231,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  ultimatestunts/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  ultimatestunts/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu  ultimatestunts/Makefile
+	  $(AUTOMAKE) --foreign  ultimatestunts/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \

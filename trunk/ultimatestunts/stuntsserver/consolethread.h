@@ -43,12 +43,18 @@ public:
 	void cmd_clearai();
 	void cmd_set(const CString &args);
 	void cmd_show();
+	void cmd_online();
+	void cmd_offline();
 	void cmd_write(const CString &args);
+
+	bool m_IsOnline;
 
 private:
 	CString getInput(CString question="");
 
 	bool executeCommand(const CString &cmd);
+
+	void updateMetaServerData();
 };
 
 #endif

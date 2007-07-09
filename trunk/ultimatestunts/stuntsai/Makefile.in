@@ -52,8 +52,8 @@ binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
 am_ustuntsai_OBJECTS = main.$(OBJEXT)
 ustuntsai_OBJECTS = $(am_ustuntsai_OBJECTS)
-ustuntsai_DEPENDENCIES = ../shared/libshared.a \
-	../simulation/libsimulation.a
+ustuntsai_DEPENDENCIES = $(top_builddir)/simulation/libsimulation.a \
+	$(top_builddir)/shared/libshared.a
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -148,10 +148,6 @@ USE_INCLUDED_LIBINTL = @USE_INCLUDED_LIBINTL@
 USE_NLS = @USE_NLS@
 VERSION = @VERSION@
 XGETTEXT = @XGETTEXT@
-X_CFLAGS = @X_CFLAGS@
-X_EXTRA_LIBS = @X_EXTRA_LIBS@
-X_LIBS = @X_LIBS@
-X_PRE_LIBS = @X_PRE_LIBS@
 ac_ct_CC = @ac_ct_CC@
 ac_ct_CXX = @ac_ct_CXX@
 ac_ct_RANLIB = @ac_ct_RANLIB@
@@ -203,11 +199,15 @@ target_os = @target_os@
 target_vendor = @target_vendor@
 usdatadir = @usdatadir@
 ustuntsai_SOURCES = main.cpp
-ustuntsai_LDADD = ../shared/libshared.a ../simulation/libsimulation.a @sdllibs@ @netlibs@ @LIBINTL@
+ustuntsai_LDADD = $(top_builddir)/simulation/libsimulation.a \
+	$(top_builddir)/shared/libshared.a @sdllibs@ @netlibs@ @LIBINTL@
+
 EXTRA_DIST = main.cpp 
 
 # set the include path found by configure
-INCLUDES = $(all_includes) -I../intl -I../shared -I../simulation
+INCLUDES = -I$(top_srcdir)/intl -I$(top_srcdir)/shared \
+	-I$(top_srcdir)/simulation $(all_includes)
+
 
 # the library search path.
 ustuntsai_LDFLAGS = $(all_libraries) 
@@ -224,9 +224,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  stuntsai/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  stuntsai/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu  stuntsai/Makefile
+	  $(AUTOMAKE) --foreign  stuntsai/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \

@@ -50,19 +50,19 @@ int CRenderWidget::onRedraw()
 		glColor3f(1,1,1);
 	}
 
-	leave2DMode();
-
 	if(m_Renderer != NULL)
 	{
+		leave2DMode();
+
 		m_Renderer->m_X = m_X;
 		m_Renderer->m_Y = m_Y;
 		m_Renderer->m_W = m_W;
 		m_Renderer->m_H = m_H;
 
 		m_Renderer->update();
-	}
 
-	enter2DMode();
+		enter2DMode();
+	}
 
 	return 0;
 }

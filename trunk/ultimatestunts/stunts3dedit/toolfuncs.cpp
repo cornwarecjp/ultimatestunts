@@ -163,7 +163,7 @@ void scaleFunc()
 	}
 
 	float sf = maxs / (max-min);
-	printf("Scaling with scalefactor %f\n", sf);
+	printf("Scaling with scalefactor %f / (%f-%f) = %f\n", maxs, max, min, sf);
 
 	//Apply scaling
 	if(scene)
@@ -338,8 +338,32 @@ void generateFunc()
 			}
 		}
 	}
-
-	if(getInput("Generate texture replacement colors for all primitives (y/n)? ") == "y")
+	else if(getInput("Generate texture coordinates for this primitive (y/n)? ") == "y")
+	{
+		if(getInput("Use plane projection (y/n)? ") == "y")
+		{
+			CVector normal = getInput("Enter plane normal vector: ").toVector();
+			CMatrix Rmat; Rmat.targetZ(normal, true);
+			for(unsigned int v=0; v<pr.m_Vertex.size(); v++)
+			{
+				CVector p = Rmat * pr.m_Vertex[v].pos;
+				p.z = 0.0;
+				pr.m_Vertex[v].tex = p;
+			}
+		}
+		else if(getInput("Use cylinder projection (y/n)? ") == "y")
+		{
+			CVector axispos = getInput("Enter cylinder axis position: ").toVector();
+			CVector normal = getInput("Enter cylinder axis direction: ").toVector();
+			CMatrix Rmat; Rmat.targetZ(normal, true);
+			for(unsigned int v=0; v<pr.m_Vertex.size(); v++)
+			{
+				CVector p = Rmat * (pr.m_Vertex[v].pos - axispos);
+				pr.m_Vertex[v].tex = CVector(atan2f(p.y,p.x)/(2*M_PI), p.z, 0.0);
+			}
+		}
+	}
+	else if(getInput("Generate texture replacement colors for all primitives (y/n)? ") == "y")
 	{
 		//for every primitive
 		for(unsigned int p=0; p<graphobj->m_Primitives.size(); p++)
@@ -421,3 +445,39 @@ void splitFunc()
 
 	graphobj->render(VisibleLODs);
 }
+
+void orderFunc()
+{
+	printf("Swap the order of two primitives.\n");
+	for(unsigned int i=0; i<graphobj->m_Primitives.size(); i++)
+		printf("%d: %s\n", i, graphobj->m_Primitives[i].m_Name.c_str());
+	int p1 = getInput("Select the first primitive (negative=cancel): ").toInt();
+	if(p1<0) return;
+	if(p1 >= (int)(graphobj->m_Primitives.size()))
+	{
+		printf("Selected primitive exceeds number of primitives\n");
+		return;
+	}
+
+	int p2 = getInput("Select the second primitive (negative=cancel): ").toInt();
+	if(p2<0) return;
+	if(p2 >= (int)(graphobj->m_Primitives.size()))
+	{
+		printf("Selected primitive exceeds number of primitives\n");
+		return;
+	}
+
+	if(p1==p2) return;
+
+	CPrimitive tmp = graphobj->m_Primitives[p1];
+	graphobj->m_Primitives[p1] = graphobj->m_Primitives[p2];
+	graphobj->m_Primitives[p2] = tmp;
+
+	if(curr_primitive == p1)
+		{curr_primitive = p2;}
+	else if(curr_primitive == p2)
+		{curr_primitive = p1;}
+
+	graphobj->render(VisibleLODs);
+}
+

@@ -87,8 +87,8 @@ CBinBuffer & CBinBuffer::operator += (const Uint16 & i)
 
 Uint16 CBinBuffer::getUint16(int unsigned &pos) const
 {
-	Uint16 ret = getUint8(pos) << 8;
-	ret += getUint8(pos);
+	Uint16 ret = ((Uint16)getUint8(pos)) << 8;
+	ret += ((Uint16)getUint8(pos));
 	return ret;
 }
 
@@ -104,10 +104,10 @@ CBinBuffer & CBinBuffer::operator += (const Uint32 & i)
 
 Uint32 CBinBuffer::getUint32(int unsigned &pos) const
 {
-	Uint32 ret = getUint8(pos) << 24;
-	ret += getUint8(pos) << 16;
-	ret += getUint8(pos) << 8;
-	ret += getUint8(pos);
+	Uint32 ret = ((Uint32)getUint8(pos)) << 24;
+	ret += ((Uint32)getUint8(pos)) << 16;
+	ret += ((Uint32)getUint8(pos)) << 8;
+	ret += ((Uint32)getUint8(pos));
 	return ret;
 }
 
@@ -160,12 +160,12 @@ float CBinBuffer::getFloat16(int unsigned &pos, float unit) const
 
 CBinBuffer & CBinBuffer::addFloat32(const float & v, float unit)
 {
-	return operator+=((Uint32)((v/unit) + (float)(0x7FFFFFFF)));
+	return operator+=((Uint32)((double)(v/unit) + (double)(0x7FFFFFFF)));
 }
 
 float CBinBuffer::getFloat32(int unsigned &pos, float unit) const
 {
-	return unit * ((float)(getUint32(pos)) - (float)(0x7FFFFFFF));
+	return unit * ((double)(getUint32(pos)) - (double)(0x7FFFFFFF));
 }
 
 //Vector:

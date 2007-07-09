@@ -32,6 +32,9 @@ public:
 
 	virtual bool doAction(CEditTrack *track) const;
 
+	virtual CAction *copy() const
+		{return new CReplaceAction(*this);}
+
 	bool m_ClearTile;
 	STile m_Tile;
 

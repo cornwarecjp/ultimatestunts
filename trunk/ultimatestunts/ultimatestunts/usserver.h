@@ -35,6 +35,8 @@ public:
 	void set(const CString &var, const CString &val);
 	void start();
 	void stop();
+	void online();
+	void offline();
 protected:
 	void giveCmd(const CString &cmd);
 

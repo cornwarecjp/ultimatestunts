@@ -18,11 +18,14 @@
 #include <cstdio>
 #include <unistd.h>
 
+#include "metaserver.h"
+
 #include "consolethread.h"
 #include "main.h"
 
 CConsoleThread::CConsoleThread()
 {
+	m_IsOnline = false;
 }
 
 CConsoleThread::~CConsoleThread()
@@ -119,9 +122,15 @@ void CConsoleThread::cmd_set(const CString &args)
 		if(var=="track")
 			{gamecorethread.m_Trackfile = val;}
 		else if(var=="port")
-			{networkthread.setPort(val.toInt());}
+		{
+			networkthread.setPort(val.toInt());
+			if(m_IsOnline) updateMetaServerData();
+		}
 		else if(var=="serverName")
-			{networkthread.setServerName(val);}
+		{
+			networkthread.setServerName(val);
+			if(m_IsOnline) updateMetaServerData();
+		}
 		else if(var=="minPlayers")
 			{
 				Clients.enter();
@@ -201,6 +210,19 @@ void CConsoleThread::cmd_show()
 	printf("\nCurrent network    frame rate: %.1f FPS\n", nfps);
 }
 
+void CConsoleThread::cmd_online()
+{
+	updateMetaServerData();
+}
+
+void CConsoleThread::cmd_offline()
+{
+	if(!m_IsOnline) return;
+	CMetaServer meta;
+	meta.removeServer();
+	m_IsOnline = false;
+}
+
 void CConsoleThread::cmd_write(const CString &args)
 {
 	CChatMessage msg;
@@ -222,6 +244,8 @@ bool CConsoleThread::executeCommand(const CString &cmd)
 			"  help                 Display this list\n"
 			"  set parameter=value  Set a variable (see below)\n"
 			"  show                 Show current variables and players\n"
+			"  online               Register at the metaserver for online gaming\n"
+			"  offline              Unregister from the metaserver\n"
 			"  start                Start the game\n"
 			"  stop                 Stop the current game\n"
 			"Variables are: \n"
@@ -235,6 +259,7 @@ bool CConsoleThread::executeCommand(const CString &cmd)
 	else if(cmd == "exit" || cmd == "quit")
 	{
 		cmd_stop();
+		cmd_offline();
 		return false;
 	}
 	else if(cmd == "start")
@@ -245,6 +270,10 @@ bool CConsoleThread::executeCommand(const CString &cmd)
 		{cmd_show();}
 	else if(cmd == "clearai")
 		{cmd_clearai();}
+	else if(cmd == "online")
+		{cmd_online();}
+	else if(cmd == "offline")
+		{cmd_offline();}
 	else if(cmd.length() > 6 && cmd.mid(0, 6) == "addai ")
 		{cmd_addai(cmd.mid(6));}
 	else if(cmd.length() > 4 && cmd.mid(0, 4) == "set ")
@@ -258,3 +287,11 @@ bool CConsoleThread::executeCommand(const CString &cmd)
 
 	return true;
 }
+
+void CConsoleThread::updateMetaServerData()
+{
+	CMetaServer meta;
+	if(meta.setServer(networkthread.getServerName(), networkthread.getPort()))
+		m_IsOnline = true;
+}
+

@@ -44,11 +44,11 @@ int main(int argc, char *argv[])
 	theMainConfig->setValue("animation", "watertesselation", "1");
 
 	printf("\nCreating a window\n");
-	CWinSystem *winsys = new CWinSystem("Ultimate Stunts Track Editor", *theMainConfig);
+	CWinSystem *winsys = new CWinSystem("Ultimate Stunts Track Editor");
 
 	theTrackDocument = new CTrackDocument;
 
-	CTEGUI *gui = new CTEGUI(*theMainConfig, winsys);
+	CTEGUI *gui = new CTEGUI(winsys);
 
 	printf("Starting the GUI\n");
 	gui->start();

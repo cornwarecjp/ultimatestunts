@@ -25,7 +25,7 @@
 #include "fileselect.h"
 
 
-CGUI::CGUI(const CLConfig &conf, CWinSystem *winsys)
+CGUI::CGUI(CWinSystem *winsys)
 {
 	//TODO: get conffile options
 	m_WinSys = winsys;

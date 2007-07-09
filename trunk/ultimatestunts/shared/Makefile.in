@@ -153,10 +153,6 @@ USE_INCLUDED_LIBINTL = @USE_INCLUDED_LIBINTL@
 USE_NLS = @USE_NLS@
 VERSION = @VERSION@
 XGETTEXT = @XGETTEXT@
-X_CFLAGS = @X_CFLAGS@
-X_EXTRA_LIBS = @X_EXTRA_LIBS@
-X_LIBS = @X_LIBS@
-X_PRE_LIBS = @X_PRE_LIBS@
 ac_ct_CC = @ac_ct_CC@
 ac_ct_CXX = @ac_ct_CXX@
 ac_ct_RANLIB = @ac_ct_RANLIB@
@@ -209,7 +205,7 @@ target_vendor = @target_vendor@
 usdatadir = @usdatadir@
 noinst_LIBRARIES = libshared.a
 libshared_a_SOURCES = binbuffer.cpp bthread.cpp cfile.cpp cstring.cpp datafile.cpp datamanager.cpp dataobject.cpp generalmatrix.cpp generalvector.cpp glbfile.cpp hello.cpp ipnumber.cpp lconfig.cpp matrix.cpp timer.cpp usmisc.cpp vector.cpp
-INCLUDES = $(all_includes) -I../intl 
+INCLUDES = -I$(top_srcdir)/intl $(all_includes)
 EXTRA_DIST = binbuffer.cpp binbuffer.h bthread.cpp bthread.h cfile.cpp cfile.h cstring.cpp cstring.h datafile.cpp datafile.h datamanager.cpp datamanager.h dataobject.cpp dataobject.h filecontrol.h generalmatrix.cpp generalmatrix.h generalvector.cpp generalvector.h glbfile.cpp glbfile.h hello.cpp hello.h lconfig.cpp lconfig.h matrix.cpp matrix.h pi.h timer.cpp timer.h usmisc.cpp usmisc.h vector.cpp vector.h
 all: all-am
 
@@ -224,9 +220,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  shared/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  shared/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu  shared/Makefile
+	  $(AUTOMAKE) --foreign  shared/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \

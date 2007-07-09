@@ -34,12 +34,21 @@ public:
 	virtual bool load(const CString &filename, const CParamList &list);
 	virtual void unload();
 
+	CVector getHorizonColor() const
+		{return m_HorizonColor;}
+
+	CVector getSkyColor() const
+		{return m_SkyColor;}
+
 
 	void draw() const;
 protected:
 	CTimer m_Timer;
 
 	unsigned int m_HorizonTex;
+	CVector m_HorizonColor;
+
+	CVector m_SkyColor;
 };
 
 #endif

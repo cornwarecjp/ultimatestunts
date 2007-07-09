@@ -34,6 +34,7 @@
 CCar::CCar(CDataManager *manager) : CMovingObject(manager)
 {
 	m_Ground.nor = CVector(0,0,0);
+	m_SimState = eFlying;
 }
 
 CCar::~CCar()
@@ -46,9 +47,9 @@ bool CCar::load(const CString &filename, const CParamList &list)
 
 	//initial state
 	m_DesiredSteering = 0.0;
-	m_xAngle = 0.0;
-	m_zAngle = 0.0;
-	m_BodyHeight = 0.0;
+	//m_xAngle = 0.0;
+	//m_zAngle = 0.0;
+	//m_BodyHeight = 0.0;
 
 	CDataFile dfile(getFilename());
 	CLConfig cfile(dfile.useExtern());
@@ -76,22 +77,6 @@ bool CCar::load(const CString &filename, const CParamList &list)
 	//wheels
 	CString frontwheelgeomfile        = cfile.getValue("frontwheels", "geometry");
 	CString rearwheelgeomfile         = cfile.getValue("rearwheels", "geometry");
-	float FrontWheelMass              = cfile.getValue("frontwheels", "mass").toFloat();
-	float RearWheelMass               = cfile.getValue("rearwheels", "mass").toFloat();
-	float FrontWheelMu                = cfile.getValue("frontwheels", "mu").toFloat();
-	float RearWheelMu                 = cfile.getValue("rearwheels", "mu").toFloat();
-	float FrontWheelRoll              = cfile.getValue("frontwheels", "roll").toFloat();
-	float RearWheelRoll               = cfile.getValue("rearwheels", "roll").toFloat();
-	float FrontWheelsuspk             = cfile.getValue("frontwheels", "suspk").toFloat();
-	float RearWheelsuspk              = cfile.getValue("rearwheels", "suspk").toFloat();
-	float FrontWheeltractionstiffness = cfile.getValue("frontwheels", "tractionstiffness").toFloat();
-	float RearWheeltractionstiffness  = cfile.getValue("rearwheels", "tractionstiffness").toFloat();
-	float FrontWheelcornerstiffness   = cfile.getValue("frontwheels", "cornerstiffness").toFloat();
-	float RearWheelcornerstiffness    = cfile.getValue("rearwheels", "cornerstiffness").toFloat();
-	CVector FrontWheelNeutral         = cfile.getValue("frontwheels", "position").toVector();
-	CVector RearWheelNeutral          = cfile.getValue("rearwheels", "position").toVector();
-	float FrontBrakeMax               = cfile.getValue("frontwheels", "brakemax").toFloat();
-	float RearBrakeMax                = cfile.getValue("rearwheels", "brakemax").toFloat();
 	m_FrontSteerMax                   = cfile.getValue("frontwheels", "steermax").toFloat();
 	m_RearSteerMax                    = -cfile.getValue("rearwheels", "steermax").toFloat();
 	m_Engine.m_FrontTraction          = cfile.getValue("frontwheels", "traction").toFloat();
@@ -213,11 +198,15 @@ bool CCar::load(const CString &filename, const CParamList &list)
 	m_Wheel[2].m_Radius = ((CBound *)theWorld->getObject(CDataObject::eBound, wheel3.m_Body))->m_CylinderRadius;
 	m_Wheel[3].m_Radius = ((CBound *)theWorld->getObject(CDataObject::eBound, wheel4.m_Body))->m_CylinderRadius;
 
-	//neutral position
-	m_Wheel[0].m_NeutralPos = CVector(-FrontWheelNeutral.x, FrontWheelNeutral.y, FrontWheelNeutral.z);
-	m_Wheel[1].m_NeutralPos = CVector( FrontWheelNeutral.x, FrontWheelNeutral.y, FrontWheelNeutral.z);
-	m_Wheel[2].m_NeutralPos = CVector(-RearWheelNeutral.x,  RearWheelNeutral.y,  RearWheelNeutral.z);
-	m_Wheel[3].m_NeutralPos = CVector( RearWheelNeutral.x,  RearWheelNeutral.y,  RearWheelNeutral.z);
+	//Important: do this AFTER setting m_Radius:
+	m_Wheel[0].load(cfile, "frontwheels");
+	m_Wheel[1].load(cfile, "frontwheels");
+	m_Wheel[2].load(cfile, "rearwheels");
+	m_Wheel[3].load(cfile, "rearwheels");
+
+	//Correcting the neutral position
+	m_Wheel[0].m_NeutralPos.x = -m_Wheel[0].m_NeutralPos.x;
+	m_Wheel[2].m_NeutralPos.x = -m_Wheel[2].m_NeutralPos.x;
 
 	for(unsigned int i=0; i<4; i++)
 		m_Wheel[i].m_NeutralPos -= m_CenterOfMass; //save as relative to center of mass
@@ -226,36 +215,6 @@ bool CCar::load(const CString &filename, const CParamList &list)
 	m_PositionAboveGround = 0.5 * (
 		m_Wheel[0].m_Radius - m_Wheel[0].m_NeutralPos.y +
 		m_Wheel[2].m_Radius - m_Wheel[2].m_NeutralPos.y);
-
-	m_Wheel[0].m_Iinv_eff = 1.0 / (0.5 * FrontWheelMass * m_Wheel[0].m_Radius * m_Wheel[0].m_Radius);
-	m_Wheel[1].m_Iinv_eff = 1.0 / (0.5 * FrontWheelMass * m_Wheel[1].m_Radius * m_Wheel[1].m_Radius);
-	m_Wheel[2].m_Iinv_eff = 1.0 / (0.5 * RearWheelMass * m_Wheel[2].m_Radius * m_Wheel[2].m_Radius);
-	m_Wheel[3].m_Iinv_eff = 1.0 / (0.5 * RearWheelMass * m_Wheel[3].m_Radius * m_Wheel[3].m_Radius);
-
-	m_Wheel[0].m_Mu = FrontWheelMu;
-	m_Wheel[1].m_Mu = FrontWheelMu;
-	m_Wheel[2].m_Mu = RearWheelMu;
-	m_Wheel[3].m_Mu = RearWheelMu;
-	m_Wheel[0].m_Roll = FrontWheelRoll;
-	m_Wheel[1].m_Roll = FrontWheelRoll;
-	m_Wheel[2].m_Roll = RearWheelRoll;
-	m_Wheel[3].m_Roll = RearWheelRoll;
-	m_Wheel[0].m_suspk = FrontWheelsuspk;
-	m_Wheel[1].m_suspk = FrontWheelsuspk;
-	m_Wheel[2].m_suspk = RearWheelsuspk;
-	m_Wheel[3].m_suspk = RearWheelsuspk;
-	m_Wheel[0].m_tractionStiffness = FrontWheeltractionstiffness;
-	m_Wheel[1].m_tractionStiffness = FrontWheeltractionstiffness;
-	m_Wheel[2].m_tractionStiffness = RearWheeltractionstiffness;
-	m_Wheel[3].m_tractionStiffness = RearWheeltractionstiffness;
-	m_Wheel[0].m_cornerStiffness = FrontWheelcornerstiffness;
-	m_Wheel[1].m_cornerStiffness = FrontWheelcornerstiffness;
-	m_Wheel[2].m_cornerStiffness = RearWheelcornerstiffness;
-	m_Wheel[3].m_cornerStiffness = RearWheelcornerstiffness;
-	m_Wheel[0].m_BrakeMax = FrontBrakeMax;
-	m_Wheel[1].m_BrakeMax = FrontBrakeMax;
-	m_Wheel[2].m_BrakeMax = RearBrakeMax;
-	m_Wheel[3].m_BrakeMax = RearBrakeMax;
 
 	//Setting the initial positions
 	m_Position = CVector(0,0,0);
@@ -278,14 +237,10 @@ void CCar::resetBodyPositions()
 
 void CCar::placeBodies()
 {
-	//Body orientation matrix
-	CMatrix bodyOri;
-	bodyOri.setRotation(CVector(m_xAngle, 0.0, m_zAngle));
+	m_Bodies[0].m_Position = m_Position -
+		m_OrientationMatrix * m_CenterOfMass;
 
-	m_Bodies[0].m_Position = m_Position +
-		m_OrientationMatrix * (CVector(0.0,m_BodyHeight,0.0) - m_CenterOfMass);
-
-	m_Bodies[0].m_OrientationMatrix = bodyOri * m_OrientationMatrix;
+	m_Bodies[0].m_OrientationMatrix = m_OrientationMatrix;
 
 	for(unsigned int i=0; i < 4; i++)
 	{
@@ -304,7 +259,8 @@ void CCar::placeBodies()
 		r.rotX(rotationAngle);
 
 		//i+1 because body 0 is the car main body
-		m_Bodies[i+1].m_Position = m_Position + m_OrientationMatrix * m_Wheel[i].m_NeutralPos;
+		m_Bodies[i+1].m_Position = m_Position + m_OrientationMatrix *
+			(m_Wheel[i].m_NeutralPos + CVector(0,m_Wheel[i].m_Height,0));
 		m_Bodies[i+1].m_OrientationMatrix = r * s * m_OrientationMatrix;
 	}
 }
@@ -314,20 +270,27 @@ void CCar::determineGroundPlane(CPhysics *simulator)
 	vector<CCollisionFace> wheelGround;
 	vector<CVector> contactPoint;
 
+	//Debugging:
+	//m_Ground.nor = CVector(0,1,0);
+	//m_Ground.d = 0.0;
+	//return;
+
 	//fprintf(stderr, "\n\ndetermineGroundPlane\n");
 
 	//get the ground faces for the wheels
 	for(unsigned int i=0; i < 4; i++)
 	{
-		CVector pos = m_OrientationMatrix * m_Wheel[i].m_NeutralPos;
+		CVector pos = m_OrientationMatrix * (m_Wheel[i].m_NeutralPos + CVector(0,m_Wheel[i].m_Radius,0));
 		//fprintf(stderr, "Wheel %d height: %.3f\n", i, (pos + m_Position).y);
 
 		const CCollisionFace * theFace = theWorld->m_Detector.getGroundFace(pos + m_Position);
 		if(theFace != NULL)
 		{
-			CCollisionFace cf = *theFace;
+			//In absolute coordinates:
+			m_Wheel[i].m_Ground = *theFace;
 
 			//relative to the car center:
+			CCollisionFace cf = *theFace;
 			cf.d -= m_Position.dotProduct(cf.nor);
 			float dpos = pos.dotProduct(cf.nor);
 
@@ -344,6 +307,8 @@ void CCar::determineGroundPlane(CPhysics *simulator)
 			wheelGround.push_back(cf);
 		}
 	}
+
+	//printf("%d\n", wheelGround.size());
 
 	switch(wheelGround.size())
 	{
@@ -530,18 +495,47 @@ void CCar::determineGroundPlane(CPhysics *simulator)
 
 void CCar::placeOnGround()
 {
+	//Place wheels on ground
+	for(unsigned int i=0; i < 4; i++)
+	{
+		const CCollisionFace &ground = m_Wheel[i].m_Ground;
+		float ndoty = ground.nor.dotProduct(m_OrientationMatrix * CVector(0,1,0));
+
+		if(ndoty < 0.1)
+		{
+			m_Wheel[i].m_Height = 0.0;
+			m_Wheel[i].m_dHeight = 0.0;
+			continue;
+		}
+
+		float ndoty_inv = 1.0 / ndoty;
+
+		CVector neutral_rel = m_OrientationMatrix * m_Wheel[i].m_NeutralPos;
+		CVector neutral = m_Position + neutral_rel;
+		m_Wheel[i].m_Height = ndoty_inv * (ground.d + m_Wheel[i].m_Radius - ground.nor.dotProduct(neutral));
+
+		//Assuming that ndoty is more or less constant:
+		m_Wheel[i].m_dHeight = -ndoty_inv * ground.nor.dotProduct(
+			m_Velocity - m_AngularVelocity.crossProduct(neutral_rel));
+
+		if(m_Wheel[i].m_Height < 0.0)
+		{
+			m_Wheel[i].m_Height = 0.0;
+			m_Wheel[i].m_dHeight = 0.0;
+		}
+	}
+}
+
+void CCar::landOnGround()
+{
 	/*
 	All models are wrong, but some are useful.
 	G.E.P. Box
 	*/
 
-	
 	if(m_Ground.nor.abs2() < 0.25) return;
 
-	//fprintf(stderr, "ground normal = %s\n", CString(m_Ground->nor).c_str());
-
 	//The right rotation:
-	
 	CMatrix &Mnu = m_OrientationMatrix;
 	CVector ynu;
 	ynu.x = Mnu.Element(1,0);
@@ -559,8 +553,10 @@ void CCar::placeOnGround()
 
 	Mnu *= rotate;
 
-	//The right position:
+	//align the angular velocity
+	m_AngularVelocity = m_AngularVelocity.component(m_Ground.nor);
 
+	//The right position:
 	CVector &pos = m_Position;
 	float dobj = pos.dotProduct(m_Ground.nor) - m_Ground.d;
 	pos -= (dobj - m_PositionAboveGround) * m_Ground.nor;
@@ -572,10 +568,7 @@ void CCar::placeOnGround()
 		m_Velocity -= vvert * m_Ground.nor;
 	}
 
-	//align the angular velocity
-	m_AngularVelocity = m_AngularVelocity.component(m_Ground.nor);
-
-	//placeBodies(); //not needed
+	printf("Landed\n");
 }
 
 void CCar::fixFlyingOrientation()
@@ -595,26 +588,19 @@ void CCar::fixFlyingOrientation()
 
 	//The component of the Y-axis perpendicular to v, normalised:
 	CVector yNew = (yNow - yNow.component(v)).normal();
+	if(yNew.dotProduct(yNow) < 0.0) yNew = -yNew;
 
 	//The rotation axis
-	CVector rAxis = v.crossProduct(yNow);
-
+	CVector rAxis = yNew.crossProduct(yNow);
 	float rAxisSize = rAxis.abs();
-	if(rAxisSize < 0.001) return; //they seem to be more or less parallel: give up
 
-	float angle = fabsf(asin(yNow.crossProduct(yNew).abs()));
+	if(rAxisSize < 0.001) return; //rotation is not needed; prevent division by zero
+
+	float angle = fabsf(asin(rAxisSize));
 
 	//Don't rotate too much:
 	angle *= 0.5; //some kind of under-compensation
 	if(angle >  0.01) angle =  0.01;
-
-	/*
-	fprintf(stderr, "v     = %s\n", CString(v).c_str());
-	fprintf(stderr, "yNow  = %s\n", CString(yNow).c_str());
-	fprintf(stderr, "yNew  = %s\n", CString(yNew).c_str());
-	fprintf(stderr, "rAxis = %s\n", CString(rAxis.normal()).c_str());
-	fprintf(stderr, "angle = %.3f rad\n", angle);
-	*/
 
 	rAxis *= (angle / rAxisSize);
 
@@ -644,24 +630,31 @@ void CCar::update(CPhysics *simulator, float dt)
 	if(m_Ground.nor.abs2() < 0.25)
 	{
 		//fprintf(stderr, "ground plane NOT found\n");
-		fixFlyingOrientation();
 		simulateAir(simulator, dt);
 	}
 	else
 	{
 		float vvert = m_Velocity.dotProduct(m_Ground.nor);
 		float dobj = m_Bodies[0].m_Position.dotProduct(m_Ground.nor) - m_Ground.d;
-		if(vvert > 0.1 || dobj > 10.0)
+		unsigned numFloatingWheels = 0;
+		for(unsigned int i=0; i<4; i++)
+			if(m_Wheel[i].m_Height < 0.001) numFloatingWheels++;
+
+		if(vvert > 0.1 && numFloatingWheels == 4)
+		{
+			//fprintf(stderr, "vertical speed pointing away from gound\n");
+			//printf("Airborne!\n");
+			simulateAir(simulator, dt);
+		}
+		else if(dobj > 10.0)
 		{
 			//fprintf(stderr, "ground plane far below\n");
 			//printf("Airborne!\n");
-			fixFlyingOrientation();
 			simulateAir(simulator, dt);
 		}
 		else
 		{
 			//fprintf(stderr, "ground plane found\n");
-			placeOnGround();
 			simulateGround(simulator, dt);
 		}
 	}
@@ -676,7 +669,7 @@ void CCar::update(CPhysics *simulator, float dt)
 	}
 
 	//----------------------
-	//Integration step and other general things
+	//Integration step
 	//----------------------
 	CMovingObject::update(simulator, dt);
 }
@@ -703,14 +696,6 @@ void CCar::correctCollisions()
 			dr = newcolnor * (col.depth / dotpr);
 		}
 
-		/*
-		fprintf(stderr, "Collision detected:\n");
-		fprintf(stderr, "  m_Position = %s\n", CString(m_Position - col.pos).c_str());
-		fprintf(stderr, "  m_Velocity = %s\n", CString(m_Velocity).c_str());
-		fprintf(stderr, "  vmean = %s\n", CString(col.vmean).c_str());
-		fprintf(stderr, "  nor = %s\n", CString(col.nor).c_str());
-		*/
-
 		//correct the position
 		m_Position += dr;
 
@@ -720,11 +705,6 @@ void CCar::correctCollisions()
 		if(radcomp < 0.0)
 			m_Velocity -= radcomp * col.nor;
 		m_Velocity += col.vmean;
-
-		/*
-		fprintf(stderr, "  new m_Position = %s\n", CString(m_Position - col.pos).c_str());
-		fprintf(stderr, "  new m_Velocity = %s\n", CString(m_Velocity).c_str());
-		*/
 	}
 }
 
@@ -763,49 +743,34 @@ void CCar::simulateGeneral(CPhysics *simulator, float dt)
 	//Wheel simulation
 	//----------------------
 	updateWheelOrientation();
-	calculateNormalForces();
 	updateWheelTorques();
 }
 
 void CCar::simulateAir(CPhysics *simulator, float dt)
 {
-	m_xAngle = 0.0;
-	m_zAngle = 0.0;
-	m_BodyHeight = 0.0;
+	//printf("Flying\n");
+	m_SimState = eFlying;
+	for(unsigned int i=0; i<4; i++)
+	{
+		m_Wheel[i].m_Fnormal = 0.0;
+		m_Wheel[i].m_Height = 0.0;
+		m_Wheel[i].m_dHeight = 0.0;
+	}
+
+	fixFlyingOrientation();
 }
 
 void CCar::simulateGround(CPhysics *simulator, float dt)
 {
+	if(m_SimState == eFlying)
+		landOnGround();
+	m_SimState = eRiding;
+	//printf("Riding\n");
+
+	placeOnGround();
+
+	calculateNormalForces();
 	applyWheelForces();
-
-	CVector M = m_Mtot;
-	CVector F = m_Ftot;
-	M *= m_OrientationMatrix.transpose(); //in car coordinates
-	F *= m_OrientationMatrix.transpose(); //in car coordinates
-	
-	if(fabs(m_xAngle) < 1.0)
-		{m_xAngle += 0.05 * dt * M.x * m_InvMass;}
-	else
-	{
-		m_xAngle = 0.9 * m_xAngle;
-		printf("Error: car tilt exceeded maximum\n");
-	}
-
-	if(fabs(m_zAngle) < 1.0)
-		{m_zAngle += 0.5 * dt * M.z * m_InvMass;}
-	else
-	{
-		m_zAngle = 0.9 * m_zAngle;
-		printf("Error: car roll exceeded maximum\n");
-	}
-
-	if(fabs(m_BodyHeight) < 1.0)
-		{m_BodyHeight += 0.5 * dt * F.y * m_InvMass;}
-	else
-	{
-		m_BodyHeight = 0.9 * m_BodyHeight;
-		printf("Error: car suspension height exceeded maximum\n");
-	}
 }
 
 void CCar::addDownforce()
@@ -937,46 +902,47 @@ void CCar::updateWheelTorques()      //engine + brakes
 
 void CCar::calculateNormalForces()
 {
-	CMatrix bodyOri;
-	bodyOri.setRotation(CVector(m_xAngle, 0.0, m_zAngle));
-
-	/*
-	CMatrix Rmat_inv = m_OrientationMatrix.transpose();
-
-	//external forces
-	CVector Fext = Rmat_inv * m_Ftot;
-	float Fy_tot = -Fext.y;
-
-	float zfr = m_Wheel[0].m_NeutralPos.z, zba = m_Wheel[2].m_NeutralPos.z;
-	float length = zba - zfr;
-
-	//neutral weight distribution
-	float wf[4];
-	wf[0] = wf[1] =  0.5 * zba / length;
-	wf[2] = wf[3] = -0.5 * zfr / length;
-	*/
-
 	for(unsigned int i=0; i < 4; i++)
 	{
-		//neutral position of the wheel:
-		CVector r0 = m_Wheel[i].m_NeutralPos;
-
-		//real position of the body at the wheel positions:
-		CVector r = bodyOri * r0;
-
 		//y difference:
-		float dy = r.y - r0.y;
+		float y = m_Wheel[i].m_Height, dy = m_Wheel[i].m_dHeight;
+		//printf("Wheel %d: y = %.3f dy = %.3f\n", i, y, dy);
 
-		//Body height:
-		dy += m_BodyHeight;
-
-		m_Wheel[i].m_Fnormal = - m_Wheel[i].m_suspk * dy; //+ wf[i] * Fy_tot
+		m_Wheel[i].m_Fnormal = m_Wheel[i].m_suspk * y + m_Wheel[i].m_suspd * dy;
 		if(m_Wheel[i].m_Fnormal < 0.0) m_Wheel[i].m_Fnormal = 0.0; //no "glue" forces
 	}
 }
 
 void CCar::applyWheelForces()
 {
+	//----------------------
+	//DEBUGGING
+	//----------------------
+	/*
+	for(unsigned int i=0; i < 4; i++)
+	{
+		//position of the wheel:
+		CVector r = m_Wheel[i].m_NeutralPos;
+
+		CVector Fwheel = CVector(0, m_Wheel[i].m_Fnormal, 0);
+
+		//add forces to the wheel
+		Fwheel *= m_OrientationMatrix; //TODO: transform to ground plane
+		r += CVector(0.0, -m_Wheel[i].m_Radius, 0.0); //forces attach on surface, not on middle
+		r *= m_OrientationMatrix;
+
+		Fwheel.x = Fwheel.z = 0.0; //debugging
+		//fprintf(stderr, "before %d: F = %s; M = %s\n", i, CString(m_Ftot).c_str(), CString(m_Mtot).c_str());
+		//fprintf(stderr, "  Applying %s @ %s\n", CString(Fwheel).c_str(), CString(r).c_str());
+		addForceAt(Fwheel, r);
+		//fprintf(stderr, "after %d: F = %s; M = %s\n", i, CString(m_Ftot).c_str(), CString(m_Mtot).c_str());
+	}
+	return;
+	*/
+	//----------------------
+	//DEBUGGING
+	//----------------------
+
 	float muGround = 1.0, rollGround = 0.0;
 	if(m_Ground.nor.abs2() > 0.25 && m_Ground.material != NULL)
 	{
@@ -1023,10 +989,15 @@ void CCar::applyWheelForces()
 		m_Wheel[i].m_M += Fwheel.z * m_Wheel[i].m_Radius + Mwheel.x;
 
 		//add forces to the wheel
-		Fwheel *= m_OrientationMatrix;
+		Fwheel *= m_OrientationMatrix; //TODO: transform to ground plane
 		r += CVector(0.0, -m_Wheel[i].m_Radius, 0.0); //forces attach on surface, not on middle
 		r *= m_OrientationMatrix;
+
+		//Fwheel.x = Fwheel.z = 0.0; //debugging
+		//fprintf(stderr, "before %d: F = %s; M = %s\n", i, CString(m_Ftot).c_str(), CString(m_Mtot).c_str());
+		//fprintf(stderr, "  Applying %s @ %s\n", CString(Fwheel).c_str(), CString(r).c_str());
 		addForceAt(Fwheel, r);
+		//fprintf(stderr, "after %d: F = %s; M = %s\n", i, CString(m_Ftot).c_str(), CString(m_Mtot).c_str());
 	}
 
 	//fprintf(stderr, "%.f\n", 1000*m_Velocity.abs());
@@ -1038,8 +1009,8 @@ CBinBuffer &CCar::getData(CBinBuffer &b) const
 
 	//general
 	b.addFloat8(m_DesiredSteering, 0.008);
-	b.addFloat8(m_xAngle, 0.002);
-	b.addFloat8(m_zAngle, 0.002);
+	//b.addFloat8(m_xAngle, 0.002);
+	//b.addFloat8(m_zAngle, 0.002);
 
 	//engine
 	b += Uint8(m_Engine.m_Gear);
@@ -1053,6 +1024,7 @@ CBinBuffer &CCar::getData(CBinBuffer &b) const
 		b.addFloat8(m_Wheel[i].m_a, 0.025);
 		b.addFloat8(m_Wheel[i].m_DesiredSt, 0.008);
 		b.addFloat8(m_Wheel[i].m_SkidVolume, 0.008);
+		b.addFloat8(m_Wheel[i].m_Height, 0.008);
 	}
 
 	return b;
@@ -1064,8 +1036,8 @@ bool CCar::setData(const CBinBuffer &b, unsigned int &pos)
 
 	//general
 	m_DesiredSteering = b.getFloat8(pos, 0.008);
-	m_xAngle = b.getFloat8(pos, 0.002);
-	m_zAngle = b.getFloat8(pos, 0.002);
+	//m_xAngle = b.getFloat8(pos, 0.002);
+	//m_zAngle = b.getFloat8(pos, 0.002);
 
 	//engine
 	m_Engine.m_Gear = b.getUint8(pos);
@@ -1079,6 +1051,7 @@ bool CCar::setData(const CBinBuffer &b, unsigned int &pos)
 		m_Wheel[i].m_a = b.getFloat8(pos, 0.025);
 		m_Wheel[i].m_DesiredSt = b.getFloat8(pos, 0.008);
 		m_Wheel[i].m_SkidVolume = b.getFloat8(pos, 0.008);
+		m_Wheel[i].m_Height = b.getFloat8(pos, 0.008);
 	}
 
 	placeBodies();

@@ -20,8 +20,6 @@
 
 #include "gui.h"
 
-#include "lconfig.h"
-
 #include "guipage.h"
 #include "mainpage.h"
 
@@ -31,7 +29,7 @@
 
 class CTEGUI : public CGUI  {
 public: 
-	CTEGUI(const CLConfig &conf, CWinSystem *winsys);
+	CTEGUI(CWinSystem *winsys);
 	virtual ~CTEGUI();
 
 	virtual void start(); //returns when an exit command is given

@@ -29,8 +29,6 @@
 #include "replaceaction.h"
 
 #include "winsystem.h"
-#include "renderwidget.h"
-#include "menu.h"
 
 CMainPage::CMainPage() : CGUIPage()
 {
@@ -39,38 +37,55 @@ CMainPage::CMainPage() : CGUIPage()
 	m_Camera = new CTECamera();
 	m_Renderer->setCamera(m_Camera);
 
-	CRenderWidget *render = new CRenderWidget;
-	render->m_Xrel = 0.3;
-	render->m_Yrel = 0.0;
-	render->m_Wrel = 0.7;
-	render->m_Hrel = 0.8;
-	render->m_Renderer = m_Renderer;
-	m_Widgets.push_back(render);
+	m_RenderWidget = new CRenderWidget;
+	m_RenderWidget->m_Xrel = 0.3;
+	m_RenderWidget->m_Yrel = 0.05;
+	m_RenderWidget->m_Wrel = 0.7;
+	m_RenderWidget->m_Hrel = 0.8;
+	m_RenderWidget->m_Renderer = m_Renderer;
+	m_Widgets.push_back(m_RenderWidget);
 
-	CMenu *menu = new CMenu;
-	menu->m_Xrel = 0.0;
-	menu->m_Yrel = 0.0;
-	menu->m_Wrel = 0.3;
-	menu->m_Hrel = 0.8;
-	menu->m_Lines.push_back(_("Load track"));
-	menu->m_Lines.push_back(_("Save track"));
-	menu->m_Lines.push_back(_("Import Stunts track"));
-	menu->m_Lines.push_back(_("Exit"));
-	menu->m_Lines.push_back("");
-	menu->m_Lines.push_back(_("Undo"));
-	menu->m_Lines.push_back(_("Redo"));
-	menu->m_AlignLeft = false;
-	m_Widgets.push_back(menu);
+	m_HintLabel = new CLabel;
+	m_HintLabel->m_Xrel = 0.3;
+	m_HintLabel->m_Yrel = 0.0;
+	m_HintLabel->m_Wrel = 0.7;
+	m_HintLabel->m_Hrel = 0.05;
+	m_HintLabel->m_Text = "";
+	m_Widgets.push_back(m_HintLabel);
+
+	m_FilanemeLabel = new CLabel;
+	m_FilanemeLabel->m_Xrel = 0.3;
+	m_FilanemeLabel->m_Yrel = 0.85;
+	m_FilanemeLabel->m_Wrel = 0.7;
+	m_FilanemeLabel->m_Hrel = 0.05;
+	m_FilanemeLabel->m_Text = "[new file]";
+	m_Widgets.push_back(m_FilanemeLabel);
+
+	m_TileSelect = new CTileSelect;
+	m_TileSelect->m_Xrel = 0.0;
+	m_TileSelect->m_Yrel = 0.3;
+	m_TileSelect->m_Wrel = 0.3;
+	m_TileSelect->m_Hrel = 0.6;
+	m_Widgets.push_back(m_TileSelect);
+
+	m_IconBar = new CIconBar;
+	m_IconBar->m_Xrel = 0.0;
+	m_IconBar->m_Yrel = 0.9;
+	m_IconBar->m_Wrel = 1.0;
+	m_IconBar->m_Hrel = 0.1;
+	m_IconBar->addIcon(CIconList::eLoad, 0.1, _("Load track"));
+	m_IconBar->addIcon(CIconList::eImport, 1.1, _("Import Stunts track"));
+	m_IconBar->addIcon(CIconList::eSave, 1.1, _("Save track"));
+	m_IconBar->addIcon(CIconList::eQuit, 1.1, _("Exit"));
+	m_IconBar->addIcon(CIconList::eUndo, 2.1, _("Undo"));
+	m_IconBar->addIcon(CIconList::eRedo, 1.1, _("Redo"));
+	m_Widgets.push_back(m_IconBar);
+
+	m_NormalNumWidgets = m_Widgets.size();
 
 	m_DrawBackground = false;
 
-	{
-		CReplaceAction *ra = new CReplaceAction;
-		ra->m_Tile.m_Model = 1;
-		ra->m_Tile.m_Z = 0;
-		ra->m_Tile.m_R = 0;
-		theTrackDocument->setNewAction(ra);
-	}
+	theTrackDocument->setNewAction(m_TileSelect->m_Action);
 
 	m_PrevMouseX = m_PrevMouseY = -1;
 	m_TrackCache = NULL;
@@ -78,13 +93,15 @@ CMainPage::CMainPage() : CGUIPage()
 
 CMainPage::~CMainPage()
 {
+	//Widgets will be deleted automagically by base class
+
 	delete m_Renderer;
 	delete m_Camera;
 }
 
-unsigned int CMainPage::getMenuSelection()
+CIconList::eIconID CMainPage::getSelection()
 {
-	return ((CMenu *)(m_Widgets[1]))->m_Selected;
+	return m_IconBar->m_Selected;
 }
 
 void CMainPage::resetCameraPosition()
@@ -92,14 +109,26 @@ void CMainPage::resetCameraPosition()
 	m_Camera->setTargetPos(theTrackDocument->getCursorPos());
 }
 
+void CMainPage::updateDocInfo()
+{
+	m_FilanemeLabel->m_Text = theTrackDocument->m_Trackname;
+
+	m_Title = "";
+}
+
 int CMainPage::onKeyPress(int key)
 {
 	SDLMod modState = SDL_GetModState();
 
-	if(m_Widgets.size()==2) //otherwise, maybe there is e.g. a messagebox.
+	if(m_Widgets.size()==m_NormalNumWidgets) //otherwise, maybe there is e.g. a messagebox.
 	{
 		CVector movement(0,0,0);
 
+		//Action-based key handling
+		int action_ret = m_TileSelect->onKeyPress(key);
+		if(action_ret != 0) return action_ret;
+
+		//Otherwise, default key handling
 		switch(key)
 		{
 		case SDLK_PAGEUP:
@@ -120,73 +149,6 @@ int CMainPage::onKeyPress(int key)
 		case SDLK_DOWN:
 			movement.z = 1;
 			break;
-
-
-		case SDLK_RETURN:
-			theTrackDocument->commitAction();
-			break;
-		case 'r':
-			{
-				//Change tile rotation
-				CReplaceAction *ra = (CReplaceAction *)theTrackDocument->m_Action;
-				ra->m_Tile.m_R++;
-				if(ra->m_Tile.m_R > 3)
-					ra->m_Tile.m_R = 0;
-
-				theTrackDocument->applyAction();
-			}
-			break;
-		case SDLK_TAB:
-			//Change tile model
-			if(modState & KMOD_SHIFT)
-			{
-				CReplaceAction *ra = (CReplaceAction *)theTrackDocument->m_Action;
-				ra->m_Tile.m_Model--;
-				if(ra->m_Tile.m_Model == 0) //0 = delete
-					ra->m_Tile.m_Model = int(
-					theTrackDocument->m_DataManager->getNumObjects(CDataObject::eTileModel)
-					) - 1;
-			}
-			else
-			{
-				CReplaceAction *ra = (CReplaceAction *)theTrackDocument->m_Action;
-				ra->m_Tile.m_Model++;
-				if(ra->m_Tile.m_Model >= int(
-					theTrackDocument->m_DataManager->getNumObjects(CDataObject::eTileModel)
-					))
-						ra->m_Tile.m_Model = 1; //0 = delete
-			}
-			theTrackDocument->applyAction();
-			break;
-		case SDLK_DELETE:
-			{
-				//Change tile model
-				CReplaceAction *ra = (CReplaceAction *)theTrackDocument->m_Action;
-				int oldModel = ra->m_Tile.m_Model;
-
-				ra->m_Tile.m_Model = 0; //0 = delete
-
-				theTrackDocument->applyAction();
-				theTrackDocument->commitAction(); //immediately do it
-
-				ra->m_Tile.m_Model = oldModel;
-				theTrackDocument->applyAction(); //apply previous action to new situation
-			}
-			break;
-		case SDLK_INSERT:
-			{
-				//Change tile insert mode
-				CReplaceAction *ra = (CReplaceAction *)theTrackDocument->m_Action;
-
-				ra->m_ClearTile = false;
-				theTrackDocument->applyAction();
-				theTrackDocument->commitAction(); //immediately do it
-
-				ra->m_ClearTile = true;
-				theTrackDocument->applyAction(); //apply previous action to new situation
-			}
-			break;
-
 		case 'z':
 		case 'Z':
 			if(modState & KMOD_CTRL)
@@ -247,14 +209,20 @@ int CMainPage::onMouseClick(int x, int y, unsigned int buttons)
 	m_PrevMouseX = -1;
 	m_PrevMouseY = -1;
 
+	if(m_TileSelect->isInWidget(x, y))
+		return m_TileSelect->onMouseClick(x, y, buttons);
+
 	return CGUIPage::onMouseClick(x, y, buttons);
 }
 
 int CMainPage::onMouseMove(int x, int y, unsigned int buttons)
 {
-	if(m_Widgets.size()==2) //otherwise, maybe there is e.g. a messagebox.
+	if(m_Widgets.size()==m_NormalNumWidgets) //otherwise, maybe there is e.g. a messagebox.
 	{
-		if(m_Widgets[0]->isInWidget(x,y) && buttons != 0)
+		if(m_TileSelect->isInWidget(x, y))
+			return m_TileSelect->onMouseMove(x, y, buttons);
+
+		if(m_RenderWidget->isInWidget(x,y) && buttons != 0)
 		{
 			if(m_PrevMouseX < 0 || m_PrevMouseY < 0)
 			{
@@ -290,6 +258,12 @@ int CMainPage::onMouseMove(int x, int y, unsigned int buttons)
 			m_PrevMouseX = -1;
 			m_PrevMouseY = -1;
 		}
+
+		int ret = CGUIPage::onMouseMove(x, y, buttons);
+	
+		m_HintLabel->m_Text = m_IconBar->m_Description;
+	
+		return ret;
 	}
 
 	return CGUIPage::onMouseMove(x, y, buttons);
@@ -304,5 +278,5 @@ int CMainPage::onIdle()
 		return WIDGET_REDRAW;
 	}
 
-	return 0;
+	return CGUIPage::onIdle();
 }

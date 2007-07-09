@@ -115,8 +115,8 @@ void CGameCamera::update()
 				const CMatrix &rmat = to->m_OrientationMatrix;
 				tp = CVector(rmat.Element(2,0), 0.0, rmat.Element(2,2));
 				tp.normalise();
-				tp *= (0.1 * vabs + 10.0); //further away when going faster
-				tp.y += (0.02 * vabs + 2.0);
+				tp *= (0.1 * vabs + 8.0); //further away when going faster
+				tp.y += (0.01 * vabs + 1.5);
 				tp += to->m_Position;
 				autotargetOffset = CVector(0,1.5,0);
 				autotarget = true; //point the camera to the object

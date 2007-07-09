@@ -25,7 +25,7 @@
 #include "lconfig.h"
 #include "timer.h"
 
-CCarViewer::CCarViewer(const CWinSystem *winsys, CGraphicWorld *world) : CObjectViewer(winsys, world)
+CCarViewer::CCarViewer(const CWinSystem *winsys, CDataManager *world) : CObjectViewer(winsys, world)
 {
 	CObjectViewer::m_Camera = &m_Camera;
 
@@ -105,28 +105,28 @@ void CCarViewer::loadCar(const CString &carfile, CVector color)
 	//Showroom:
 	addObject(
 		"misc/showroom.glb", params, CVector(),
-		CMatrix(), false, 0);
+		CMatrix(), false, CDataObject::eBound, 0);
 
 	//Body:
 	addObject(
 		carconf.getValue("body", "geometry"), params, hOffset,
-		CMatrix(), true, 1);
+		CMatrix(), true, CDataObject::eBound, 1);
 
 	//Right front wheel
 	pos = frontPos + hOffset;
-	addObject(frontGeometry, params, pos, mright, true, 2);
+	addObject(frontGeometry, params, pos, mright, true, CDataObject::eBound, 2);
 
 	//Left front wheel
 	pos.x = -pos.x;
-	addObject(frontGeometry, params, pos, mleft, true, 3);
+	addObject(frontGeometry, params, pos, mleft, true, CDataObject::eBound, 3);
 
 	//Right rear wheel
 	pos = rearPos + hOffset;
-	addObject(rearGeometry, params, pos, mright, true, 4);
+	addObject(rearGeometry, params, pos, mright, true, CDataObject::eBound, 4);
 
 	//Left rear wheel
 	pos.x = -pos.x;
-	addObject(rearGeometry, params, pos, mleft, true, 5);
+	addObject(rearGeometry, params, pos, mleft, true, CDataObject::eBound, 5);
 }
 
 void CCarViewer::reloadData()

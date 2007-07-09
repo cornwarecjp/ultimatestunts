@@ -25,7 +25,6 @@
 
 #include "uscore.h"
 #include "player.h"
-#include "lconfig.h"
 
 #include "usserver.h"
 
@@ -36,7 +35,7 @@
 
 class CGameGUI : public CGUI  {
 public: 
-	CGameGUI(const CLConfig &conf, CGameWinSystem *winsys);
+	CGameGUI(CGameWinSystem *winsys);
 	virtual ~CGameGUI();
 
 	virtual void start(); //returns when an exit command is given
@@ -66,6 +65,7 @@ protected:
 	int m_HostPort;
 	int m_MinPlayers;
 	CString m_ServerName;
+	bool m_OnlineServer;
 	vector<CClientNet::SBroadcastResult> m_ServerList;
 	CString m_TrackFile;
 	CString m_ReplayFile;
@@ -103,6 +103,8 @@ protected:
 		CString viewGameTypeMenu();
 		CString viewSelectServerMenu();
 		CString viewTrackMenu();
+			CString editTrack();
+			CString viewLoadTrackMenu();
 		CString viewReplayMenu();
 		CString viewReplay();
 		CString viewPlayersMenu();
@@ -117,6 +119,7 @@ protected:
 	CGUIPage m_GameTypePage;
 	CGUIPage m_SelectServerPage;
 	CGUIPage m_TrackPage;
+	CGUIPage m_LoadTrackPage;
 	CGUIPage m_ReplayPage;
 	CGUIPage m_PlayersPage;
 	CGUIPage m_PlayerPage;

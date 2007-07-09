@@ -451,7 +451,7 @@ void CGameCore::collectHiscoreData(bool saveHiscore)
 		CDataFile f(m_ReplayFile);
 	} //~CDataFile destructor called -> closes the file again
 	
-	if(m_LastHiscores.size() > 0 && m_LastHiscores[0].isNew) //it could be 0 sometimes
+	if(m_LastHiscores.size() > 0 && m_LastHiscores[0].isNew && m_GameType != eReplayGame)
 	{
 		//copy it to the track's replay file
 

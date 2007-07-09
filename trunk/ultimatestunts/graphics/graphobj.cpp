@@ -34,6 +34,7 @@
 
 CGraphObj::CGraphObj(CDataManager *manager, eDataType type) : CDataObject(manager, type)
 {
+	m_CurrentTime = 0.0; //Initial value doesn't matter, as long as it isn't NaN, inf etc.
 }
 
 CGraphObj::~CGraphObj()

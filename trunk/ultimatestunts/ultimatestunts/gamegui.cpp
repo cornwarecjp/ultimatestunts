@@ -19,24 +19,35 @@
 #include <cstdlib>
 #include <unistd.h>
 
+//I18n
 #include <libintl.h>
 #define _(String) gettext (String)
 #define N_(String1, String2, n) ngettext ((String1), (String2), (n))
 
+//Generic stuff
 #include "lconfig.h"
 #include "usmacros.h"
 #include "usmisc.h"
+#include "datafile.h"
 
+#include "metaserver.h"
+
+//Track editor stuff
+#include "trackdocument.h"
+#include "tegui.h"
+
+//GUI elements
 #include "gamegui.h"
 #include "menu.h"
 #include "longmenu.h"
+#include "label.h"
 #include "renderwidget.h"
 
+//Simulation data
 #include "objectchoice.h"
 #include "aiplayercar.h"
 #include "humanplayer.h"
-
-#include "datafile.h"
+#include "hiscorefile.h"
 
 CUSCore *_USGameCore = NULL;
 CGUIPage *_LoadingPage = NULL;
@@ -59,7 +70,7 @@ void loadingCallback(const CString &status, float progress)
 	theWinSystem->swapBuffers();
 }
 
-CGameGUI::CGameGUI(const CLConfig &conf, CGameWinSystem *winsys) : CGUI(conf, winsys)
+CGameGUI::CGameGUI(CGameWinSystem *winsys) : CGUI(winsys)
 {
 	printf("---Sound system\n");
 	m_SoundSystem = new CSound;
@@ -150,12 +161,29 @@ CGameGUI::CGameGUI(const CLConfig &conf, CGameWinSystem *winsys) : CGUI(conf, wi
 
 	//TRACK MENU
 	m_TrackPage.m_DrawBackground = true;
+	CLabel *label = new CLabel;
+	label->m_Xrel = 0.1;
+	label->m_Yrel = 0.75;
+	label->m_Wrel = 0.8;
+	label->m_Hrel = 0.05;
+	m_TrackPage.m_Widgets.push_back(label);
+	menu = new CMenu;
+	menu->m_Xrel = 0.1;
+	menu->m_Yrel = 0.05;
+	menu->m_Wrel = 0.8;
+	menu->m_Hrel = 0.15;
+	m_TrackPage.m_Widgets.push_back(menu);
+	menu->m_Selected = 0;
+	menu->m_AlignLeft = true;
+
+	//LOAD TRACK MENU
+	m_LoadTrackPage.m_DrawBackground = true;
 	menu = new CLongMenu;
 	menu->m_Xrel = 0.1;
 	menu->m_Yrel = 0.2;
 	menu->m_Wrel = 0.8;
 	menu->m_Hrel = 0.6;
-	m_TrackPage.m_Widgets.push_back(menu);
+	m_LoadTrackPage.m_Widgets.push_back(menu);
 	menu->m_Selected = 0;
 	menu->m_AlignLeft = false;
 
@@ -390,7 +418,7 @@ void CGameGUI::updateMenuTexts()
 	menu->m_Lines.push_back(_("Drive!"));
 	menu->m_Lines.push_back(_("Set the game type"));
 	menu->m_Lines.push_back(_("Select the track"));
-	menu->m_Lines.push_back(_("Select the players"));
+	menu->m_Lines.push_back(_("Players and cars"));
 	menu->m_Lines.push_back(_("View a replay"));
 	menu->m_Lines.push_back(_("Settings"));
 	menu->m_Lines.push_back(_("Credits and License"));
@@ -424,8 +452,10 @@ void CGameGUI::updateMenuTexts()
 	menu = (CMenu *)(m_GameTypePage.m_Widgets[0]);
 	menu->m_Lines.clear();
 	menu->m_Lines.push_back(_("Local game"));
-	menu->m_Lines.push_back(_("Join an existing network game"));
-	menu->m_Lines.push_back(_("Start a new network game"));
+	menu->m_Lines.push_back(_("Join an existing LAN/network game"));
+	menu->m_Lines.push_back(_("Start a new LAN/network game"));
+	menu->m_Lines.push_back(_("Join an existing online game"));
+	menu->m_Lines.push_back(_("Start a new online game"));
 
 	//SELECT SERVER MENU
 	m_SelectServerPage.m_Title = _("Select a server:");
@@ -435,14 +465,23 @@ void CGameGUI::updateMenuTexts()
 		menu->m_Lines.push_back(m_ServerList[i].hostName + " : " + m_ServerList[i].serverName);
 
 	//TRACK MENU
-	m_TrackPage.m_Title = _("Select a track:");
-	menu = (CMenu *)(m_TrackPage.m_Widgets[0]);
+	m_TrackPage.m_Title = m_TrackFile;
+	menu = (CMenu *)(m_TrackPage.m_Widgets[1]);
+	menu->m_Lines.clear();
+	menu->m_Lines.push_back(_("Select a track"));
+	menu->m_Lines.push_back(_("Edit track"));
+	menu->m_Lines.push_back(_("View best time replay"));
+	menu->m_Lines.push_back(_("Return to main menu"));
+
+	//LOAD TRACK MENU
+	m_LoadTrackPage.m_Title = _("Select a track");
+	menu = (CMenu *)(m_LoadTrackPage.m_Widgets[0]);
 	menu->m_Lines = getDataDirContents("tracks", ".track");
 
 	//REPLAY MENU
 	m_ReplayPage.m_Title = _("Select a replay file:");
 	menu = (CMenu *)(m_ReplayPage.m_Widgets[0]);
-	menu->m_Lines = getDataDirContents("tracks", ".repl");
+	menu->m_Lines = getDataDirContents("replays", ".repl");
 
 	//PLAYERS MENU
 	m_PlayersPage.m_Title = _("Players menu:");
@@ -528,6 +567,10 @@ void CGameGUI::start()
 			section = viewSelectServerMenu();
 		else if(section=="trackmenu")
 			section = viewTrackMenu();
+		else if(section=="edittrack")
+			section = editTrack();
+		else if(section=="loadtrackmenu")
+			section = viewLoadTrackMenu();
 		else if(section=="replaymenu")
 			section = viewReplayMenu();
 		else if(section=="viewreplay")
@@ -586,7 +629,6 @@ CString CGameGUI::viewMainMenu()
 		case 4:
 			return "replaymenu";
 		case 5:
-			//showMessageBox(_("Please edit ultimatestunts.conf manually"));
 			return "optionsmenu";
 		case 6:
 			return "creditsmenu";
@@ -619,11 +661,21 @@ CString CGameGUI::viewGameTypeMenu()
 			m_HostPort = showInputBox(_("Enter the port number:"), m_HostPort, &cancelled).toInt();
 			if(cancelled) break;
 
+		case 3:
 			//to kill our own server if we had one
 			//(it should not be detected by the broadcast):
 			initGameType();
 
-			m_ServerList = CClientNet::broadcast(m_HostPort);
+			if(menu->m_Selected == 1)
+			{
+				m_ServerList = CClientNet::broadcast(m_HostPort);
+			}
+			else
+			{
+				CMetaServer meta;
+				m_ServerList = meta.getServerList();
+			}
+
 			if(m_ServerList.size() == 1)
 			{
 				m_HostName = m_ServerList[0].hostName;
@@ -653,6 +705,7 @@ CString CGameGUI::viewGameTypeMenu()
 			break;
 
 		case 2:
+		case 4:
 			m_HostName = "localhost";
 			m_HostPort = showInputBox(_("Enter the port number:"), m_HostPort, &cancelled).toInt();
 			if(cancelled) break;
@@ -662,6 +715,8 @@ CString CGameGUI::viewGameTypeMenu()
 				m_MinPlayers, &cancelled).toInt();
 			if(cancelled) break;
 			m_GameType = NewNetwork;
+			m_OnlineServer = (menu->m_Selected == 4);
+
 			break;
 	}
 
@@ -692,21 +747,99 @@ CString CGameGUI::viewSelectServerMenu()
 
 CString CGameGUI::viewTrackMenu()
 {
+	//1st place hiscore entry
+	{
+		CHiscoreFile f(m_TrackFile);
+		CHiscore hiscore = f.getEntries();
+
+		CLabel *label = (CLabel *)(m_TrackPage.m_Widgets[0]);
+		if(hiscore.size() == 0)
+			{label->m_Text = _("No best time available");}
+		else
+		{
+			SHiscoreEntry best = hiscore[0];
+			label->m_Text = CString(_("Best time: ")) +
+				CString().fromTime(best.time) + "   " + best.name + " (" + best.carname + ")";
+		}
+	}
+
 	m_ChildWidget = &m_TrackPage;
 	if(!m_WinSys->runLoop(this))
-		return "mainmenu";
+	{
+		if(m_GameType == NewNetwork && m_Server != NULL)
+			m_Server->set("track", m_TrackFile);
+	
+		initGameType(); //sets the track in local game mode
 
-	CMenu *menu = (CMenu *)(m_TrackPage.m_Widgets[0]);
+		return "mainmenu";
+	}
+
+	CMenu *menu = (CMenu *)(m_TrackPage.m_Widgets[1]);
+
+	switch(menu->m_Selected)
+	{
+	case 0: //Load track
+		return "loadtrackmenu";
+	case 1: //Edit track
+		return "edittrack";
+	case 2: //View replay
+	{
+		int pos = m_TrackFile.inStr(".track");
+		m_ReplayFile = m_TrackFile.mid(0, pos) + ".repl";
+
+		if(!dataFileExists(m_ReplayFile))
+			{showMessageBox(_("The best time replay for this track does not exist"));}
+		else
+			{viewReplay();}
+
+		return "trackmenu";
+	}
+	case 3: //Return to main menu
+	default:
+	{
+		if(m_GameType == NewNetwork && m_Server != NULL)
+			m_Server->set("track", m_TrackFile);
+	
+		initGameType(); //sets the track in local game mode
+
+		return "mainmenu";
+	}
+	}
+
+	//Never happens
+	return "trackmenu";
+}
+
+CString CGameGUI::editTrack()
+{
+	theTrackDocument = new CTrackDocument(m_TrackFile);
+	CTEGUI *gui = new CTEGUI(m_WinSys);
+
+	leave2DMode();
+	gui->start();
+	enter2DMode();
+
+	if(dataFileExists(theTrackDocument->m_Trackname))
+		m_TrackFile = theTrackDocument->m_Trackname;
+
+	delete gui;
+	delete theTrackDocument;
+	theTrackDocument = NULL;
+
+	return "trackmenu";
+}
+
+CString CGameGUI::viewLoadTrackMenu()
+{
+	m_ChildWidget = &m_LoadTrackPage;
+	if(!m_WinSys->runLoop(this))
+		return "trackmenu";
+
+	CMenu *menu = (CMenu *)(m_LoadTrackPage.m_Widgets[0]);
 
 	m_TrackFile = CString("tracks/") + menu->m_Lines[menu->m_Selected];
 
-	if(m_GameType == NewNetwork && m_Server != NULL)
-		m_Server->set("track", m_TrackFile);
-
-
-	initGameType(); //sets the track in local game mode
-
-	return "mainmenu";
+	return "trackmenu";
 }
 
 CString CGameGUI::viewReplayMenu()
@@ -717,7 +850,7 @@ CString CGameGUI::viewReplayMenu()
 
 	CMenu *menu = (CMenu *)(m_ReplayPage.m_Widgets[0]);
 
-	m_ReplayFile = CString("tracks/") + menu->m_Lines[menu->m_Selected];
+	m_ReplayFile = CString("replays/") + menu->m_Lines[menu->m_Selected];
 
 	return "viewreplay";
 }
@@ -1014,7 +1147,7 @@ CString CGameGUI::viewHiscore()
 				newFN += ".repl";
 
 			//The real datadir filename
-			CString fn = "tracks/" + newFN;
+			CString fn = "replays/" + newFN;
 
 			//Check if we overwrite something
 			if(dataFileExists(fn, true)) //search only locally
@@ -1061,6 +1194,9 @@ void CGameGUI::initGameType(bool keepServerAlive, bool keepReplayFile)
 			m_Server = new CUSServer(m_HostPort, m_ServerName);
 		}
 
+		if(!m_OnlineServer)
+			{m_Server->offline();}
+
 		//update server settings
 		m_Server->set("port", m_HostPort);
 		m_Server->set("serverName", m_ServerName);
@@ -1068,6 +1204,9 @@ void CGameGUI::initGameType(bool keepServerAlive, bool keepReplayFile)
 		m_Server->set("track", m_TrackFile);
 		m_Server->set("saveHiscore", "false"); //else, they would be saved twice on this computer
 		sleep(1); //give the server some time to start
+
+		if(m_OnlineServer)
+			{m_Server->online();}
 	}
 	else
 	{

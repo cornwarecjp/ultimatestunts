@@ -24,7 +24,7 @@
 #include "graphobj.h"
 #include "texture.h"
 
-CObjectViewer::CObjectViewer(const CWinSystem *winsys, CGraphicWorld *world) : CRenderer(winsys)
+CObjectViewer::CObjectViewer(const CWinSystem *winsys, CDataManager *world) : CRenderer(winsys)
 {
 	m_World = world;
 	m_Reflection = NULL;
@@ -46,14 +46,16 @@ void CObjectViewer::setReflection(const CString &filename)
 
 void CObjectViewer::addObject(
 	const CString &filename, CParamList list, CVector pos,
-	CMatrix ori, bool reflect, int replace)
+	CMatrix ori, bool reflect, CDataObject::eDataType type, int replace)
 {
 	if(replace >= 0 && replace < int(m_Objects.size()))
 	{
 		//Re-use object
 
 		reloadData();
-		CGraphObj *obj = m_World->getMovObjBound(m_Objects[replace].objectID);
+		CGraphObj *obj = (CGraphObj *)
+			(m_World->getObject(m_Objects[replace].type, m_Objects[replace].objectID));
+
 		if(obj != NULL) obj->load(filename, list); //re-use CGraphObj object, if existing
 
 		m_Objects[replace].filename = filename;
@@ -69,6 +71,7 @@ void CObjectViewer::addObject(
 		SObject obj;
 		obj.filename = filename;
 		obj.parameters = list;
+		obj.type = type;
 		obj.position = pos;
 		obj.orientation = ori;
 		obj.reflectInGround = reflect;
@@ -99,6 +102,7 @@ void CObjectViewer::update()
 	else
 		glClear( GL_COLOR_BUFFER_BIT );
 	*/
+	glDisable(GL_FOG);
 
 	//Lighting:
 	GLfloat light_color[] = {1.0, 1.0, 1.0, 1.0};
@@ -118,7 +122,7 @@ void CObjectViewer::update()
 	const CVector &camera = m_Camera->getPosition();
 	glTranslatef (-camera.x, -camera.y, -camera.z);
 
-	glColor3f(1,1,1);
+	glColor4f(1,1,1,1);
 
 	glPushMatrix();
 	glScalef(1.0,-1.0,1.0);
@@ -136,9 +140,33 @@ void CObjectViewer::update()
 
 void CObjectViewer::viewObjects(bool isReflection)
 {
+	/*
+	if(!isReflection)
+	{
+		glDisable(GL_TEXTURE_2D);
+		glDisable(GL_LIGHTING);
+
+		glBegin(GL_LINE_LOOP);
+		glVertex3f(-30,0,-30);
+		glVertex3f( 30,0,-30);
+		glVertex3f( 30,0, 30);
+		glVertex3f(-30,0, 30);
+		glEnd();
+		glBegin(GL_LINES);
+		glVertex3f(0, 0,0);
+		glVertex3f(0,18,0);
+		glEnd();
+
+		glEnable(GL_TEXTURE_2D);
+		glEnable(GL_LIGHTING);
+	}
+	*/
+
 	for(unsigned int i=0; i < m_Objects.size(); i++)
 	{
-		CGraphObj *obj = m_World->getMovObjBound(m_Objects[i].objectID);
+		CGraphObj *obj = (CGraphObj *)
+			(m_World->getObject(m_Objects[i].type, m_Objects[i].objectID));
+
 		if(obj == NULL) continue; //error
 
 		if(isReflection && !(m_Objects[i].reflectInGround))
@@ -177,6 +205,6 @@ void CObjectViewer::reloadData()
 	for(unsigned int i=0; i < m_Objects.size(); i++)
 	{
 		m_Objects[i].objectID = m_World->loadObject(
-			m_Objects[i].filename, m_Objects[i].parameters, CDataObject::eBound);
+			m_Objects[i].filename, m_Objects[i].parameters, m_Objects[i].type);
 	}
 }

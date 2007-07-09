@@ -69,7 +69,7 @@ void CFileSelect::updateDirListing()
 	for(unsigned int i=0; i < files.size(); i++)
 		if(
 			dirExists(m_Directory + files[i]) ||
-			files[i].right(m_Extension.length()) == m_Extension)
+			files[i].right(m_Extension.length()).toLower() == m_Extension)
 				m_Menu.m_Lines.push_back(files[i]);
 
 }

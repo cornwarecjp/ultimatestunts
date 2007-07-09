@@ -46,6 +46,17 @@ protected:
 	int m_X, m_Y, m_W, m_H;
 
 	void drawBackground();
+
+	//Scrollbar API:
+	int m_RequestH; //negative = don't use scrollbar (default)
+	int m_ScrollPosition;
+
+	int m_ScrollStartPos;
+	float m_ScrollDistance;
+
+	void drawScrollbar();
+	bool isInScrollbar(int x, int y);
+	bool handleScrollbarMove(int x, int y, unsigned int buttons);
 };
 
 #endif

@@ -58,7 +58,7 @@ zbuffer = true
 transparency = blend
 
 #Maximum distance for drawing reflection. Transparency must be enabled to get realistic reflection
-reflectiondist = 100.0
+reflectiondist = 200.0
 
 #Reflection update settings:
 #Do you want the reflections to be updated when the objects move?
@@ -199,6 +199,10 @@ Nmax = 50
 #execute the command "locale -a"
 language = system
 
+#Metaserver settings
+metaserver_hostname = www.ultimatestunts.nl
+metaserver_port = 80
+metaserver_filename = /metaserver.php
 
 #Global keys
 [input_global]

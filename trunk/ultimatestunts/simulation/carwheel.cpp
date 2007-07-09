@@ -25,6 +25,9 @@ CCarWheel::CCarWheel()
 	m_a = 0.0;
 	m_w = 0.0;
 	m_M = 0.0;
+
+	m_Height = 0.0;
+	m_dHeight = 0.0;
 	m_Z = CVector(0.0,0.0,1.0);
 
 	m_DesiredSt = 0.0;
@@ -33,6 +36,7 @@ CCarWheel::CCarWheel()
 	m_Radius = 0.35;
 	m_Iinv_eff = 1.0 / (5.0 * m_Radius * m_Radius); //assume the mass to be 5.0 to 10.0 kg
 	m_suspk = 100000.0;
+	m_suspd = 10000.0;
 	m_tractionStiffness = 0.25;
 	m_cornerStiffness = 1.0;
 	m_BrakeMax = 100.0;
@@ -42,6 +46,21 @@ CCarWheel::CCarWheel()
 }
 
 CCarWheel::~CCarWheel(){
+}
+
+void CCarWheel::load(CLConfig &cfile, const CString &section)
+{
+	m_Mu = cfile.getValue(section, "mu").toFloat();
+	m_Roll = cfile.getValue(section, "roll").toFloat();
+	m_suspk = cfile.getValue(section, "suspk").toFloat();
+	m_suspd = cfile.getValue(section, "suspd").toFloat();
+	m_tractionStiffness = cfile.getValue(section, "tractionstiffness").toFloat();
+	m_cornerStiffness = cfile.getValue(section, "cornerstiffness").toFloat();
+	m_BrakeMax = cfile.getValue(section, "brakemax").toFloat();
+	m_NeutralPos = cfile.getValue(section, "position").toVector();
+
+	//This needs a correct m_Radius setting:
+	m_Iinv_eff = 1.0 / (0.5 * cfile.getValue(section, "mass").toFloat() * m_Radius * m_Radius);
 }
 
 /*
@@ -147,12 +166,18 @@ CVector CCarWheel::getGroundForce(
 
 	CVector Slip(slip_lat, 0.0, slip_long);
 	staticlimit(contactMu, Slip, m_SkidVolume);
-
 	//fprintf(stderr, "%.f; %.f; %.f; ", 1000*vlong_rel, 1000*slip_long, 1000*Slip.z);
 
-	CVector rollFriction(contactRoll * vlong/speedfactor, 0.0, 0.0);
+	//Correct skid volume for velocity difference
+	// (low relative velocity = no skid sound)
+	float v_rel = sqrt(vlong_rel*vlong_rel + vlat*vlat);
+	float volume_mult = v_rel / 10.0;
+	if(volume_mult > 1.0) volume_mult = 1.0;
+	m_SkidVolume *= volume_mult;
 
+	CVector rollFriction(contactRoll * vlong/speedfactor, 0.0, 0.0);
 	groundM = m_Fnormal * rollFriction;
+
 	return m_Fnormal * (Slip + CVector(0.0, 1.0, 0.0));
 }
 

@@ -71,11 +71,13 @@ bool CEditTrack::save(const CString &filename) const
 
 	//Write the environment section
 	tfile.writel("BEGIN");
-	tfile.writel(m_BackgroundFilename);
-	tfile.writel(m_EnvMapFilename);
-	tfile.writel(m_LightDirection);
-	tfile.writel(m_LightColor);
-	tfile.writel(m_AmbientColor);
+	tfile.writel(CString("sky = ") + m_SkyFilename);
+	tfile.writel(CString("horizon = ") + m_HorizonFilename);
+	tfile.writel(CString("envmap = ") + m_EnvMapFilename);
+	tfile.writel(CString("lightdir = ") + m_LightDirection);
+	tfile.writel(CString("lightcol = ") + m_LightColor);
+	tfile.writel(CString("ambientcol = ") + m_AmbientColor);
+	tfile.writel(CString("skycol = ") + m_SkyColor);
 	tfile.writel("END");
 	tfile.writel("");
 

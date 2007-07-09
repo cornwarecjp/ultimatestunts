@@ -18,7 +18,10 @@
 #ifndef CARWHEEL_H
 #define CARWHEEL_H
 
+#include "lconfig.h"
+
 #include "vector.h"
+#include "collisionface.h"
 
 /**
   *@author CJP
@@ -28,6 +31,9 @@ class CCarWheel {
 public: 
 	CCarWheel();
 	~CCarWheel();
+
+	//Set m_Radius before calling this function:
+	void load(CLConfig &cfile, const CString &section);
 
 	//state variables:
 	float m_w; //angular velocity around the axis
@@ -45,12 +51,16 @@ public:
 	float getBrakeTorque(float brakeFactor);
 
 	//Temorary data
-	CVector m_Z;
+	CVector m_Z; //Z-axis orientation used in car.cpp
+	CCollisionFace m_Ground; //the ground plane ( |normal| < 0.5 is no plane)
+	float m_Height; //Suspension height position above neutral pos
+	float m_dHeight; //Suspension height velocity
 
 	//settings:
 	float m_Radius;
 	float m_Iinv_eff;
 	float m_suspk;
+	float m_suspd;
 	float m_tractionStiffness, m_cornerStiffness;
 	float m_BrakeMax;
 

@@ -54,8 +54,9 @@ am_ustuntsserver_OBJECTS = consolethread.$(OBJEXT) \
 	gamecorethread.$(OBJEXT) main.$(OBJEXT) \
 	networkthread.$(OBJEXT) uploadmanager.$(OBJEXT)
 ustuntsserver_OBJECTS = $(am_ustuntsserver_OBJECTS)
-ustuntsserver_DEPENDENCIES = ../simulation/libsimulation.a \
-	../shared/libshared.a
+ustuntsserver_DEPENDENCIES =  \
+	$(top_builddir)/simulation/libsimulation.a \
+	$(top_builddir)/shared/libshared.a
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -150,10 +151,6 @@ USE_INCLUDED_LIBINTL = @USE_INCLUDED_LIBINTL@
 USE_NLS = @USE_NLS@
 VERSION = @VERSION@
 XGETTEXT = @XGETTEXT@
-X_CFLAGS = @X_CFLAGS@
-X_EXTRA_LIBS = @X_EXTRA_LIBS@
-X_LIBS = @X_LIBS@
-X_PRE_LIBS = @X_PRE_LIBS@
 ac_ct_CC = @ac_ct_CC@
 ac_ct_CXX = @ac_ct_CXX@
 ac_ct_RANLIB = @ac_ct_RANLIB@
@@ -205,11 +202,15 @@ target_os = @target_os@
 target_vendor = @target_vendor@
 usdatadir = @usdatadir@
 ustuntsserver_SOURCES = consolethread.cpp gamecorethread.cpp main.cpp networkthread.cpp uploadmanager.cpp
-ustuntsserver_LDADD = ../simulation/libsimulation.a ../shared/libshared.a @sdllibs@ @netlibs@ @LIBINTL@
+ustuntsserver_LDADD = $(top_builddir)/simulation/libsimulation.a \
+	$(top_builddir)/shared/libshared.a @sdllibs@ @netlibs@ @LIBINTL@
+
 EXTRA_DIST = consolethread.cpp consolethread.h gamecorethread.cpp gamecorethread.h main.cpp networkthread.cpp networkthread.h uploadmanager.cpp uploadmanager.h
 
 # set the include path found by configure
-INCLUDES = $(all_includes) -I../intl -I../shared -I../simulation
+INCLUDES = -I$(top_srcdir)/intl -I$(top_srcdir)/shared \
+	-I$(top_srcdir)/simulation $(all_includes)
+
 
 # the library search path.
 ustuntsserver_LDFLAGS = $(all_libraries) 
@@ -226,9 +227,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  stuntsserver/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  stuntsserver/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu  stuntsserver/Makefile
+	  $(AUTOMAKE) --foreign  stuntsserver/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \

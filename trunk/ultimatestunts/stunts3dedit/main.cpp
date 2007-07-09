@@ -58,6 +58,7 @@ enum eKeyconf {
 	eMirror = 'm',
 	eClamp = 'a',
 	eSplit = 'P',
+	eOrder = 'o',
 	eGenerate = 'g',
 	eTranslate = 't',
 
@@ -139,6 +140,8 @@ bool mainloop()
 		clampFunc();
 	if(winsys->wasPressed(eSplit))
 		splitFunc();
+	if(winsys->wasPressed(eOrder))
+		orderFunc();
 	if(winsys->wasPressed(eGenerate))
 		generateFunc();
 	if(winsys->wasPressed(eTranslate))
@@ -179,11 +182,11 @@ int main(int argc, char *argv[])
 	VisibleLODs = "1234c";
 
 	printf("\nCreating a window\n");
-	winsys = new CWinSystem("Stunts 3D Edit", *theMainConfig);
+	winsys = new CWinSystem("Stunts 3D Edit");
 
 
 	printf("\nLoading textures from textures.dat\n");
-	texloader = new CTextureLoader(*theMainConfig, "textures.dat");
+	texloader = new CTextureLoader("textures.dat");
 
 	graphobj = new CEditGraphObj;
 	graphobj->m_MatArray = texloader->m_TexArray;

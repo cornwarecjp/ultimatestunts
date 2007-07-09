@@ -23,7 +23,7 @@ namespace std {}
 using namespace std;
 
 #include "renderer.h"
-#include "graphicworld.h"
+#include "datamanager.h"
 #include "staticreflection.h"
 
 /**
@@ -32,7 +32,7 @@ using namespace std;
 
 class CObjectViewer : public CRenderer {
 public: 
-	CObjectViewer(const CWinSystem *winsys, CGraphicWorld *world);
+	CObjectViewer(const CWinSystem *winsys, CDataManager *world);
 	virtual ~CObjectViewer();
 
 	virtual void update();
@@ -43,6 +43,7 @@ public:
 	{
 		CString filename;
 		CParamList parameters;
+		CDataObject::eDataType type;
 		int objectID; //updated by reloadData
 		CVector position;
 		CMatrix orientation;
@@ -51,7 +52,7 @@ public:
 	vector<SObject> m_Objects;
 	void addObject(
 		const CString &filename, CParamList list, CVector pos,
-		CMatrix ori, bool reflect, int replace=-1);
+		CMatrix ori, bool reflect, CDataObject::eDataType type, int replace=-1);
 
 	struct STexture
 	{
@@ -67,7 +68,7 @@ protected:
 
 	CStaticReflection *m_Reflection;
 
-	CGraphicWorld *m_World;
+	CDataManager *m_World;
 
 private:
 	void viewObjects(bool isReflection);

@@ -31,6 +31,8 @@ public:
 	virtual ~CAction(){;}
 
 	virtual bool doAction(CEditTrack *track) const =0;
+
+	virtual CAction *copy() const=0;
 };
 
 #endif

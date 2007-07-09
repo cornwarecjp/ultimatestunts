@@ -20,6 +20,8 @@
 #include <cmath>
 #include "pi.h"
 
+#include "datafile.h"
+
 #include "background.h"
 
 CBackground::CBackground(CDataManager *manager) : CTexture(manager)
@@ -32,35 +34,99 @@ bool CBackground::load(const CString &filename, const CParamList &list)
 {
 	if(!CTexture::load(filename, list)) return false;
 
-	m_HorizonTex = m_Texture;
+	m_SkyColor = m_ParamList.getValue("skycolor", "0,0,0").toVector();
+
+	RGBImageRec *image = NULL;
+	{
+		CDataFile f(m_ParamList.getValue("horizon", "[NO HORIZON FILENAME PROVIDED]"));
+		RGBImageRec *in_image = loadImage(f.useExtern());
+	
+		image = scaleImage(in_image, m_Sizex, m_Sizey);
+		if(image==NULL)
+		{
+			image = in_image; //in_image is not freed because we use it
+		}
+		else
+		{
+			freeImage(in_image); //no longer used because we have image
+		}
+	}
+
+	glGenTextures(1, &m_HorizonTex);
+	glBindTexture(GL_TEXTURE_2D, m_HorizonTex);
+
+	if(image->format == 1) //RGBA
+		{glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA8, image->sizeX, image->sizeY, 0, GL_RGBA, GL_UNSIGNED_BYTE, image->data);}
+	else //Assume RGB
+		{glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB8,  image->sizeX, image->sizeY, 0, GL_RGB,  GL_UNSIGNED_BYTE, image->data);}
+
+	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );
+
+	if(m_TextureSmooth)
+	{
+		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+	}
+	else
+	{
+		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+	}
+
+	//determine color
+	RGBImageRec *image2 = scaleImage(image, 1,1);
+	if(image2==NULL)
+	{
+		m_HorizonColor.x = (float)*(image->data  ) / 255;
+		m_HorizonColor.y = (float)*(image->data+1) / 255;
+		m_HorizonColor.z = (float)*(image->data+2) / 255;
+	}
+	else
+	{
+		m_HorizonColor.x = (float)*(image2->data  ) / 255;
+		m_HorizonColor.y = (float)*(image2->data+1) / 255;
+		m_HorizonColor.z = (float)*(image2->data+2) / 255;
+
+		freeImage(image2);
+	}
+
+
+	freeImage(image);
+
 	return true;
 }
 
 void CBackground::unload()
 {
+	if(!isLoaded()) return;
+
+	glDeleteTextures(1, &m_HorizonTex);
+	m_HorizonTex = 0;
+
 	CTexture::unload();
 }
 
 void CBackground::draw() const
 {
-	float hmax = 1000.0;
 	float vmax = 10.0;
+	float hmax = 100.0*vmax;
 	float tiling = 10.0;
 
 	float t = 0.01 * m_Timer.getTime();
 	float drift = t - (float)((int)t);
 
-	GLfloat color[] = {1.0, 1.0, 1.0};
+	CVector color = m_SkyColor;
 	if(getSizeX() <=4 || getSizeY() <= 4)
 	{
-		color[0] = m_Color.x;
-		color[1] = m_Color.y;
-		color[2] = m_Color.z;
+		color.x *= m_Color.x;
+		color.y *= m_Color.y;
+		color.z *= m_Color.z;
 	}
 	else
 		{CTexture::draw();}
 
-	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, color);
+	glColor3f(color.x, color.y, color.z);
 
 	glDisable(GL_LIGHTING);
 	glDisable(GL_CULL_FACE);
@@ -105,20 +171,55 @@ void CBackground::draw() const
 	//Horizon
 	bool fogEnabled = glIsEnabled(GL_FOG);
 	glDisable(GL_FOG);
+	glBindTexture(GL_TEXTURE_2D, m_HorizonTex);
+
 	glBegin(GL_QUADS);
 
+	//North
 	glTexCoord2f(0,0);
-	glVertex3f(-hmax,-vmax,-hmax);
-	glTexCoord2f(1,0);
-	glVertex3f( hmax,-vmax,-hmax);
-	glTexCoord2f(1,1);
-	glVertex3f( hmax, vmax,-hmax);
+	glVertex3f(-vmax,-0.05*vmax,-vmax);
+	glTexCoord2f(2,0);
+	glVertex3f( vmax,-0.05*vmax,-vmax);
+	glTexCoord2f(2,1);
+	glVertex3f( vmax, 0.05*vmax,-vmax);
 	glTexCoord2f(0,1);
-	glVertex3f(-hmax, vmax,-hmax);
+	glVertex3f(-vmax, 0.05*vmax,-vmax);
+
+	//South
+	glTexCoord2f(0,0);
+	glVertex3f( vmax,-0.05*vmax,vmax);
+	glTexCoord2f(2,0);
+	glVertex3f(-vmax,-0.05*vmax,vmax);
+	glTexCoord2f(2,1);
+	glVertex3f(-vmax, 0.05*vmax,vmax);
+	glTexCoord2f(0,1);
+	glVertex3f( vmax, 0.05*vmax,vmax);
+
+	//West
+	glTexCoord2f(0,0);
+	glVertex3f(-vmax,-0.05*vmax,vmax);
+	glTexCoord2f(2,0);
+	glVertex3f(-vmax,-0.05*vmax,-vmax);
+	glTexCoord2f(2,1);
+	glVertex3f(-vmax, 0.05*vmax,-vmax);
+	glTexCoord2f(0,1);
+	glVertex3f(-vmax, 0.05*vmax,vmax);
+
+	//East
+	glTexCoord2f(0,0);
+	glVertex3f(vmax,-0.05*vmax,-vmax);
+	glTexCoord2f(2,0);
+	glVertex3f(vmax,-0.05*vmax,vmax);
+	glTexCoord2f(2,1);
+	glVertex3f(vmax, 0.05*vmax,vmax);
+	glTexCoord2f(0,1);
+	glVertex3f(vmax, 0.05*vmax,-vmax);
 
 	glEnd();
 	if(fogEnabled) glEnable(GL_FOG);
 
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_LIGHTING);
+
+	glColor3f(1,1,1);
 }

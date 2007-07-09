@@ -22,7 +22,6 @@
 namespace std {}
 using namespace std;
 
-#include "lconfig.h"
 #include "widget.h"
 #include "guipage.h"
 #include "winsystem.h"
@@ -35,7 +34,7 @@ using namespace std;
 class CGUI : public CWidget
 {
 public:
-	CGUI(const CLConfig &conf, CWinSystem *winsys);
+	CGUI(CWinSystem *winsys);
 	virtual ~CGUI();
 
 	virtual int onMouseMove(int x, int y, unsigned int buttons);

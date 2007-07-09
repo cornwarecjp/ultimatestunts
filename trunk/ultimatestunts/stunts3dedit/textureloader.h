@@ -20,7 +20,6 @@
 
 #include "lodtexture.h"
 #include "cstring.h"
-#include "lconfig.h"
 
 /**
   *@author CJP
@@ -28,7 +27,7 @@
 
 class CTextureLoader {
 public: 
-	CTextureLoader(const CLConfig &conf, CString texdatfile);
+	CTextureLoader(CString texdatfile);
 	~CTextureLoader();
 
 	CLODTexture ** m_TexArray;

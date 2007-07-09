@@ -71,6 +71,7 @@ bool CTrack::load(const CString &filename, const CParamList &list)
 				SParameter p;
 				p.name = "scale";
 				p.value = line.mid(pos+6, line.length()-pos-6);
+				p.value = CString(p.value.toInt());
 				plist.push_back(p);
 			}
 			//TODO: check for different y-direction mul
@@ -84,6 +85,7 @@ bool CTrack::load(const CString &filename, const CParamList &list)
 				SParameter p;
 				p.name = "mu";
 				p.value = line.mid(pos+3, line.length()-pos-3);
+				p.value = CString(p.value.toFloat());
 				plist.push_back(p);
 			}
 		}
@@ -96,6 +98,7 @@ bool CTrack::load(const CString &filename, const CParamList &list)
 				SParameter p;
 				p.name = "roll";
 				p.value = line.mid(pos+5, line.length()-pos-5);
+				p.value = CString(p.value.toFloat());
 				plist.push_back(p);
 			}
 		}
@@ -115,11 +118,33 @@ bool CTrack::load(const CString &filename, const CParamList &list)
 		printf("Error: could not find the environment section in the track file\n");
 		return false;
 	}
-	m_BackgroundFilename = tfile.readl();
-	m_EnvMapFilename = tfile.readl();
-	m_LightDirection = tfile.readl().toVector().normal();
-	m_LightColor = tfile.readl().toVector();
-	m_AmbientColor = tfile.readl().toVector();
+
+	while(true)
+	{
+		CString line = tfile.readl();
+		if(line == "END") break;
+
+		int ispos = line.inStr('=');
+		if(ispos <= 0) continue;
+
+		CString name = line.mid(0, ispos), value = line.mid(ispos+1);
+		name.Trim(); value.Trim();
+
+		if(name == "sky")
+			{m_SkyFilename = value;}
+		else if(name == "horizon")
+			{m_HorizonFilename = value;}
+		else if(name == "envmap")
+			{m_EnvMapFilename = value;}
+		else if(name == "lightdir")
+			{m_LightDirection = value.toVector();}
+		else if(name == "lightcol")
+			{m_LightColor = value.toVector();}
+		else if(name == "ambientcol")
+			{m_AmbientColor = value.toVector();}
+		else if(name == "skycol")
+			{m_SkyColor = value.toVector();}
+	}
 
 	//Second: loading collision (and graphics) data
 	//Find "BEGIN"
@@ -233,12 +258,6 @@ bool CTrack::load(const CString &filename, const CParamList &list)
 
 			bool isEnd = line.mid(pos+1).toLower().inStr("end") >= 0;
 
-			/*
-			int x = (unsigned int)(p.x+0.1),
-				y = (unsigned int)(p.z+0.1),
-				z = (unsigned int)(p.y+0.1);
-			*/
-
 			//New route tracker:
 			CCheckpoint newPoint;
 			newPoint.x = (int)(p.x+0.1);
@@ -249,7 +268,7 @@ bool CTrack::load(const CString &filename, const CParamList &list)
 			CDataObject *tmodel = m_DataManager->getObject(CDataObject::eTileModel, t.m_Model);
 
 			newPoint.y = t.m_Z; //height translation
-			printf("%.f, %.f, %.f -> %d %d %d\n", p.x, p.y, p.z, newPoint.x,newPoint.y,newPoint.z);
+			//printf("%.f, %.f, %.f -> %d %d %d\n", p.x, p.y, p.z, newPoint.x,newPoint.y,newPoint.z);
 
 			//Check whether it already exists
 			int exroute=-1, extile=-1;
@@ -272,7 +291,7 @@ bool CTrack::load(const CString &filename, const CParamList &list)
 						return false;
 					}
 
-					printf("End of first route\n");
+					//printf("End of first route\n");
 				}
 				else
 				{
@@ -282,7 +301,7 @@ bool CTrack::load(const CString &filename, const CParamList &list)
 						return false;
 					}
 
-					printf("End of new route\n");
+					//printf("End of new route\n");
 					m_Routes.back().finishRoute = exroute;
 					m_Routes.back().finishTile = extile;
 				}
@@ -307,7 +326,7 @@ bool CTrack::load(const CString &filename, const CParamList &list)
 					}
 
 					//Add first route:
-					printf("Start of first route\n");
+					//printf("Start of first route\n");
 					CRoute first;
 					first.finishRoute = first.finishTile = first.startRoute = first.startTile = 0;
 					m_Routes.push_back(first);
@@ -321,7 +340,7 @@ bool CTrack::load(const CString &filename, const CParamList &list)
 						return false;
 					}
 
-					printf("Start of new route\n");
+					//printf("Start of new route\n");
 					m_Routes.back().startRoute = exroute;
 					m_Routes.back().startTile = extile;
 				}
@@ -337,19 +356,6 @@ bool CTrack::load(const CString &filename, const CParamList &list)
 	{
 		m_Routes.resize(m_Routes.size()-1);
 	}
-
-	/*
-	printf("Resulting routes:\n");
-	for(unsigned int r=0; r<m_Routes.size(); r++)
-	{
-		printf("Route %d:\n", r);
-		for(unsigned int i=0; i<m_Routes[r].size(); i++)
-		{
-			CCheckpoint &cp = m_Routes[r][i];
-			printf("  %d, %d, %d\n", cp.x, cp.y, cp.z);
-		}
-	}
-	*/
 
 	printf("   Succesfully loaded the track\n");
 	return true;

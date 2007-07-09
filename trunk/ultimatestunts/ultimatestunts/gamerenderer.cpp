@@ -56,15 +56,19 @@ bool CGameRenderer::loadTrackData()
 	if(!m_GraphicWorld->loadWorld())
 		return false;
 
-	CVector fc = m_GraphicWorld->m_Background->getColor();
-	m_FogColor[0] = fc.x;
-	m_FogColor[1] = fc.y;
-	m_FogColor[2] = fc.z;
-	m_FogColor[3] = 1.0;
-	glClearColor(m_FogColor[0],m_FogColor[1],m_FogColor[2],m_FogColor[3]);
-
-	if(m_Settings.m_FogMode >= 0)
-		glFogfv(GL_FOG_COLOR, m_FogColor);
+	{
+		CVector sc = m_GraphicWorld->m_Background->getSkyColor();
+		CVector cc = m_GraphicWorld->m_Background->getColor();
+		glClearColor(cc.x*sc.x,cc.y*sc.y,cc.z*sc.z,1.0);
+	
+		CVector fc = m_GraphicWorld->m_Background->getHorizonColor();
+		m_FogColor[0] = fc.x*sc.x;
+		m_FogColor[1] = fc.y*sc.y;
+		m_FogColor[2] = fc.z*sc.z;
+		m_FogColor[3] = 1.0;
+		if(m_Settings.m_FogMode >= 0)
+			glFogfv(GL_FOG_COLOR, m_FogColor);
+	}
 
 	//Lighting:
 	CTrack *theTrack = theWorld->getTrack();
@@ -452,9 +456,9 @@ void CGameRenderer::viewTrack_normal()
 
 	//Nu: de dynamische begrenzing om weergavesnelheid te vergroten
 	int xmin = (camx-m_Settings.m_VisibleTiles < 0)? 0 : camx-m_Settings.m_VisibleTiles;
-	int xmax = (camx+m_Settings.m_VisibleTiles > lengte)? lengte : camx+m_Settings.m_VisibleTiles;
+	int xmax = (camx+m_Settings.m_VisibleTiles >= lengte)? lengte : camx+m_Settings.m_VisibleTiles+1;
 	int zmin = (camz-m_Settings.m_VisibleTiles < 0)? 0 : camz-m_Settings.m_VisibleTiles;
-	int zmax = (camz+m_Settings.m_VisibleTiles > breedte)? breedte : camz+m_Settings.m_VisibleTiles;
+	int zmax = (camz+m_Settings.m_VisibleTiles >= breedte)? breedte : camz+m_Settings.m_VisibleTiles+1;
 
 	//if(!m_ZBuffer)
 	//always back to front (because of transparency)

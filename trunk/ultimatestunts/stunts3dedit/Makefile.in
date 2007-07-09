@@ -56,8 +56,8 @@ am_ustunts3dedit_OBJECTS = 3ds.$(OBJEXT) editcamera.$(OBJEXT) \
 	loadobj.$(OBJEXT) loadraw.$(OBJEXT) lw.$(OBJEXT) \
 	main.$(OBJEXT) textureloader.$(OBJEXT)
 ustunts3dedit_OBJECTS = $(am_ustunts3dedit_OBJECTS)
-ustunts3dedit_DEPENDENCIES = ../graphics/libgraphics.a \
-	../shared/libshared.a
+ustunts3dedit_DEPENDENCIES = $(top_builddir)/graphics/libgraphics.a \
+	$(top_builddir)/shared/libshared.a
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -156,10 +156,6 @@ USE_INCLUDED_LIBINTL = @USE_INCLUDED_LIBINTL@
 USE_NLS = @USE_NLS@
 VERSION = @VERSION@
 XGETTEXT = @XGETTEXT@
-X_CFLAGS = @X_CFLAGS@
-X_EXTRA_LIBS = @X_EXTRA_LIBS@
-X_LIBS = @X_LIBS@
-X_PRE_LIBS = @X_PRE_LIBS@
 ac_ct_CC = @ac_ct_CC@
 ac_ct_CXX = @ac_ct_CXX@
 ac_ct_RANLIB = @ac_ct_RANLIB@
@@ -211,11 +207,15 @@ target_os = @target_os@
 target_vendor = @target_vendor@
 usdatadir = @usdatadir@
 ustunts3dedit_SOURCES = 3ds.cpp editcamera.cpp editgraphobj.cpp editrenderer.cpp load3ds.cpp loadglt.cpp loadlwo.cpp loadobj.cpp loadraw.cpp lw.c main.cpp textureloader.cpp
-ustunts3dedit_LDADD = ../graphics/libgraphics.a ../shared/libshared.a @sdllibs@ @graphlibs@ @LIBINTL@
+ustunts3dedit_LDADD = $(top_builddir)/graphics/libgraphics.a \
+	$(top_builddir)/shared/libshared.a @sdllibs@ @graphlibs@ @LIBINTL@
+
 EXTRA_DIST = 3ds.cpp 3ds.h editcamera.cpp editcamera.h editgraphobj.cpp editgraphobj.h editrenderer.cpp editrenderer.h load3ds.cpp load3ds.h loadglt.cpp loadglt.h loadlwo.cpp loadlwo.h loadobj.cpp loadobj.h loadraw.cpp loadraw.h lw.c lw.h main.cpp textureloader.cpp textureloader.h
 
 # set the include path found by configure
-INCLUDES = $(all_includes) -I../intl -I../shared -I../graphics
+INCLUDES = -I$(top_srcdir)/graphics -I$(top_srcdir)/intl -I$(top_srcdir)/shared \
+	$(all_includes)
+
 
 # the library search path.
 ustunts3dedit_LDFLAGS = $(all_libraries) 
@@ -232,9 +232,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  stunts3dedit/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  stunts3dedit/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu  stunts3dedit/Makefile
+	  $(AUTOMAKE) --foreign  stunts3dedit/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \

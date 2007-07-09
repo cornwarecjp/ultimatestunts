@@ -66,11 +66,14 @@ public:
 	};
 	vector<CRoute> m_Routes;
 
-	CString m_BackgroundFilename;
+	//Environment
+	CString m_SkyFilename;
+	CString m_HorizonFilename;
 	CString m_EnvMapFilename;
 	CVector m_LightDirection;
 	CVector m_LightColor;
 	CVector m_AmbientColor;
+	CVector m_SkyColor;
 
 private:
 	bool findBeginTag(CDataFile &f);

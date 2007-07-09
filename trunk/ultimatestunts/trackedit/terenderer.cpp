@@ -49,14 +49,6 @@ void CTERenderer::update()
 	//set up viewport
 	CRenderer::update();
 
-	//printf("Updating graphics\n");
-
-	//Clear the screen
-	if(m_Settings.m_ZBuffer)
-		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-	else
-		glClear( GL_COLOR_BUFFER_BIT );
-
 	//Set the camera
 	const CMatrix &cammat = m_Camera->getOrientation();
 	glLoadMatrixf(cammat.transpose().gl_mtr());

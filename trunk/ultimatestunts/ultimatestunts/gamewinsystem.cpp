@@ -16,6 +16,9 @@
  ***************************************************************************/
 
 #include "SDL.h"
+
+#include "lconfig.h"
+
 #include "gamewinsystem.h"
 
 /*
@@ -38,7 +41,7 @@ SDLK_LAST .. SDLK_LAST+256:	First joystick
 #define JOY0_BTN3 (SDLK_LAST+7)
 
 
-CGameWinSystem::CGameWinSystem(const CString &caption, const CLConfig &conf) : CWinSystem(caption, conf)
+CGameWinSystem::CGameWinSystem(const CString &caption) : CWinSystem(caption)
 {
 	//allocate the keycode arrays
 	for(unsigned int p=0; p < 4; p++)
@@ -49,14 +52,7 @@ CGameWinSystem::CGameWinSystem(const CString &caption, const CLConfig &conf) : C
 	}
 	m_GlobalKeyCode = tCodeArray(10);
 
-	//set default values
-	m_GlobalKeyCode[eExit] = getKeyCodeFromString(conf.getValue("input_global", "exit"));
-	m_GlobalKeyCode[eNextSong] = getKeyCodeFromString(conf.getValue("input_global", "nextsong"));
-
-	setupKeys(conf, "input_player0", 0);
-	setupKeys(conf, "input_player1", 1);
-	setupKeys(conf, "input_player2", 2);
-	setupKeys(conf, "input_player3", 3);
+	reloadConfiguration();
 }
 
 bool CGameWinSystem::reloadConfiguration()
@@ -69,10 +65,10 @@ bool CGameWinSystem::reloadConfiguration()
 	m_GlobalKeyCode[eExit] = getKeyCodeFromString(conf.getValue("input_global", "exit"));
 	m_GlobalKeyCode[eNextSong] = getKeyCodeFromString(conf.getValue("input_global", "nextsong"));
 
-	setupKeys(conf, "input_player0", 0);
-	setupKeys(conf, "input_player1", 1);
-	setupKeys(conf, "input_player2", 2);
-	setupKeys(conf, "input_player3", 3);
+	setupKeys("input_player0", 0);
+	setupKeys("input_player1", 1);
+	setupKeys("input_player2", 2);
+	setupKeys("input_player3", 3);
 
 	return true;
 }
@@ -81,8 +77,9 @@ CGameWinSystem::~CGameWinSystem()
 {
 }
 
-void CGameWinSystem::setupKeys(const CLConfig &conf, const CString &section, unsigned int player)
+void CGameWinSystem::setupKeys(const CString &section, unsigned int player)
 {
+	CLConfig &conf = *theMainConfig;
 	m_PlayerKeyCode[player][eShiftUp] = getKeyCodeFromString(conf.getValue(section, "shiftup"));
 	m_PlayerKeyCode[player][eShiftDown] = getKeyCodeFromString(conf.getValue(section, "shiftdown"));
 	m_PlayerKeyCode[player][eHorn] = getKeyCodeFromString(conf.getValue(section, "horn"));

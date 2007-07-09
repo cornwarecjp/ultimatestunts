@@ -52,6 +52,7 @@ public:
 	{
 		CString serverName;
 		CString hostName;
+		int port;
 	};
 
 	static vector<SBroadcastResult> broadcast(int port);

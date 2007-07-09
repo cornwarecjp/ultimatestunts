@@ -139,57 +139,60 @@ bool loadOBJ(const CString &filename, CEditGraphObj &obj)
 		}
 		else if(lhs == "f")
 		{
+			printf("Processing point list %s\n", rhs.c_str());
 			CPrimitive &pr = obj.m_Primitives.back();
 
 			unsigned int i=0;
-			while(true)
+			bool moreVertices = true;
+			while(moreVertices)
 			{
-				int pos = rhs.inStr("/");
-				if(pos < 0)
+				int sppos = rhs.inStr(' ');
+
+				if(sppos < 0)
 				{
-					if(i < 3)
+					if(i < 2)
 						printf("Error in line \"%s\": less than 3 points\n", line.c_str());
 
-					break;
+					moreVertices = false;
+					sppos = rhs.length();
 				}
 
-				unsigned int vi = rhs.mid(0, pos).toInt() - 1;
-				rhs = rhs.mid(pos+1);
+				CString vtStr = rhs.mid(0, sppos);
+				rhs = rhs.mid(sppos+1);
 
-				pos = rhs.inStr("/");
-				if(pos < 0)
-				{
-					printf("Error in line \"%s\": not an even number of slashes\n", line.c_str());
-					break;
-				}
+				printf("Processing point %s\n", vtStr.c_str());
 
-				unsigned int ti = rhs.mid(0, pos).toInt() - 1;
-				if(pos == 0) ti = 0; //handle missing texture coordinate
-				rhs = rhs.mid(pos+1);
-
+				unsigned int vi = vtStr.toInt() - 1;
+				unsigned int ti = 0;
 				unsigned int ni = 0;
-				pos = rhs.inStr(' ');
-				if(pos < 0)
+
+				int pos = vtStr.inStr('/');
+				if(pos > 0)
 				{
-					ni = rhs.toInt() - 1;
+					vi = vtStr.mid(0, pos).toInt() - 1;
+					vtStr = vtStr.mid(pos+1);
+
+					ti = vtStr.mid(0, pos).toInt() - 1;
+
+					pos = vtStr.inStr('/');
+					if(pos >= 0)
+					{
+						if(pos == 0)
+							{ti = 0;} //handle missing texture coordinate
+						else
+							{ti = vtStr.mid(0, pos).toInt() - 1;}
+						vtStr = vtStr.mid(pos+1);
+
+						ni = vtStr.toInt() - 1;
+					}
 				}
-				else
-				{
-					ni = rhs.mid(0, pos).toInt() - 1;
-					rhs = rhs.mid(pos+1);
-				}
+
+				printf("Adding %d/%d/%d\n", vi,ti,ni);
 
 				if(vi >= v_arr.size())
 				{
 					printf("In line \"%s\":\n", line.c_str());
 					printf("Error: vertex index %d exceeds array size %d\n", vi+1, v_arr.size());
-					return false;
-				}
-
-				if(ni >= vn_arr.size())
-				{
-					printf("In line \"%s\":\n", line.c_str());
-					printf("Error: normal index %d exceeds array size %d\n", ni+1, v_arr.size());
 					return false;
 				}
 
@@ -209,8 +212,8 @@ bool loadOBJ(const CString &filename, CEditGraphObj &obj)
 				{
 					CVertex vt;
 					vt.pos = v_arr[vi];
-					vt.nor = vn_arr[ni];
-					if(ti < vt_arr.size()) vt.tex = vt_arr[ti];
+					vt.nor = (ti < vt_arr.size())? vn_arr[ni] : CVector(0,1,0);
+					vt.tex = (ti < vt_arr.size())? vt_arr[ti] : CVector(0,0,0);
 					pr.m_Vertex.push_back(vt);
 					v_index.push_back(vi);
 					vn_index.push_back(ni);
@@ -231,6 +234,8 @@ bool loadOBJ(const CString &filename, CEditGraphObj &obj)
 
 				i++;
 			}
+
+			printf("Processed %d points\n", i);
 		}
 	}
 

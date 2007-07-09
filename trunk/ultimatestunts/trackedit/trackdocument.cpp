@@ -22,7 +22,7 @@
 
 CTrackDocument *theTrackDocument = NULL;
 
-CTrackDocument::CTrackDocument()
+CTrackDocument::CTrackDocument(CString trackname)
 {
 	m_CursorX = m_CursorY = m_CursorZ = 0;
 	m_Action = NULL;
@@ -30,7 +30,7 @@ CTrackDocument::CTrackDocument()
 	m_DataManager = new CTEManager;
 	m_FutureTrack = new CEditTrack(m_DataManager);
 
-	m_Trackname = "default.track";
+	m_Trackname = trackname;
 	if(!load())
 	{
 		printf("Error: %s could not be loaded\n", m_Trackname.c_str());
@@ -133,7 +133,7 @@ bool CTrackDocument::load()
 	*/
 
 	CEditTrack track(m_DataManager);
-	if(!track.load(CString("tracks/") + m_Trackname, CParamList()))
+	if(!track.load(m_Trackname, CParamList()))
 		return false; //loading failed
 
 	m_UndoHistory.clear();
@@ -174,5 +174,5 @@ bool CTrackDocument::save()
 
 	if(track == NULL) return false;
 
-	return track->save(CString("tracks/") + m_Trackname);
+	return track->save(m_Trackname);
 }

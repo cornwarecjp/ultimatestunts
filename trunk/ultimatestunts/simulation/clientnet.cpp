@@ -151,6 +151,7 @@ vector<CClientNet::SBroadcastResult> CClientNet::broadcast(int port)
 					CClientNet::SBroadcastResult br;
 					br.serverName = msg.mid(smsg.length());
 					br.hostName = buf.getIP().toString();
+					br.port = port;
 
 					//Now, erase it from the buffer
 					tmpnet.m_ReceiveBuffer.erase(tmpnet.m_ReceiveBuffer.begin()+i);

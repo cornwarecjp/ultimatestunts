@@ -122,6 +122,7 @@ void helpFunc()
 		"%c: Mirror\n"
 		"%c: Clamp\n"
 		"%c: Split\n"
+		"%c: Order primitives\n"
 		"%c: Generate normals, texture replacement colors or texture coordinates\n"
 		"%c: Translate\n"
 		"%c: Rotate Texture\n"
@@ -129,7 +130,7 @@ void helpFunc()
 		"%c: Help\n",
 		eLoad, eSave, eSettings, ePrimitive, eVertex, eNew, eChange,
 		eChangePrimitive, eDuplicatePrimitive, eSetCollision, eRotate, eScale,
-		eMirror, eClamp, eSplit, eGenerate, eTranslate, eRotateTexture, eTranslateTexture,
+		eMirror, eClamp, eSplit, eOrder, eGenerate, eTranslate, eRotateTexture, eTranslateTexture,
 		eHelp
 	);
 }

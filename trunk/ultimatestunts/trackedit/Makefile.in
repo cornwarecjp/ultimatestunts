@@ -14,6 +14,8 @@
 
 @SET_MAKE@
 
+
+
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
 VPATH = @srcdir@
@@ -39,7 +41,8 @@ host_triplet = @host@
 target_triplet = @target@
 bin_PROGRAMS = ustuntstrackedit$(EXEEXT)
 subdir = trackedit
-DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
+DIST_COMMON = $(noinst_HEADERS) $(srcdir)/Makefile.am \
+	$(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -47,16 +50,26 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
+LIBRARIES = $(noinst_LIBRARIES)
+AR = ar
+ARFLAGS = cru
+libtrackedit_a_AR = $(AR) $(ARFLAGS)
+libtrackedit_a_LIBADD =
+am_libtrackedit_a_OBJECTS = actionwidget.$(OBJEXT) edittrack.$(OBJEXT) \
+	mainpage.$(OBJEXT) replaceaction.$(OBJEXT) tecamera.$(OBJEXT) \
+	tegui.$(OBJEXT) temanager.$(OBJEXT) terenderer.$(OBJEXT) \
+	tileselect.$(OBJEXT) trackdocument.$(OBJEXT) trkfile.$(OBJEXT)
+libtrackedit_a_OBJECTS = $(am_libtrackedit_a_OBJECTS)
 am__installdirs = "$(DESTDIR)$(bindir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
-am_ustuntstrackedit_OBJECTS = edittrack.$(OBJEXT) main.$(OBJEXT) \
-	mainpage.$(OBJEXT) replaceaction.$(OBJEXT) tecamera.$(OBJEXT) \
-	tegui.$(OBJEXT) temanager.$(OBJEXT) terenderer.$(OBJEXT) \
-	trackdocument.$(OBJEXT) trkfile.$(OBJEXT)
+am_ustuntstrackedit_OBJECTS = main.$(OBJEXT)
 ustuntstrackedit_OBJECTS = $(am_ustuntstrackedit_OBJECTS)
-ustuntstrackedit_DEPENDENCIES = ../graphics/libgraphics.a \
-	../simulation/libsimulation.a ../shared/libshared.a
+ustuntstrackedit_DEPENDENCIES =  \
+	$(top_builddir)/trackedit/libtrackedit.a \
+	$(top_builddir)/graphics/libgraphics.a \
+	$(top_builddir)/simulation/libsimulation.a \
+	$(top_builddir)/shared/libshared.a
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -65,8 +78,9 @@ CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 CXXLD = $(CXX)
 CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
-SOURCES = $(ustuntstrackedit_SOURCES)
-DIST_SOURCES = $(ustuntstrackedit_SOURCES)
+SOURCES = $(libtrackedit_a_SOURCES) $(ustuntstrackedit_SOURCES)
+DIST_SOURCES = $(libtrackedit_a_SOURCES) $(ustuntstrackedit_SOURCES)
+HEADERS = $(noinst_HEADERS)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -151,10 +165,6 @@ USE_INCLUDED_LIBINTL = @USE_INCLUDED_LIBINTL@
 USE_NLS = @USE_NLS@
 VERSION = @VERSION@
 XGETTEXT = @XGETTEXT@
-X_CFLAGS = @X_CFLAGS@
-X_EXTRA_LIBS = @X_EXTRA_LIBS@
-X_LIBS = @X_LIBS@
-X_PRE_LIBS = @X_PRE_LIBS@
 ac_ct_CC = @ac_ct_CC@
 ac_ct_CXX = @ac_ct_CXX@
 ac_ct_RANLIB = @ac_ct_RANLIB@
@@ -205,15 +215,26 @@ target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
 usdatadir = @usdatadir@
-ustuntstrackedit_SOURCES = edittrack.cpp main.cpp mainpage.cpp replaceaction.cpp tecamera.cpp tegui.cpp temanager.cpp terenderer.cpp trackdocument.cpp trkfile.cpp
-ustuntstrackedit_LDADD = ../graphics/libgraphics.a ../simulation/libsimulation.a ../shared/libshared.a @sdllibs@ @graphlibs@ @LIBINTL@
+ustuntstrackedit_SOURCES = main.cpp
+ustuntstrackedit_LDADD = $(top_builddir)/trackedit/libtrackedit.a \
+	$(top_builddir)/graphics/libgraphics.a $(top_builddir)/simulation/libsimulation.a \
+	$(top_builddir)/shared/libshared.a @sdllibs@ @graphlibs@ @LIBINTL@
+
 EXTRA_DIST = action.h edittrack.cpp edittrack.h main.cpp mainpage.cpp mainpage.h replaceaction.cpp replaceaction.h tecamera.cpp tecamera.h tegui.cpp tegui.h temanager.cpp temanager.h terenderer.cpp terenderer.h trackdocument.cpp trackdocument.h trkfile.cpp trkfile.h
 
 # set the include path found by configure
-INCLUDES = $(all_includes) -I../intl -I../shared -I../simulation -I../graphics
+INCLUDES = -I$(top_srcdir)/graphics -I$(top_srcdir)/intl -I$(top_srcdir)/shared \
+	-I$(top_srcdir)/simulation $(all_includes)
+
 
 # the library search path.
 ustuntstrackedit_LDFLAGS = $(all_libraries) 
+noinst_HEADERS = tileselect.h actionwidget.h
+noinst_LIBRARIES = libtrackedit.a
+libtrackedit_a_SOURCES = actionwidget.cpp edittrack.cpp mainpage.cpp\
+	replaceaction.cpp tecamera.cpp tegui.cpp temanager.cpp terenderer.cpp\
+	tileselect.cpp trackdocument.cpp trkfile.cpp
+
 all: all-am
 
 .SUFFIXES:
@@ -227,9 +248,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  trackedit/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  trackedit/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu  trackedit/Makefile
+	  $(AUTOMAKE) --foreign  trackedit/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -247,6 +268,13 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
+
+clean-noinstLIBRARIES:
+	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
+libtrackedit.a: $(libtrackedit_a_OBJECTS) $(libtrackedit_a_DEPENDENCIES) 
+	-rm -f libtrackedit.a
+	$(libtrackedit_a_AR) libtrackedit.a $(libtrackedit_a_OBJECTS) $(libtrackedit_a_LIBADD)
+	$(RANLIB) libtrackedit.a
 install-binPROGRAMS: $(bin_PROGRAMS)
 	@$(NORMAL_INSTALL)
 	test -z "$(bindir)" || $(mkdir_p) "$(DESTDIR)$(bindir)"
@@ -280,6 +308,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/actionwidget.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/edittrack.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mainpage.Po@am__quote@
@@ -288,6 +317,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tegui.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/temanager.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/terenderer.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tileselect.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/trackdocument.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/trkfile.Po@am__quote@
 
@@ -383,7 +413,7 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(PROGRAMS)
+all-am: Makefile $(LIBRARIES) $(PROGRAMS) $(HEADERS)
 installdirs:
 	for dir in "$(DESTDIR)$(bindir)"; do \
 	  test -z "$$dir" || $(mkdir_p) "$$dir"; \
@@ -414,7 +444,8 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
+clean-am: clean-binPROGRAMS clean-generic clean-noinstLIBRARIES \
+	mostlyclean-am
 
 distclean: distclean-am
 	-rm -rf ./$(DEPDIR)
@@ -462,15 +493,16 @@ ps-am:
 uninstall-am: uninstall-binPROGRAMS uninstall-info-am
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean clean-binPROGRAMS \
-	clean-generic ctags distclean distclean-compile \
-	distclean-generic distclean-tags distdir dvi dvi-am html \
-	html-am info info-am install install-am install-binPROGRAMS \
-	install-data install-data-am install-exec install-exec-am \
-	install-info install-info-am install-man install-strip \
-	installcheck installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic pdf pdf-am ps ps-am tags uninstall \
-	uninstall-am uninstall-binPROGRAMS uninstall-info-am
+	clean-generic clean-noinstLIBRARIES ctags distclean \
+	distclean-compile distclean-generic distclean-tags distdir dvi \
+	dvi-am html html-am info info-am install install-am \
+	install-binPROGRAMS install-data install-data-am install-exec \
+	install-exec-am install-info install-info-am install-man \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-compile mostlyclean-generic pdf pdf-am ps ps-am \
+	tags uninstall uninstall-am uninstall-binPROGRAMS \
+	uninstall-info-am
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

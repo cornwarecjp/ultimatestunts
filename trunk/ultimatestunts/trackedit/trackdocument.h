@@ -33,7 +33,7 @@ using namespace std;
 
 class CTrackDocument  {
 public: 
-	CTrackDocument();
+	CTrackDocument(CString trackname = "tracks/default.track");
 	~CTrackDocument();
 
 	CEditTrack *getCurrentTrack();
@@ -53,10 +53,10 @@ public:
 	void applyAction(); //applies the active action to m_FutureTrack
 	void commitAction(); //actually does the action
 	CAction *m_Action; //memory-managed from the outside
-	void setNewAction(CAction *a)
+	void setNewAction(const CAction *a)
 	{
 		if(m_Action != NULL) delete m_Action;
-		m_Action = a;
+		m_Action = a->copy();
 		applyAction();
 	}
 

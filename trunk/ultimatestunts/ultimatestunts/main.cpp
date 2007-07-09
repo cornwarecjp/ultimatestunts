@@ -43,10 +43,10 @@ int main(int argc, char *argv[])
 	shared_main(argc, argv);
 
 	printf("---Window system\n");
-	CGameWinSystem *winsys = new CGameWinSystem("Ultimate Stunts", *theMainConfig);
+	CGameWinSystem *winsys = new CGameWinSystem("Ultimate Stunts");
 
 	printf("---GUI\n");
-	CGameGUI *gui = new CGameGUI(*theMainConfig, winsys);
+	CGameGUI *gui = new CGameGUI(winsys);
 
 	printf("Starting the GUI\n");
 	gui->start();

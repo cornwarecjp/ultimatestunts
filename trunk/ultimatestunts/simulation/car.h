@@ -79,23 +79,25 @@ public:
 	virtual bool setData(const CBinBuffer &b, unsigned int &pos);//override for car-specific data
 	virtual CMessageBuffer::eMessageType getType() const {return CMessageBuffer::car;}
 
-	CCarRuleStatus m_RuleStatus;
-
-	CString m_CarName; //is loaded from car file
-
 	virtual void update(CPhysics *simulator, float dt);
 	virtual void correctCollisions();
+
+	CString m_CarName; //is loaded from car file
+	CCarRuleStatus m_RuleStatus;
 
 	//sub objects:
 	CCarEngine m_Engine;
 	CCarWheel m_Wheel[4];
 
+	SCarDashboardInfo m_Dashboard;
+
+
 	//State variables:
 	float m_DesiredSteering;
-	float m_xAngle, m_zAngle; //orientation of the body
-	float m_BodyHeight; //height of the body
+	enum {eRiding, eFlying} m_SimState;
+	//float m_xAngle, m_zAngle; //orientation of the body
+	//float m_BodyHeight; //height of the body
 
-	SCarDashboardInfo m_Dashboard;
 protected:
 	//car specific physics
 	void simulateGeneral(CPhysics *simulator, float dt);
@@ -112,6 +114,7 @@ protected:
 
 	virtual void determineGroundPlane(CPhysics *simulator);
 	void placeOnGround();
+	void landOnGround();
 	void fixFlyingOrientation();
 
 	virtual void placeBodies();

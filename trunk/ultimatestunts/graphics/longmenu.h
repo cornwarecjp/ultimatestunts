@@ -37,11 +37,7 @@ public:
 protected:
 	virtual int getdy();
 	unsigned int getNumVisibleLines();
-
-	unsigned int m_ScreenTop;
-
-	int m_ScrollStartPos;
-	float m_ScrollDistance;
+	unsigned int getScreenTop();
 };
 
 #endif

@@ -20,6 +20,8 @@
 #include <cstdio>
 #include <cstdlib>
 
+#include "lconfig.h"
+
 #include "winsystem.h"
 
 CWinSystem *theWinSystem = NULL;
@@ -27,7 +29,7 @@ CWinSystem *theWinSystem = NULL;
 bool dummy_loopfunc()
 {return false;} //exit immediately
 
-CWinSystem::CWinSystem(const CString &caption, const CLConfig &conf)
+CWinSystem::CWinSystem(const CString &caption)
 {
 	theWinSystem = this;
 

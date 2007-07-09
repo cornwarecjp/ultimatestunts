@@ -250,8 +250,17 @@ bool CGraphicWorld::loadWorld()
 	p.value = m_TexSmooth;
 	plist.push_back(p);
 
-	m_Background->load(m_World->getTrack()->m_BackgroundFilename, plist);
 	m_EnvMap->load(m_World->getTrack()->m_EnvMapFilename, plist);
+
+	//Extra parameters for background object
+	p.name = "horizon";
+	p.value = m_World->getTrack()->m_HorizonFilename;
+	plist.push_back(p);
+	p.name = "skycolor";
+	p.value = m_World->getTrack()->m_SkyColor;
+	plist.push_back(p);
+
+	m_Background->load(m_World->getTrack()->m_SkyFilename, plist);
 
 	printf("  Loading track map\n");
 	loadTrackMap();

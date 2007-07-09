@@ -20,17 +20,15 @@
 #include "datafile.h"
 #include "textureloader.h"
 
-CTextureLoader::CTextureLoader(const CLConfig &conf, CString texdatfile)
+#include "lconfig.h"
+
+CTextureLoader::CTextureLoader(CString texdatfile)
 {
 	//defaults:
 	m_TexMaxSize = 1024;
 	m_TexSmooth = true;
 
-	/*
-	CString topdir = conf.getValue("files", "datadir");
-	if(topdir != "" && topdir[topdir.length()-1] != '/')
-		topdir += '/';
-	*/
+	const CLConfig &conf = *theMainConfig;
 
 	CString cnf = conf.getValue("graphics", "texture_maxsize");
 	if(cnf != "")

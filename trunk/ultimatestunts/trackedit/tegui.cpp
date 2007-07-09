@@ -33,11 +33,9 @@
 #include "longmenu.h"
 #include "edittrack.h"
 
-CTEGUI::CTEGUI(const CLConfig &conf, CWinSystem *winsys) : CGUI(conf, winsys)
+CTEGUI::CTEGUI(CWinSystem *winsys) : CGUI(winsys)
 {
-	m_MainPage.m_Title = theTrackDocument->m_Trackname;
-
-	m_LoadPage.m_Title = _("Select a track:");
+	m_LoadPage.m_Title = _("Select a track");
 	m_LoadPage.m_DrawBackground = true;
 	CLongMenu *menu = new CLongMenu;
 	menu->m_Xrel = 0.1;
@@ -57,7 +55,7 @@ CTEGUI::~CTEGUI()
 
 void CTEGUI::updateMenuTexts()
 {
-	m_MainPage.m_Title = theTrackDocument->m_Trackname;
+	m_MainPage.updateDocInfo();
 
 	CMenu *menu = (CMenu *)(m_LoadPage.m_Widgets[0]);
 	menu->m_Lines = getDataDirContents("tracks", ".track");
@@ -99,20 +97,20 @@ CString CTEGUI::viewMainMenu()
 	if(!m_WinSys->runLoop(this))
 		return "exit";
 
-	switch(m_MainPage.getMenuSelection())
+	switch(m_MainPage.getSelection())
 	{
-		case 0:
+		case CIconList::eLoad:
 			return "loadmenu";
-		case 1:
+		case CIconList::eSave:
 			return "saveasmenu";
-		case 2:
+		case CIconList::eImport:
 			return "importmenu";
-		case 3:
+		case CIconList::eQuit:
 			return "exit";
-		case 5:
+		case CIconList::eUndo:
 			theTrackDocument->undo();
 			return "mainmenu";
-		case 6:
+		case CIconList::eRedo:
 			theTrackDocument->redo();
 			return "mainmenu";
 		default:
@@ -130,7 +128,7 @@ CString CTEGUI::viewLoadMenu()
 
 	CMenu *menu = (CMenu *)(m_LoadPage.m_Widgets[0]);
 
-	theTrackDocument->m_Trackname = menu->m_Lines[menu->m_Selected];
+	theTrackDocument->m_Trackname = CString("tracks/") + menu->m_Lines[menu->m_Selected];
 	if(!theTrackDocument->load())
 	{
 		CString msg;
@@ -179,18 +177,35 @@ CString CTEGUI::viewSaveAsMenu()
 	m_LoadPage.m_Title = _("Tracks:");
 	m_ChildWidget = &m_LoadPage;
 
+	CString name = theTrackDocument->m_Trackname;
+
+	//Remove directory
+	int pos = name.inStr('/');
+	while(pos >= 0)
+	{
+		name = name.mid(pos+1);
+		pos = name.inStr('/');
+	}
+
+	//Add .track extension
+	if(name.mid(name.length()-6) != ".track")
+			name += ".track";
+
+	//Allow user to modify name
 	bool cancelled = false;
-	CString name = showInputBox(_("Enter the filename:"), theTrackDocument->m_Trackname, &cancelled);
+	name = showInputBox(_("Enter the filename:"), name, &cancelled);
+
+	//Add .track extension again if user deleted it
+	if(name.mid(name.length()-6) != ".track")
+			name += ".track";
 
 	if(!cancelled)
 	{
 		CString oldname = theTrackDocument->m_Trackname;
 
-		if(name.mid(name.length()-6) != ".track")
-				name += ".track";
-		theTrackDocument->m_Trackname = name;
+		theTrackDocument->m_Trackname = CString("tracks/") + name;
 
-		if(dataFileExists(CString("tracks/") + theTrackDocument->m_Trackname, true)) //search only locally
+		if(dataFileExists(theTrackDocument->m_Trackname, true)) //search only locally
 		{
 			CString q;
 			q.format(_("File %s already exists. Overwrite?"), 256, theTrackDocument->m_Trackname.c_str());

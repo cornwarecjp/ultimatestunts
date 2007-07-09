@@ -54,7 +54,7 @@ enum eGlobalKey
 
 class CGameWinSystem : public CWinSystem  {
 public: 
-	CGameWinSystem(const CString &caption, const CLConfig &conf);
+	CGameWinSystem(const CString &caption);
 	virtual ~CGameWinSystem();
 
 	virtual bool reloadConfiguration();
@@ -92,7 +92,7 @@ private:
 	vector<tCodeArray> m_PlayerControlCode;
 	tCodeArray m_GlobalKeyCode;
 
-	void setupKeys(const CLConfig &conf, const CString &section, unsigned int player);
+	void setupKeys(const CString &section, unsigned int player);
 };
 
 #endif

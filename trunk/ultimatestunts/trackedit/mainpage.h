@@ -26,6 +26,13 @@
 #include "tecamera.h"
 #include "edittrack.h"
 
+#include "renderwidget.h"
+#include "label.h"
+#include "iconbar.h"
+#include "tileselect.h"
+
+#include "iconlist.h"
+
 /**
   *@author CJP
   */
@@ -41,13 +48,20 @@ public:
 	virtual int onIdle();
 
 	void resetCameraPosition();
+	void updateDocInfo(); //e.g. filename
 
-	unsigned int getMenuSelection();
+	CIconList::eIconID getSelection();
 
 protected:
+	CRenderWidget *m_RenderWidget;
+	CLabel *m_HintLabel, *m_FilanemeLabel;
+	CIconBar *m_IconBar;
+	CTileSelect *m_TileSelect;
+
 	CTERenderer *m_Renderer;
 	CTECamera *m_Camera;
 
+	unsigned int m_NormalNumWidgets;
 	CEditTrack *m_TrackCache;
 
 	int m_PrevMouseX, m_PrevMouseY;

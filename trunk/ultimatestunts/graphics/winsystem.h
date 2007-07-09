@@ -22,7 +22,6 @@
 
 #include "cstring.h"
 #include "usmacros.h"
-#include "lconfig.h"
 #include "widget.h"
 
 /**
@@ -31,7 +30,7 @@
 
 class CWinSystem {
 public: 
-	CWinSystem(const CString &caption, const CLConfig &conf);
+	CWinSystem(const CString &caption);
 	virtual ~CWinSystem();
 
 	int runLoop( bool (CALLBACKFUN *loopfunc)(), bool swp = false);

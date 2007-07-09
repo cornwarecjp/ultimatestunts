@@ -64,6 +64,16 @@ void CUSServer::stop()
 	giveCmd("stop");
 }
 
+void CUSServer::online()
+{
+	giveCmd("online");
+}
+
+void CUSServer::offline()
+{
+	giveCmd("offline");
+}
+
 void CUSServer::giveCmd(const CString &cmd)
 {
 	//printf("Giving a command: %s...\n", cmd.c_str());
