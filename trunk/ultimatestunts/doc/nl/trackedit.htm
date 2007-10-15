@@ -8,17 +8,25 @@
 
 <h3>Inleiding</h3>
 De Ultimate Stunts track editor zal u in staat stellen om nieuwe banen te maken
-en bestaande banen te bewerken. Op dit moment (versie 0.7.0) is de track editor
+en bestaande banen te bewerken. Op dit moment (versie 0.7.2) is de track editor
 nog erg beperkt: het is slechts mogelijk om tiles te plaatsen/verwijderen op
 de baan, en om banen te importeren vanuit het originele spel Stunts.
 
 <h3>Gebruik</h3>
 Op dit moment is de gebruikersinterface nog vrij eenvoudig. In het hoofdvenster
-is er een 3D view van de baan, de naam van de baan erboven, en een menu aan
-de linkerkant. Het menu kan gebruikt worden met de muis. Voor het rondbewegen
+zijn de volgende items zichtbaar:
+<ul>
+	<li>Een 3D view van de baan</li>
+	<li>De naam van de baan boven de 3D view</li>
+	<li>Een Statusbalk onder de 3D view</li>
+	<li>Een toolbar bovenin het scherm</li>
+	<li>Het bewerkgereedschap aan de linkerkant</li>
+</ul>
+De meeste items kunnen gebruikt worden met de muis. Voor het rondbewegen
 in de 3D view kunnen de volgende controls gebruikt worden:
 <ul>
 	<li>"Slepen" met de linker muisknop: roteren van de camerapositie</li>
+	<li>"Slepen" met de rechter muisknop: inzoomen / uitzoomen</li>
 	<li>Pijltjestoetsen: verplaats de cursor naar
 		links/rechts/voor/achter</li>
 	<li>PgUp/PgDn toetsen: verplaats de cursor naar boven/beneden</li>
@@ -32,25 +40,37 @@ witte balk van lijnen:
 <h3>De baan bewerken</h3>
 Het "knipperen" van de cursor laat twee toestanden van de baan zien: de
 huidige toestand, en hoe het er uit ziet als u op de Enter toets drukt. Soms
-is er geen verschil, en in deze gevallen zult u geen geknipper zien. De
-standaard bewerkmodus is om individuele tiles in te voegen (eigenlijk is dit
-de enige bewerkmodus in versie 0.7.0). Dus, als u op Enter drukt, wordt de
-geselecteerde tile ingevoegd op de cursorpositie. Bestaande tiles op die
-positie worden daarbij verwijderd. De volgende toetsen kunnen gebruikt
-worden:
+is er geen verschil, en in deze gevallen zult u geen geknipper zien.
+<p>
+Ultimate Stunts zal meerdere bewerkingsgereedschappen ondersteunen, maar op
+dit moment (versie 0.7.2) is er slechts ÈÈn gereedschap, die u in staat
+stelt om individuele tiles in te voegen / te verwijderen. De
+gebruikersinterface van dat gereedschap is te zien aan de linkerkant van het
+scherm, maar er zijn ook sneltoetsen.
+<p>
+De standaardmodus van dit gereedschap is om de tile op de cursorpositie te
+vervangen door de geselecteerde tile. Dus, als u op de OK-button in
+de gereedschaps-interface klikt (of op Enter drukt), dan wordt de
+geselecteerde tile op de cursorpositie geplaatst. Bestaande tiles op die
+positie worden daarbij verwijderd.
+<p>
+De "+"-knop is vergelijkbaar met de OK-knop, maar het vervangt niet de tile
+op de cursorpositie. In plaats daarvan combineert het de bestaande en de
+geselecteerde tile. De andere twee knoppen kunnen gebruikt worden om de
+geselecteerde tile te roteren, en om de bestaande tile op de cursorpositie
+te wissen.
+<p>
+De volgende toetsen kunnen als sneltoetsen gebruikt worden:
 <ul>
-	<li><b>Enter</b>: plaats de tile. Bestaande tiles op die positie zullen
-		verwijderd worden.</li>
-	<li><b>Insert</b>: plaats de tile. Bestaande tiles op die positie zullen
-		<i>niet</i> verwijderd worden.</li>
-	<li><b>Delete</b>: verwijder alle bestaande tiles op de cursorpositie.
-		</li>
+	<li><b>Enter</b>: plaats de tile (zoals de OK-knop).</li>
+	<li><b>Insert</b>: plaats de tile (zoals de "+"-knop).</li>
+	<li><b>Delete</b>: verwijder alle bestaande tiles op de cursorpositie
+		(zoals de gum-knop).</li>
 	<li><b>Tab</b>: selecteer een ander tilemodel.</li>
 	<li><b>Shift</b>+<b>Tab</b>: selecteer een ander tilemodel (doorloopt
 		tilemodellen in omgekeerde volgorde).</li>
-	<li><b>r</b>: roteer het tilemodel.</li>
-	<li><b>Ctrl</b>+<b>z</b>: maak de laatste actie (vervangen/invoegen/
-		verwijderen) ongedaan.</li>
+	<li><b>r</b>: roteer het tilemodel (zoals de roteer-knop).</li>
+	<li><b>Ctrl</b>+<b>z</b>: maak de laatste actie ongedaan.</li>
 	<li><b>Ctrl</b>+<b>Shift</b>+<b>z</b>: doe de laatste ongedaan gemaakte
 		actie opnieuw.</li>
 </ul>
@@ -62,15 +82,11 @@ worden. Op dit moment moeten deze dingen allemaal handmatig gedaan worden.
 
 
 <h3>Stunts banen importeren</h3>
-…Èn van de opties in het track editor menu is om banen te importeren vanuit
-het originele "Stunts" (4D Sports Driving) spel. Het eerste dat u moet doen is
-de directory opgeven waar de Stunts banen zich bevinden. Dit is een absoluut
-pad, dus het is niet relatief ten opzichte van de Ultimate Stunts datadir.
-De "." directory is de directory vanwaaruit de track editor gestart is. In de
-toekomst zal deze vraag waarschijnlijk vervangen worden door een
-gebruikersvriendelijkere directory browser. Nadat u de juiste directory
-geselecteerd heeft kunt u op een baanbestand klikken, zodat het geÔmporteerd
-wordt.
+…Èn van de opties in het track editor toolbar is om banen te importeren vanuit
+het originele "Stunts" (4D Sports Driving) spel. Als u vindt dat de huidige
+track editor nog te beperkt is, dan kunt u uw banen in Stunts maken en
+importeren in Ultimate Stunts. U kunt deze functie ook gebruiken om uw grote
+verzameling Stunts banen in Ultimate Stunts te importeren.
 
 <h3>Configureren van de Stunts importeer functie</h3>
 De Stunts import functie kan geconfigureerd worden door een bestand te bewerken

@@ -8,17 +8,25 @@
 
 <h3>Introduction</h3>
 The Ultimate Stunts track editor will allow you to make new tracks and edit
-existing tracks. Currently (version 0.7.0), the track editor is still very
+existing tracks. Currently (version 0.7.2), the track editor is still very
 limited: it is only possible to place/remove tiles on the track,
 and to import tracks from the original Stunts game.
 
 <h3>Usage</h3>
-Currently, the user interface is still quite simple. In the main window, there
-is a 3D view of the track, the name of the track on top of it, and a menu
-on the left. The menu can be used with the mouse. For moving around in the 3D
+Currently, the user interface is still quite simple. In the main window, the
+following items are visible:
+<ul>
+	<li>A 3D view of the track</li>
+	<li>The name of the track on top of the 3D view</li>
+	<li>A Statusbar below the 3D view</li>
+	<li>A toolbar on the top of the screen</li>
+	<li>The edit tool on the left</li>
+</ul>
+Most items can be used with the mouse. For moving around in the 3D
 view, the following controls can be used:
 <ul>
 	<li>"Dragging" with the left mouse button: rotate the camera view</li>
+	<li>"Dragging" with the right mouse button: zoom in / zoom out</li>
 	<li>Arrow keys: move the cursor left/right/forward/backward</li>
 	<li>PgUp/PgDn keys: move the cursor up/down</li>
 </ul>
@@ -31,42 +39,49 @@ of lines:
 <h3>Track editing</h3>
 The "blinking" of the cursor shows two states of the track: the current state,
 and what it will look like when you press the Enter key. Sometimes there will
-be no difference, and in those cases, you won't see the blinking. The default
-edit mode is to insert individual tiles (in fact, it's the only edit mode in
-version 0.7.0). So, when you press Enter, the selected tile is inserted on the
+be no difference, and in those cases, you won't see the blinking.
+<p>
+Ultimate Stunts will support multiple editing tools, but currently (version
+0.7.2) there is only one tool, which allows you to insert/remove individual
+tiles. The user interface of that tool can be seen in the left part of the
+screen, but there are also keyboard shortcuts.
+<p>
+The default mode of this tool is to replace the tile on the cursor position
+with the selected tile. So, when you click on the OK button in the tool
+interface (or press Enter), the selected tile is placed on the
 cursor position. Any existing tile on that position will be removed in the
-action. The following keys can be used:
+action.
+<p>
+The "+"-button is similar to the OK-button, but it does not replace the tile
+on the cursor position. Instead, it Combines the existing and selected tile.
+The other two buttons can be used for rotating the selected tile, and for
+erasing the existing tile on the cursor position.
+<p>
+The following keys can be used as shortcuts:
 <ul>
-	<li><b>Enter</b>: place the tile. Existing tiles on that position will
-		be removed.</li>
-	<li><b>Insert</b>: place the tile. Existing tiles on that position will
-		<i>not</i> be removed.</li>
-	<li><b>Delete</b>: remove all existing tiles on the cursor position.
-		</li>
+	<li><b>Enter</b>: place the tile (like the OK button).</li>
+	<li><b>Insert</b>: place the tile (like the "+"-button).</li>
+	<li><b>Delete</b>: remove tiles on the cursor position (like the eraser
+		button).</li>
 	<li><b>Tab</b>: select another tile model.</li>
 	<li><b>Shift</b>+<b>Tab</b>: select another tile model (browses tile
 		models in opposite direction).</li>
-	<li><b>r</b>: rotate the tile model.</li>
-	<li><b>Ctrl</b>+<b>z</b>: undo the last action (replace/insert/delete).
-		</li>
+	<li><b>r</b>: rotate the tile model (like the rotate button).</li>
+	<li><b>Ctrl</b>+<b>z</b>: undo the last action.</li>
 	<li><b>Ctrl</b>+<b>Shift</b>+<b>z</b>: redo the last undone action.</li>
 </ul>
 Currently, the available set of tile models is limited by the selection of
 tiles that is already used in the track. Also, the sizes of the track cannot
 be changed, route information cannot be changed, and environment settings
 (background, lighting etc.) cannot be edited. Currently, all those things need
-to be done manually.
+to be done manually in the track file.
 
 <h3>Importing Stunts tracks</h3>
-One of the options in the track editor menu is to import a track from the
-original "Stunts" (4D Sports Driving) game. The first thing you have to do is
-to enter the directory where the Stunts tracks are. This is an absolute path,
-so it is not relative to the Ultimate Stunts data dir. The "." directory is
-the directory from where the track editor is started. In the future, this
-question will probably be replaced with a more user-friendly directory
-browser. After you selected the right directory, you can just click on a
-track file, and it will be imported.
-
+One of the options in the track editor toolbar is to import a track from the
+original "Stunts" (4D Sports Driving) game. If you feel like the current track
+editor is still too limited, you can make your tracks in Stunts and import
+them in Ultimate Stunts. You can also use this function to import your large
+collection of Stunts tracks.
 
 <h3>Configuring the Stunts import function</h3>
 The Stunts import function can be configured by modifying a file that is

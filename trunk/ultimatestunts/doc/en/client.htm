@@ -1,39 +1,159 @@
 <html><body>
-<h1>Using the Ultimate Stunts program</h1>
+<h1>Playing Ultimate Stunts</h1>
 
-When the ultimatestunts program is started, music playback starts, and a
-menu interface appears. You can start playing immediately, or first change
+When the ultimatestunts game is started, music playback starts, and a
+menu interface appears. You can start playing immediately, by selecting
+the "Drive!" option in the main menu. Alternatively, you can first change
 some things, like cars/players and the track.
-<br><img src="../nolanguage/menu_main.jpg">
-
-<h1>Playing</h1>
+<p>
 When you choose to start playing, the data files are loaded. Depending on
 your hardware, this might take some time. When all data is loaded, the game
-starts. The controls of the game (keys, joystick etc.) can be set in the
-ultimatestunts.conf file. This is the default for one player:
+starts. The control bindings of the game (keys, joystick etc.) can be 
+changed in the settings, but this is the default for one player:
 <ul>
 	<li>Arrow keys: accelerate, brake and steer</li>
-	<li>right shift/right ctrl: Gear up/down, including the reverse gear
-		</li>
+	<li>; and /: Gear up/down, including the reverse gear</li>
 	<li>Esc: exit the game</li>
-	<li>right alt: change camera mode</li>
-	<li>/: change camera target car</li>
+	<li>right shift: change camera mode</li>
+	<li>right alt: change camera target car</li>
 	<li>F1: play the next song in the playlist</li>
 </ul>
+
+<h1>Menu functions</h1>
+This section gives a walkthrough for the menus in Ultimate Stunts. We'll start
+with the menu options in the main menu:
+<ul>
+	<li><a href="#drive">Drive!</a></li>
+	<li><a href="#gametype">Set the game type</a></li>
+	<li><a href="#track">Select the track</a></li>
+	<li><a href="#playerscars">Players and cars</a></li>
+	<li><a href="#replay">View a replay</a></li>
+	<li><a href="#settings">Settings</a></li>
+	<li><a href="#credits">Credits and License</a></li>
+	<li><a href="#exit">Exit</a></li>
+</ul>
+<br><img src="../nolanguage/menu_main.jpg">
+
+<a name="drive"></a><h1>Drive!</h1>
+Selecting this option will start the game. This allows you to start racing with
+only a single click after starting Ultimate Stunts.
+<p>
 After exiting the game, crashing or finishing, the hiscore of the track
 is displayed, and you can optionally choose to view or save a replay of this
-race. If you have reached the first place for this track, then the replay is
-automatically saved with the same name as the track.
+race. If you have reached the first place for this track, then a replay is
+automatically saved. The hiscore menu has the following options:
+<ul>
+	<li><h3>View replay</h3>
+	With this option you can view a replay of your last race. You can use the
+	same camera controls as during the race.
+	</li>
+	<li><h3>Save replay</h3>
+	This saves the replay in a file, so that you can view it again later.
+	</li>
+	<li><h3>Play again</h3>
+	Starts the same race again.
+	</li>
+	<li><h3>Return to main menu</h3>
+	This brings you back to the main menu.
+	</li>
+</ul>
 <br><img src="../nolanguage/menu_hiscore.jpg">
 
-<h1>Other functions</h1>
-<h3>Selecting a track</h3>
-If you want to play on another track, then you can select a track with that
-option in the main menu.
+<a name="gametype"></a><h1>Set the game type</h1>
+The main purpose of this menu is to select between a local game and different
+kinds of network multiplaying game types. You have the following options:
+<ul>
+	<li><h3>Local game</h3>
+	This is the default option. In a local game, you don't participate in a
+	network game: everything runs on your own computer.
+	</li>
+	<li><h3>Join an existing LAN/network game</h3>
+	If your computer is connected to other computers through a Local Area Network,
+	this lets you join a network game. After selecting this option, Ultimate Stunts
+	asks for the port number. Usually, the default port number is OK. Then, Ultimate
+	Stunts searches in your LAN for game servers. If one server is found, it
+	automatically connects to that server. If more than one is found, you can choose
+	between them. If none is found, you get the option to enter a hostname or IP number
+	manually.
+	</li>
+	<li><h3>Start a new LAN/network game</h3>
+	This lets you start a new network game. Ultimate Stunts asks for the following
+	information:
+	<ul>
+		<li>Port number: Usually, the default should be OK. Selecting a different
+		port number can be useful in case of a conflict with another application
+		or a firewall.</li>
+		<li>Name of the server: This name is displayed in the list of servers, if
+		there are multiple servers on the LAN.</li>
+		<li>Minimum number of players: This is an important setting: the game will
+		not start until this many players have joined the game (including the player
+		who started the game).</li>
+	</ul>
+	After supplying this information, Ultimate Stunts starts a game server, so that
+	other players can join the game.
+	</li>
+	<li><h3>Join an existing online game</h3>
+	If your computer is connected to the internet, this lets you join an online
+	network game. When you select this option, Ultimate Stunts gets a list of
+	game servers from the Ultimate Stunts metaserver. Because this metaserver can
+	be reached from all over the world, this gives you the possibility to play with
+	people in other countries and on other continents. If only one game server is
+	registered online, Ultimate Stunts automatically connects to that server. If
+	more than one is found, you can choose between them. If none is found, you get
+	the option to enter a hostname or IP number manually.
+	</li>
+	<li><h3>Start a new online game</h3>
+	This lets you start a new online network game. Ultimate Stunts asks for the
+	following information:
+	<ul>
+		<li>Port number: Usually, the default should be OK. Selecting a different
+		port number can be useful in case of a conflict with another application
+		or a firewall.</li>
+		<li>Name of the server: This name is displayed in the list of servers, if
+		there are multiple servers online.</li>
+		<li>Minimum number of players: This is an important setting: the game will
+		not start until this many players have joined the game (including the player
+		who started the game).</li>
+	</ul>
+	After supplying this information, Ultimate Stunts starts a game server, so that
+	other players can join the game. It will also register this server on the
+	Ultimate Stunts metaserver, so that other players can see it in their server
+	list.
+	</li>
+</ul>
 
-<h3>Selecting players and cars</h3>
-You can select the players, and the cars they drive, in the Player selection
-menu, which can be accessed from the main menu:
+
+<a name="track"></a><h1>Select the track</h1>
+If you want to play on another track, then you can select a track here.
+<br><img src="../nolanguage/menu_track.jpg"><br>
+The track page shows the follwing things:
+<ul>
+	<li>The name of the currently selected track</li>
+	<li>The best time for finishing this track</li>
+	<li>Several menu options</li>
+</ul>
+The track menu gives you the following options:
+<ul>
+	<li><h3>Select a track</h3>
+	This lets you select another track from a list of track files.
+	</li>
+	<li><h3>Edit track</h3>
+	With this option, you can start the track editor. For information on how to
+	use the track editor, see <a href="trackedit.htm">this</a> page.
+	</li>
+	<li><h3>View best time replay</h3>
+	When someone beats the best time record of a track, a replay of that race is
+	saved automatically. With this menu option, you can view the replay of the
+	best time race.
+	</li>
+	<li><h3>Return to main menu</h3>
+	Return to the main menu.
+	</li>
+</ul>
+
+
+<a name="playerscars"></a><h1>Players and cars</h1>
+You can select the players, and the cars they drive, in this menu:
 <br><img src="../nolanguage/menu_players.jpg"><br>
 You can either add a player, or change an existing player in the list. Changing
 the player's settings or deleting the player is done in the individual player
@@ -42,17 +162,22 @@ menu, which can be accessed by selecting a player in the player selection menu:
 Split screen multiplaying (up to four players) is possible by adding multiple
 human players to the list.
 
-<h3>Viewing a replay</h3>
+<a name="replay"></a><h1>View a replay</h1>
 You can select this function from the main menu, and select a replay file
-to view it.
+to view it. Note that the best time replays, which are saved automatically,
+are not visible here: you can view them from the track menu. Here, you can
+only select replays which are saved manually from the hiscore menu.
 
-<h3>Changing the settings</h3>
-In the settings menus, which can be accessed from the main menu, you can change
+<a name="settings"></a><h1>Settings</h1>
+In the settings menus, you can change
 a large number of settings. The settings are divided into sections, like
 graphics and sound, and in each section, you can set a number of variables.
+<p>
 When a variable is changed, the change is applied immediately. Sometimes,
 the result of this can be noticed immediately, for instance, when setting
-the language, or when changing the music volume. When you have changed some
+the language, or when changing the music volume.
+<p>
+When you have changed some
 setting(s), and leave the settings menus, Ultimate Stunts asks you whether
 you want to save the settings. If you choose to save them, Ultimate Stunts
 writes the settings to a text file with the name "ultimatestunts.conf", and
@@ -64,50 +189,16 @@ later by entering the settings menus and leaving them again. Ultimate Stunts
 will detect again that some settings are changed, and will ask you again to
 save the settings.
 
-<h1>Multiplaying over a network</h1>
-Ultimate Stunts uses a client-server model for network multiplaying. This means
-that an Ultimate Stunts gameserver program needs to be started somewhere, so
-that different computers can login to it. You can start the ustuntsserver
-program manually, and control it with the console interface, but you can also
-let it start automatically from the game menus. We will only consider this last
-option here: the server program is documented elsewhere.
-<p>
-For a networked multiplaying game, the game type needs to be changed, as its
-default setting is "local game". This is the game type menu:
-<br><img src="../nolanguage/menu_gametype.jpg">
+<a name="credits"></a><h1>Credits and License</h1>
+Here you can see who made Ultimate Stunts, and you can read the General Public
+License. If you think you can do something useful for the Ultimate Stunts
+project, please feel free to contact the project administrator.
 
-<h3>The host player</h3>
-First of all, one of the players (preferrably the one with the fastest computer
-and network connection) starts a new network game. After some questions are
-answered by the user, a server process is started automatically. Ultimate Stunts
-asks for the following things before a server can be started:
-<ul>
-	<li><b>The port number</b>. In most cases, the default should work.
-		Sometimes a different port number needs to be chosen, e.g. to
-		work around firewall rules. If you are looking for free port
-		numbers on your machine, then you should look for UDP port
-		numbers, as Ultimate Stunts uses UDP instead of TCP. On some
-		systems, it is not possible to use port numbers lower than
-		1024. All clients should login using the same port number as in
-		the server settings.
-	</li><li><b>A name for the server</b>. The name is used so that other
-		players can select the right server if more than one Ultimate
-		Stunts server runs on the network, e.g. on a LAN-party.
-	</li><li><b>The minimum number of players</b>. The game will not start
-		until this minimum number of players is reached.
-	</li>
-</ul>
-
-<h3>All other players</h3>
-Then, all other players need to join the game that has been created. After
-selecting the port number, Ultimate Stunts searches for servers on the local
-network. This will take several seconds. If no server is found, then you can
-try to select the server manually by entering the hostname or IP-number of the
-server. This may be necessary if the server is somewhere far away on the
-internet, or even when the server is in another subnet.
-<p>
-If one server is found, Ultimate Stunts automatically connects to that server.
-If more than one server is found, then the user can select one from a menu.
+<a name="exit"></a><h1>Exit</h1>
+Ultimate Stunts can be a nice game, but there is a time for everything, and
+it is definitely not healthy to play computer games all day. Please use your
+time responsibly, and select this menu option if you really should be doing
+other things.
 
 </body></html>
 
