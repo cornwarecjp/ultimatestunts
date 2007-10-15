@@ -166,46 +166,6 @@ bool CEditTrack::save(const CString &filename) const
 		}
 	}
 
-	/*
-	//Search for start/finish
-	for(int y=0; y<m_H; y++)
-		for(int z=0; z<m_W; z++)
-			for(int x=0; x<m_L; x++)
-			{
-				int n = y + m_H * (z+m_W*x);
-				const STile &t = m_Track[n];
-				CParamList pl =
-					m_DataManager->getObject(CDataObject::eTileModel, t.m_Model)->getParamList();
-
-				CString flags = pl.getValue("flags", "");
-				if(flags.inStr('s') >= 0)
-				{
-					//Start/finish
-					tfile.writel(CString(x)+","+z+","+y+":0.0");
-
-					//Tile after start/finish (not always correct)
-					int x2 = x, z2 = z;
-					switch(t.m_R % 4)
-					{
-					case 0: z2--; break;
-					case 1: x2--; break;
-					case 2: z2++; break;
-					case 3: x2++; break;
-					}
-
-					for(int y2=m_H-1; y2>=0; y2--)
-						if(m_Track[y2 + m_H * (z2+m_W*x2)].m_Model > 0)
-						{
-							tfile.writel(CString(x2)+","+z2+","+y2+":2.0");
-							break;
-						}
-
-					//Start/finish again
-					tfile.writel(CString(x)+","+z+","+y+":4.0");
-				}
-			}
-	*/
-
 	tfile.writel("END");
 	tfile.writel("");
 
@@ -240,6 +200,27 @@ bool CEditTrack::import(const CString &filename)
 	//Load the template track
 	load(templatefile, CParamList());
 
+	//Skybox handling
+	switch(trk.m_Skybox)
+	{
+	case 0: //desert
+		m_HorizonFilename = conf.getValue("trkimport", "background_desert");
+		break;
+	case 1: //tropical
+		m_HorizonFilename = conf.getValue("trkimport", "background_tropical");
+		break;
+	case 2: //alpine
+		m_HorizonFilename = conf.getValue("trkimport", "background_alpine");
+		break;
+	case 3: //city
+		m_HorizonFilename = conf.getValue("trkimport", "background_city");
+		break;
+	case 4: //country
+		m_HorizonFilename = conf.getValue("trkimport", "background_country");
+		break;
+	}
+
+	//Load tile data
 	for(unsigned int y=0; y<30; y++)
 	for(unsigned int x=0; x<30; x++)
 	{

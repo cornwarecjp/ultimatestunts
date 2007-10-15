@@ -39,9 +39,12 @@ public:
 	void draw(unsigned int w, unsigned int h, eShowMode mode = eFull);
 
 protected:
-	CTexture m_BackgroundTexture, m_SteerTexture;
+	CTexture *m_BackgroundTexture, *m_SteerTexture;
 
-	CTexture m_VelGaugeTex, m_RPMGaugeTex;
+	CTexture *m_CrashBackgroundTexture;
+	CTexture *m_CrashTexture;
+
+	CTexture *m_VelGaugeTex, *m_RPMGaugeTex;
 
 	SCarDashboardInfo m_Info;
 

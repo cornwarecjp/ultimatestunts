@@ -37,7 +37,7 @@ public:
 	//Public API:
 	vector<CClientNet::SBroadcastResult> getServerList();
 	bool setServer(const CString &name, unsigned int port); //add or change
-	void removeServer();
+	void removeServer(unsigned int port);
 
 protected:
 	CString m_Hostname, m_URI;
@@ -46,10 +46,21 @@ protected:
 	unsigned int m_SockFD;
 	bool m_Connected;
 
+	bool m_IsChunked;
+	unsigned int m_DataLength;
+
+	CString getLineFromStr(CString &buffer);
+	void urlEncode(CString &str);
+
 	//HTTP-level
 	bool httpGet(const CString &args);
 	bool httpPost(const CString &args, const CString &data);
+
 	CString httpReceiveResponse();
+	CString httpReadBodyChunked();
+	CString httpReadBodyNormal();
+	bool httpReadHeaders();
+	CString httpReadHeaderLine(CString &name);
 
 	//Read-and-write-utilities
 	CString readLine();

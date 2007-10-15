@@ -88,7 +88,7 @@ float CTimer::getF()
 	return (1.0 / getdt());
 }
 
-float CTimer::getTime() const
+float CTimer::getTime()
 {
 #ifdef USE_SDL
 	return ((float)SDL_GetTicks())/1000.0;

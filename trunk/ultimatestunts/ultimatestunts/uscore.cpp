@@ -31,7 +31,7 @@ CUSCore::CUSCore(CGameWinSystem *winsys, CSound *soundsys)
 	m_SoundSystem = soundsys;
 
 	printf("---Renderer\n");
-	m_Renderer = new CGameRenderer(winsys);
+	m_Renderer = new CGameRenderer;
 	m_Console = new CConsole(winsys);
 
 	m_NumCameras = 0;
@@ -74,19 +74,23 @@ bool CUSCore::addCamera(unsigned int objid)
 	return true;
 }
 
-void CUSCore::readyAndLoad(LoadStatusCallback callBackFun)
+bool CUSCore::readyAndLoad(LoadStatusCallback callBackFun)
 {
-	CGameCore::readyAndLoad(callBackFun);
+	if(!CGameCore::readyAndLoad(callBackFun)) return false;
 
 	printf("Setting cameras\n");
 	m_Renderer->setCameras(m_Cameras, m_NumCameras);
 	m_SoundSystem->setCamera(m_Cameras[0]); //first camera
 
 	m_FPS = 0.0; //to begin with
+	return true;
 }
 
 bool CUSCore::update()
 {
+	//Simulation update
+	if(!CGameCore::update()) return false;
+
 	bool retval = true;
 
 	//Escape:
@@ -98,6 +102,7 @@ bool CUSCore::update()
 		CGameCamera *theCam = (CGameCamera *)m_Cameras[i];
 		if(m_WinSys->playerKeyWasPressed(eCameraChange, i)) theCam->swithCameraMode();
 		if(m_WinSys->playerKeyWasPressed(eCameraToggle, i)) theCam->switchTrackedObject();
+		m_Cameras[i]->update();
 	}
 
 	//Next song:
@@ -106,20 +111,10 @@ bool CUSCore::update()
 	//Debug messages
 	theWorld->printDebug = m_WinSys->getKeyState('d');
 
-	retval = retval && CGameCore::update();
-
-	for(unsigned int i=0; i < m_NumCameras; i++)
-		m_Cameras[i]->update();
-
-
-	static float topspeed = 0.0;
-
-
 	//Debugging and text output display:
 	m_Console->clear();
 	m_Console->print(CString().format( _("Frame rate: %.1f FPS"), 80, m_FPS ));
-	m_Console->print(CString().format( _("Top speed in this session: %.1f km/h"), 80,
-		(float)(topspeed*3.6) ));
+	/*
 	for(unsigned int i=0; i<m_World->getNumObjects(CDataObject::eMovingObject); i++)
 	{
 		CMovingObject *mo = m_World->getMovingObject(i);
@@ -138,6 +133,7 @@ bool CUSCore::update()
 			//m_Console->setMessage("test", 2.0);
 		}
 	}
+	*/
 
 	//Update the output:
 	m_Renderer->update();

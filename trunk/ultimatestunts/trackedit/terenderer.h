@@ -19,7 +19,6 @@
 #define TERENDERER_H
 
 #include "renderer.h"
-#include "winsystem.h"
 #include "temanager.h"
 #include "edittrack.h"
 
@@ -29,7 +28,7 @@
 
 class CTERenderer : public CRenderer  {
 public: 
-	CTERenderer(const CWinSystem *winsys);
+	CTERenderer();
 	~CTERenderer();
 
 	void update();

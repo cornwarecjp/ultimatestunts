@@ -1,5 +1,5 @@
 /***************************************************************************
-                          soundobj.cpp  -  description
+                          soundobj.cpp  -  A sound channel object
                              -------------------
     begin                : di feb 25 2003
     copyright            : (C) 2003 by CJP
@@ -14,10 +14,12 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#include <stdlib.h>
 
-#include "soundobj.h"
-#include "lconfig.h"
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#include <stdlib.h>
 
 #ifdef HAVE_LIBFMOD
 
@@ -37,6 +39,10 @@
 
 #endif
 
+#include "lconfig.h"
+#include "timer.h"
+
+#include "soundobj.h"
 
 CSoundObj::CSoundObj(int movingobjectID, bool looping)
 {
@@ -44,6 +50,8 @@ CSoundObj::CSoundObj(int movingobjectID, bool looping)
 	m_Looping = looping;
 	m_Pos.x = m_Pos.y = m_Pos.z = 0;
 	m_Vel.x = m_Vel.y = m_Vel.z = 0;
+
+	m_PlayStartTime = CTimer::getTime();
 
 	m_CurrentSample = NULL;
 
@@ -53,6 +61,8 @@ CSoundObj::CSoundObj(int movingobjectID, bool looping)
 		{alSourcei(m_Source, AL_LOOPING, AL_TRUE);}
 	else
 		{alSourcei(m_Source, AL_LOOPING, AL_FALSE);}
+
+	alSourcef(m_Source, AL_REFERENCE_DISTANCE, 10.0);
 
 	m_WorkaroundPitchBug =
 		theMainConfig->getValue("workaround", "openal_008_pitch") == "true";
@@ -90,12 +100,17 @@ int CSoundObj::setSample(CSndSample *s)
 		FSOUND_SetLoopMode(m_Channel, FSOUND_LOOP_OFF);
 		FSOUND_SetPaused(m_Channel, 1);
 	}
+
+	FSOUND_3D_SetMinMaxDistance(m_Channel, 10.0, 200.0);
 #endif
 
 #ifdef HAVE_LIBOPENAL
 	s->attachToChannel(m_Source);
 	if(m_Looping)
+	{
+		setVolume(0); //initial volume
 		alSourcePlay(m_Source);
+	}
 #endif
 
 	return 0;
@@ -105,14 +120,14 @@ void CSoundObj::setPos(CVector p)
 {
 	m_Pos = p;
 #ifdef HAVE_LIBFMOD
-	float parr[] = {m_Pos.x/10, m_Pos.y/10, -m_Pos.z/10};
-	float varr[] = {m_Vel.x/10, m_Vel.y/10, -m_Vel.z/10};
+	float parr[] = {m_Pos.x, m_Pos.y, -m_Pos.z};
+	float varr[] = {m_Vel.x, m_Vel.y, -m_Vel.z};
 	//printf("Setting sound pos to (%f,%f,%f)\n", p.x, p.y, p.z);
 	FSOUND_3D_SetAttributes(m_Channel, parr, varr);
 #endif
 
 #ifdef HAVE_LIBOPENAL
-	alSource3f(m_Source, AL_POSITION, p.x/10, p.y/10, p.z/10);
+	alSource3f(m_Source, AL_POSITION, p.x, p.y, p.z);
 #endif
 }
 
@@ -120,13 +135,13 @@ void CSoundObj::setVel(CVector v)
 {
 	m_Vel = v;
 #ifdef HAVE_LIBFMOD
-	float parr[] = {m_Pos.x/10, m_Pos.y/10, -m_Pos.z/10};
-	float varr[] = {m_Vel.x/10, m_Vel.y/10, -m_Vel.z/10};
+	float parr[] = {m_Pos.x, m_Pos.y, -m_Pos.z};
+	float varr[] = {m_Vel.x, m_Vel.y, -m_Vel.z};
 	FSOUND_3D_SetAttributes(m_Channel, parr, varr);
 #endif
 
 #ifdef HAVE_LIBOPENAL
-	alSource3f(m_Source, AL_VELOCITY, v.x/10, v.y/10, v.z/10);
+	alSource3f(m_Source, AL_VELOCITY, v.x, v.y, v.z);
 #endif
 }
 
@@ -135,8 +150,8 @@ void CSoundObj::setPosVel(CVector p, CVector v)
 	m_Pos = p;
 	m_Vel = v;
 #ifdef HAVE_LIBFMOD
-	float parr[] = {m_Pos.x/10, m_Pos.y/10, -m_Pos.z/10};
-	float varr[] = {m_Vel.x/10, m_Vel.y/10, -m_Vel.z/10};
+	float parr[] = {m_Pos.x, m_Pos.y, -m_Pos.z};
+	float varr[] = {m_Vel.x, m_Vel.y, -m_Vel.z};
 	FSOUND_3D_SetAttributes(m_Channel, parr, varr);
 #endif
 
@@ -167,6 +182,8 @@ void CSoundObj::setFrequency(float f)
 
 void CSoundObj::setVolume(int v)
 {
+	m_Volume = v;
+
 #ifdef HAVE_LIBFMOD
 	FSOUND_SetVolume(m_Channel, v);
 #endif
@@ -176,19 +193,45 @@ void CSoundObj::setVolume(int v)
 #endif
 }
 
+int CSoundObj::getVolume() const
+{
+#ifdef HAVE_LIBOPENAL
+	ALfloat volume;
+	alGetSourcef(m_Source, AL_GAIN, &volume);
+	return int(255 * volume);
+#endif
+
+	return m_Volume;
+}
+
 void CSoundObj::playOnce()
 {
 #ifdef HAVE_LIBFMOD
 	if(m_CurrentSample == NULL) return;
+
+	FSOUND_SetPaused(m_Channel, 1);
 	m_CurrentSample->attachToChannel(m_Channel);
 	FSOUND_SetCurrentPosition(m_Channel, 0);
 	FSOUND_SetLoopMode(m_Channel, FSOUND_LOOP_OFF);
 	FSOUND_SetPaused(m_Channel, 0);
+	
+	//It seems that the state needs to be reloaded
+	setPosVel(m_Pos, m_Vel);
+	FSOUND_SetVolume(m_Channel, m_Volume);
 #endif
 
 #ifdef HAVE_LIBOPENAL
 	alSourcePlay(m_Source);
 #endif
 
+	m_PlayStartTime = CTimer::getTime();
+
 	//printf("CSoundObj::playOnce() called\n");
 }
+
+float CSoundObj::getPlayTime() const
+{
+	return CTimer::getTime() - m_PlayStartTime;
+}
+
+

@@ -28,7 +28,7 @@
 //TODO: remove this when not debugging
 CTimer _DebugTimer;
 
-CGameRenderer::CGameRenderer(const CWinSystem *winsys) : CRenderer(winsys)
+CGameRenderer::CGameRenderer()
 {
 	m_GraphicWorld = new CGraphicWorld();
 	m_NumCameras = 1;
@@ -273,8 +273,8 @@ void CGameRenderer::updateReflections()
 
 void CGameRenderer::selectCamera(unsigned int n, bool threed)
 {
-	unsigned int sw = m_WinSys->getWidth();
-	unsigned int sh = m_WinSys->getHeight();
+	unsigned int sw = theWinSystem->getWidth();
+	unsigned int sh = theWinSystem->getHeight();
 
 	//default for 1 camera:
 	unsigned int x = 0, y = 0, w = sw, h = sh;

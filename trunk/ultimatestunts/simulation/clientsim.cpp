@@ -17,6 +17,7 @@
 
 #include <cstdio>
 
+#include "timer.h"
 #include "clientsim.h"
 #include "textmessage.h"
 #include "movingobject.h"
@@ -39,13 +40,19 @@ CString CClientSim::getTrackname(CGameCore::LoadStatusCallback callBackFun)
 {
 	m_Net->sendTextMessage(USNET_READY);
 
-	while(true)
+	float t = CTimer::getTime();
+	float t_lastcontact = t;
+	while(t - t_lastcontact < 10.0)
 	{
+		t = CTimer::getTime();
+
 		m_Net->sendTextMessage(USNET_STATUS); //request for status
 
 		CMessageBuffer *buf = m_Net->receiveExpectedData(CMessageBuffer::textMessage, 500); //0.5 second
 		if(buf != NULL)
 		{
+			t_lastcontact = t;
+
 			CTextMessage tm;
 			tm.setBuffer(*buf);
 
@@ -62,11 +69,12 @@ CString CClientSim::getTrackname(CGameCore::LoadStatusCallback callBackFun)
 			//We received a status update:
 			CString sts = USNET_STATUS;
 			if(callBackFun != NULL && tm.m_Message.mid(0,sts.length()) == sts)
-				callBackFun(tm.m_Message.mid(sts.length()), -1.0);
+				if(!callBackFun(tm.m_Message.mid(sts.length()), -1.0))
+					return ""; //user wants to quit
 		}
 	}
 
-	return "tracks/default.track"; //we'll never reach this anyway
+	return ""; //Timeout
 }
 
 bool CClientSim::update()

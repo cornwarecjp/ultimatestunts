@@ -13,8 +13,8 @@ INCLUDES = -I$(top_srcdir)/graphics -I$(top_srcdir)/intl -I$(top_srcdir)/shared 
 
 # the library search path.
 ustuntstrackedit_LDFLAGS = $(all_libraries) 
-noinst_HEADERS = tileselect.h actionwidget.h
+noinst_HEADERS = tileselect.h actionwidget.h replaceactionwidget.h compass.h
 noinst_LIBRARIES = libtrackedit.a
-libtrackedit_a_SOURCES = actionwidget.cpp edittrack.cpp mainpage.cpp\
-	replaceaction.cpp tecamera.cpp tegui.cpp temanager.cpp terenderer.cpp\
-	tileselect.cpp trackdocument.cpp trkfile.cpp
+libtrackedit_a_SOURCES = actionwidget.cpp edittrack.cpp \
+		mainpage.cpp	replaceaction.cpp tecamera.cpp tegui.cpp temanager.cpp terenderer.cpp	tileselect.cpp \
+		trackdocument.cpp trkfile.cpp replaceactionwidget.cpp compass.cpp

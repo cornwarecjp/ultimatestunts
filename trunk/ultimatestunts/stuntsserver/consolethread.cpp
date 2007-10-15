@@ -74,6 +74,12 @@ void CConsoleThread::cmd_start()
 
 void CConsoleThread::cmd_stop()
 {
+	if(!gamecorethread.isRunning())
+	{
+		printf("Gamecore thread was not running\n");
+		return;
+	}
+
 	printf("Stopping gamecore thread\n");
 	if(!gamecorethread.stop())
 		printf("For some reason, stopping the thread failed\n");
@@ -123,8 +129,10 @@ void CConsoleThread::cmd_set(const CString &args)
 			{gamecorethread.m_Trackfile = val;}
 		else if(var=="port")
 		{
+			bool wasOnline = m_IsOnline;
+			if(wasOnline) cmd_offline();
 			networkthread.setPort(val.toInt());
-			if(m_IsOnline) updateMetaServerData();
+			if(wasOnline) updateMetaServerData();
 		}
 		else if(var=="serverName")
 		{
@@ -219,7 +227,7 @@ void CConsoleThread::cmd_offline()
 {
 	if(!m_IsOnline) return;
 	CMetaServer meta;
-	meta.removeServer();
+	meta.removeServer(networkthread.getPort());
 	m_IsOnline = false;
 }
 

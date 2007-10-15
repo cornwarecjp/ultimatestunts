@@ -58,7 +58,8 @@ libtrackedit_a_LIBADD =
 am_libtrackedit_a_OBJECTS = actionwidget.$(OBJEXT) edittrack.$(OBJEXT) \
 	mainpage.$(OBJEXT) replaceaction.$(OBJEXT) tecamera.$(OBJEXT) \
 	tegui.$(OBJEXT) temanager.$(OBJEXT) terenderer.$(OBJEXT) \
-	tileselect.$(OBJEXT) trackdocument.$(OBJEXT) trkfile.$(OBJEXT)
+	tileselect.$(OBJEXT) trackdocument.$(OBJEXT) trkfile.$(OBJEXT) \
+	replaceactionwidget.$(OBJEXT) compass.$(OBJEXT)
 libtrackedit_a_OBJECTS = $(am_libtrackedit_a_OBJECTS)
 am__installdirs = "$(DESTDIR)$(bindir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
@@ -229,11 +230,11 @@ INCLUDES = -I$(top_srcdir)/graphics -I$(top_srcdir)/intl -I$(top_srcdir)/shared 
 
 # the library search path.
 ustuntstrackedit_LDFLAGS = $(all_libraries) 
-noinst_HEADERS = tileselect.h actionwidget.h
+noinst_HEADERS = tileselect.h actionwidget.h replaceactionwidget.h compass.h
 noinst_LIBRARIES = libtrackedit.a
-libtrackedit_a_SOURCES = actionwidget.cpp edittrack.cpp mainpage.cpp\
-	replaceaction.cpp tecamera.cpp tegui.cpp temanager.cpp terenderer.cpp\
-	tileselect.cpp trackdocument.cpp trkfile.cpp
+libtrackedit_a_SOURCES = actionwidget.cpp edittrack.cpp \
+		mainpage.cpp	replaceaction.cpp tecamera.cpp tegui.cpp temanager.cpp terenderer.cpp	tileselect.cpp \
+		trackdocument.cpp trkfile.cpp replaceactionwidget.cpp compass.cpp
 
 all: all-am
 
@@ -309,10 +310,12 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/actionwidget.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/compass.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/edittrack.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mainpage.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/replaceaction.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/replaceactionwidget.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tecamera.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tegui.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/temanager.Po@am__quote@

@@ -26,13 +26,11 @@
 /**
 	@author CJP <cornware-cjp@users.sourceforge.net>
 */
-class CTileSelect : public CActionWidget
+class CTileSelect : public CWidget
 {
 public:
 	CTileSelect();
 	virtual ~CTileSelect();
-
-	virtual int onKeyPress(int key);
 
 	virtual int onMouseClick(int x, int y, unsigned int buttons);
 	virtual int onMouseMove(int x, int y, unsigned int buttons);
@@ -40,10 +38,15 @@ public:
 	virtual int onIdle();
 	virtual int onRedraw();
 
+	void setSelection(unsigned int sel);
+	unsigned int getSelection() const
+		{return m_Selection;}
 protected:
 	CRenderWidget *m_RenderWidget;
 	CObjectViewer *m_ObjectViewer;
 	CTECamera m_Camera;
+
+	unsigned int m_Selection;
 };
 
 #endif

@@ -1,8 +1,8 @@
 /***************************************************************************
-                          collisiondata.cpp  -  description
+                          compass.h  -  A compass for navigating through the world
                              -------------------
-    begin                : do aug 19 2004
-    copyright            : (C) 2004 by CJP
+    begin                : ma sep 24 2007
+    copyright            : (C) 2007 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
 
@@ -14,21 +14,38 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
+#ifndef CCOMPASS_H
+#define CCOMPASS_H
 
-#include "collisiondata.h"
+#include "widget.h"
+#include "renderer.h"
 
-CCollisionData::CCollisionData()
+/**
+	@author CJP <cornware-cjp@users.sourceforge.net>
+*/
+
+class CCompass : public CWidget, CRenderer
 {
-	depth = 0.0;
-	fatal = false;
-}
+public:
+	CCompass();
+	~CCompass();
 
-float CCollisionData::getTangVel() const
-{
-	return (vdiff - vdiff.component(nor)).abs();
-}
+	//CRenderer wrappers:
+	void setCamera(const CCamera *cam)
+		{CRenderer::setCamera(cam);}
 
-float CCollisionData::getRadVel() const
-{
-	return vdiff.component(nor).abs();
-}
+	virtual int onMouseMove(int x, int y, unsigned int buttons);
+	virtual int onMouseClick(int x, int y, unsigned int buttons);
+	virtual int onRedraw();
+
+	enum eSelection {eNone, eXup, eXdn, eYup, eYdn, eZup, eZdn} m_Selection;
+
+protected:
+	virtual void updateScreenSize();
+
+	void setColor(bool selected);
+	void drawCompass();
+	void drawUpDown();
+};
+
+#endif

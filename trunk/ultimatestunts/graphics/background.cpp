@@ -41,7 +41,10 @@ bool CBackground::load(const CString &filename, const CParamList &list)
 		CDataFile f(m_ParamList.getValue("horizon", "[NO HORIZON FILENAME PROVIDED]"));
 		RGBImageRec *in_image = loadImage(f.useExtern());
 	
-		image = scaleImage(in_image, m_Sizex, m_Sizey);
+		int sx = list.getValue("sizex", "256").toInt();
+		int sy = list.getValue("sizey", "256").toInt();
+
+		image = scaleImage(in_image, sx, sy);
 		if(image==NULL)
 		{
 			image = in_image; //in_image is not freed because we use it

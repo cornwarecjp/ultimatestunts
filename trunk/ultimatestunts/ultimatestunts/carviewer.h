@@ -26,7 +26,7 @@
 
 class CCarViewer : public CObjectViewer {
 public: 
-	CCarViewer(const CWinSystem *winsys, CDataManager *world);
+	CCarViewer(CDataManager *world);
 	virtual ~CCarViewer();
 
 	virtual void update();

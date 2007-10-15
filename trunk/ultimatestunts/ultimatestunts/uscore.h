@@ -45,7 +45,7 @@ public:
 
 	virtual bool update(); //true = continue false = leave
 
-	virtual void readyAndLoad(LoadStatusCallback callBackFun = NULL);
+	virtual bool readyAndLoad(LoadStatusCallback callBackFun = NULL);
 
 	CGraphicWorld *getGraphicWorld();
 

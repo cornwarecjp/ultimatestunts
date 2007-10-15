@@ -234,10 +234,6 @@ bool CTrack::load(const CString &filename, const CParamList &list)
 
 	//Fourth: loading the possible routes
 	
-	//unsigned int counter = 0; //counts how many tiles we've had
-	//bool isAlternative = false; //Are we tracking an alternative (not fastest) route?
-	//float timeOffset = 0.0; //this is added to tile times
-
 	//Find "BEGIN"
 	if(!findBeginTag(tfile))
 	{
@@ -254,7 +250,6 @@ bool CTrack::load(const CString &filename, const CParamList &list)
 		if(pos > 0 && !(line.inStr('#') >=0 && pos > line.inStr('#')) )
 		{
 			CVector p = line.mid(0, pos).toVector();
-			//float time = line.mid(pos+1).toFloat();
 
 			bool isEnd = line.mid(pos+1).toLower().inStr("end") >= 0;
 

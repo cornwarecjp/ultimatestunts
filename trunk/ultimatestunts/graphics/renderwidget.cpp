@@ -36,19 +36,7 @@ int CRenderWidget::onRedraw()
 {
 	CWidget::onRedraw();
 
-	//Workaround for an ugly bug in the intel i815 openGL driver for Linux
-	//TODO: contact the driver maintainer and remove this workaround
-	//This workaround should do approximately the same as:
-	//glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	{
-		glDisable(GL_SCISSOR_TEST);
-		glClear(GL_DEPTH_BUFFER_BIT);
-		glEnable(GL_SCISSOR_TEST);
-
-		glColor3f(0,0,0);
-		drawBackground();
-		glColor3f(1,1,1);
-	}
+	_clear3DArea(m_W, m_H);
 
 	if(m_Renderer != NULL)
 	{
@@ -75,10 +63,10 @@ int CRenderWidget::onIdle()
 	return 0;
 }
 
-void CRenderWidget::enter2DMode()
+void _enter2DMode(unsigned int x, unsigned int y, bool depth, bool fog)
 {
-	if(m_EnableDepth) glDisable(GL_DEPTH_TEST);
-	if(m_EnableFog)   glDisable(GL_FOG);
+	if(depth) glDisable(GL_DEPTH_TEST);
+	if(fog)   glDisable(GL_FOG);
 	glDisable(GL_LIGHTING);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
 
@@ -94,17 +82,49 @@ void CRenderWidget::enter2DMode()
 	glLoadIdentity();
 	glViewport(0, 0, w, h);
 
-	glTranslatef(m_X, m_Y, 0);
+	glTranslatef(x, y, 0);
 }
 
-void CRenderWidget::leave2DMode()
+void _clear3DArea(unsigned int w, unsigned int h)
+{
+	//Workaround for an ugly bug in the intel i815 openGL driver for Linux
+	//TODO: contact the driver maintainer and remove this workaround
+	//This workaround should do approximately the same as:
+	//glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	{
+		glDisable(GL_SCISSOR_TEST);
+		glClear(GL_DEPTH_BUFFER_BIT);
+		glEnable(GL_SCISSOR_TEST);
+
+		glColor3f(0,0,0);
+		glBegin(GL_QUADS);
+		glVertex2f(2,2);
+		glVertex2f(w-2,2);
+		glVertex2f(w-2,h-2);
+		glVertex2f(2,h-2);
+		glEnd();
+		glColor3f(1,1,1);
+	}
+}
+
+void _leave2DMode(bool depth, bool fog)
 {
 	glEnable(GL_LIGHTING);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
-	if(m_EnableDepth) glEnable(GL_DEPTH_TEST);
-	if(m_EnableFog) glEnable(GL_FOG);
+	if(depth) glEnable(GL_DEPTH_TEST);
+	if(fog) glEnable(GL_FOG);
 
 	//glDisable(GL_SCISSOR_TEST);
+}
+
+void CRenderWidget::enter2DMode()
+{
+	_enter2DMode(m_X, m_Y, m_EnableDepth, m_EnableFog);
+}
+
+void CRenderWidget::leave2DMode()
+{
+	_leave2DMode(m_EnableDepth, m_EnableFog);
 }
 

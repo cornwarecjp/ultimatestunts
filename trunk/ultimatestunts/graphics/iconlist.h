@@ -28,7 +28,11 @@ public:
 	CIconList();
 	~CIconList();
 
-	enum eIconID {eLoad=0, eSave=1, eUndo=2, eRedo=3, eQuit=4, eHelp=5, eImport=6, eNone};
+	enum eIconID {
+		eLoad=0, eSave=1, eUndo=2, eRedo=3, eQuit=4, eHelp=5, eImport=6,
+		eRotateTile=8, eCombineTiles=9, eOK = 10, eDelete=11,
+		eNone
+		};
 
 	void enable();
 	void disable();

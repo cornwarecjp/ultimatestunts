@@ -29,7 +29,8 @@
 #include "renderwidget.h"
 #include "label.h"
 #include "iconbar.h"
-#include "tileselect.h"
+#include "compass.h"
+#include "replaceactionwidget.h"
 
 #include "iconlist.h"
 
@@ -56,7 +57,8 @@ protected:
 	CRenderWidget *m_RenderWidget;
 	CLabel *m_HintLabel, *m_FilanemeLabel;
 	CIconBar *m_IconBar;
-	CTileSelect *m_TileSelect;
+	CCompass *m_Compass;
+	CReplaceActionWidget *m_ActionWidget;
 
 	CTERenderer *m_Renderer;
 	CTECamera *m_Camera;

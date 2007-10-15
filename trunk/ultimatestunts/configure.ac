@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT([Ultimate Stunts], [0.7.2], [cornware-cjp@users.sourceforge.net], [ultimatestunts])
+AC_INIT([Ultimate Stunts], [0.7.3], [cornware-cjp@users.sourceforge.net], [ultimatestunts])
 AC_CONFIG_SRCDIR([ultimatestunts/main.cpp])
 AM_CONFIG_HEADER(config.h)
 AC_CANONICAL_TARGET

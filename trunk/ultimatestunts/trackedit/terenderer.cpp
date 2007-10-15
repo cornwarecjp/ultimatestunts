@@ -24,7 +24,7 @@
 
 #include "trackdocument.h"
 
-CTERenderer::CTERenderer(const CWinSystem *winsys) : CRenderer(winsys)
+CTERenderer::CTERenderer()
 {
 	camx = camy = camz = 0;
 	tgtx = tgty = tgtz = 0;

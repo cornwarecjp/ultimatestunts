@@ -30,7 +30,7 @@
 
 class CGameRenderer : public CRenderer  {
 public: 
-	CGameRenderer(const CWinSystem *winsys);
+	CGameRenderer();
 	virtual ~CGameRenderer();
 
 	virtual bool reloadConfiguration();

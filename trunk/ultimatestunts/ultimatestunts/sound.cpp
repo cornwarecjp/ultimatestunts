@@ -26,7 +26,6 @@
 #ifdef FMOD_HEADER
 #include <fmod/fmod.h>
 #include <fmod/fmod_errors.h>
-#include <fmod/wincompat.h> //debugging
 #endif
 
 #ifdef OPENAL_HEADER
@@ -54,8 +53,6 @@ void musicEndCallback()
 
 CSound::CSound()
 {
-	CLConfig &conf = *theMainConfig;
-
 #ifdef HAVE_LIBOPENAL
 	int argc = 1;
 	char *argv[1];
@@ -68,11 +65,13 @@ CSound::CSound()
 	}
 
 	alListenerf(AL_GAIN, 1.0);
-	alDopplerFactor(1.0);
-	alDopplerVelocity(340.0);
+	alSpeedOfSound(343.3);
+	alDistanceModel(AL_INVERSE_DISTANCE_CLAMPED);
 #endif
 
 #ifdef HAVE_LIBFMOD
+	CLConfig &conf = *theMainConfig;
+
 	//Initialising the sound library:
 	CString drivername = "nosound"; //Default for unknown system types
 
@@ -126,21 +125,44 @@ CSound::CSound()
 
 	printf("   Loaded driver: %s\n", FSOUND_GetDriverName(FSOUND_GetDriver()) );
 
-  // INITIALIZE
-  if (!FSOUND_Init(44100, 32, 0))
-  {
-    printf("  Init: %s\n", FMOD_ErrorString(FSOUND_GetError()));
-    return;
-  }
+	// INITIALIZE
+	if (!FSOUND_Init(44100, 32, 0))
+	{
+		printf("  Init: %s\n", FMOD_ErrorString(FSOUND_GetError()));
+		return;
+	}
+
+	FSOUND_3D_SetRolloffFactor(1.0);
 #endif //libfmod
 
 
 	//The sound world:
 	m_SoundWorld = new CSoundWorld();
 
+	m_Music = NULL;
+	m_MusicObject = NULL;
+
+	reloadConfiguration();
+
+	//Loading music data:
+	playNextSong();
+}
+
+bool CSound::reloadConfiguration()
+{
+	CLConfig &conf = *theMainConfig;
+
+	//TODO: driver settings
+
+	//OpenAL doppler is not yet bug-free:
+	alDopplerFactor(conf.getValue("workaround", "openal_008_dopplerfactor").toFloat());
+
 	m_MusicVolume = conf.getValue("sound", "musicvolume").toInt();
 	m_SoundVolume = conf.getValue("sound", "soundvolume").toInt();
 
+	if(m_MusicObject != NULL) m_MusicObject->setVolume(m_MusicVolume);
+
+	//Re-checking music playlist
 	//Defining the playlist
 	vector<CString> wavfiles = getDataDirContents("music", ".wav");
 	vector<CString> mp3files = getDataDirContents("music", ".mp3");
@@ -152,25 +174,6 @@ CSound::CSound()
 		m_Playlist.push_back(oggfiles[i]);
 	for(unsigned int i=0; i < m_Playlist.size(); i++)
 		m_Playlist[i] = CString("music/") + m_Playlist[i];
-
-	//Loading data:
-	m_Music = NULL;
-	m_MusicObject = NULL;
-	playNextSong();
-}
-
-bool CSound::reloadConfiguration()
-{
-	CLConfig &conf = *theMainConfig;
-
-	//TODO: driver settings
-
-	m_MusicVolume = conf.getValue("sound", "musicvolume").toInt();
-	m_SoundVolume = conf.getValue("sound", "soundvolume").toInt();
-
-	if(m_MusicObject != NULL) m_MusicObject->setVolume(m_MusicVolume);
-
-	//TODO: re-check music playlist
 
 	return true;
 }
@@ -253,14 +256,35 @@ void CSound::update()
 	float ori_arr[] =
 		{-ori.Element(0,2), -ori.Element(1,2), -ori.Element(2,2),
 		  ori.Element(0,1),  ori.Element(1,1),  ori.Element(2,1)};
-	alListener3f(AL_POSITION, p.x/10, p.y/10, p.z/10);
-	alListener3f(AL_VELOCITY, v.x/10, v.y/10, v.z/10);
+	alListener3f(AL_POSITION, p.x, p.y, p.z);
+	alListener3f(AL_VELOCITY, v.x, v.y, v.z);
 	alListenerfv(AL_ORIENTATION, ori_arr);
+
+	//Debug:
+	/*
+	{
+		CSoundObj *chn = m_SoundWorld->m_Channels[0];
+		const CMovingObject *o = theWorld->getMovingObject(chn->getMovingObjectID());
+		CVector SV = o->m_Velocity;
+		CVector LV = m_Camera->getVelocity();
+		CVector SL = m_Camera->getPosition() - o->m_Position;
+		float SS = 343.3;
+		float DF = 1.0;
+
+		float vls = SL.dotProduct(LV) / SL.abs();
+		float vss = SL.dotProduct(SV) / SL.abs();
+
+		float fmul = (SS - DF*vls) / (SS - DF*vss);
+		printf("fmul = %f\n", fmul);
+
+		//printf("dv = %s\n", CString(vCam - vObj).c_str());
+	}
+	*/
 #endif
 
 #ifdef HAVE_LIBFMOD
-	float pos[] = {p.x/10, p.y/10, -p.z/10};
-	float vel[] = {v.x/10, v.y/10, -v.z/10};
+	float pos[] = {p.x, p.y, -p.z};
+	float vel[] = {v.x, v.y, -v.z};
 	//Arguments: pos, vel, front x,y,z, top x,y,z
 	FSOUND_3D_Listener_SetAttributes(
 		&pos[0], &vel[0],
@@ -285,41 +309,83 @@ void CSound::update()
 			{
 			case CSoundObj::eSkid:
 			{
-				unsigned int vol = 0;
+				float vol = 0;
 				
 				for(unsigned int w=0; w < 4; w++)
 				{
-					vol += int(63 * theCar->m_Wheel[w].m_SkidVolume);
+					vol += 0.2 * theCar->m_Wheel[w].m_SkidVolume;
 				}
 
-				chn->setVolume((vol * m_SoundVolume) >> 8);
+				chn->setVolume(int(vol * m_SoundVolume));
 				break;
 			}
 			case CSoundObj::eEngine:
 			{
 				float engineRPS = theCar->m_Engine.m_MainAxisW * theCar->m_Engine.getGearRatio();
-				int vol = 100 + (int)(100 * theCar->m_Engine.m_Gas);
-				if(vol > 255) vol = 255;
-				chn->setFrequency(0.0025 * engineRPS); //correct for sound sample frequency & 2*pi
-				chn->setVolume((vol * m_SoundVolume) >> 8);
+				float vol = 0.2 + 0.4 * theCar->m_Engine.m_Gas;
+				if(vol > 1.0) vol = 1.0;
+				chn->setFrequency(engineRPS / theCar->m_EngineSoundBaseRPS);
+				chn->setVolume(int(vol * m_SoundVolume));
+				break;
+			}
+			case CSoundObj::eWallSkid:
+			{
+				//Calculate skid intensity
+				float intensity = 0.0;
+				for(unsigned int j=0; j < o->m_AllCollisions.size(); j++)
+				{
+					const CCollisionData &coll = o->m_AllCollisions[j];
+					float v = coll.getTangVel();
+					//printf("Collision %f\n", v);
+					if(0.02*v > intensity) intensity = 0.02*v; //max @ 50 m/s
+				}
+				if(intensity > 1.0) intensity = 1.0;
+
+				//printf("Intensity %f\n", intensity);
+				chn->setVolume(int(intensity * m_SoundVolume));
+
 				break;
 			}
 			case CSoundObj::eCrash:
-			{
-				bool doCrash = false;
-				float intensity = 1.0;
-				for(unsigned int j=0; j < o->m_AllCollisions.size(); j++)
+			case CSoundObj::eFatalCrash:
+				if(o->m_AllCollisions.size() != 0)
 				{
-					doCrash = true;
-					//const CCollisionData &coll = o->m_Collisions[j];
-				}
-				if(doCrash)
-				{
-					chn->setVolume(int(255*intensity));
-					chn->playOnce();
+					//Calculate crash intensity
+					float intensity = 0.0;
+					bool fatal = false;
+					for(unsigned int j=0; j < o->m_AllCollisions.size(); j++)
+					{
+						const CCollisionData &coll = o->m_AllCollisions[j];
+						float v = coll.getRadVel();
+						if(0.2*v > intensity) intensity = 0.2*v; //max @ 5 m/s
+
+						if(coll.fatal)
+							fatal = true;
+					}
+	
+					if(chn->m_SoundType == CSoundObj::eCrash)
+					{
+						if(intensity > 1.0) intensity = 1.0;
+						float newVolume = 1.0*intensity;
+
+						float oldVolume = float(chn->getVolume()) / float(m_SoundVolume);
+						float playTime = chn->getPlayTime();
+						oldVolume -= 0.5*playTime; //assumes fade-out in 2 sec.
+		
+						if(newVolume > oldVolume)
+						{
+							chn->setVolume(int(newVolume*m_SoundVolume));
+							chn->playOnce();
+						}
+					}
+
+					if(fatal && chn->m_SoundType == CSoundObj::eFatalCrash)
+					{
+						chn->setVolume(m_SoundVolume);
+						chn->playOnce();
+					}
 				}
 				break;
-			}
 			}
 		}
 	}

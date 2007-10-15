@@ -25,15 +25,19 @@
   */
 
 class CCollisionData {
-public: 
-	float getTangVel();
-	float getRadVel();
+public:
+	CCollisionData();
+
+	float getTangVel() const;
+	float getRadVel() const;
 
 	CVector pos;
 	CVector nor;
 	float depth;
 	CVector vmean;
 	CVector vdiff;
+
+	bool fatal; //to be filled by simulation; default: false
 };
 
 #endif

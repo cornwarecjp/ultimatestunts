@@ -20,7 +20,6 @@
 
 #include "lconfig.h"
 #include "camera.h"
-#include "winsystem.h"
 #include "graphicsettings.h"
 
 /**
@@ -29,7 +28,7 @@
 
 class CRenderer {
 public: 
-	CRenderer(const CWinSystem *winsys);
+	CRenderer();
 	virtual ~CRenderer();
 
 	virtual bool reloadConfiguration();
@@ -44,7 +43,6 @@ protected:
 	virtual void updateScreenSize(); //default: get from winsys
 
 	const CCamera *m_Camera;
-	const CWinSystem *m_WinSys;
 
 	float *m_FogColor;
 

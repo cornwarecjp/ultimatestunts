@@ -104,9 +104,9 @@ void CRuleControl::updateCarRules(unsigned int movObjIndex, CCar *car)
 	CVector pos = car->m_Position;
 
 	//integer position of the car
-	int x = (int)(0.5 + (pos.x)/TILESIZE);
-	int y = (int)(0.5 + (pos.y)/VERTSIZE);
-	int z = (int)(0.5 + (pos.z)/TILESIZE);
+	int x = (int)(0.5 + pos.x/TILESIZE);
+	int y = (int)(pos.y/VERTSIZE); if(pos.y < 0) y--;
+	int z = (int)(0.5 + pos.z/TILESIZE);
 	CTrack::CCheckpoint carpos;
 	carpos.x = x;
 	carpos.y = y;
@@ -517,10 +517,13 @@ bool CRuleControl::checkFinished()
 				break;
 			}
 
-			if(status.state == CCarRuleStatus::eFinished &&
+			if(
+				(status.state == CCarRuleStatus::eFinished ||
+				 status.state == CCarRuleStatus::eCrashed)
+					&&
 				theWorld->m_LastTime - status.finishTime < 3.0)
 			{
-				ret = false;  //wait some time after everybody is finished
+				ret = false;  //wait some time after everybody is finished or crashed
 				break;
 			}
 		}

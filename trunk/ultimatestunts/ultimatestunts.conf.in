@@ -116,21 +116,6 @@ compiledvertexarray = true
 
 
 
-
-#Various workarounds for compatibility issues
-[workaround]
-
-#Work around a pixel transfer bug in the
-#Linux DRI-driver for the Intel i815
-#cards
-dri_i815_pixeltransfer = false
-
-#Work around a bug in the pitch limits
-#of the OpenAL 0.0.8 implementation
-#from openal.org
-openal_008_pitch = true
-
-
 #Animation section
 [animation]
 
@@ -145,10 +130,57 @@ enable = true
 watertesselation = 10
 
 
+#Menu / user interface settings
+[user_interface]
+
+#Do you want a fancy OpenGL mouse cursor in the menus?
+#Setting this to false might increase responsiveness
+#in the menus.
+opengl_mousecursor = true
+
+
+#Language setting. If this is set to "system", then
+#the operating system's settings decide the language.
+#If the language is not supported, then english is
+#used.
+#Hint: use the following format:
+#language_country
+#for intance: de_DE, fr_FR, hu_HU, nl_NL, pt_BR
+#On some systems, you also need to add the codeset
+#for instance: nl_NL.UTF-8
+#For a list of locales that is supported on your system,
+#execute the command "locale -a"
+language = system
+
+
+#Various workarounds for compatibility issues
+[workaround]
+
+#Work around a pixel transfer bug in the
+#Linux DRI-driver for the Intel i815
+#cards
+dri_i815_pixeltransfer = false
+
+#Work around a bug in the pitch limits
+#of the OpenAL 0.0.8 implementation
+#from openal.org
+openal_008_pitch = true
+
+#Work around a bug in the doppler effect
+#of the OpenAL 0.0.8 implementation
+#from openal.org
+openal_008_dopplerfactor = 0.0
+
+
 #Files section
 [files]
 datadir = @usdatadir@
 savedir = ~/.ultimatestunts/saveddata/
+
+#Metaserver settings
+metaserver_hostname = www.ultimatestunts.nl
+metaserver_port = 80
+metaserver_filename = /metaserver.php
 
 #Sound section
 [sound]
@@ -172,7 +204,7 @@ linuxdriver = oss
 subdriver = ThIsIsNoTrEcOgNiSeDaSaDeViCe
 
 #Volumes [0..255]
-musicvolume = 168
+musicvolume = 128
 soundvolume = 128
 
 [simulation]
@@ -183,26 +215,6 @@ dtmin = 0.005
 #Maximum simulation steps per graphics frame
 Nmax = 50
 
-
-[misc]
-
-#Language setting. If this is set to "system", then
-#the operating system's settings decide the language.
-#If the language is not supported, then english is
-#used.
-#Hint: use the following format:
-#language_country
-#for intance: de_DE, fr_FR, hu_HU, nl_NL, pt_BR
-#On some systems, you also need to add the codeset
-#for instance: nl_NL.UTF-8
-#For a list of locales that is supported on your system,
-#execute the command "locale -a"
-language = system
-
-#Metaserver settings
-metaserver_hostname = www.ultimatestunts.nl
-metaserver_port = 80
-metaserver_filename = /metaserver.php
 
 #Global keys
 [input_global]

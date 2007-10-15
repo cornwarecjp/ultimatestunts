@@ -18,13 +18,13 @@
 #include <cmath>
 #include <GL/gl.h>
 
-#include "renderer.h"
+#include "winsystem.h"
 #include "usmacros.h"
 
-CRenderer::CRenderer(const CWinSystem *winsys)
+#include "renderer.h"
+
+CRenderer::CRenderer()
 {
-	m_WinSys = winsys;
-	
 	m_FogColor = new float[4];
 
 	reloadConfiguration();
@@ -200,6 +200,6 @@ void CRenderer::update()
 void CRenderer::updateScreenSize()
 {
 	m_X = m_Y = 0;
-	m_W = m_WinSys->getWidth();
-	m_H = m_WinSys->getHeight();
+	m_W = theWinSystem->getWidth();
+	m_H = theWinSystem->getHeight();
 }

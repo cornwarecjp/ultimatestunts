@@ -106,13 +106,19 @@ bool CPhysics::update()
 			{
 				CMovingObject *mo = (CMovingObject *)objs[i];
 				mo->m_SimCollisions = theWorld->m_Detector.getCollisions(mo);
-				for(unsigned int j=0; j < mo->m_SimCollisions.size(); j++)
-					mo->m_AllCollisions.push_back(mo->m_SimCollisions[j]);
 			}
 
 			//collision response
 			for(unsigned int i=0; i < objs.size(); i++)
 				((CMovingObject *)objs[i])->correctCollisions();
+
+			//Add to m_AllCollisions
+			for(unsigned int i=0; i < objs.size(); i++)
+			{
+				CMovingObject *mo = (CMovingObject *)objs[i];
+				for(unsigned int j=0; j < mo->m_SimCollisions.size(); j++)
+					mo->m_AllCollisions.push_back(mo->m_SimCollisions[j]);
+			}
 		}
 	}
 	return true;

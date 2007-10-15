@@ -1,8 +1,8 @@
 /***************************************************************************
-                          collisiondata.cpp  -  description
+                          replaceactionwidget.h  -  Widget interface for CReplaceAction
                              -------------------
-    begin                : do aug 19 2004
-    copyright            : (C) 2004 by CJP
+    begin                : zo jul 15 2007
+    copyright            : (C) 2007 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
 
@@ -14,21 +14,38 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
+#ifndef REPLACEACTIONWIDGET_H
+#define REPLACEACTIONWIDGET_H
 
-#include "collisiondata.h"
+#include "actionwidget.h"
 
-CCollisionData::CCollisionData()
-{
-	depth = 0.0;
-	fatal = false;
-}
+#include "tileselect.h"
+#include "iconbar.h"
 
-float CCollisionData::getTangVel() const
-{
-	return (vdiff - vdiff.component(nor)).abs();
-}
+/**
+	@author CJP <cornware-cjp@users.sourceforge.net>
+*/
+class CReplaceActionWidget : public CActionWidget {
+public:
+	CReplaceActionWidget();
+	virtual ~CReplaceActionWidget();
 
-float CCollisionData::getRadVel() const
-{
-	return vdiff.component(nor).abs();
-}
+	virtual int onKeyPress(int key);
+
+	virtual int onMouseClick(int x, int y, unsigned int buttons);
+	virtual int onMouseMove(int x, int y, unsigned int buttons);
+	virtual int onResize(int x, int y, int w, int h);
+	virtual int onIdle();
+	virtual int onRedraw();
+
+protected:
+	CTileSelect m_TileSelect;
+	CIconBar m_IconBar;
+
+	void rotate();
+	void insert();
+	void apply();
+	void del();
+};
+
+#endif

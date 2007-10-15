@@ -141,10 +141,13 @@ bool CGameCore::addPlayer(CPlayer *p, CObjectChoice choice)
 	return true;
 }
 
-void CGameCore::readyAndLoad(LoadStatusCallback callBackFun)
+bool CGameCore::readyAndLoad(LoadStatusCallback callBackFun)
 {
 	if(callBackFun != NULL)
-		callBackFun(_("Game is being started"), 0.0);
+		if(!callBackFun(_("Game is being started"), 0.0))
+		{
+			return false;
+		}
 
 	//pre-load:
 	switch(m_GameType)
@@ -155,6 +158,13 @@ void CGameCore::readyAndLoad(LoadStatusCallback callBackFun)
 		{
 		CClientSim *csim = (CClientSim *)(m_Simulations[0]); //TODO: less dirty
 		m_TrackFile = csim->getTrackname(callBackFun);
+
+		if(m_TrackFile == "") //didn't get track name
+		{
+			resetGame();
+			return false;
+		}
+
 		}
 		break;
 	case eReplayGame:
@@ -172,11 +182,14 @@ void CGameCore::readyAndLoad(LoadStatusCallback callBackFun)
 			if(m_PCtrl->addPlayer(oc) < 0)
 			{
 				printf("Error: player was refused!\n");
-				return; //failed
+				resetGame();
+				return false;
 			}
 		}
 
 		}
+		break;
+	default:
 		break;
 	}
 
@@ -193,10 +206,21 @@ void CGameCore::readyAndLoad(LoadStatusCallback callBackFun)
 	);
 
 	if(callBackFun != NULL)
-		callBackFun(_("Loading files"), -1.0);
+		if(!callBackFun(_("Loading files"), -1.0))
+		{
+			resetGame();
+			return false;
+		}
 
 	loadTrackData();
 	loadMovObjData();
+
+	if(callBackFun != NULL)
+		if(!callBackFun(_("Ready"), -1.0))
+		{
+			resetGame();
+			return false;
+		}
 
 	//post-load:
 	switch(m_GameType)
@@ -217,8 +241,11 @@ void CGameCore::readyAndLoad(LoadStatusCallback callBackFun)
 		}
 		break;
 	case eReplayGame:
+	default:
 		break;
 	}
+
+	return true;
 }
 
 void CGameCore::setStartTime(float offset)
@@ -272,10 +299,6 @@ bool CGameCore::update() //true = continue false = leave
 	//Do the chatsystem message delivery
 	switch(m_GameType)
 	{
-	case eLocalGame:
-	case eReplayGame:
-		theWorld->m_ChatSystem.loopBack(); //local delivery
-		break;
 	case eNetworkGame:
 		{
 		//send the entire outgoing queue. Receiving is done by CClientSim
@@ -288,6 +311,11 @@ bool CGameCore::update() //true = continue false = leave
 
 		theWorld->m_ChatSystem.m_OutQueue.clear();
 		}
+		break;
+	case eLocalGame:
+	case eReplayGame:
+	default:
+		theWorld->m_ChatSystem.loopBack(); //local delivery
 		break;
 	}
 
@@ -342,6 +370,8 @@ void CGameCore::resetGame()
 		m_Simulations.push_back(new CReplayer(m_PCtrl));
 		m_Simulations.push_back(new CApproximation);
 		}
+		break;
+	default:
 		break;
 	}
 }
@@ -433,6 +463,7 @@ void CGameCore::collectHiscoreData(bool saveHiscore)
 		}
 		break;
 	case eReplayGame:
+	default:
 		//No hiscores to add
 		break;
 	}

@@ -221,7 +221,7 @@ void update_shared_configuration()
 	printf("Enabling localisation\n");
 
 	//select a language
-	CString conf_lang = theMainConfig->getValue("misc", "language");
+	CString conf_lang = theMainConfig->getValue("user_interface", "language");
 	if(conf_lang == "system")
 	{
 		char *retval = setlocale(LC_MESSAGES, "");

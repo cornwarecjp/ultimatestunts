@@ -24,6 +24,8 @@
 #define _(String) gettext (String)
 #define N_(String1, String2, n) ngettext ((String1), (String2), (n))
 
+#include "SDL.h"
+
 //Generic stuff
 #include "lconfig.h"
 #include "usmacros.h"
@@ -57,17 +59,32 @@ bool game_mainloop()
 	return _USGameCore->update();
 }
 
-void loadingCallback(const CString &status, float progress)
+bool loadingCallback(const CString &status, float progress)
 {
 	CMenu *menu = (CMenu *)(_LoadingPage->m_Widgets[0]);
 
 	if(status != "")
 		menu->m_Lines[0] = _("Status: ") + status;
 
-	//TODO: progress
+	//TODO: progress bar
 
 	_LoadingPage->onRedraw();
 	theWinSystem->swapBuffers();
+
+	//Check for escape key
+	bool exit = false;
+	{
+		SDL_Event event;
+		while(SDL_PollEvent(&event))
+			if(event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_ESCAPE)
+			{
+				exit = true;
+			}
+	}
+
+	if(exit) printf("EXIT!!!!!!!\n");
+
+	return !exit;
 }
 
 CGameGUI::CGameGUI(CGameWinSystem *winsys) : CGUI(winsys)
@@ -212,7 +229,7 @@ CGameGUI::CGameGUI(CGameWinSystem *winsys) : CGUI(winsys)
 	//PLAYER MENU
 	m_PlayerPage.m_DrawBackground = true;
 	{
-		m_CarViewer = new CCarViewer(m_WinSys, m_GameCore->getGraphicWorld());
+		m_CarViewer = new CCarViewer(m_GameCore->getGraphicWorld());
 		CRenderWidget *render;
 		if(theMainConfig->getValue("graphics", "car_preview") == "true")
 		{
@@ -738,6 +755,7 @@ CString CGameGUI::viewSelectServerMenu()
 	CMenu *menu = (CMenu *)(m_SelectServerPage.m_Widgets[0]);
 
 	m_HostName = m_ServerList[menu->m_Selected].hostName;
+	m_HostPort = m_ServerList[menu->m_Selected].port;
 	m_ServerName = m_ServerList[menu->m_Selected].serverName;
 	m_GameType = JoinNetwork;
 	initGameType();
@@ -1248,19 +1266,27 @@ CString CGameGUI::viewReplay()
 
 CString CGameGUI::playGame()
 {
-	load();
+	if(!load())
+	{
+		unload();
+		return "mainmenu";
+	}
+
+	m_WinSys->showMouseCursor(false);
 	leave2DMode();
 
 	_USGameCore = m_GameCore;
 	m_WinSys->runLoop(game_mainloop, true); //true: swap buffers
 
 	enter2DMode();
+	m_WinSys->showMouseCursor(true);
+
 	unload();
 
 	return "hiscore";
 }
 
-void CGameGUI::load()
+bool CGameGUI::load()
 {
 	m_ChildWidget = &m_LoadingPage;
 	onResize(0, 0, m_W, m_H);
@@ -1351,8 +1377,12 @@ void CGameGUI::load()
 	}
 
 	_LoadingPage = &m_LoadingPage;
-	m_GameCore->readyAndLoad(loadingCallback);
+	
+	if(!m_GameCore->readyAndLoad(loadingCallback))
+		return false; //Loading failed, or was cancelled
+
 	m_GameCore->setStartTime();
+	return true;
 }
 
 void CGameGUI::unload()

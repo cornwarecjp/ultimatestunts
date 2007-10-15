@@ -31,14 +31,18 @@
 
 #include "dashboard.h"
 
-CDashboard::CDashboard(CGraphicWorld *manager, unsigned int movObjID) :
-	m_BackgroundTexture(manager),
-	m_SteerTexture(manager),
-	m_VelGaugeTex(manager),
-	m_RPMGaugeTex(manager)
+CDashboard::CDashboard(CGraphicWorld *manager, unsigned int movObjID)
 {
 	m_MovObjID = movObjID;
 	m_GraphicWorld = manager;
+
+	//Default: all NULL
+	m_BackgroundTexture = NULL;
+	m_CrashBackgroundTexture = NULL;
+	m_CrashTexture = NULL;
+	m_RPMGaugeTex = NULL;
+	m_SteerTexture = NULL;
+	m_VelGaugeTex = NULL;
 
 	CMovingObject *mo = theWorld->getMovingObject(movObjID);
 	if(mo->getType() == CMessageBuffer::car)
@@ -47,22 +51,71 @@ CDashboard::CDashboard(CGraphicWorld *manager, unsigned int movObjID) :
 
 		if(m_Info.background_tex != "")
 		{
-			m_BackgroundTexture.load(m_Info.background_tex, CParamList());
+			m_BackgroundTexture =
+				(CTexture *)(manager->getObject(CDataObject::eTexture,
+				manager->loadObject(
+					m_Info.background_tex, CParamList(), CDataObject::eTexture)
+				));
 
 			//Get rid of texture repeating artifact
-			m_BackgroundTexture.draw();
+			m_BackgroundTexture->draw();
 			glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
 			glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );
 		}
 
+		if(m_Info.crash_background_tex == "")
+		{
+			m_CrashBackgroundTexture = m_BackgroundTexture;
+		}
+		else
+		{
+			m_CrashBackgroundTexture =
+				(CTexture *)(manager->getObject(CDataObject::eTexture,
+				manager->loadObject(
+					m_Info.crash_background_tex, CParamList(), CDataObject::eTexture)
+				));
+
+			//Get rid of texture repeating artifact
+			m_CrashBackgroundTexture->draw();
+			glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
+			glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );
+		}
+
+		if(m_Info.crash_tex != "")
+		{
+			m_CrashTexture = 
+				(CTexture *)(manager->getObject(CDataObject::eTexture,
+				manager->loadObject(
+					m_Info.crash_tex, CParamList(), CDataObject::eTexture)
+				));
+		}
+
 		if(m_Info.steer_tex != "")
-			m_SteerTexture.load(m_Info.steer_tex, CParamList());
+		{
+			m_SteerTexture = 
+				(CTexture *)(manager->getObject(CDataObject::eTexture,
+				manager->loadObject(
+					m_Info.steer_tex, CParamList(), CDataObject::eTexture)
+				));
+		}
 
 		if(m_Info.analog_vel_tex != "")
-			m_VelGaugeTex.load(m_Info.analog_vel_tex, CParamList());
+		{
+			m_VelGaugeTex = 
+				(CTexture *)(manager->getObject(CDataObject::eTexture,
+				manager->loadObject(
+					m_Info.analog_vel_tex, CParamList(), CDataObject::eTexture)
+				));
+		}
 
 		if(m_Info.analog_rpm_tex != "")
-			m_RPMGaugeTex.load(m_Info.analog_rpm_tex, CParamList());
+		{
+			m_RPMGaugeTex = 
+				(CTexture *)(manager->getObject(CDataObject::eTexture,
+				manager->loadObject(
+					m_Info.analog_rpm_tex, CParamList(), CDataObject::eTexture)
+				));
+		}
 	}
 }
 
@@ -76,6 +129,23 @@ void CDashboard::draw(unsigned int w, unsigned int h, eShowMode mode)
 	if(theObj->getType() != CMessageBuffer::car) return;
 
 	CCar *theCar = (CCar *)theObj;
+	bool crashed = theCar->m_RuleStatus.state == CCarRuleStatus::eCrashed;
+
+	if(mode == eFull && crashed && m_CrashTexture != NULL)
+	{
+		m_CrashTexture->draw();
+
+		glBegin(GL_QUADS);
+		glTexCoord2f(0,0);
+		glVertex2f(0,0);
+		glTexCoord2f(1,0);
+		glVertex2f(w,0);
+		glTexCoord2f(1,1);
+		glVertex2f(w,h);
+		glTexCoord2f(0,1);
+		glVertex2f(0,h);
+		glEnd();
+	}
 
 	//Switch from full to timer mode at a certain aspect ratio
 	if(mode == eFull && h < 0.5*w)
@@ -83,11 +153,13 @@ void CDashboard::draw(unsigned int w, unsigned int h, eShowMode mode)
 
 	glPushMatrix();
 	glScalef(w, w, 1.0);
-	
+
 	//The background
-	if(mode == eFull && m_BackgroundTexture.isLoaded())
+	CTexture *background = m_BackgroundTexture;
+	if(crashed) background = m_CrashBackgroundTexture;
+	if(mode == eFull && background != NULL)
 	{
-		m_BackgroundTexture.draw();
+		background->draw();
 
 		glBegin(GL_QUADS);
 		glTexCoord2f(0,0);
@@ -115,10 +187,10 @@ void CDashboard::draw(unsigned int w, unsigned int h, eShowMode mode)
 			r = 0.07;
 		}
 
-		if(m_VelGaugeTex.isLoaded())
+		if(m_VelGaugeTex != NULL)
 		{
 
-			m_VelGaugeTex.draw();
+			m_VelGaugeTex->draw();
 
 			glBegin(GL_QUADS);
 			glTexCoord2f(0,0);
@@ -164,9 +236,9 @@ void CDashboard::draw(unsigned int w, unsigned int h, eShowMode mode)
 			r = 0.07;
 		}
 
-		if(m_RPMGaugeTex.isLoaded())
+		if(m_RPMGaugeTex != NULL)
 		{
-			m_RPMGaugeTex.draw();
+			m_RPMGaugeTex->draw();
 
 			glBegin(GL_QUADS);
 			glTexCoord2f(0,0);
@@ -202,7 +274,7 @@ void CDashboard::draw(unsigned int w, unsigned int h, eShowMode mode)
 	}
 
 	//The steer
-	if(mode == eFull && m_SteerTexture.isLoaded())
+	if(mode == eFull && m_SteerTexture != NULL)
 	{
 		float r = m_Info.steer_rad;
 
@@ -210,7 +282,7 @@ void CDashboard::draw(unsigned int w, unsigned int h, eShowMode mode)
 		glTranslatef(m_Info.steer_pos.x, m_Info.steer_pos.y, 0.0);
 		glRotatef(-m_Info.steer_ang * theCar->m_DesiredSteering,  0.0,0.0,1.0);
 
-		m_SteerTexture.draw();
+		m_SteerTexture->draw();
 
 		glBegin(GL_QUADS);
 		glTexCoord2f(0,0);

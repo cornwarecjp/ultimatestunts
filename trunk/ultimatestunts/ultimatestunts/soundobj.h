@@ -1,5 +1,5 @@
 /***************************************************************************
-                          soundobj.h  -  description
+                          soundobj.h  -  A sound channel object
                              -------------------
     begin                : di feb 25 2003
     copyright            : (C) 2003 by CJP
@@ -44,20 +44,25 @@ public:
 
 	void setFrequency(float f); //1.0 = original sound
 	void setVolume(int v); //0 - 255
+	int getVolume() const; //0 - 255
 
 	void playOnce(); //for non-looping channels
+	float getPlayTime() const;
 
 	int getMovingObjectID()
 		{return m_MovingObjectID;}
 
 	//a hint to CSound about its identity:
-	enum {eEngine, eSkid, eCrash} m_SoundType;
+	enum {eEngine, eSkid, eWallSkid, eCrash, eFatalCrash} m_SoundType;
 
 protected:
 	CVector m_Pos;
 	CVector m_Vel;
+	int m_Volume;
 	int m_MovingObjectID;
 	bool m_Looping;
+
+	float m_PlayStartTime;
 
 	CSndSample *m_CurrentSample;
 

@@ -43,4 +43,9 @@ private:
 	void leave2DMode();
 };
 
+//Static interfaces for use in non-CRenderWidget-derived code:
+void _clear3DArea(unsigned int w, unsigned int h);
+void _leave2DMode(bool depth, bool fog);
+void _enter2DMode(unsigned int x, unsigned int y, bool depth, bool fog);
+
 #endif

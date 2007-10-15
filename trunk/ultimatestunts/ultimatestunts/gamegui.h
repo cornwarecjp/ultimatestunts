@@ -98,7 +98,7 @@ protected:
 	//The menu starters:
 	CString viewMainMenu();
 		CString playGame();
-			void load();
+			bool load();
 			void unload();
 		CString viewGameTypeMenu();
 		CString viewSelectServerMenu();

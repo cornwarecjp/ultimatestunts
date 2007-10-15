@@ -20,7 +20,7 @@
 #include "usmacros.h"
 #include "datafile.h"
 
-CEditRenderer::CEditRenderer(const CWinSystem *winsys) : CRenderer(winsys)
+CEditRenderer::CEditRenderer()
 {
 	m_EnvMap = new CTexture(NULL);
 

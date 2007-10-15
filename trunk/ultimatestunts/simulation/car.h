@@ -33,6 +33,9 @@ struct SCarDashboardInfo
 	CString background_tex;
 	float background_hth;
 
+	CString crash_background_tex;
+	CString crash_tex;
+
 	CString steer_tex;
 	CVector steer_pos;
 	float steer_rad;
@@ -83,7 +86,7 @@ public:
 	virtual void correctCollisions();
 
 	CString m_CarName; //is loaded from car file
-	CCarRuleStatus m_RuleStatus;
+	float m_EngineSoundBaseRPS; //base engine rad/s of the engine sound
 
 	//sub objects:
 	CCarEngine m_Engine;
@@ -95,8 +98,7 @@ public:
 	//State variables:
 	float m_DesiredSteering;
 	enum {eRiding, eFlying} m_SimState;
-	//float m_xAngle, m_zAngle; //orientation of the body
-	//float m_BodyHeight; //height of the body
+	CCarRuleStatus m_RuleStatus;
 
 protected:
 	//car specific physics
@@ -120,6 +122,8 @@ protected:
 	virtual void placeBodies();
 
 	//car specific settings:
+	float m_SteerSpeedOut, m_SteerSpeedIn;
+	float m_SteerSpeed_v_factor;
 
 	//body
 	CVector m_BodySize;

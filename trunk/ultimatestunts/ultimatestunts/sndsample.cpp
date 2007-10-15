@@ -120,6 +120,8 @@ bool CSndSample::load(const CString &filename, const CParamList &list)
 	}
 
 
+	m_isLoaded = true;
+
 	if(alutLoadVorbis != NULL && extension == ".ogg") //.ogg: load as ogg vorbis file
 	{
 		//The data
@@ -133,7 +135,11 @@ bool CSndSample::load(const CString &filename, const CParamList &list)
 
 		alGenBuffers(1, &m_Buffer);
 		if(alutLoadVorbis(m_Buffer, wave, size) != AL_TRUE)
+		{
 			printf("alutLoadVorbis failed\n");
+			alDeleteBuffers(1, &m_Buffer);
+			m_isLoaded = false;
+		}
 	}
 	else if(alutLoadMP3 != NULL && extension == ".mp3") //.mp3: load as MP3 file
 	{
@@ -148,7 +154,11 @@ bool CSndSample::load(const CString &filename, const CParamList &list)
 
 		alGenBuffers(1, &m_Buffer);
 		if(alutLoadMP3(m_Buffer, wave, size) != AL_TRUE)
+		{
 			printf("alutLoadMP3 failed\n");
+			alDeleteBuffers(1, &m_Buffer);
+			m_isLoaded = false;
+		}
 	}
 	else //default ALUT loader
 	{
@@ -163,21 +173,9 @@ bool CSndSample::load(const CString &filename, const CParamList &list)
 			m_isLoaded = false;
 			return false;
 		}
-
-		/*
-		ALsizei
-			format = AL_FORMAT_MONO16,
-			bits = 0,
-			freq = 44100;
-
-		alGenBuffers(1, &m_Buffer);
-		alutLoadWAV(realfile.c_str(), &wave, &format, &size, &bits, &freq);
-		alBufferData(m_Buffer, format, wave, size, freq);
-		*/
 	}
 
 	free(wave);
-	m_isLoaded = true;
 
 	//Check for errors
 	{
@@ -201,7 +199,8 @@ int CSndSample::attachToChannel(int c)
 #endif
 
 #ifdef HAVE_LIBOPENAL
-	alSourcei((unsigned int)c, AL_BUFFER, m_Buffer);
+	if(m_isLoaded)
+		alSourcei((unsigned int)c, AL_BUFFER, m_Buffer);
 	return 0;
 #endif
 

@@ -61,8 +61,8 @@ public:
 	bool addPlayer(CPlayer *p, CObjectChoice choice);
 
 	//step 3: wait for the start signal and load everything
-	typedef void (* LoadStatusCallback) (const CString &t, float);
-	virtual void readyAndLoad(LoadStatusCallback callBackFun = NULL);
+	typedef bool (* LoadStatusCallback) (const CString &t, float);
+	virtual bool readyAndLoad(LoadStatusCallback callBackFun = NULL);
 
 	//step 4: start the game time counter
 	void setStartTime(float offset = 0.0);

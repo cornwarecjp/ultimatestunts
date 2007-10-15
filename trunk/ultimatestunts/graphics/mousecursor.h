@@ -1,8 +1,8 @@
 /***************************************************************************
-                          collisiondata.cpp  -  description
+                          mousecursor.h  -  A mouse cursor texture
                              -------------------
-    begin                : do aug 19 2004
-    copyright            : (C) 2004 by CJP
+    begin                : zo aug 26 2007
+    copyright            : (C) 2007 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
 
@@ -14,21 +14,22 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
+#ifndef MOUSECURSOR_H
+#define MOUSECURSOR_H
 
-#include "collisiondata.h"
+#include "texture.h"
 
-CCollisionData::CCollisionData()
+/**
+	@author CJP <cornware-cjp@users.sourceforge.net>
+*/
+class CMouseCursor : protected CTexture
 {
-	depth = 0.0;
-	fatal = false;
-}
+public:
+	CMouseCursor();
+	~CMouseCursor();
 
-float CCollisionData::getTangVel() const
-{
-	return (vdiff - vdiff.component(nor)).abs();
-}
+	void draw() const
+		{CTexture::draw();}
+};
 
-float CCollisionData::getRadVel() const
-{
-	return vdiff.component(nor).abs();
-}
+#endif

@@ -24,7 +24,7 @@
 #include "graphobj.h"
 #include "texture.h"
 
-CObjectViewer::CObjectViewer(const CWinSystem *winsys, CDataManager *world) : CRenderer(winsys)
+CObjectViewer::CObjectViewer(CDataManager *world)
 {
 	m_World = world;
 	m_Reflection = NULL;

@@ -112,7 +112,12 @@ bool CCar::load(const CString &filename, const CParamList &list)
 
 	//The sounds:
 	m_Sounds.push_back(theWorld->loadObject(cfile.getValue("sound", "engine"), CParamList(), CDataObject::eSample));
-	m_Sounds.push_back(theWorld->loadObject(cfile.getValue("sound", "skid"), CParamList(), CDataObject::eSample));
+	{
+		CString baseRPS = cfile.getValue("sound", "enginerps");
+		m_EngineSoundBaseRPS = 388.0;
+		if(baseRPS != "")
+			m_EngineSoundBaseRPS = baseRPS.toFloat();
+	}
 
 	//One texture:
 	m_Textures.push_back(theWorld->loadObject(cfile.getValue("skin", "texture"), CParamList(), CDataObject::eMaterial));
@@ -120,6 +125,9 @@ bool CCar::load(const CString &filename, const CParamList &list)
 	//Dashboard info:
 	m_Dashboard.background_tex = cfile.getValue("dashboard", "background_tex");
 	m_Dashboard.background_hth = cfile.getValue("dashboard", "background_hth").toFloat();
+
+	m_Dashboard.crash_background_tex = cfile.getValue("dashboard", "crash_background_tex");
+	m_Dashboard.crash_tex            = cfile.getValue("dashboard", "crash_tex");
 
 	m_Dashboard.steer_tex = cfile.getValue("dashboard", "steer_tex");
 	m_Dashboard.steer_pos = cfile.getValue("dashboard", "steer_pos").toVector();
@@ -149,6 +157,10 @@ bool CCar::load(const CString &filename, const CParamList &list)
 	m_Dashboard.songtitle_pos = cfile.getValue("dashboard", "songtitle_pos").toVector();
 	m_Dashboard.songtitle_hth = cfile.getValue("dashboard", "songtitle_hth").toFloat();
 	m_Dashboard.songtitle_wth = cfile.getValue("dashboard", "songtitle_wth").toFloat();
+
+	m_SteerSpeedOut = cfile.getValue("controls", "steerspeed_out").toFloat();
+	m_SteerSpeedIn  = cfile.getValue("controls", "steerspeed_in").toFloat();
+	m_SteerSpeed_v_factor  = cfile.getValue("controls", "steerspeed_v_factor").toFloat();
 
 	//The input object: CCarInput instead of CMovObjInput
 	delete m_InputData;
@@ -621,6 +633,15 @@ void CCar::update(CPhysics *simulator, float dt)
 		m_Wheel[i].m_M = 0.0;
 	}
 
+	//Override input on crash
+	if(m_RuleStatus.state == CCarRuleStatus::eCrashed)
+	{
+		m_InputData->m_Up = 0.0;
+		m_InputData->m_Forward = 0.0;
+		m_InputData->m_Backward = 1.0; //This is always the brake, even in reverse gear
+		m_InputData->m_Right = 0.0;
+	}
+
 	//Wheel stuff
 	doSteering(dt);
 
@@ -680,7 +701,14 @@ void CCar::correctCollisions()
 	{
 		CCollisionData col = m_SimCollisions[c];
 
-		//printf("depth = %.3f\n", col.depth);
+		//First do a crash test
+		if(col.getRadVel() > 10.0) //10 m/s = 36 km/h
+		{
+			m_RuleStatus.crash();
+			m_SimCollisions[c].fatal = true;
+		}
+
+		//Then do position correction
 		CVector dr = col.nor * col.depth;
 
 		//no correction towards the ground
@@ -767,7 +795,7 @@ void CCar::simulateGround(CPhysics *simulator, float dt)
 	m_SimState = eRiding;
 	//printf("Riding\n");
 
-	placeOnGround();
+	placeOnGround(); //Places wheels on ground
 
 	calculateNormalForces();
 	applyWheelForces();
@@ -805,13 +833,16 @@ void CCar::doSteering(float dt)
 	float steer = input->m_Right;
 
 	//the speed of steering
-	float steerspeed = 0.25 / (1.0 + 0.01 * m_Velocity.abs()); //faster velocity -> slower steering
-
+	float steerspeed = m_SteerSpeedOut;
 	if((m_DesiredSteering < 0.0 && steer > m_DesiredSteering) ||
 		(m_DesiredSteering > 0.0 && steer < m_DesiredSteering)) 
-		steerspeed *= 10.0; //steer back to neutral is faster
+		steerspeed = m_SteerSpeedIn; //steer back to neutral is faster
 
-	//New linear function:
+	//faster velocity -> slower steering
+	steerspeed /= 1.0 + m_SteerSpeed_v_factor * m_Velocity.abs();
+
+
+	//linear function:
 	float steerchange = copysign(steerspeed * dt, steer - m_DesiredSteering);
 	m_DesiredSteering += steerchange;
 	if(m_DesiredSteering < -1.0) m_DesiredSteering = -1.0;
@@ -856,26 +887,19 @@ void CCar::doSteering(float dt)
 
 void CCar::updateWheelOrientation()
 {
-	//body orientation:
-	CVector zaxis;
-	zaxis.x = m_OrientationMatrix.Element(2,0);
-	zaxis.y = m_OrientationMatrix.Element(2,1);
-	zaxis.z = m_OrientationMatrix.Element(2,2);
+	CVector
+		z1(-sin(m_Wheel[0].m_DesiredSt), 0.0, cos(m_Wheel[0].m_DesiredSt)),
+		z2(-sin(m_Wheel[1].m_DesiredSt), 0.0, cos(m_Wheel[1].m_DesiredSt)),
+		z3(-sin(m_Wheel[2].m_DesiredSt), 0.0, cos(m_Wheel[2].m_DesiredSt)),
+		z4(-sin(m_Wheel[3].m_DesiredSt), 0.0, cos(m_Wheel[3].m_DesiredSt));
 
-	//steering matrices
-	CMatrix s1, s2, s3, s4;
-	s1.rotY(m_Wheel[0].m_DesiredSt);
-	s2.rotY(m_Wheel[1].m_DesiredSt);
-	s3.rotY(m_Wheel[2].m_DesiredSt);
-	s4.rotY(m_Wheel[3].m_DesiredSt);
-
-	m_Wheel[0].m_Z = s1 * zaxis;
-	m_Wheel[1].m_Z = s2 * zaxis;
-	m_Wheel[2].m_Z = s3 * zaxis;
-	m_Wheel[3].m_Z = s4 * zaxis;
+	m_Wheel[0].m_Z = m_OrientationMatrix * z1;
+	m_Wheel[1].m_Z = m_OrientationMatrix * z2;
+	m_Wheel[2].m_Z = m_OrientationMatrix * z3;
+	m_Wheel[3].m_Z = m_OrientationMatrix * z4;
 }
 
-void CCar::updateWheelTorques()      //engine + brakes
+void CCar::updateWheelTorques() //engine + brakes
 {
 	CCarInput *input = (CCarInput *)m_InputData;
 
@@ -915,41 +939,6 @@ void CCar::calculateNormalForces()
 
 void CCar::applyWheelForces()
 {
-	//----------------------
-	//DEBUGGING
-	//----------------------
-	/*
-	for(unsigned int i=0; i < 4; i++)
-	{
-		//position of the wheel:
-		CVector r = m_Wheel[i].m_NeutralPos;
-
-		CVector Fwheel = CVector(0, m_Wheel[i].m_Fnormal, 0);
-
-		//add forces to the wheel
-		Fwheel *= m_OrientationMatrix; //TODO: transform to ground plane
-		r += CVector(0.0, -m_Wheel[i].m_Radius, 0.0); //forces attach on surface, not on middle
-		r *= m_OrientationMatrix;
-
-		Fwheel.x = Fwheel.z = 0.0; //debugging
-		//fprintf(stderr, "before %d: F = %s; M = %s\n", i, CString(m_Ftot).c_str(), CString(m_Mtot).c_str());
-		//fprintf(stderr, "  Applying %s @ %s\n", CString(Fwheel).c_str(), CString(r).c_str());
-		addForceAt(Fwheel, r);
-		//fprintf(stderr, "after %d: F = %s; M = %s\n", i, CString(m_Ftot).c_str(), CString(m_Mtot).c_str());
-	}
-	return;
-	*/
-	//----------------------
-	//DEBUGGING
-	//----------------------
-
-	float muGround = 1.0, rollGround = 0.0;
-	if(m_Ground.nor.abs2() > 0.25 && m_Ground.material != NULL)
-	{
-		muGround   = m_Ground.material->m_Mu;
-		rollGround = m_Ground.material->m_Roll;
-	}
-
 	//This function mainly works in the car coordinate system
 	CMatrix Rmat_inv = m_OrientationMatrix.transpose();
 
@@ -958,6 +947,12 @@ void CCar::applyWheelForces()
 
 	for(unsigned int i=0; i < 4; i++)
 	{
+		if(m_Wheel[i].m_Ground.nor.abs2() < 0.25 || m_Wheel[i].m_Ground.material == NULL)
+			continue;
+
+		float muGround = m_Wheel[i].m_Ground.material->m_Mu;
+		float rollGround = m_Wheel[i].m_Ground.material->m_Roll;
+
 		//position of the wheel:
 		CVector r = m_Wheel[i].m_NeutralPos;
 
@@ -971,6 +966,7 @@ void CCar::applyWheelForces()
 			wz = -wz;
 
 		//x direction:
+		//TODO: write out explicitly (this is inefficient)
 		CVector wx = wz.crossProduct(CVector(0,-1,0));
 
 		//velocity of the center of the wheel:
@@ -983,24 +979,28 @@ void CCar::applyWheelForces()
 		CVector Fwheel = m_Wheel[i].getGroundForce(
 			Mwheel, vlong, vlat, m_Wheel[i].m_Mu * muGround, m_Wheel[i].m_Roll * rollGround);
 
-		//fprintf(stderr, "%.f; %.f; %.f; ", 1000*vlong, 1000*vlat, Fwheel.x);
+		//Transform from wheel coordinates to car coordinates:
+		Fwheel = CVector(0,Fwheel.y,0) + Fwheel.x * wx + Fwheel.z * wz;
 
 		//feedback to the net torque on the wheel:
 		m_Wheel[i].m_M += Fwheel.z * m_Wheel[i].m_Radius + Mwheel.x;
 
-		//add forces to the wheel
+		//forces attach on surface, not on middle:
+		r += CVector(0.0, -m_Wheel[i].m_Radius, 0.0);
+
+		//fprintf(stderr, "%f\t%f\t%f\t%f\t%f\t",
+		//	wz.x, wz.y, wz.z,
+		//	vlong, vlat);
+
+		//Back to world orientation:
 		Fwheel *= m_OrientationMatrix; //TODO: transform to ground plane
-		r += CVector(0.0, -m_Wheel[i].m_Radius, 0.0); //forces attach on surface, not on middle
 		r *= m_OrientationMatrix;
 
-		//Fwheel.x = Fwheel.z = 0.0; //debugging
-		//fprintf(stderr, "before %d: F = %s; M = %s\n", i, CString(m_Ftot).c_str(), CString(m_Mtot).c_str());
-		//fprintf(stderr, "  Applying %s @ %s\n", CString(Fwheel).c_str(), CString(r).c_str());
+		//add forces to the wheel
 		addForceAt(Fwheel, r);
-		//fprintf(stderr, "after %d: F = %s; M = %s\n", i, CString(m_Ftot).c_str(), CString(m_Mtot).c_str());
 	}
 
-	//fprintf(stderr, "%.f\n", 1000*m_Velocity.abs());
+	//fprintf(stderr, "\n");
 }
 
 CBinBuffer &CCar::getData(CBinBuffer &b) const

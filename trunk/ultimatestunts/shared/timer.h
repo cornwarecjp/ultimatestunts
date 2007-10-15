@@ -33,7 +33,7 @@ public:
 	float getdt(float min, float max);
 	float getF();
 
-	float getTime() const;
+	static float getTime();
 protected:
 	float m_PreviousTime;
 };

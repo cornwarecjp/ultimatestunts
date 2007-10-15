@@ -50,7 +50,7 @@ protected:
 	bool m_FirstUpdate;
 
 	//Object <-> object collisions
-	CCollisionData ObjObjTest(const CBody &body1, const CBody &body2, CVector vmean);
+	CCollisionData ObjObjTest(const CBody &body1, const CBody &body2, CVector vdiff, CVector vmean);
 
 	//Object <-> tile collisions
 	vector<CCollisionData> ObjTileTest(const CMovingObject *theObj, int xtile, int ztile, int htile);
@@ -58,7 +58,7 @@ protected:
 
 	//Object <-> track bound collisions
 	void calculateTrackBounds();
-	vector<CCollisionData> ObjTrackBoundTest(const CBody &body);
+	vector<CCollisionData> ObjTrackBoundTest(const CBody &body, CVector vdiff);
 
 	//Ground face tests
 	const CCollisionFace *getTileGround(int xtile, int ztile, int htile, const CVector &pos, float &dmax);

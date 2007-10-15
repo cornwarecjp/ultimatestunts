@@ -38,7 +38,14 @@ bool CSoundWorld::loadObjects()
 		loadObject(sounds[i]->getFilename(), CParamList(), CDataObject::eSample);
 	}
 
-	unsigned int crashsoundID = loadObject("cars/generic/crash_nonfatal.wav", CParamList(), CDataObject::eSample);
+	unsigned int crashsoundID =
+		loadObject("cars/generic/crash_nonfatal.wav", CParamList(), CDataObject::eSample);
+	unsigned int fatalcrashsoundID =
+		loadObject("cars/generic/crash_fatal.wav", CParamList(), CDataObject::eSample);
+	unsigned int skidsoundID =
+		loadObject("cars/generic/skid.wav", CParamList(), CDataObject::eSample);
+	unsigned int metalskidsoundID =
+		loadObject("cars/generic/skid_metal.wav", CParamList(), CDataObject::eSample);
 
 	for(unsigned int i=0; i<theWorld->getNumObjects(CDataObject::eMovingObject); i++)
 	{
@@ -53,9 +60,16 @@ bool CSoundWorld::loadObjects()
 		}
 		{ //skid sound
 			CSoundObj *so = new CSoundObj(i);
-			so->setSample((CSndSample *)getObject(CDataObject::eSample, mo->m_Sounds[1]));
+			so->setSample((CSndSample *)getObject(CDataObject::eSample, skidsoundID));
 			so->setPosVel(CVector(0,0,0), CVector(0,0,0));
 			so->m_SoundType = CSoundObj::eSkid;
+			m_Channels.push_back(so);
+		}
+		{ //wall skid sound
+			CSoundObj *so = new CSoundObj(i);
+			so->setSample((CSndSample *)getObject(CDataObject::eSample, metalskidsoundID));
+			so->setPosVel(CVector(0,0,0), CVector(0,0,0));
+			so->m_SoundType = CSoundObj::eWallSkid;
 			m_Channels.push_back(so);
 		}
 		{ //crash sound
@@ -63,6 +77,13 @@ bool CSoundWorld::loadObjects()
 			so->setSample((CSndSample *)getObject(CDataObject::eSample, crashsoundID));
 			so->setPosVel(CVector(0,0,0), CVector(0,0,0));
 			so->m_SoundType = CSoundObj::eCrash;
+			m_Channels.push_back(so);
+		}
+		{ //fatal crash sound
+			CSoundObj *so = new CSoundObj(i, false);
+			so->setSample((CSndSample *)getObject(CDataObject::eSample, fatalcrashsoundID));
+			so->setPosVel(CVector(0,0,0), CVector(0,0,0));
+			so->m_SoundType = CSoundObj::eFatalCrash;
 			m_Channels.push_back(so);
 		}
 

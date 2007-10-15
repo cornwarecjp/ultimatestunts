@@ -90,7 +90,7 @@ vector<CCollisionData> CCollisionDetector::getCollisions(const CMovingObject *ob
 	vector<CDataObject *> objs = theWorld->getObjectArray(CDataObject::eMovingObject);
 
 	//Collision with track bounds
-	ret = ObjTrackBoundTest(obj->m_Bodies[0]);
+	ret = ObjTrackBoundTest(obj->m_Bodies[0], -obj->m_Velocity);
 
 	//Moving object to tile collisions
 	int lengte = theWorld->getTrack()->m_L;
@@ -128,7 +128,9 @@ vector<CCollisionData> CCollisionDetector::getCollisions(const CMovingObject *ob
 			(obj->m_Velocity * o2->getInvMass() + o2->m_Velocity * obj->getInvMass())
 			/ (o2->getInvMass() + obj->getInvMass());
 
-		CCollisionData c = ObjObjTest(obj->m_Bodies[0], o2->m_Bodies[0], vmean);
+		CVector vdiff = o2->m_Velocity - obj->m_Velocity;
+
+		CCollisionData c = ObjObjTest(obj->m_Bodies[0], o2->m_Bodies[0], vdiff, vmean);
 		if(c.nor.abs2() < 0.1) continue; //no collision
 
 		ret.push_back(c);
@@ -314,7 +316,7 @@ void CCollisionDetector::calculateTrackBounds()
 		((float)wth-0.5)*TILESIZE);
 }
 
-vector<CCollisionData> CCollisionDetector::ObjTrackBoundTest(const CBody &body)
+vector<CCollisionData> CCollisionDetector::ObjTrackBoundTest(const CBody &body, CVector vdiff)
 {
 	vector<CCollisionData> ret;
 	
@@ -331,8 +333,8 @@ vector<CCollisionData> CCollisionDetector::ObjTrackBoundTest(const CBody &body)
 		c.pos.x = m_TrackMin.x;
 		c.nor = CVector(1,0,0);
 		c.depth = m_TrackMin.x + r - p.x;
-		//c.vdiff;
-		//c.vmean;
+		c.vdiff = vdiff;
+		c.vmean = CVector(0,0,0);
 		ret.push_back(c);
 	}
 	if(p.y - r < m_TrackMin.y) //the bottom of the track
@@ -342,8 +344,8 @@ vector<CCollisionData> CCollisionDetector::ObjTrackBoundTest(const CBody &body)
 		c.pos.y = m_TrackMin.y;
 		c.nor = CVector(0,1,0);
 		c.depth = -p.y; //m_TrackMin.y + r - p.y;
-		//c.vdiff;
-		//c.vmean;
+		c.vdiff = vdiff;
+		c.vmean = CVector(0,0,0);
 		ret.push_back(c);
 	}
 	if(p.z - r < m_TrackMin.z)
@@ -353,8 +355,8 @@ vector<CCollisionData> CCollisionDetector::ObjTrackBoundTest(const CBody &body)
 		c.pos.z = m_TrackMin.z;
 		c.nor = CVector(0,0,1);
 		c.depth = m_TrackMin.z + r - p.z;
-		//c.vdiff;
-		//c.vmean;
+		c.vdiff = vdiff;
+		c.vmean = CVector(0,0,0);
 		ret.push_back(c);
 	}
 	if(p.x + r > m_TrackMax.x)
@@ -364,8 +366,8 @@ vector<CCollisionData> CCollisionDetector::ObjTrackBoundTest(const CBody &body)
 		c.pos.x = m_TrackMax.x;
 		c.nor = CVector(-1,0,0);
 		c.depth = p.x + r - m_TrackMax.x;
-		//c.vdiff;
-		//c.vmean;
+		c.vdiff = vdiff;
+		c.vmean = CVector(0,0,0);
 		ret.push_back(c);
 	}
 	if(p.y + r > m_TrackMax.y)
@@ -375,8 +377,8 @@ vector<CCollisionData> CCollisionDetector::ObjTrackBoundTest(const CBody &body)
 		c.pos.y = m_TrackMax.y;
 		c.nor = CVector(0,-1,0);
 		c.depth = p.y + r - m_TrackMax.y;
-		//c.vdiff;
-		//c.vmean;
+		c.vdiff = vdiff;
+		c.vmean = CVector(0,0,0);
 		ret.push_back(c);
 	}
 	if(p.z + r > m_TrackMax.z)
@@ -386,15 +388,15 @@ vector<CCollisionData> CCollisionDetector::ObjTrackBoundTest(const CBody &body)
 		c.pos.z = m_TrackMax.z;
 		c.nor = CVector(0,0,-1);
 		c.depth = p.z + r - m_TrackMax.z;
-		//c.vdiff;
-		//c.vmean;
+		c.vdiff = vdiff;
+		c.vmean = CVector(0,0,0);
 		ret.push_back(c);
 	}
 
 	return ret;
 }
 
-CCollisionData CCollisionDetector::ObjObjTest(const CBody &body1, const CBody &body2, CVector vmean)
+CCollisionData CCollisionDetector::ObjObjTest(const CBody &body1, const CBody &body2, CVector vdiff, CVector vmean)
 {
 	CCollisionData ret;
 	ret.nor = CVector(0,0,0); //this will mean that there is no collision
@@ -444,6 +446,7 @@ CCollisionData CCollisionDetector::ObjObjTest(const CBody &body1, const CBody &b
 	ret.nor.normalise();
 	ret.pos = p1 - b1->m_BSphere_r * ret.nor;
 	ret.depth = 0.5 * (b1->m_BSphere_r + b2->m_BSphere_r - (p2-p1).abs());
+	ret.vdiff = vdiff;
 	ret.vmean = vmean;
 
 
@@ -562,6 +565,8 @@ vector<CCollisionData> CCollisionDetector::ObjTileTest(const CMovingObject *theO
 		c.pos = cpos;
 		c.nor = cnor;
 		c.depth = penetr_depth;
+		c.vdiff = -theObj->m_Velocity;
+		c.vmean = CVector(0,0,0);
 		ret.push_back(c);
 
 	} //for tf

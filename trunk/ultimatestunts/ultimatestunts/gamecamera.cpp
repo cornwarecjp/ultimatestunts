@@ -176,8 +176,22 @@ void CGameCamera::update()
 	{
 		autotarget = true; //always autotarget when not reached
 
+		//First correct position for normal linear movement:
+		m_Position += dt * m_Velocity;
+
+		//Then apply a spring-damper system to the error
 		CVector prel = m_Position - tp;
 		CVector vrel = m_Velocity - tv;
+
+		/*
+		fprintf(stderr, "dt = %f\n", dt);
+		fprintf(stderr, "tp = %s\n", CString(tp).c_str());
+		fprintf(stderr, "tv = %s\n", CString(tv).c_str());
+		fprintf(stderr, "m_Position = %s\n", CString(m_Position).c_str());
+		fprintf(stderr, "m_Velocity = %s\n", CString(m_Velocity).c_str());
+		fprintf(stderr, "prel = %s\n", CString(prel).c_str());
+		fprintf(stderr, "vrel = %s\n", CString(vrel).c_str());
+		*/
 
 		//"damper" + "spring" model
 		//damper is needed to prevent real oscillations
@@ -193,7 +207,7 @@ void CGameCamera::update()
 		float lambda = DAMPC/2;
 
 		CVector Acosphi = prel;
-		CVector Asinphi = (lambda * prel + vrel) / omega;
+		CVector Asinphi = -(lambda * prel + vrel) / omega;
 		CVector A(
 			sqrt(Acosphi.x*Acosphi.x + Asinphi.x*Asinphi.x),
 			sqrt(Acosphi.y*Acosphi.y + Asinphi.y*Asinphi.y),
@@ -217,15 +231,22 @@ void CGameCamera::update()
 			);
 
 		CVector vrelnew(
-			A.x * exp(-lambda*dt) * (-lambda*cos(omega*dt+phi.x) + omega*sin(omega*dt+phi.x)),
-			A.y * exp(-lambda*dt) * (-lambda*cos(omega*dt+phi.y) + omega*sin(omega*dt+phi.y)),
-			A.z * exp(-lambda*dt) * (-lambda*cos(omega*dt+phi.z) + omega*sin(omega*dt+phi.z))
+			A.x * exp(-lambda*dt) * (-lambda*cos(omega*dt+phi.x) - omega*sin(omega*dt+phi.x)),
+			A.y * exp(-lambda*dt) * (-lambda*cos(omega*dt+phi.y) - omega*sin(omega*dt+phi.y)),
+			A.z * exp(-lambda*dt) * (-lambda*cos(omega*dt+phi.z) - omega*sin(omega*dt+phi.z))
 			);
 
 		//fprintf(stderr, "prel = %s phi = %s\n", CString(prel).c_str(), CString(phi).c_str());
 		//CVector a = -DAMPC*vrel - SPRC*prel;
 		m_Velocity += (vrelnew - vrel); //a * dt;
 		m_Position += (prelnew - prel); //m_Velocity * dt;
+
+		/*
+		fprintf(stderr, "prelnew = %s\n", CString(prelnew).c_str());
+		fprintf(stderr, "vrelnew = %s\n", CString(vrelnew).c_str());
+		fprintf(stderr, "New m_Position = %s\n", CString(m_Position).c_str());
+		fprintf(stderr, "New m_Velocity = %s\n", CString(m_Velocity).c_str());
+		*/
 
 		if(prel.abs() < reach_thr || (m_Timer.getTime() - m_SwitchTime) > 2.0)
 			m_Reached = true;

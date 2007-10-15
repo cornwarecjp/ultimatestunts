@@ -193,8 +193,8 @@ int main(int argc, char *argv[])
 	graphobj->render(VisibleLODs);
 
 	printf("\nInitialising the rendering engine\n");
-	renderer = new CEditRenderer(winsys);
-	camera = new CEditCamera();
+	renderer = new CEditRenderer;
+	camera = new CEditCamera;
 	renderer->setCamera(camera);
 	renderer->setGraphobj(graphobj);
 

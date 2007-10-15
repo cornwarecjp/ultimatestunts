@@ -189,6 +189,9 @@ CDataObject *CGraphicWorld::createObject(const CString &filename, const CParamLi
 	if(type == CDataObject::eMaterial)
 		return new CLODTexture(this);
 
+	if(type == CDataObject::eTexture)
+		return new CTexture(this);
+
 	if(type == CDataObject::eTileModel)
 		return new CGraphObj(this, CDataObject::eTileModel);
 

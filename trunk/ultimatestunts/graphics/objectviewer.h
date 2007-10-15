@@ -32,7 +32,7 @@ using namespace std;
 
 class CObjectViewer : public CRenderer {
 public: 
-	CObjectViewer(const CWinSystem *winsys, CDataManager *world);
+	CObjectViewer(CDataManager *world);
 	virtual ~CObjectViewer();
 
 	virtual void update();

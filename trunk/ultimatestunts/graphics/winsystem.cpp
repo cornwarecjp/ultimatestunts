@@ -22,6 +22,8 @@
 
 #include "lconfig.h"
 
+#include "mousecursor.h"
+
 #include "winsystem.h"
 
 CWinSystem *theWinSystem = NULL;
@@ -38,6 +40,7 @@ CWinSystem::CWinSystem(const CString &caption)
 	m_W = 0; m_H = 0; //to make sure that the format is changed the first time
 	m_BPP = 24;
 	m_VisibleTiles = 20;
+	m_OpenGLCursor = true;
 
 	//Some code coming from SDL gears
 	//This has to be called before video mode initialization
@@ -163,6 +166,16 @@ bool CWinSystem::reloadConfiguration()
 	if(cnf != "")
 		m_VisibleTiles = cnf.toInt();
 
+	//OpenGL cursor
+	cnf = conf.getValue("user_interface", "opengl_mousecursor");
+	if(cnf != "")
+		m_OpenGLCursor = (cnf== "true");
+
+	if(m_OpenGLCursor)
+		{SDL_ShowCursor(SDL_DISABLE);}
+	else
+		{SDL_ShowCursor(SDL_ENABLE);}
+
 	return true;
 }
 
@@ -245,6 +258,7 @@ int CWinSystem::runLoop( bool (CALLBACKFUN *loopfunc)(), bool swp)
 bool CWinSystem::runLoop(CWidget *widget)
 {
 	int widgetmessages = widget->onResize(0, 0, m_W, m_H) | widget->onRedraw();
+	drawCursor();
 	swapBuffers();
 
 	SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
@@ -323,6 +337,7 @@ bool CWinSystem::runLoop(CWidget *widget)
 				case SDL_MOUSEMOTION:
 					widgetmessages |= widget->onMouseMove(
 						event.motion.x, m_H - event.motion.y, event.motion.state);
+					if(m_OpenGLCursor) widgetmessages |= WIDGET_REDRAW;
 					break;
 
 				case SDL_MOUSEBUTTONUP:
@@ -337,6 +352,7 @@ bool CWinSystem::runLoop(CWidget *widget)
 		if(widgetmessages & WIDGET_REDRAW)
 		{
 			widgetmessages |= widget->onRedraw();
+			drawCursor();
 			swapBuffers();
 		}
 	}
@@ -352,6 +368,39 @@ bool CWinSystem::runLoop(CWidget *widget)
 void CWinSystem::swapBuffers()
 {
 	SDL_GL_SwapBuffers();
+}
+
+void CWinSystem::showMouseCursor(bool show)
+{
+	if(show && !m_OpenGLCursor)
+		{SDL_ShowCursor(SDL_ENABLE);}
+	else
+		{SDL_ShowCursor(SDL_DISABLE);}
+}
+
+void CWinSystem::drawCursor()
+{
+	if(!m_OpenGLCursor) return;
+
+	static CMouseCursor cursor;
+
+	int x, y;
+	SDL_GetMouseState(&x, &y);
+
+	glLoadIdentity();
+	glTranslatef(x, m_H-y, 0);
+
+	glScissor(0, 0, m_W, m_H);
+
+	//the rectangle
+	glColor3f(1,1,1);
+	cursor.draw();
+	glBegin(GL_QUADS);
+	glTexCoord2f(0,1); glVertex2f( 0,-31);
+	glTexCoord2f(1,1); glVertex2f(31,-31);
+	glTexCoord2f(1,0); glVertex2f(31, 0 );
+	glTexCoord2f(0,0); glVertex2f( 0, 0 );
+	glEnd();
 }
 
 bool CWinSystem::getKeyState(int c) const

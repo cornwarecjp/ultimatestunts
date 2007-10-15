@@ -26,20 +26,15 @@
 #include "tileselect.h"
 
 CTileSelect::CTileSelect()
- : CActionWidget()
 {
 	m_RenderWidget = new CRenderWidget;
-	m_ObjectViewer = new CObjectViewer(theWinSystem, theTrackDocument->m_DataManager);
+	m_ObjectViewer = new CObjectViewer(theTrackDocument->m_DataManager);
 	m_RenderWidget->m_Renderer = m_ObjectViewer;
 	m_ObjectViewer->setCamera(&m_Camera);
 
 	m_Camera.zoomOut(0.3);
 
-	CReplaceAction *ra = new CReplaceAction;
-	ra->m_Tile.m_Model = 1;
-	ra->m_Tile.m_Z = 0;
-	ra->m_Tile.m_R = 0;
-	m_Action = ra;
+	m_Selection = 1;
 }
 
 
@@ -47,80 +42,18 @@ CTileSelect::~CTileSelect()
 {
 	delete m_RenderWidget;
 	delete m_ObjectViewer;
-
-	delete m_Action;
 }
 
-int CTileSelect::onKeyPress(int key)
+void CTileSelect::setSelection(unsigned int sel)
 {
-	SDLMod modState = SDL_GetModState();
+	m_Selection = sel;
+	if(m_Selection == 0) //0 = delete
+		m_Selection = 
+			theTrackDocument->m_DataManager->getNumObjects(CDataObject::eTileModel) - 1;
 
-	CReplaceAction *ra = (CReplaceAction *)m_Action;
-
-	switch(key)
-	{
-	case SDLK_RETURN:
-		theTrackDocument->commitAction();
-		return WIDGET_REDRAW;
-	case 'r':
-		{
-			//Change tile rotation
-			ra->m_Tile.m_R++;
-			if(ra->m_Tile.m_R > 3)
-				ra->m_Tile.m_R = 0;
-
-			theTrackDocument->setNewAction(ra);
-		}
-		return WIDGET_REDRAW;
-	case SDLK_TAB:
-		//Change tile model
-		if(modState & KMOD_SHIFT)
-		{
-			ra->m_Tile.m_Model--;
-			if(ra->m_Tile.m_Model == 0) //0 = delete
-				ra->m_Tile.m_Model = int(
-				theTrackDocument->m_DataManager->getNumObjects(CDataObject::eTileModel)
-				) - 1;
-		}
-		else
-		{
-			ra->m_Tile.m_Model++;
-			if(ra->m_Tile.m_Model >= int(
-				theTrackDocument->m_DataManager->getNumObjects(CDataObject::eTileModel)
-				))
-					ra->m_Tile.m_Model = 1; //0 = delete
-		}
-		theTrackDocument->setNewAction(ra);
-		return WIDGET_REDRAW;
-	case SDLK_DELETE:
-		{
-			//Change tile model
-			int oldModel = ra->m_Tile.m_Model;
-
-			ra->m_Tile.m_Model = 0; //0 = delete
-			theTrackDocument->setNewAction(ra);
-
-			theTrackDocument->applyAction();
-			theTrackDocument->commitAction(); //immediately do it
-
-			ra->m_Tile.m_Model = oldModel;
-			theTrackDocument->setNewAction(ra);
-		}
-		return WIDGET_REDRAW;
-	case SDLK_INSERT:
-		{
-			//Change tile insert mode
-			ra->m_ClearTile = false;
-			theTrackDocument->setNewAction(ra);
-			theTrackDocument->commitAction(); //immediately do it
-
-			ra->m_ClearTile = true;
-			theTrackDocument->setNewAction(ra);
-		}
-		return WIDGET_REDRAW;
-	}
-
-	return 0;
+	if(m_Selection >= 
+		theTrackDocument->m_DataManager->getNumObjects(CDataObject::eTileModel))
+			m_Selection = 1; //0 = delete
 }
 
 int CTileSelect::onMouseClick(int x, int y, unsigned int buttons)
@@ -142,11 +75,9 @@ int CTileSelect::onMouseClick(int x, int y, unsigned int buttons)
 	if(index < 0) index = 0;
 	if(index >= numTiles) index = numTiles-1;
 
-	((CReplaceAction *)m_Action)->m_Tile.m_Model = index;
+	m_Selection = index;
 
-	theTrackDocument->setNewAction(m_Action);
-
-	return WIDGET_REDRAW;
+	return WIDGET_REDRAW | WIDGET_QUIT;
 }
 
 int CTileSelect::onMouseMove(int x, int y, unsigned int buttons)
@@ -192,14 +123,12 @@ int CTileSelect::onRedraw()
 	else if(m_ScrollPosition > m_RequestH - m_H)
 		{m_ScrollPosition = m_RequestH - m_H;}
 
-	unsigned int selected = ((CReplaceAction *)m_Action)->m_Tile.m_Model;
-	if(selected >= tiles.size())
-	{
-		selected = ((CReplaceAction *)m_Action)->m_Tile.m_Model = tiles.size() - 1;
-		theTrackDocument->setNewAction(m_Action); //because the action has changed
-	}
-
 	int ret = 0;
+
+	if(m_Selection >= tiles.size())
+	{
+		m_Selection = tiles.size() - 1;
+	}
 
 	for(unsigned int i=1; i < tiles.size(); i++)
 	{
@@ -234,7 +163,7 @@ int CTileSelect::onRedraw()
 		ret |= m_RenderWidget->onRedraw();
 		glPopMatrix();
 
-		if(i == selected)
+		if(i == m_Selection)
 		{
 			//Selection rectangle
 			glColor3f(1.0,0.8,0.0);

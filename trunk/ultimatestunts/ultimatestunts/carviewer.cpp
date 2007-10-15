@@ -25,7 +25,7 @@
 #include "lconfig.h"
 #include "timer.h"
 
-CCarViewer::CCarViewer(const CWinSystem *winsys, CDataManager *world) : CObjectViewer(winsys, world)
+CCarViewer::CCarViewer(CDataManager *world) : CObjectViewer(world)
 {
 	CObjectViewer::m_Camera = &m_Camera;
 

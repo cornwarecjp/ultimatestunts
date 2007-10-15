@@ -160,11 +160,13 @@ float CBinBuffer::getFloat16(int unsigned &pos, float unit) const
 
 CBinBuffer & CBinBuffer::addFloat32(const float & v, float unit)
 {
+	//double is necessary because we need more than 24bit mantissa accuracy here
 	return operator+=((Uint32)((double)(v/unit) + (double)(0x7FFFFFFF)));
 }
 
 float CBinBuffer::getFloat32(int unsigned &pos, float unit) const
 {
+	//double is necessary because we need more than 24bit mantissa accuracy here
 	return unit * ((double)(getUint32(pos)) - (double)(0x7FFFFFFF));
 }
 

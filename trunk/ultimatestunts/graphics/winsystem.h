@@ -44,6 +44,8 @@ public:
 	bool wasPressed(int c);
 	bool joyBtnWasPressed(int c);
 
+	void showMouseCursor(bool show=true);
+
 	SDL_Surface *getScreen(){return m_Screen;}
 
 	unsigned int getWidth() const
@@ -52,7 +54,12 @@ public:
 		{return m_H;}
 	unsigned int getBPP() const
 		{return m_BPP;}
+
 protected:
+	void drawCursor();
+
+	bool m_OpenGLCursor;
+
 	unsigned int m_W, m_H, m_BPP;
 	bool m_Fullscreen;
 	Uint32 m_Flags;

@@ -33,7 +33,7 @@
 CMainPage::CMainPage() : CGUIPage()
 {
 	printf("\nInitialising the rendering engine\n");
-	m_Renderer = new CTERenderer(theWinSystem);
+	m_Renderer = new CTERenderer;
 	m_Camera = new CTECamera();
 	m_Renderer->setCamera(m_Camera);
 
@@ -61,12 +61,20 @@ CMainPage::CMainPage() : CGUIPage()
 	m_FilanemeLabel->m_Text = "[new file]";
 	m_Widgets.push_back(m_FilanemeLabel);
 
-	m_TileSelect = new CTileSelect;
-	m_TileSelect->m_Xrel = 0.0;
-	m_TileSelect->m_Yrel = 0.3;
-	m_TileSelect->m_Wrel = 0.3;
-	m_TileSelect->m_Hrel = 0.6;
-	m_Widgets.push_back(m_TileSelect);
+	m_Compass = new CCompass;
+	m_Compass->m_Xrel = 0.0;
+	m_Compass->m_Yrel = 0.0;
+	m_Compass->m_Wrel = 0.3;
+	m_Compass->m_Hrel = 0.1;
+	m_Compass->setCamera(m_Camera);
+	m_Widgets.push_back(m_Compass);
+
+	m_ActionWidget = new CReplaceActionWidget;
+	m_ActionWidget->m_Xrel = 0.0;
+	m_ActionWidget->m_Yrel = 0.1;
+	m_ActionWidget->m_Wrel = 0.3;
+	m_ActionWidget->m_Hrel = 0.8;
+	m_Widgets.push_back(m_ActionWidget);
 
 	m_IconBar = new CIconBar;
 	m_IconBar->m_Xrel = 0.0;
@@ -85,7 +93,7 @@ CMainPage::CMainPage() : CGUIPage()
 
 	m_DrawBackground = false;
 
-	theTrackDocument->setNewAction(m_TileSelect->m_Action);
+	theTrackDocument->setNewAction(m_ActionWidget->m_Action);
 
 	m_PrevMouseX = m_PrevMouseY = -1;
 	m_TrackCache = NULL;
@@ -125,7 +133,7 @@ int CMainPage::onKeyPress(int key)
 		CVector movement(0,0,0);
 
 		//Action-based key handling
-		int action_ret = m_TileSelect->onKeyPress(key);
+		int action_ret = m_ActionWidget->onKeyPress(key);
 		if(action_ret != 0) return action_ret;
 
 		//Otherwise, default key handling
@@ -209,8 +217,50 @@ int CMainPage::onMouseClick(int x, int y, unsigned int buttons)
 	m_PrevMouseX = -1;
 	m_PrevMouseY = -1;
 
-	if(m_TileSelect->isInWidget(x, y))
-		return m_TileSelect->onMouseClick(x, y, buttons);
+	if(m_ActionWidget->isInWidget(x, y))
+		return m_ActionWidget->onMouseClick(x, y, buttons);
+
+	if(m_Compass->isInWidget(x, y))
+		if(m_Compass->onMouseClick(x, y, buttons) & WIDGET_QUIT)
+		{
+			int dx=0,dy=0,dz=0;
+
+			switch(m_Compass->m_Selection)
+			{
+			case CCompass::eXup:
+				dx = 1;
+				break;
+			case CCompass::eXdn:
+				dx = -1;
+				break;
+			case CCompass::eYup:
+				dy = 1;
+				break;
+			case CCompass::eYdn:
+				dy = -1;
+				break;
+			case CCompass::eZup:
+				dz = 1;
+				break;
+			case CCompass::eZdn:
+				dz = -1;
+				break;
+			case CCompass::eNone:
+				break;
+			}
+
+			theTrackDocument->moveCursor(
+				theTrackDocument->getCursorX()+dx,
+				theTrackDocument->getCursorY()+dy,
+				theTrackDocument->getCursorZ()+dz
+				);
+
+			theTrackDocument->applyAction(); //action could be changed
+
+			m_Camera->setTargetPos(theTrackDocument->getCursorPos());
+
+			return WIDGET_REDRAW;
+		}
 
 	return CGUIPage::onMouseClick(x, y, buttons);
 }
@@ -219,8 +269,11 @@ int CMainPage::onMouseMove(int x, int y, unsigned int buttons)
 {
 	if(m_Widgets.size()==m_NormalNumWidgets) //otherwise, maybe there is e.g. a messagebox.
 	{
-		if(m_TileSelect->isInWidget(x, y))
-			return m_TileSelect->onMouseMove(x, y, buttons);
+		if(m_ActionWidget->isInWidget(x, y))
+			return m_ActionWidget->onMouseMove(x, y, buttons);
+
+		if(m_Compass->isInWidget(x, y))
+			return m_Compass->onMouseMove(x, y, buttons);
 
 		if(m_RenderWidget->isInWidget(x,y) && buttons != 0)
 		{
