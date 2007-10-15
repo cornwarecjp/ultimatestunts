@@ -32,7 +32,7 @@ END
 
 BEGIN
 sky = environment/sky3.rgb
-horizon = environment/kyoto-horizon.png
+horizon = environment/london-horizon.png
 envmap = environment/spheremap.rgb
 lightdir = -0.690000,-0.700000,-0.200000
 lightcol = 1.000000,1.000000,0.800000

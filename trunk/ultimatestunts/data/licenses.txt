@@ -114,6 +114,16 @@ Original license:
 	GPL
 ------------------------
 
+subaruimpreza.conf
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
 super.conf
 ------------------------
 Original author:
@@ -479,6 +489,34 @@ UStunts modifications:
 	Increased pitch
 ------------------------
 
+engine2.wav
+------------------------
+Original author:
+	?? (Andrew Mustun?)
+Original project:
+	Trophy (same file as engine.wav)
+Original license:
+	?? (Open Source)
+UStunts author:
+	CJP
+UStunts modifications:
+	Increased pitch
+------------------------
+
+engine4.wav
+------------------------
+Original author:
+	?? (Andrew Mustun?)
+Original project:
+	Trophy (same file as engine.wav)
+Original license:
+	?? (Open Source)
+UStunts author:
+	CJP
+UStunts modifications:
+	Increased pitch
+------------------------
+
 license.jpg
 ------------------------
 Original author:
@@ -728,6 +766,40 @@ UStunts modifications:
 	Different material settings
 ------------------------
 
+./cars/subaruimpreza:
+body.glb
+------------------------
+Original author:
+	unknown
+Original project:
+	??
+Original license:
+	not present (free?)
+UStunts author:
+	CJP
+UStunts modifications:
+	Fileformat conversion
+	Lots of mesh editing
+	Separated wheels from body
+	Different material settings
+------------------------
+
+wheel.glb
+------------------------
+Original author:
+	unknown
+Original project:
+	??
+Original license:
+	not present (free?)
+UStunts author:
+	CJP
+UStunts modifications:
+	Fileformat conversion
+	Lots of mesh editing
+	Separated wheels from body
+	Different material settings
+------------------------
 
 ./cars/tford:
 body.glb
@@ -1059,6 +1131,22 @@ Original license:
 
 
 ./misc:
+icons.rgb
+------------------------
+Original author:
+	??
+Original project:
+	KDE
+Original license:
+	Open Source (LGPL?)
+UStunts author:
+	CJP
+UStunts modifications:
+	Fileformat conversion
+	Composition of image
+	Color changes
+------------------------
+
 iso8859-1.rgba
 ------------------------
 Original author:
@@ -1165,6 +1253,28 @@ UStunts author:
 	CJP
 UStunts modifications:
 	Fileformat conversion
+------------------------
+
+
+./replays:
+DragRace.repl
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+Posche911-on-Mountain-track.repl
+------------------------
+Original author:
+	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
 ------------------------
 
 
@@ -1943,7 +2053,7 @@ Original license:
 corklr.glb
 ------------------------
 Original author:
-	BBalazs
+	CJP
 Original project:
 	Ultimate Stunts
 Original license:
@@ -2842,16 +2952,6 @@ Original license:
 	GPL
 ------------------------
 
-DragRace.repl
-------------------------
-Original author:
-	CJP
-Original project:
-	Ultimate Stunts
-Original license:
-	GPL
-------------------------
-
 hill2.track
 ------------------------
 Original author:
@@ -2893,16 +2993,6 @@ Original license:
 ------------------------
 
 nocorners.track
-------------------------
-Original author:
-	CJP
-Original project:
-	Ultimate Stunts
-Original license:
-	GPL
-------------------------
-
-Porsche911-on-test.repl
 ------------------------
 Original author:
 	CJP

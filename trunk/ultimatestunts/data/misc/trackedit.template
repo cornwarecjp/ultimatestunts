@@ -135,6 +135,9 @@ tiles/crkbridgeright3.glb 7 8 4
 tiles/crkbridgeright4.glb 7 8 4
 tiles/ship.glb 0
 tiles/blockedpipe1.glb 0 7 8 9
+tiles/leftrightcorner_inleft.glb 0 3
+tiles/leftrightcorner_inright.glb 0 3
+tiles/leftrightcorner_mid.glb 0 3
 END
 
 #tile_id/rotation/heigth
