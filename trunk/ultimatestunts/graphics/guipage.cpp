@@ -30,7 +30,10 @@ CGUIPage::CGUIPage()
 	loadConsoleFont();
 
 	m_Title = "Ultimate Stunts menu";
+	m_OnlyTopGetsMouseEvents = true;
 	m_DrawBackground = true;
+
+	m_EventWidget = 0;
 
 	if(_thePageBackground == NULL)
 	{
@@ -57,6 +60,7 @@ int CGUIPage::onKeyPress(int key)
 {
 	if(m_Widgets.size() == 0) return 0;
 
+	m_EventWidget = m_Widgets.size()-1;
 	return m_Widgets[m_Widgets.size()-1]->onKeyPress(key);
 }
 
@@ -64,8 +68,17 @@ int CGUIPage::onMouseMove(int x, int y, unsigned int buttons)
 {
 	if(m_Widgets.size() == 0) return 0;
 
+	m_EventWidget = m_Widgets.size()-1;
 	if(m_Widgets[m_Widgets.size()-1]->isInWidget(x, y))
 		return m_Widgets[m_Widgets.size()-1]->onMouseMove(x, y, buttons);
+
+	if(!m_OnlyTopGetsMouseEvents && m_Widgets.size() > 1)
+		for(int i = m_Widgets.size()-2; i >= 0; i--)
+			if(m_Widgets[i]->isInWidget(x, y))
+			{
+				m_EventWidget = i;
+				return m_Widgets[i]->onMouseMove(x, y, buttons);
+			}
 
 	return 0;
 }
@@ -74,8 +87,17 @@ int CGUIPage::onMouseClick(int x, int y, unsigned int buttons)
 {
 	if(m_Widgets.size() == 0) return 0;
 
+	m_EventWidget = m_Widgets.size()-1;
 	if(m_Widgets[m_Widgets.size()-1]->isInWidget(x, y))
 		return m_Widgets[m_Widgets.size()-1]->onMouseClick(x, y, buttons);
+
+	if(!m_OnlyTopGetsMouseEvents && m_Widgets.size() > 1)
+		for(int i = m_Widgets.size()-2; i >= 0; i--)
+			if(m_Widgets[i]->isInWidget(x, y))
+			{
+				m_EventWidget = i;
+				return m_Widgets[i]->onMouseClick(x, y, buttons);
+			}
 
 	return 0;
 }

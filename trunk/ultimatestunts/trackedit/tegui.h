@@ -42,10 +42,28 @@ protected:
 	CString viewLoadMenu();
 	CString viewSaveAsMenu();
 	CString viewImportMenu();
+	CString viewTilesMenu();
+	CString viewTileMenu();
+	CString viewLoadTileMenu();
 
 	//The menu pages
 	CMainPage m_MainPage;
 	CGUIPage m_LoadPage;
+	CGUIPage m_TilesPage;
+	CGUIPage m_TilePage;
+
+	//State data for the menus:
+	int m_CurrentTile; //Negative = none selected
+
+	//A cache for names of the tiles, loaded by constructor
+	struct STileDescr
+	{
+		CString description;
+		CString glbfile;
+		CString textures;
+		CString flags;
+	};
+	vector<STileDescr> m_TileFiles;
 };
 
 #endif

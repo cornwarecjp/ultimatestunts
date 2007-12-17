@@ -17,9 +17,7 @@
 #ifndef TILESELECT_H
 #define TILESELECT_H
 
-#include "renderwidget.h"
-#include "objectviewer.h"
-#include "tecamera.h"
+#include "objectviewwidget.h"
 
 #include "actionwidget.h"
 
@@ -42,9 +40,7 @@ public:
 	unsigned int getSelection() const
 		{return m_Selection;}
 protected:
-	CRenderWidget *m_RenderWidget;
-	CObjectViewer *m_ObjectViewer;
-	CTECamera m_Camera;
+	CObjectViewWidget *m_RenderWidget;
 
 	unsigned int m_Selection;
 };

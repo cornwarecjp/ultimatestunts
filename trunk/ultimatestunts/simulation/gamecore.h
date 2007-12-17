@@ -102,6 +102,7 @@ protected:
 
 	CTimer m_Timer; //for the FPS counter
 	float m_TimerOffset; //timer offset relative to game time
+	float m_GlobalTimeAccel; //time acceleration (1.0 = normal)
 	float m_FPS;
 
 	virtual void loadTrackData();

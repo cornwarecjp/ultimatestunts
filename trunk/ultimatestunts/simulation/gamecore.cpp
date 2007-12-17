@@ -24,6 +24,7 @@
 #define N_(String1, String2, n) ngettext ((String1), (String2), (n))
 
 #include "usmacros.h"
+#include "lconfig.h"
 
 #include "clientsim.h"
 #include "physics.h"
@@ -43,6 +44,7 @@ CGameCore::CGameCore()
 	m_ClientNet = NULL;
 	m_GameType = eLocalGame;
 	m_FPS = 0.0;
+
 	initLocalGame(""); //just to get it into some state
 }
 
@@ -251,8 +253,15 @@ bool CGameCore::readyAndLoad(LoadStatusCallback callBackFun)
 void CGameCore::setStartTime(float offset)
 {
 	//TODO: some time synchronisation between server and client
+	float tnow = m_Timer.getTime();
+
+	m_GlobalTimeAccel = 1.0;
+	CString cnf = theMainConfig->getValue("simulation", "global_t_accel");
+	if(cnf != "")
+		m_GlobalTimeAccel = cnf.toFloat();
+
 	theWorld->m_LastTime = -3.01 + offset;
-	m_TimerOffset = m_Timer.getTime() - theWorld->m_LastTime;
+	m_TimerOffset = m_GlobalTimeAccel * tnow - theWorld->m_LastTime;
 	m_FPS = 0.0;
 
 	usleep(1000); //< 1000 fps. Just to avoid getting too high FPS in the first frame
@@ -261,7 +270,7 @@ void CGameCore::setStartTime(float offset)
 bool CGameCore::update() //true = continue false = leave
 {
 	//Game time info:
-	float currTime = m_Timer.getTime() - m_TimerOffset;
+	float currTime = m_GlobalTimeAccel * m_Timer.getTime() - m_TimerOffset;
 
 	float dt = currTime - theWorld->m_LastTime + 0.00001; //to avoid division by zero
 
@@ -277,7 +286,7 @@ bool CGameCore::update() //true = continue false = leave
 	theWorld->m_LastTime = currTime;
 
 	//FPS:
-	float fpsnu = 1.0 / dt;
+	float fpsnu = m_GlobalTimeAccel / dt;
 	m_FPS = 0.9 * m_FPS + 0.1 * fpsnu;
 
 	if(m_GameType == eNetworkGame)

@@ -29,7 +29,7 @@ public:
 	~CIconList();
 
 	enum eIconID {
-		eLoad=0, eSave=1, eUndo=2, eRedo=3, eQuit=4, eHelp=5, eImport=6,
+		eLoad=0, eSave=1, eUndo=2, eRedo=3, eQuit=4, eHelp=5, eImport=6, eTiles=7,
 		eRotateTile=8, eCombineTiles=9, eOK = 10, eDelete=11,
 		eNone
 		};

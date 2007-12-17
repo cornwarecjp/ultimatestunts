@@ -19,6 +19,51 @@
 
 #include "dataobject.h"
 
+CParamList::CParamList()
+{
+}
+
+CParamList::CParamList(const CString &paramline)
+{
+	CString theString = paramline;
+	theString.Trim();
+
+	//printf("CParamList::CParamList(%s)\n", theString.c_str());
+
+	while(theString != "")
+	{
+		CString parval;
+
+		int space = theString.inStr(' ');
+		if(space < 0)
+		{
+			parval = theString;
+			theString = "";
+		}
+		else
+		{
+			parval = theString.mid(0, space);
+			theString = theString.mid(space+1);
+		}
+
+		parval.Trim();
+
+		int equal = parval.inStr('=');
+		if(equal < 0) continue; //ignore non-"A=B" parts
+
+		SParameter p;
+		p.name = parval.mid(0, equal);
+		p.value = parval.mid(equal+1);
+
+		printf("  \"%s\" = \"%s\"\n", p.name.c_str(), p.value.c_str());
+		push_back(p);
+	}
+}
+
+CParamList::~CParamList()
+{
+}
+
 bool CParamList::operator==(const CParamList &val) const
 {
 	for(unsigned int i=0; i < val.size(); i++)

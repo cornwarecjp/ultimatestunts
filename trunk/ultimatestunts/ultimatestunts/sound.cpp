@@ -154,8 +154,10 @@ bool CSound::reloadConfiguration()
 
 	//TODO: driver settings
 
+#ifdef HAVE_LIBOPENAL
 	//OpenAL doppler is not yet bug-free:
 	alDopplerFactor(conf.getValue("workaround", "openal_008_dopplerfactor").toFloat());
+#endif
 
 	m_MusicVolume = conf.getValue("sound", "musicvolume").toInt();
 	m_SoundVolume = conf.getValue("sound", "soundvolume").toInt();

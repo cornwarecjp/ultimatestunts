@@ -62,50 +62,13 @@ bool CTrack::load(const CString &filename, const CParamList &list)
 		if(line == "END") break;
 
 		CParamList plist;
-		
-		int pos = line.inStr("scale=");
-		if(pos  > 0) //scale is specified
-		{
-			if((unsigned int)pos < line.length()-6)
-			{
-				SParameter p;
-				p.name = "scale";
-				p.value = line.mid(pos+6, line.length()-pos-6);
-				p.value = CString(p.value.toInt());
-				plist.push_back(p);
-			}
-			//TODO: check for different y-direction mul
-		}
 
-		pos = line.inStr("mu=");
-		if(pos  > 0) //mu is specified
-		{
-			if((unsigned int)pos < line.length()-3)
-			{
-				SParameter p;
-				p.name = "mu";
-				p.value = line.mid(pos+3, line.length()-pos-3);
-				p.value = CString(p.value.toFloat());
-				plist.push_back(p);
-			}
-		}
-
-		pos = line.inStr("roll=");
-		if(pos  > 0) //roll is specified
-		{
-			if((unsigned int)pos < line.length()-5)
-			{
-				SParameter p;
-				p.name = "roll";
-				p.value = line.mid(pos+5, line.length()-pos-5);
-				p.value = CString(p.value.toFloat());
-				plist.push_back(p);
-			}
-		}
-
-		pos = line.inStr(' ');
+		int pos = line.inStr(' ');
 		if(pos  > 0) //there is a space
+		{
+			plist = CParamList(line.mid(pos+1));
 			line = line.mid(0, pos);
+		}
 
 		//TODO: check if the ID is correct (starting from 0)
 		m_DataManager->loadObject(line, plist, CDataObject::eMaterial);

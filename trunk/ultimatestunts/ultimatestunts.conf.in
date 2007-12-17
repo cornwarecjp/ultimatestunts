@@ -215,6 +215,8 @@ dtmin = 0.005
 #Maximum simulation steps per graphics frame
 Nmax = 50
 
+#Global time acceleration (1.0 = normal)
+global_t_accel = 1.0
 
 #Global keys
 [input_global]

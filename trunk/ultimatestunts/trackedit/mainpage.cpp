@@ -87,6 +87,7 @@ CMainPage::CMainPage() : CGUIPage()
 	m_IconBar->addIcon(CIconList::eQuit, 1.1, _("Exit"));
 	m_IconBar->addIcon(CIconList::eUndo, 2.1, _("Undo"));
 	m_IconBar->addIcon(CIconList::eRedo, 1.1, _("Redo"));
+	m_IconBar->addIcon(CIconList::eTiles, 2.1, _("Change tiles collection"));
 	m_Widgets.push_back(m_IconBar);
 
 	m_NormalNumWidgets = m_Widgets.size();

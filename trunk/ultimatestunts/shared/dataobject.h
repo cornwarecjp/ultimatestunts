@@ -38,6 +38,10 @@ struct SParameter
 class CParamList : public vector<SParameter>
 {
 public:
+	CParamList();
+	CParamList(const CString &paramline);
+	~CParamList();
+
 	bool operator==(const CParamList &val) const;
 	CString getValue(const CString &var, const CString &deflt) const;
 };

@@ -44,6 +44,9 @@ public:
 	vector<CWidget *> m_Widgets;
 	CString m_Title;
 
+	unsigned int m_EventWidget; //widget that triggered the last event (e.g. WIDGET_QUIT)
+
+	bool m_OnlyTopGetsMouseEvents;
 	bool m_DrawBackground;
 };
 

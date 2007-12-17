@@ -27,13 +27,7 @@
 
 CTileSelect::CTileSelect()
 {
-	m_RenderWidget = new CRenderWidget;
-	m_ObjectViewer = new CObjectViewer(theTrackDocument->m_DataManager);
-	m_RenderWidget->m_Renderer = m_ObjectViewer;
-	m_ObjectViewer->setCamera(&m_Camera);
-
-	m_Camera.zoomOut(0.3);
-
+	m_RenderWidget = new CObjectViewWidget(theTrackDocument->m_DataManager);
 	m_Selection = 1;
 }
 
@@ -41,7 +35,6 @@ CTileSelect::CTileSelect()
 CTileSelect::~CTileSelect()
 {
 	delete m_RenderWidget;
-	delete m_ObjectViewer;
 }
 
 void CTileSelect::setSelection(unsigned int sel)
@@ -96,10 +89,7 @@ int CTileSelect::onMouseMove(int x, int y, unsigned int buttons)
 
 int CTileSelect::onIdle()
 {
-	//TODO: CTimer-based
-	m_Camera.turnRight(0.1);
-
-	return WIDGET_REDRAW;
+	return m_RenderWidget->onIdle();
 }
 
 int CTileSelect::onRedraw()
@@ -155,8 +145,8 @@ int CTileSelect::onRedraw()
 		m_RenderWidget->onResize(m_X + x, m_Y+m_H - y - h, 64, h);
 
 		const CDataObject *tile = (const CDataObject *)(tiles[i]);
-		m_ObjectViewer->m_Objects.clear();
-		m_ObjectViewer->addObject(tile->getFilename(), tile->getParamList(),
+		m_RenderWidget->m_ObjectViewer.m_Objects.clear();
+		m_RenderWidget->m_ObjectViewer.addObject(tile->getFilename(), tile->getParamList(),
 			CVector(0,0,0), CMatrix(), false, CDataObject::eTileModel);
 
 		glPushMatrix();
