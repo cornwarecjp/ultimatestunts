@@ -18,6 +18,8 @@
 #ifndef LODTEXTURE_H
 #define LODTEXTURE_H
 
+#include <GL/gl.h>
+
 #include "texture.h"
 
 /**
@@ -37,9 +39,9 @@ public:
 
 	unsigned int getTextureID(int lod) const; //only for low-level hacking to make things faster
 protected:
-	unsigned int m_Texture2;
-	unsigned int m_Texture3;
-	unsigned int m_Texture4;
+	GLuint m_Texture2;
+	GLuint m_Texture3;
+	GLuint m_Texture4;
 
 	int sizex2,sizey2,
 			sizex3,sizey3,

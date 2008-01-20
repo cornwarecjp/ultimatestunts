@@ -27,7 +27,7 @@
 
 #include <GL/gl.h>
 
-#ifdef HAVE_GLEXT_H
+#if defined(HAVE_GLEXT_H) && !defined(__APPLE__)
 
 #include <GL/glext.h>
 

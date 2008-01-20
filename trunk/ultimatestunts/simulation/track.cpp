@@ -50,12 +50,12 @@ bool CTrack::load(const CString &filename, const CParamList &list)
 	m_H = tfile.readl().toInt();
 
 	//First: load materials/textures
-	//Find "BEGIN"
-	if(!findBeginTag(tfile))
+	if(!findBeginTag(tfile)) //Find "BEGIN"
 	{
 		printf("Error: could not find the textures section in the track file\n");
 		return false;
 	}
+	vector<int> textureIDs;
 	while(true)
 	{
 		line = tfile.readl();
@@ -70,13 +70,18 @@ bool CTrack::load(const CString &filename, const CParamList &list)
 			line = line.mid(0, pos);
 		}
 
-		//TODO: check if the ID is correct (starting from 0)
-		m_DataManager->loadObject(line, plist, CDataObject::eMaterial);
+		int texID = m_DataManager->loadObject(line, plist, CDataObject::eMaterial);
+		if(texID < 0)
+		{
+			printf("Failed to load texture %s\n", line.c_str());
+			return false;
+		}
+		textureIDs.push_back(texID);
 	}
 	printf("\n   Loaded %d materials\n\n", m_DataManager->getNumObjects(CDataObject::eMaterial));
 
-	//Find "BEGIN"
-	if(!findBeginTag(tfile))
+
+	if(!findBeginTag(tfile)) //Find "BEGIN"
 	{
 		printf("Error: could not find the environment section in the track file\n");
 		return false;
@@ -99,19 +104,26 @@ bool CTrack::load(const CString &filename, const CParamList &list)
 			{m_HorizonFilename = value;}
 		else if(name == "envmap")
 			{m_EnvMapFilename = value;}
+
 		else if(name == "lightdir")
 			{m_LightDirection = value.toVector();}
 		else if(name == "lightcol")
 			{m_LightColor = value.toVector();}
 		else if(name == "ambientcol")
 			{m_AmbientColor = value.toVector();}
+
 		else if(name == "skycol")
 			{m_SkyColor = value.toVector();}
+		else if(name == "horizonskycol")
+			{m_HorizonSkyColor = value.toVector();}
+		else if(name == "fogcol")
+			{m_FogColor = value.toVector();}
+		else if(name == "envcol")
+			{m_EnvironmentColor = value.toVector();}
 	}
 
 	//Second: loading collision (and graphics) data
-	//Find "BEGIN"
-	if(!findBeginTag(tfile))
+	if(!findBeginTag(tfile)) //Find "BEGIN"
 	{
 		printf("Error: could not find the tiles section in the track file\n");
 		return false;
@@ -123,7 +135,7 @@ bool CTrack::load(const CString &filename, const CParamList &list)
 
 		//printf("  line = \"%s\"\n", line.c_str());
 
-		CString tile_flags, texture_indices;;
+		CString tile_flags, texture_indices;
 		int pos = line.inStr(' ');
 		if(pos  > 0) //a space exists
 		{
@@ -139,7 +151,7 @@ bool CTrack::load(const CString &filename, const CParamList &list)
 			line = line.mid(0, pos);
 		}
 
-		//printf("  flags = \"%s\"\n", tile_flags.c_str());
+		texture_indices = translateTextureIndices(texture_indices, textureIDs);
 
 		CParamList plist;
 		SParameter p;
@@ -159,8 +171,7 @@ bool CTrack::load(const CString &filename, const CParamList &list)
 	m_Track.resize(m_L * m_W * m_H);
 	for(int y=0; y<m_H; y++)
 	{
-		//Find "BEGIN"
-		if(!findBeginTag(tfile))
+		if(!findBeginTag(tfile)) //Find "BEGIN"
 		{
 			printf("Error: could not find track layer %d section in the track file\n", y);
 			return false;
@@ -197,8 +208,7 @@ bool CTrack::load(const CString &filename, const CParamList &list)
 
 	//Fourth: loading the possible routes
 	
-	//Find "BEGIN"
-	if(!findBeginTag(tfile))
+	if(!findBeginTag(tfile)) //Find "BEGIN"
 	{
 		printf("Error: could not find the route section in the track file\n");
 		return false;
@@ -337,3 +347,34 @@ bool CTrack::findBeginTag(CDataFile &f)
 		if(line == "\n") return false; //EOF
 	}
 }
+
+CString CTrack::translateTextureIndices(const CString &original, const vector<int> &table)
+{
+	CString src = original;
+	CString ret;
+
+	while(!(src.empty()))
+	{
+		int IDold = 0;
+
+		int pos = src.inStr(' ');
+		if(pos < 0)
+		{
+			IDold = src.toInt();
+			src = "";
+		}
+		else
+		{
+			IDold = src.mid(0, pos).toInt();
+			src = src.mid(pos+1);
+		}
+
+		ret += CString(table[IDold]) + " ";
+	}
+
+	//Remove last space
+	ret.trimR();
+
+	return ret;
+}
+

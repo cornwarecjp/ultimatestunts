@@ -109,7 +109,9 @@ void CDataManager::unloadAll(CDataObject::eDataType type)
 	{
 		for(unsigned int t=0; t < CDataObject::eEnumTop; t++)
 			while(m_Objects[t].size() > 0)
+			{
 				unloadObject(t, 0);
+			}
 
 		return;
 	}

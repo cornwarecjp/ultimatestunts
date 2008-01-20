@@ -29,6 +29,17 @@ CEditTrack::~CEditTrack()
 {
 }
 
+bool CEditTrack::tileIsUsed(int ID) const
+{
+	for(int i=0; i < m_L*m_W*m_H; i++)
+	{
+		const STile &t = m_Track[i];
+		if(t.m_Model == ID) return true;
+	}
+
+	return false;
+}
+
 bool CEditTrack::save(const CString &filename) const
 {
 	//Open the track file
@@ -78,6 +89,9 @@ bool CEditTrack::save(const CString &filename) const
 	tfile.writel(CString("lightcol = ") + m_LightColor);
 	tfile.writel(CString("ambientcol = ") + m_AmbientColor);
 	tfile.writel(CString("skycol = ") + m_SkyColor);
+	tfile.writel(CString("horizonskycol = ") + m_HorizonSkyColor);
+	tfile.writel(CString("fogcol = ") + m_FogColor);
+	tfile.writel(CString("envcol = ") + m_EnvironmentColor);
 	tfile.writel("END");
 	tfile.writel("");
 
@@ -157,7 +171,7 @@ bool CEditTrack::save(const CString &filename) const
 			CString line = CString(cp.x) + "," + cp.z + "," + cp.y + ":";
 
 			cp = m_Routes[r][i];
-			printf("%d, %d, %d -> %s\n", cp.x, cp.y, cp.z, line.c_str());
+			//printf("%d, %d, %d -> %s\n", cp.x, cp.y, cp.z, line.c_str());
 
 			if(isLast)
 				line += " end";

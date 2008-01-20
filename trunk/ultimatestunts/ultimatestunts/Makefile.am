@@ -1,5 +1,7 @@
 bin_PROGRAMS = ustunts
-ustunts_SOURCES = carviewer.cpp gamecamera.cpp gamegui.cpp gamerenderer.cpp gamewinsystem.cpp humanplayer.cpp main.cpp music.cpp sndsample.cpp sound.cpp soundobj.cpp soundworld.cpp uscore.cpp usserver.cpp
+ustunts_SOURCES = carviewer.cpp gamecamera.cpp gamegui.cpp gamerenderer.cpp \
+	gamewinsystem.cpp humanplayer.cpp main.cpp music.cpp sndsample.cpp sound.cpp soundobj.cpp \
+	soundworld.cpp uscore.cpp usserver.cpp
 ustunts_LDADD = $(top_builddir)/trackedit/libtrackedit.a \
 	$(top_builddir)/graphics/libgraphics.a $(top_builddir)/simulation/libsimulation.a \
 	$(top_builddir)/shared/libshared.a @sdllibs@ @graphlibs@ @soundlibs@ @netlibs@ @LIBINTL@
@@ -11,3 +13,4 @@ INCLUDES = -I$(top_srcdir)/graphics -I$(top_srcdir)/intl -I$(top_srcdir)/shared 
 
 # the library search path.
 ustunts_LDFLAGS = $(all_libraries) 
+

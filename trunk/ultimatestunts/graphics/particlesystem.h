@@ -1,8 +1,8 @@
 /***************************************************************************
-                          font.h  -  A bitmap-based font class
+                          particlesystem.h  -  A particle system base class
                              -------------------
-    begin                : ma okt 25 2004
-    copyright            : (C) 2004 by CJP
+    begin                : ma jan 14 2008
+    copyright            : (C) 2008 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
 
@@ -14,40 +14,48 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
+#ifndef PARTICLESYSTEM_H
+#define PARTICLESYSTEM_H
 
-#ifndef FONT_H
-#define FONT_H
+#include <vector>
+namespace std {}
+using namespace std;
 
-#include <GL/gl.h>
+#include "vector.h"
+#include "matrix.h"
 
 #include "texture.h"
 
 /**
-  *@author CJP
-  */
-
-class CFont : protected CTexture
+	@author CJP <cornware-cjp@users.sourceforge.net>
+*/
+class CParticleSystem
 {
-public: 
-	CFont(CDataManager *manager);
-	virtual ~CFont();
+public:
+	CParticleSystem(unsigned int numParticles);
+	virtual ~CParticleSystem();
 
-	virtual bool load(const CString &filename, const CParamList &list);
-	virtual void unload();
+	void update(float dt, bool newParticle=true);
+	virtual void draw(const CMatrix &cammat) const;
 
-	//ALWAYS enable before drawing, and disable after (read the source)
-	void enable();
-	void disable();
-	void drawString(const CString &str);
+	struct SParticle
+	{
+		CVector pos, vel;
+		float rotation, size;
+	};
 
-	float getFontW(){return m_W;}
-	float getFontH(){return m_H;}
+	bool m_Enabled;
+	CTexture *m_Texture;
 
 protected:
-	float m_W, m_H;
+	vector<SParticle *> m_Particles;
+	unsigned int m_OldestParticle;
 
-	GLuint m_Texture;
-	unsigned int m_BaseDispList;
+	virtual SParticle *createParticle();
+
+	virtual void initNewParticle(SParticle *p);
+	virtual void updateParticle(SParticle *p, float dt);
+	virtual void drawParticle(const SParticle *p) const;
 };
 
 #endif

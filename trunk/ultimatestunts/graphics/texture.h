@@ -16,6 +16,9 @@
  ***************************************************************************/
 #ifndef TEXTURE_H
 #define TEXTURE_H
+
+#include <GL/gl.h>
+
 #include "image.h"
 #include "vector.h"
 
@@ -45,7 +48,7 @@ protected:
 
 	bool m_TextureSmooth;
 
-	unsigned int m_Texture;
+	GLuint m_Texture;
 
 	int m_Sizex, m_Sizey;
 

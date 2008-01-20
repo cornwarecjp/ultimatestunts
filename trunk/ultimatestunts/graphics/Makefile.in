@@ -65,7 +65,8 @@ am_libgraphics_a_OBJECTS = background.$(OBJEXT) colorselect.$(OBJEXT) \
 	staticreflection.$(OBJEXT) texture.$(OBJEXT) widget.$(OBJEXT) \
 	winsystem.$(OBJEXT) iconlist.$(OBJEXT) iconbar.$(OBJEXT) \
 	label.$(OBJEXT) mousecursor.$(OBJEXT) \
-	objectviewwidget.$(OBJEXT)
+	objectviewwidget.$(OBJEXT) particlesystem.$(OBJEXT) \
+	smoke.$(OBJEXT)
 libgraphics_a_OBJECTS = $(am_libgraphics_a_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -218,17 +219,20 @@ target_vendor = @target_vendor@
 usdatadir = @usdatadir@
 noinst_LIBRARIES = libgraphics.a
 libgraphics_a_SOURCES = background.cpp colorselect.cpp console.cpp \
-				dashboard.cpp dynamicreflection.cpp dynamicshadow.cpp fileselect.cpp font.cpp \
-				glextensions.cpp graphobj.cpp graphicworld.cpp gui.cpp guipage.cpp image.c inputbox.cpp \
-				lodtexture.cpp longmenu.cpp menu.cpp messagebox.cpp objectviewer.cpp reflection.cpp \
-				renderer.cpp renderwidget.cpp staticreflection.cpp texture.cpp widget.cpp \
-				winsystem.cpp iconlist.cpp iconbar.cpp label.cpp mousecursor.cpp objectviewwidget.cpp
+					dashboard.cpp dynamicreflection.cpp dynamicshadow.cpp fileselect.cpp font.cpp \
+					glextensions.cpp graphobj.cpp graphicworld.cpp gui.cpp guipage.cpp image.c inputbox.cpp \
+					lodtexture.cpp longmenu.cpp menu.cpp messagebox.cpp objectviewer.cpp reflection.cpp \
+					renderer.cpp renderwidget.cpp staticreflection.cpp texture.cpp widget.cpp \
+					winsystem.cpp iconlist.cpp iconbar.cpp label.cpp mousecursor.cpp objectviewwidget.cpp \
+	particlesystem.cpp smoke.cpp
 
 INCLUDES = -I$(top_srcdir)/intl -I$(top_srcdir)/shared \
 	-I$(top_srcdir)/simulation $(all_includes)
 
 EXTRA_DIST = background.cpp background.h camera.h colorselect.cpp colorselect.h console.cpp console.h dashboard.cpp dashboard.h dynamicreflection.cpp dynamicreflection.h dynamicshadow.cpp dynamicshadow.h fileselect.cpp fileselect.h font.cpp font.h glextensions.cpp glextensions.h graphicworld.cpp graphicworld.h graphobj.cpp graphobj.h gui.cpp gui.h guipage.cpp guipage.h image.c image.h inputbox.cpp inputbox.h lodtexture.cpp  lodtexture.h longmenu.cpp  longmenu.h menu.cpp menu.h messagebox.cpp messagebox.h objectviewer.cpp objectviewer.h reflection.cpp reflection.h renderer.cpp renderer.h renderwidget.cpp renderwidget.h staticreflection.cpp staticreflection.h texture.cpp texture.h widget.cpp widget.h winsystem.cpp winsystem.h
-noinst_HEADERS = iconlist.h iconbar.h label.h mousecursor.h objectviewwidget.h
+noinst_HEADERS = iconlist.h iconbar.h label.h mousecursor.h objectviewwidget.h \
+	particlesystem.h smoke.h
+
 all: all-am
 
 .SUFFIXES:
@@ -301,9 +305,11 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mousecursor.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/objectviewer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/objectviewwidget.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/particlesystem.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/reflection.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/renderer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/renderwidget.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smoke.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/staticreflection.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/texture.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/widget.Po@am__quote@

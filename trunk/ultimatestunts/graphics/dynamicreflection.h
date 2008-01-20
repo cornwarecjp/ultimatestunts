@@ -18,6 +18,8 @@
 #ifndef DYNAMICREFLECTION_H
 #define DYNAMICREFLECTION_H
 
+#include <GL/gl.h>
+
 #include "reflection.h"
 
 /**
@@ -32,7 +34,7 @@ public:
 	void update(CRenderer *renderer, CCamera *cam, int side = -1);
 
 protected:
-	unsigned int m_ReflectionTexture[6]; //side textures
+	GLuint m_ReflectionTexture[6]; //side textures
 	float m_CentralPixel[4]; //the front color = clear color for the spheremap
 
 	void initialiseReflections();

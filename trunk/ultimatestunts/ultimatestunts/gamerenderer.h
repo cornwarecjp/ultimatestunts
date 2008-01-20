@@ -62,6 +62,7 @@ protected:
 	void clearScreen();
 	void updateShadows();
 	void updateReflections();
+	void updateParticleSystems();
 	void selectCamera(unsigned int n, bool threed = true);
 	void renderScene();
 

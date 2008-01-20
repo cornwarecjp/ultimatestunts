@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-09-27 21:54+0200\n"
+"POT-Creation-Date: 2008-01-13 21:25+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -123,7 +123,7 @@ msgid "Select a server:"
 msgstr ""
 
 #: ultimatestunts/gamegui.cpp:488 ultimatestunts/gamegui.cpp:494
-#: trackedit/tegui.cpp:38
+#: trackedit/tegui.cpp:59
 msgid "Select a track"
 msgstr ""
 
@@ -137,6 +137,7 @@ msgstr ""
 
 #: ultimatestunts/gamegui.cpp:491 ultimatestunts/gamegui.cpp:518
 #: ultimatestunts/gamegui.cpp:549 ultimatestunts/gamegui.cpp:567
+#: trackedit/tegui.cpp:123
 msgid "Return to main menu"
 msgstr ""
 
@@ -189,7 +190,7 @@ msgid "Delete this player"
 msgstr ""
 
 #: ultimatestunts/gamegui.cpp:535 ultimatestunts/gamegui.cpp:1012
-#: simulation/gamecore.cpp:219
+#: simulation/gamecore.cpp:221 trackedit/tegui.cpp:129
 msgid "Ready"
 msgstr ""
 
@@ -222,7 +223,7 @@ msgstr ""
 msgid "Play again"
 msgstr ""
 
-#: ultimatestunts/gamegui.cpp:613 trackedit/tegui.cpp:85
+#: ultimatestunts/gamegui.cpp:613 trackedit/tegui.cpp:159
 msgid "Do you really want to quit?"
 msgstr ""
 
@@ -308,7 +309,7 @@ msgstr ""
 msgid "Enter the replay filename:"
 msgstr ""
 
-#: ultimatestunts/gamegui.cpp:1174 trackedit/tegui.cpp:211
+#: ultimatestunts/gamegui.cpp:1174 trackedit/tegui.cpp:288
 #, c-format
 msgid "File %s already exists. Overwrite?"
 msgstr ""
@@ -322,19 +323,9 @@ msgstr ""
 msgid "Player %s was refused"
 msgstr ""
 
-#: ultimatestunts/uscore.cpp:118
+#: ultimatestunts/uscore.cpp:116
 #, c-format
 msgid "Frame rate: %.1f FPS"
-msgstr ""
-
-#: ultimatestunts/uscore.cpp:119
-#, c-format
-msgid "Top speed in this session: %.1f km/h"
-msgstr ""
-
-#: ultimatestunts/uscore.cpp:132
-#, c-format
-msgid "Car %d velocity %.1f km/h; gear %d; %.1f RPM"
 msgstr ""
 
 #: stuntsserver/gamecorethread.cpp:70
@@ -357,7 +348,7 @@ msgid "Stopping the game"
 msgstr ""
 
 #: stuntsserver/gamecorethread.cpp:344 stuntsserver/gamecorethread.cpp:346
-#: simulation/gamecore.cpp:147
+#: simulation/gamecore.cpp:149
 msgid "Game is being started"
 msgstr ""
 
@@ -436,30 +427,66 @@ msgstr ""
 msgid "Error: more than one finish in the track\n"
 msgstr ""
 
-#: simulation/gamecore.cpp:209
+#: simulation/gamecore.cpp:211
 msgid "Loading files"
 msgstr ""
 
-#: trackedit/tegui.cpp:135 trackedit/tegui.cpp:165
+#: trackedit/tegui.cpp:71 trackedit/mainpage.cpp:90
+msgid "Change tiles collection"
+msgstr ""
+
+#: trackedit/tegui.cpp:89
+msgid "Edit this tile"
+msgstr ""
+
+#: trackedit/tegui.cpp:121
+msgid "Add a new tile"
+msgstr ""
+
+#: trackedit/tegui.cpp:122
+msgid "Remove unused tiles"
+msgstr ""
+
+#: trackedit/tegui.cpp:127
+msgid "Change the tile model"
+msgstr ""
+
+#: trackedit/tegui.cpp:128
+msgid "Delete this tile"
+msgstr ""
+
+#: trackedit/tegui.cpp:212 trackedit/tegui.cpp:242
 #, c-format
 msgid "Error: %s could not be loaded"
 msgstr ""
 
-#: trackedit/tegui.cpp:149
+#: trackedit/tegui.cpp:226
 msgid "Select the Stunts track"
 msgstr ""
 
-#: trackedit/tegui.cpp:177
+#: trackedit/tegui.cpp:254
 msgid "Tracks:"
 msgstr ""
 
-#: trackedit/tegui.cpp:196
+#: trackedit/tegui.cpp:273
 msgid "Enter the filename:"
 msgstr ""
 
-#: trackedit/tegui.cpp:218
+#: trackedit/tegui.cpp:295
 #, c-format
 msgid "Saving of %s failed"
+msgstr ""
+
+#: trackedit/tegui.cpp:322
+msgid "This tile is in use in the track. Do you really want to change it?"
+msgstr ""
+
+#: trackedit/tegui.cpp:382
+msgid "This tile is in use in the track. Do you really want to delete it?"
+msgstr ""
+
+#: trackedit/tegui.cpp:405
+msgid "Tiles:"
 msgstr ""
 
 #: trackedit/mainpage.cpp:84

@@ -36,6 +36,8 @@ struct SGraphicSettings
 
 	bool m_EnableAnimation;
 	unsigned m_WaterTesselation;
+
+	bool m_CrashSmoke;
 };
 
 #endif

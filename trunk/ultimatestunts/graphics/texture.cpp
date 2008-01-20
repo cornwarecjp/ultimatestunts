@@ -150,7 +150,7 @@ void CTexture::draw() const
     {printf("   Error: trying to draw a too small texture:\n"
 		"   x=%d, y=%d\n", getSizeX(), getSizeY()); return;}
 
-	glBindTexture(GL_TEXTURE_2D, m_Texture );
+	glBindTexture(GL_TEXTURE_2D, m_Texture);
 }
 
 int CTexture::getSizeX() const

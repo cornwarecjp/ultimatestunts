@@ -39,7 +39,7 @@ void CObjectViewer::setReflection(const CString &filename)
 {
 	if(m_Reflection != NULL) delete m_Reflection;
 
-	CStaticReflection *ref = new CStaticReflection(NULL); //not managed by a data manager
+	CStaticReflection *ref = new CStaticReflection;
 	ref->load(filename, CParamList());
 	m_Reflection = ref;
 }

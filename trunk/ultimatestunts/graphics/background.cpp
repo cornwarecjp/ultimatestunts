@@ -34,7 +34,10 @@ bool CBackground::load(const CString &filename, const CParamList &list)
 {
 	if(!CTexture::load(filename, list)) return false;
 
-	m_SkyColor = m_ParamList.getValue("skycolor", "0,0,0").toVector();
+	m_SkyColor = m_ParamList.getValue("skycol", "0,0,0").toVector();
+	m_HorizonSkyColor = m_ParamList.getValue("horizonskycol", "0,0,0").toVector();
+	m_FogColor = m_ParamList.getValue("fogcol", "0,0,0").toVector();
+	m_EnvironmentColor = m_ParamList.getValue("envcol", "0,0,0").toVector();
 
 	RGBImageRec *image = NULL;
 	{
@@ -77,24 +80,6 @@ bool CBackground::load(const CString &filename, const CParamList &list)
 		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 	}
 
-	//determine color
-	RGBImageRec *image2 = scaleImage(image, 1,1);
-	if(image2==NULL)
-	{
-		m_HorizonColor.x = (float)*(image->data  ) / 255;
-		m_HorizonColor.y = (float)*(image->data+1) / 255;
-		m_HorizonColor.z = (float)*(image->data+2) / 255;
-	}
-	else
-	{
-		m_HorizonColor.x = (float)*(image2->data  ) / 255;
-		m_HorizonColor.y = (float)*(image2->data+1) / 255;
-		m_HorizonColor.z = (float)*(image2->data+2) / 255;
-
-		freeImage(image2);
-	}
-
-
 	freeImage(image);
 
 	return true;
@@ -110,7 +95,63 @@ void CBackground::unload()
 	CTexture::unload();
 }
 
+CVector CBackground::getClearColor() const
+{
+	return 0.5*(m_HorizonSkyColor + m_SkyColor);
+}
+
+
 void CBackground::draw() const
+{
+	glDisable(GL_LIGHTING);
+	glDisable(GL_CULL_FACE);
+
+	bool fogEnabled = glIsEnabled(GL_FOG);
+	glDisable(GL_FOG);
+
+	drawSkybox();
+
+	glColor3f(m_EnvironmentColor.x, m_EnvironmentColor.y, m_EnvironmentColor.z);
+
+	drawClouds();
+	drawHorizon();
+
+	glColor3f(1,1,1);
+
+	if(fogEnabled) glEnable(GL_FOG);
+
+	glEnable(GL_CULL_FACE);
+	glEnable(GL_LIGHTING);
+}
+
+void CBackground::drawSkybox() const
+{
+	float vmax = 10.0;
+	float hmax = 10.0*vmax;
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	glBegin(GL_TRIANGLE_FAN);
+
+	glColor3f(m_SkyColor.x, m_SkyColor.y, m_SkyColor.z);
+	glVertex3f(0.0, vmax, 0.0);
+
+	glColor3f(m_HorizonSkyColor.x, m_HorizonSkyColor.y, m_HorizonSkyColor.z);
+
+	glVertex3f(0.0, 0.0, -hmax);
+	glVertex3f(-hmax, 0.0, -hmax);
+	glVertex3f(-hmax, 0.0, 0.0);
+	glVertex3f(-hmax, 0.0, hmax);
+	glVertex3f(0.0, 0.0, hmax);
+	glVertex3f(hmax, 0.0, hmax);
+	glVertex3f(hmax, 0.0, 0.0);
+	glVertex3f(hmax, 0.0, -hmax);
+	glVertex3f(0.0, 0.0, -hmax);
+
+	glEnd();
+}
+
+void CBackground::drawClouds() const
 {
 	float vmax = 10.0;
 	float hmax = 100.0*vmax;
@@ -119,24 +160,10 @@ void CBackground::draw() const
 	float t = 0.01 * m_Timer.getTime();
 	float drift = t - (float)((int)t);
 
-	CVector color = m_SkyColor;
-	if(getSizeX() <=4 || getSizeY() <= 4)
-	{
-		color.x *= m_Color.x;
-		color.y *= m_Color.y;
-		color.z *= m_Color.z;
-	}
-	else
-		{CTexture::draw();}
-
-	glColor3f(color.x, color.y, color.z);
-
-	glDisable(GL_LIGHTING);
-	glDisable(GL_CULL_FACE);
+	CTexture::draw();
 
 	glNormal3f(0.0, -1.0, 0.0); //not really necessary, because there's no lighting
 
-	//Clouds
 	glBegin(GL_TRIANGLE_FAN);
 
 	glTexCoord2f(drift, drift);
@@ -170,10 +197,13 @@ void CBackground::draw() const
 	glVertex3f(0.0, vmax, -hmax);
 
 	glEnd();
+}
 
-	//Horizon
-	bool fogEnabled = glIsEnabled(GL_FOG);
-	glDisable(GL_FOG);
+void CBackground::drawHorizon() const
+{
+	float vmax = 10.0;
+	//float hmax = 100.0*vmax;
+
 	glBindTexture(GL_TEXTURE_2D, m_HorizonTex);
 
 	glBegin(GL_QUADS);
@@ -219,10 +249,5 @@ void CBackground::draw() const
 	glVertex3f(vmax, 0.05*vmax,-vmax);
 
 	glEnd();
-	if(fogEnabled) glEnable(GL_FOG);
-
-	glEnable(GL_CULL_FACE);
-	glEnable(GL_LIGHTING);
-
-	glColor3f(1,1,1);
 }
+

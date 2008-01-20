@@ -165,6 +165,9 @@ bool CTrackDocument::import(const CString &filename)
 	m_CursorX = m_CursorY = m_CursorZ = 0;
 	applyAction();
 
+	if(ret)
+		deleteUnusedTiles();
+
 	return ret;
 }
 
@@ -176,3 +179,96 @@ bool CTrackDocument::save()
 
 	return track->save(m_Trackname);
 }
+
+bool CTrackDocument::deleteTile(int ID)
+{
+	if(ID <= 0) return false;
+
+	//Remove tile from tile list
+	m_DataManager->unloadObject(CDataObject::eTileModel, ID);
+
+	//Get track object
+	CEditTrack track(*getCurrentTrack());
+
+	//Update track array
+	for(int i=0; i < track.m_L*track.m_W*track.m_H; i++)
+	{
+		STile &t = track.m_Track[i];
+
+		if(t.m_Model < ID) continue;
+		if(t.m_Model == ID)
+		{
+			t.m_Model = 0; //empty tile
+			continue;
+		}
+		t.m_Model--;
+	}
+
+	//Clear undo history
+	m_UndoHistory.clear();
+	m_UndoHistory.push_back(track);
+	m_UndoIndex = 0;
+	applyAction();
+
+	//Remove unused textures
+	m_DataManager->removeUnusedTextures();
+
+	return true;
+}
+
+bool CTrackDocument::deleteUnusedTiles()
+{
+	printf("Removing unused tiles\n");
+
+	unsigned int numTiles = m_DataManager->getNumObjects(CDataObject::eTileModel);
+	if(numTiles <= 1) return true;
+
+	//Get track object
+	CEditTrack track(*getCurrentTrack());
+
+	//Find out which tiles are used
+	vector<bool> isUsed(numTiles, false);
+	for(int i=0; i < track.m_L*track.m_W*track.m_H; i++)
+	{
+		STile &t = track.m_Track[i];
+		isUsed[t.m_Model] = true;
+	}
+
+	//Don't delete tile 0 (the empty tile)
+	isUsed[0] = true;
+
+	//Delete all these tiles, from high to low to preserve later IDs in this loop
+	for(int i=numTiles-1; i >= 1; i--)
+	{
+		if(!isUsed[i])
+			m_DataManager->unloadObject(CDataObject::eTileModel, i);
+	}
+
+	//Now make the ID translation table
+	int decrease = 0;
+	vector<int> newID(numTiles, 0);
+	for(unsigned int i=0; i < numTiles; i++)
+	{
+		if(!isUsed[i]) decrease++;
+		newID[i] = i - decrease;
+	}
+
+	//And translate tile IDs
+	for(int i=0; i < track.m_L*track.m_W*track.m_H; i++)
+	{
+		STile &t = track.m_Track[i];
+		t.m_Model = newID[t.m_Model];
+	}
+
+	//Clear undo history
+	m_UndoHistory.clear();
+	m_UndoHistory.push_back(track);
+	m_UndoIndex = 0;
+	applyAction();
+
+	//Remove unused textures
+	m_DataManager->removeUnusedTextures();
+
+	return true;
+}
+

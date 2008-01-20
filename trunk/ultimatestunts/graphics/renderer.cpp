@@ -53,6 +53,7 @@ bool CRenderer::reloadConfiguration()
 	m_Settings.m_WaterTesselation = 10;
 	m_Settings.m_EnableAnimation = true;
 	m_Settings.m_ShadowSize = 512;
+	m_Settings.m_CrashSmoke = true;
 
 	//Load the setings
 	CString cnf = theMainConfig->getValue("graphics", "background_size");
@@ -119,6 +120,8 @@ bool CRenderer::reloadConfiguration()
 	m_Settings.m_TrackDisplayList = theMainConfig->getValue("graphics", "trackdisplaylist") == "true";
 
 	m_Settings.m_EnableAnimation = theMainConfig->getValue("animation", "enable") == "true";
+
+	m_Settings.m_CrashSmoke = theMainConfig->getValue("animation", "crashsmoke") == "true";
 
 	//Next: use these settings
 	if(m_Settings.m_ZBuffer)

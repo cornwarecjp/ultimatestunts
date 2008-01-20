@@ -70,13 +70,22 @@ public:
 	CString m_SkyFilename;
 	CString m_HorizonFilename;
 	CString m_EnvMapFilename;
+
 	CVector m_LightDirection;
 	CVector m_LightColor;
 	CVector m_AmbientColor;
+
 	CVector m_SkyColor;
+	CVector m_HorizonSkyColor;
+	CVector m_FogColor;
+	CVector m_EnvironmentColor;
+
+	//Translates indices according to a lookup table
+	static CString translateTextureIndices(const CString &original, const vector<int> &table);
 
 private:
 	bool findBeginTag(CDataFile &f);
+
 };
 
 #endif

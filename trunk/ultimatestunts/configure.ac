@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT([Ultimate Stunts], [0.7.3], [cornware-cjp@users.sourceforge.net], [ultimatestunts])
+AC_INIT([Ultimate Stunts], [0.7.4], [cornware-cjp@users.sourceforge.net], [ultimatestunts])
 AC_CONFIG_SRCDIR([ultimatestunts/main.cpp])
 AM_CONFIG_HEADER(config.h)
 AC_CANONICAL_TARGET
@@ -58,10 +58,15 @@ if test "x$ac_cv_header_windows_h" != "xyes" ; then
 
   dnl Reasonable stuff non-windoze variants ... :-)
 
-  AC_CHECK_LIB(GL, glNewList, graphlibs="-lGL $graphlibs" ,,$graphlibs)
-  if test "x$ac_cv_lib_GL_glNewList" = "xno" ; then
-    dnl if no GL, check for MesaGL
-    AC_CHECK_LIB(MesaGL, glNewList,graphlibs="-lMesaGL $graphlibs",,$graphlibs)
+  if test "x`uname -s`" = "xDarwin"; then
+    dnl On mac OS X flags are a bit different
+    graphlibs="-framework OpenGL $graphlibs"
+  else
+    AC_CHECK_LIB(GL, glNewList, graphlibs="-lGL $graphlibs" ,,$graphlibs)
+    if test "x$ac_cv_lib_GL_glNewList" = "xno" ; then
+      dnl if no GL, check for MesaGL
+      AC_CHECK_LIB(MesaGL, glNewList,graphlibs="-lMesaGL $graphlibs",,$graphlibs)
+    fi
   fi
 
   dnl if using mesa, check for xmesa.h
@@ -74,10 +79,12 @@ if test "x$ac_cv_header_windows_h" != "xyes" ; then
     AM_CONDITIONAL(ENABLE_XMESA_FX, test "no" = "yes")
   fi
 
-  AC_CHECK_LIB(GLU, gluLookAt, graphlibs="-lGLU $graphlibs" ,,$graphlibs)
-  if test "x$ac_cv_lib_GLU_gluLookAt" = "xno" ; then
-    dnl if no GLU, check for MesaGLU
-    AC_CHECK_LIB(MesaGLU, gluLookAt, graphlibs="-lMesaGLU $graphlibs" ,,$graphlibs)
+  if test "x`uname -s`" != "xDarwin"; then
+    AC_CHECK_LIB(GLU, gluLookAt, graphlibs="-lGLU $graphlibs" ,,$graphlibs)
+    if test "x$ac_cv_lib_GLU_gluLookAt" = "xno" ; then
+      dnl if no GLU, check for MesaGLU
+      AC_CHECK_LIB(MesaGLU, gluLookAt, graphlibs="-lMesaGLU $graphlibs" ,,$graphlibs)
+    fi
   fi
 
 else
@@ -169,13 +176,20 @@ if test "$try_fmod" = "yes" ; then
   dnl ------------------------
   AC_CHECK_HEADER(fmod/fmod.h, AC_DEFINE([FMOD_HEADER], [], [FMOD headers]))
 
+  dnl OS X needs an extra flag
+  if test "x`uname -s`" = "xDarwin"; then
+    fmodlibs="-lfmod -framework Carbon"
+  else
+    fmodlibs="-lfmod"
+  fi
+
   dnl This doesn't work in Cygwin because of incorrect function definition
   dnl AC_CHECK_LIB(fmod, FSOUND_Close,soundlibs="-lfmod $soundlibs";AC_DEFINE(HAVE_LIBFMOD))
 
   dnl this is my replacement:
   AC_MSG_CHECKING(for FSOUND_Close in -lfmod)
   OLDLIBS=$LIBS
-  LIBS="$LIBS -lfmod"
+  LIBS="$LIBS $fmodlibs"
   AC_LINK_IFELSE(
   [
   #include <fmod/fmod.h>
@@ -186,7 +200,7 @@ if test "$try_fmod" = "yes" ; then
       return 0;
   }
   ]
-  ,soundlibs="-lfmod $soundlibs";result="yes";AC_DEFINE([HAVE_LIBFMOD], [], [FMOD lib]), result="no")
+  ,soundlibs="$fmodlibs $soundlibs";result="yes";AC_DEFINE([HAVE_LIBFMOD], [], [FMOD lib]), result="no")
   LIBS=$OLDLIBS
   AC_MSG_RESULT($result)
 

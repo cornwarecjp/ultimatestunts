@@ -1,5 +1,5 @@
 /***************************************************************************
-                          staticreflection.cpp  -  description
+                          staticreflection.cpp  -  A reflection map from a texture file
                              -------------------
     begin                : za mei 14 2005
     copyright            : (C) 2005 by CJP
@@ -19,7 +19,7 @@
 
 #include "staticreflection.h"
 
-CStaticReflection::CStaticReflection(CDataManager *manager) : CReflection() , CTexture(manager)
+CStaticReflection::CStaticReflection() : CReflection() , CTexture(NULL)
 {
 }
 

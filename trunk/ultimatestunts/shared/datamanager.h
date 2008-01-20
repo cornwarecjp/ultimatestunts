@@ -48,12 +48,15 @@ public:
 	vector<const CDataObject *> getObjectArray(CDataObject::eDataType type) const;
 	vector<CDataObject *> getSubset(CDataObject::eDataType type, const CString &subset);
 
+	//This invalidates all IDs >= i:
+	virtual void unloadObject(unsigned int type, unsigned int i);
+
 	virtual void unloadAll(CDataObject::eDataType type=CDataObject::eNone);
+
 protected:
 	virtual CDataObject *createObject(const CString &filename, const CParamList &plist, CDataObject::eDataType type);
 
 	int findObject(const CString &filename, const CParamList plist, CDataObject::eDataType type);
-	void unloadObject(unsigned int type, unsigned int i);
 	
 	vector<vector<CDataObject *> > m_Objects; //two dimensional array
 };

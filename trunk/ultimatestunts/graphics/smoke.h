@@ -1,8 +1,8 @@
 /***************************************************************************
-                          font.h  -  A bitmap-based font class
+                          smoke.h  -  A smoke particle system
                              -------------------
-    begin                : ma okt 25 2004
-    copyright            : (C) 2004 by CJP
+    begin                : ma jan 14 2008
+    copyright            : (C) 2008 by CJP
     email                : cornware-cjp@users.sourceforge.net
  ***************************************************************************/
 
@@ -14,40 +14,41 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
+#ifndef SMOKE_H
+#define SMOKE_H
 
-#ifndef FONT_H
-#define FONT_H
-
-#include <GL/gl.h>
-
-#include "texture.h"
+#include "particlesystem.h"
 
 /**
-  *@author CJP
-  */
-
-class CFont : protected CTexture
+	@author CJP <cornware-cjp@users.sourceforge.net>
+*/
+class CSmoke : public CParticleSystem
 {
-public: 
-	CFont(CDataManager *manager);
-	virtual ~CFont();
+public:
+	CSmoke(unsigned int numParticles);
+	virtual ~CSmoke();
 
-	virtual bool load(const CString &filename, const CParamList &list);
-	virtual void unload();
+	virtual void draw(const CMatrix &cammat) const;
 
-	//ALWAYS enable before drawing, and disable after (read the source)
-	void enable();
-	void disable();
-	void drawString(const CString &str);
+	CVector m_SourcePosition;
 
-	float getFontW(){return m_W;}
-	float getFontH(){return m_H;}
+	struct SSmokePart : public SParticle
+	{
+		float age;
+		float opacity;
+	};
 
 protected:
-	float m_W, m_H;
+	virtual SParticle *createParticle();
+	virtual void drawParticle(const SParticle *p) const;
+	virtual void initNewParticle(SParticle *p);
+	virtual void updateParticle(SParticle *p, float dt);
 
-	GLuint m_Texture;
-	unsigned int m_BaseDispList;
+	static CVector m_VertexU, m_VertexV;
+
+	float getRandom();
+	unsigned int m_RandomNumbersIndex;
+	float m_RandomNumbers[256];
 };
 
 #endif

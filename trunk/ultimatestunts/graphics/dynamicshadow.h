@@ -18,6 +18,8 @@
 #ifndef DYNAMICSHADOW_H
 #define DYNAMICSHADOW_H
 
+#include <GL/gl.h>
+
 /**
   *@author CJP
   */
@@ -55,7 +57,7 @@ protected:
 	CVector m_ShadowColor;
 
 	unsigned int m_Size;
-	unsigned int m_Texture;
+	GLuint m_Texture;
 	float m_PhysicalSize;
 
 	CGraphicWorld *m_GraphicWorld;

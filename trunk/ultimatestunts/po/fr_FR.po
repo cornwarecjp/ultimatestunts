@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Ultimate Stunts 0.7.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-09-27 21:54+0200\n"
+"POT-Creation-Date: 2008-01-13 21:25+0100\n"
 "PO-Revision-Date: 2005-02-26 00:30+0100\n"
 "Last-Translator: Vincent Knecht <vknecht@club-internet.fr>\n"
 "Language-Team: French <LL@li.org>\n"
@@ -122,7 +122,7 @@ msgid "Select a server:"
 msgstr "Sélectionnez un serveur:"
 
 #: ultimatestunts/gamegui.cpp:488 ultimatestunts/gamegui.cpp:494
-#: trackedit/tegui.cpp:38
+#: trackedit/tegui.cpp:59
 msgid "Select a track"
 msgstr "Sélectionnez un circuit"
 
@@ -136,6 +136,7 @@ msgstr "Regarder un rejeu du meilleur temps"
 
 #: ultimatestunts/gamegui.cpp:491 ultimatestunts/gamegui.cpp:518
 #: ultimatestunts/gamegui.cpp:549 ultimatestunts/gamegui.cpp:567
+#: trackedit/tegui.cpp:123
 msgid "Return to main menu"
 msgstr "Retour au menu principal"
 
@@ -188,7 +189,7 @@ msgid "Delete this player"
 msgstr "Supprimer ce joueur"
 
 #: ultimatestunts/gamegui.cpp:535 ultimatestunts/gamegui.cpp:1012
-#: simulation/gamecore.cpp:219
+#: simulation/gamecore.cpp:221 trackedit/tegui.cpp:129
 msgid "Ready"
 msgstr "Prêt"
 
@@ -221,7 +222,7 @@ msgstr "Sauvegarder un rejeu"
 msgid "Play again"
 msgstr "Rejouer"
 
-#: ultimatestunts/gamegui.cpp:613 trackedit/tegui.cpp:85
+#: ultimatestunts/gamegui.cpp:613 trackedit/tegui.cpp:159
 msgid "Do you really want to quit?"
 msgstr "Voulez-vous vraiment quitter ?"
 
@@ -307,7 +308,7 @@ msgstr "  (cette course)"
 msgid "Enter the replay filename:"
 msgstr "Entrez le nom du fichier rejeu:"
 
-#: ultimatestunts/gamegui.cpp:1174 trackedit/tegui.cpp:211
+#: ultimatestunts/gamegui.cpp:1174 trackedit/tegui.cpp:288
 #, c-format
 msgid "File %s already exists. Overwrite?"
 msgstr "Le fichier %s existe déjà. L'écraser ?"
@@ -321,20 +322,10 @@ msgstr "La connexion au serveur a echoué"
 msgid "Player %s was refused"
 msgstr "Le joueur %s a été refusé"
 
-#: ultimatestunts/uscore.cpp:118
+#: ultimatestunts/uscore.cpp:116
 #, c-format
 msgid "Frame rate: %.1f FPS"
 msgstr "Rafraîchissement: %.1f FPS"
-
-#: ultimatestunts/uscore.cpp:119
-#, c-format
-msgid "Top speed in this session: %.1f km/h"
-msgstr "Vitesse maxi dans cette session: %.1f km/h"
-
-#: ultimatestunts/uscore.cpp:132
-#, c-format
-msgid "Car %d velocity %.1f km/h; gear %d; %.1f RPM"
-msgstr "Véhicule %d vélocité %1.f km/h; rapport %d; %.1f tr/min"
 
 #: stuntsserver/gamecorethread.cpp:70
 msgid "Waiting for the server to start"
@@ -356,7 +347,7 @@ msgid "Stopping the game"
 msgstr "Arrêter la partie"
 
 #: stuntsserver/gamecorethread.cpp:344 stuntsserver/gamecorethread.cpp:346
-#: simulation/gamecore.cpp:147
+#: simulation/gamecore.cpp:149
 msgid "Game is being started"
 msgstr "Démarrage de la partie"
 
@@ -435,31 +426,70 @@ msgstr "Erreur: il y a plus d'un départ sur le circuit\n"
 msgid "Error: more than one finish in the track\n"
 msgstr "Erreur: il y a plus d'une arrivée sur le circuit\n"
 
-#: simulation/gamecore.cpp:209
+#: simulation/gamecore.cpp:211
 msgid "Loading files"
 msgstr "Chargement des fichiers"
 
-#: trackedit/tegui.cpp:135 trackedit/tegui.cpp:165
+#: trackedit/tegui.cpp:71 trackedit/mainpage.cpp:90
+msgid "Change tiles collection"
+msgstr ""
+
+#: trackedit/tegui.cpp:89
+msgid "Edit this tile"
+msgstr ""
+
+#: trackedit/tegui.cpp:121
+#, fuzzy
+msgid "Add a new tile"
+msgstr "Ajouter un joueur"
+
+#: trackedit/tegui.cpp:122
+msgid "Remove unused tiles"
+msgstr ""
+
+#: trackedit/tegui.cpp:127
+#, fuzzy
+msgid "Change the tile model"
+msgstr "Entrez le nom du fichier:"
+
+#: trackedit/tegui.cpp:128
+#, fuzzy
+msgid "Delete this tile"
+msgstr "Supprimer ce joueur"
+
+#: trackedit/tegui.cpp:212 trackedit/tegui.cpp:242
 #, c-format
 msgid "Error: %s could not be loaded"
 msgstr "Erreur: %s n'a pu être chargé"
 
-#: trackedit/tegui.cpp:149
+#: trackedit/tegui.cpp:226
 msgid "Select the Stunts track"
 msgstr "Sélectionnez le circuit Stunts"
 
-#: trackedit/tegui.cpp:177
+#: trackedit/tegui.cpp:254
 msgid "Tracks:"
 msgstr "Circuits:"
 
-#: trackedit/tegui.cpp:196
+#: trackedit/tegui.cpp:273
 msgid "Enter the filename:"
 msgstr "Entrez le nom du fichier:"
 
-#: trackedit/tegui.cpp:218
+#: trackedit/tegui.cpp:295
 #, c-format
 msgid "Saving of %s failed"
 msgstr "L'enregistrement de %s a échoué"
+
+#: trackedit/tegui.cpp:322
+msgid "This tile is in use in the track. Do you really want to change it?"
+msgstr ""
+
+#: trackedit/tegui.cpp:382
+msgid "This tile is in use in the track. Do you really want to delete it?"
+msgstr ""
+
+#: trackedit/tegui.cpp:405
+msgid "Tiles:"
+msgstr ""
 
 #: trackedit/mainpage.cpp:84
 msgid "Load track"
@@ -480,6 +510,12 @@ msgstr "Annuler"
 #: trackedit/mainpage.cpp:89
 msgid "Redo"
 msgstr "Refaire"
+
+#~ msgid "Top speed in this session: %.1f km/h"
+#~ msgstr "Vitesse maxi dans cette session: %.1f km/h"
+
+#~ msgid "Car %d velocity %.1f km/h; gear %d; %.1f RPM"
+#~ msgstr "Véhicule %d vélocité %1.f km/h; rapport %d; %.1f tr/min"
 
 #~ msgid "Select the players"
 #~ msgstr "Choix des joueurs"

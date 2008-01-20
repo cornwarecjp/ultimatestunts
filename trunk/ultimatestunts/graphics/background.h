@@ -18,6 +18,8 @@
 #ifndef BACKGROUND_H
 #define BACKGROUND_H
 
+#include <GL/gl.h>
+
 #include "texture.h"
 #include "timer.h"
 
@@ -34,21 +36,26 @@ public:
 	virtual bool load(const CString &filename, const CParamList &list);
 	virtual void unload();
 
-	CVector getHorizonColor() const
-		{return m_HorizonColor;}
+	CVector getFogColor() const
+		{return m_FogColor;}
 
-	CVector getSkyColor() const
-		{return m_SkyColor;}
+	CVector getClearColor() const;
 
 
 	void draw() const;
 protected:
 	CTimer m_Timer;
 
-	unsigned int m_HorizonTex;
-	CVector m_HorizonColor;
+	GLuint m_HorizonTex;
 
 	CVector m_SkyColor;
+	CVector m_HorizonSkyColor;
+	CVector m_FogColor;
+	CVector m_EnvironmentColor;
+
+	void drawSkybox() const;
+	void drawClouds() const;
+	void drawHorizon() const;
 };
 
 #endif

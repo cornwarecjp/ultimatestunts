@@ -67,6 +67,9 @@ public:
 	bool import(const CString &filename);
 	bool save();
 
+	bool deleteTile(int ID);
+	bool deleteUnusedTiles();
+
 protected:
 	vector<CEditTrack> m_UndoHistory;
 	unsigned int m_UndoIndex;

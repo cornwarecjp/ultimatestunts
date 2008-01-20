@@ -18,6 +18,8 @@
 #ifndef REFLECTION_H
 #define REFLECTION_H
 
+#include <GL/gl.h>
+
 #include "renderer.h"
 #include "graphicsettings.h"
 
@@ -35,7 +37,7 @@ public:
 	void disable();
 
 protected:
-	unsigned int m_Texture; //spheremap texture
+	GLuint m_Texture; //spheremap texture
 
 	const SGraphicSettings *m_CurrentSettings;
 

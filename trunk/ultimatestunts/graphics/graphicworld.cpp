@@ -24,7 +24,9 @@
 #include "world.h"
 
 
-CGraphicMovObj::CGraphicMovObj(CGraphicWorld *world) : CDataObject(world, CDataObject::eMovingObject)
+CGraphicMovObj::CGraphicMovObj(CGraphicWorld *world) :
+	CDataObject(world, CDataObject::eMovingObject),
+	m_CrashSmoke(20)
 {
 	m_Shadow = NULL;
 	m_Dashboard = NULL;
@@ -78,7 +80,7 @@ CGraphicWorld::CGraphicWorld()
 
 	//Create objects:
 	m_Background = new CBackground(this);
-	m_EnvMap = new CStaticReflection(this);
+	m_EnvMap = new CStaticReflection;
 }
 
 bool CGraphicWorld::reloadConfiguration()
@@ -209,8 +211,12 @@ bool CGraphicWorld::loadWorld()
 	printf("Loading the graphic world\n");
 
 	printf("  Loading tile textures:\n");
-	//First unload all currently loaded textures to get the IDs right
+
+	//First unload all currently loaded textures
+	//TODO: replace this by removing unused textures afterwards
 	unloadAll(CDataObject::eMaterial);
+
+	vector<int> trackTextures;
 	for(unsigned int i=0; i<m_World->getNumObjects(CDataObject::eMaterial); i++)
 	{
 		int mul = m_World->getMaterial(i)->m_Mul;
@@ -228,16 +234,29 @@ bool CGraphicWorld::loadWorld()
 		p.value = m_TexSmooth;
 		plist.push_back(p);
 
-		//TODO: check ID
-		loadObject(m_World->getMaterial(i)->getFilename(), plist, CDataObject::eMaterial);
+		int texID = loadObject(m_World->getMaterial(i)->getFilename(), plist, CDataObject::eMaterial);
+		if(texID < 0)
+		{
+			printf("Failed to load texture %s\n", m_World->getMaterial(i)->getFilename().c_str());
+			return false;
+		}
+		trackTextures.push_back(texID);
 	}
 
 	printf("  Loading tiles:\n");
 	//First unload all currently loaded tiles to get the IDs right
 	unloadAll(CDataObject::eTileModel);
 	for(unsigned int i=0; i<m_World->getNumObjects(CDataObject::eTileModel); i++)
-		loadObject(m_World->getTileModel(i)->getFilename(), m_World->getTileModel(i)->getParamList(), CDataObject::eTileModel);
+	{
+		CString texture_indices = m_World->getTileModel(i)->getSubset();
+		CParamList plist = m_World->getTileModel(i)->getParamList();
 
+		for(unsigned int j=0; j < plist.size(); j++)
+			if(plist[j].name == "subset")
+				plist[j].value = CTrack::translateTextureIndices(plist[j].value, trackTextures);
+
+		loadObject(m_World->getTileModel(i)->getFilename(), plist, CDataObject::eTileModel);
+	}
 
 	printf("  Loading background and environment map:\n");
 	//params for background and envmap
@@ -259,8 +278,17 @@ bool CGraphicWorld::loadWorld()
 	p.name = "horizon";
 	p.value = m_World->getTrack()->m_HorizonFilename;
 	plist.push_back(p);
-	p.name = "skycolor";
+	p.name = "skycol";
 	p.value = m_World->getTrack()->m_SkyColor;
+	plist.push_back(p);
+	p.name = "horizonskycol";
+	p.value = m_World->getTrack()->m_HorizonSkyColor;
+	plist.push_back(p);
+	p.name = "fogcol";
+	p.value = m_World->getTrack()->m_FogColor;
+	plist.push_back(p);
+	p.name = "envcol";
+	p.value = m_World->getTrack()->m_EnvironmentColor;
 	plist.push_back(p);
 
 	m_Background->load(m_World->getTrack()->m_SkyFilename, plist);
@@ -291,6 +319,7 @@ bool CGraphicWorld::loadObjects()
 	printf("Loading moving object graphics:\n");
 
 	//Load the rest of the textures
+	vector<int> objectTextures;
 	for(unsigned int i=0; i<m_World->getNumObjects(CDataObject::eMaterial); i++)
 	{
 		int mul = m_World->getMaterial(i)->m_Mul;
@@ -308,22 +337,33 @@ bool CGraphicWorld::loadObjects()
 		p.value = m_TexSmooth;
 		plist.push_back(p);
 
-		//TODO: check ID
-		loadObject(m_World->getMaterial(i)->getFilename(), plist, CDataObject::eMaterial);
+		int texID = loadObject(m_World->getMaterial(i)->getFilename(), plist, CDataObject::eMaterial);
+		if(texID < 0)
+		{
+			printf("Failed to load texture %s\n", m_World->getMaterial(i)->getFilename().c_str());
+			return false;
+		}
+		objectTextures.push_back(texID);
 	}
 
 	//Body graphics
-	//First unload all currently loaded textures to get the IDs right
+	//First unload all currently loaded models to get the IDs right
 	unloadAll(CDataObject::eBound);
 	vector<const CDataObject *> bounds = m_World->getObjectArray(CDataObject::eBound);
 	for(unsigned int i=0; i<bounds.size(); i++)
 	{
 		CParamList plist = bounds[i]->getParamList(); //parameters like "subset"
+
+		for(unsigned int j=0; j < plist.size(); j++)
+			if(plist[j].name == "subset")
+				plist[j].value = CTrack::translateTextureIndices(plist[j].value, objectTextures);
+
 		SParameter p;
 		p.name = "lodoffset";
 		p.value = molod;
 		plist.push_back(p);
 
+		//TODO: check ID
 		loadObject(bounds[i]->getFilename(), plist, CDataObject::eBound);
 	}
 
@@ -391,3 +431,4 @@ void CGraphicWorld::drawTrackMap()
 {
 	glCallList(m_TrackMapDisplayList);
 }
+

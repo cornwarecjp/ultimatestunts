@@ -17,12 +17,18 @@
 
 #include <cstdio>
 
+#include "lconfig.h"
+
 #include "carrulestatus.h"
 #include "world.h"
 #include "cstring.h"
 
 CCarRuleStatus::CCarRuleStatus()
 {
+	CString cnf = theMainConfig->getValue("simulation", "cars_can_crash");
+	if(cnf == "") cnf = "true";
+	m_CanCrash = cnf == "true";
+
 	float t = 0.0; //theWorld->m_LastTime;
 
 	startTime = t;		//time when it started racing
@@ -87,6 +93,8 @@ bool CCarRuleStatus::finish()
 
 bool CCarRuleStatus::crash()
 {
+	if(!m_CanCrash) return true; //just ignore the crash
+
 	if(state == eRacing)
 	{
 		finishTime = theWorld->m_LastTime;	//time when it finished racing

@@ -59,6 +59,9 @@ public:
 	//tile where the car currently is
 	unsigned int currentTile;
 	unsigned int currentRoute;
+
+	//Cached from settings:
+	bool m_CanCrash;
 };
 
 #endif

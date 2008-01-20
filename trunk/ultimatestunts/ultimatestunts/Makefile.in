@@ -205,7 +205,10 @@ target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
 usdatadir = @usdatadir@
-ustunts_SOURCES = carviewer.cpp gamecamera.cpp gamegui.cpp gamerenderer.cpp gamewinsystem.cpp humanplayer.cpp main.cpp music.cpp sndsample.cpp sound.cpp soundobj.cpp soundworld.cpp uscore.cpp usserver.cpp
+ustunts_SOURCES = carviewer.cpp gamecamera.cpp gamegui.cpp gamerenderer.cpp \
+	gamewinsystem.cpp humanplayer.cpp main.cpp music.cpp sndsample.cpp sound.cpp soundobj.cpp \
+	soundworld.cpp uscore.cpp usserver.cpp
+
 ustunts_LDADD = $(top_builddir)/trackedit/libtrackedit.a \
 	$(top_builddir)/graphics/libgraphics.a $(top_builddir)/simulation/libsimulation.a \
 	$(top_builddir)/shared/libshared.a @sdllibs@ @graphlibs@ @soundlibs@ @netlibs@ @LIBINTL@

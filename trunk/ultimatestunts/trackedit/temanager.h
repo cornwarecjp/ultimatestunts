@@ -40,6 +40,8 @@ public:
 	const CGraphObj *getTile(unsigned int ID) const
 		{return (CGraphObj *)getObject(CDataObject::eTileModel, ID);}
 
+	void removeUnusedTextures();
+
 	//This function loads new textures if necessary:
 	CString getTextureSubset(const CString &textureString);
 

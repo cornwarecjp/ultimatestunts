@@ -21,6 +21,9 @@
 
 #include "gamerenderer.h"
 #include "console.h"
+
+#include "world.h"
+
 #include "timer.h"
 
 #define FOV_MULTIPLIER (0.25)
@@ -57,14 +60,13 @@ bool CGameRenderer::loadTrackData()
 		return false;
 
 	{
-		CVector sc = m_GraphicWorld->m_Background->getSkyColor();
-		CVector cc = m_GraphicWorld->m_Background->getColor();
-		glClearColor(cc.x*sc.x,cc.y*sc.y,cc.z*sc.z,1.0);
+		CVector cc = m_GraphicWorld->m_Background->getClearColor();
+		glClearColor(cc.x, cc.y, cc.z,1.0);
 	
-		CVector fc = m_GraphicWorld->m_Background->getHorizonColor();
-		m_FogColor[0] = fc.x*sc.x;
-		m_FogColor[1] = fc.y*sc.y;
-		m_FogColor[2] = fc.z*sc.z;
+		CVector fc = m_GraphicWorld->m_Background->getFogColor();
+		m_FogColor[0] = fc.x;
+		m_FogColor[1] = fc.y;
+		m_FogColor[2] = fc.z;
 		m_FogColor[3] = 1.0;
 		if(m_Settings.m_FogMode >= 0)
 			glFogfv(GL_FOG_COLOR, m_FogColor);
@@ -119,7 +121,7 @@ void CGameRenderer::update()
 		//float tstart = _DebugTimer.getTime();
 
 		updateShadows();
-		
+		updateParticleSystems();
 		updateReflections();
 		//fprintf(stderr, "Update reflections: %.5f\n\n\n", _DebugTimer.getTime() - tstart);
 
@@ -271,6 +273,33 @@ void CGameRenderer::updateReflections()
 	m_UpdateBodyReflection = -1;
 }
 
+void CGameRenderer::updateParticleSystems()
+{
+	for(unsigned int i=0; i < m_GraphicWorld->getNumObjects(CDataObject::eMovingObject); i++)
+	{
+		CMovingObject *mo = theWorld->getMovingObject(i);
+		CGraphicMovObj *gmo = m_GraphicWorld->getMovObj(i);
+
+		//Crash smoke
+		if(m_Settings.m_CrashSmoke)
+		{
+			CSmoke &smoke = gmo->m_CrashSmoke;
+
+			if(mo->getType() != CMessageBuffer::car) continue;
+		
+			CCar *theCar = (CCar *)mo;
+			bool crashed = theCar->m_RuleStatus.state == CCarRuleStatus::eCrashed;
+
+			//First set members
+			smoke.m_Enabled = crashed;
+			smoke.m_SourcePosition = mo->m_Bodies[0].m_Position;
+	
+			//Then update the particles
+			smoke.update(theWorld->m_Lastdt, true);
+		}
+	}
+}
+
 void CGameRenderer::selectCamera(unsigned int n, bool threed)
 {
 	unsigned int sw = theWinSystem->getWidth();
@@ -336,7 +365,7 @@ void CGameRenderer::renderScene()
 	{
 		viewBackground();
 		if(m_Settings.m_ZBuffer)
-			glClear( GL_DEPTH_BUFFER_BIT );
+			glClear(GL_DEPTH_BUFFER_BIT);
 	}
 
 	//fprintf(stderr, "renderTrack start: %.3f\n", _DebugTimer.getTime());
@@ -626,6 +655,7 @@ void CGameRenderer::viewPilaar(int x, int y, int cur_zpos)
 void CGameRenderer::viewMovObj(unsigned int n)
 {
 	CMovingObject *mo = theWorld->getMovingObject(n);
+	CGraphicMovObj *gmo = m_GraphicWorld->getMovObj(n);
 
 	//Determine lighting
 	//TODO: cache the results of this for split screen
@@ -667,16 +697,13 @@ void CGameRenderer::viewMovObj(unsigned int n)
 		glTranslatef (r.x, r.y, r.z);
 		glMultMatrixf(b.m_OrientationMatrix.gl_mtr());
 
-		//The model
-
-		//The reflection
+		//The model and the reflection
 		if(dist < m_Settings.m_ReflectionDist)
 		{
-			CDynamicReflection *theRefl = m_GraphicWorld->getMovObjReflection(n, m_CurrentCamera);
-			//CDynamicReflection *theRefl = m_MovingObjectReflections[m_CurrentCamera + m_NumCameras * n];
+			CDynamicReflection &theRefl = gmo->m_Reflections[m_CurrentCamera];
 
 			m_GraphicWorld->getMovObjBound(b.m_Body)->draw(
-				&m_Settings, theRefl, lod, theWorld->m_LastTime);
+				&m_Settings, &theRefl, lod, theWorld->m_LastTime);
 		}
 		else
 		{
@@ -703,7 +730,7 @@ void CGameRenderer::viewMovObj(unsigned int n)
 			{
 				CVector difference = lightDir / ldotn;
 
-				CDynamicShadow *shadow = m_GraphicWorld->getMovObjShadow(n);
+				CDynamicShadow *shadow = gmo->m_Shadow;
 
 				float ps = shadow->getPhysicalSize();
 				CVector texcoords[] = {
@@ -735,6 +762,10 @@ void CGameRenderer::viewMovObj(unsigned int n)
 			}
 		}
 	}
+
+	//Crash smoke
+	if(m_Settings.m_CrashSmoke)
+		gmo->m_CrashSmoke.draw(m_Camera->getOrientation());
 }
 
 void CGameRenderer::viewDashboard(unsigned int n)

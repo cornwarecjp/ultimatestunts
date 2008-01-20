@@ -119,6 +119,7 @@ void CTEGUI::updateMenuTexts()
 	menu = (CMenu *)(m_TilesPage.m_Widgets[1]);
 	menu->m_Lines.clear();
 	menu->m_Lines.push_back(_("Add a new tile"));
+	menu->m_Lines.push_back(_("Remove unused tiles"));
 	menu->m_Lines.push_back(_("Return to main menu"));
 
 	menu = (CMenu *)(m_TilePage.m_Widgets[1]);
@@ -311,7 +312,23 @@ CString CTEGUI::viewTilesMenu()
 		CTileSelect *tselect = (CTileSelect *)(m_TilesPage.m_Widgets[0]);
 		printf("Edit tile %d\n", tselect->getSelection());
 		m_CurrentTile = tselect->getSelection();
-		return "tilemenu";
+
+		if(theTrackDocument->getCurrentTrack()->tileIsUsed(m_CurrentTile))
+		{
+			printf("Tile is used\n");
+
+			bool cancelled = false;
+			if(showYNMessageBox(
+				_("This tile is in use in the track. Do you really want to change it?")
+				, &cancelled) && !cancelled)
+			{
+				return "tilemenu"; //change tile
+			}
+
+			return "tilesmenu"; //return to this menu
+		}
+
+		return "tilemenu"; //change tile
 	}
 	else if(m_TilesPage.m_EventWidget == 1) //menu-triggered
 	{
@@ -322,7 +339,10 @@ CString CTEGUI::viewTilesMenu()
 			printf("New tile\n");
 			m_CurrentTile = -1;
 			return "loadtilemenu";
-		case 1: //Return to main menu
+		case 1: //Delete unused tiles
+			theTrackDocument->deleteUnusedTiles();
+			return "tilesmenu";
+		case 2: //Return to main menu
 		default:
 			break;
 		}
@@ -354,7 +374,24 @@ CString CTEGUI::viewTileMenu()
 	case 0: //Change model
 		return "loadtilemenu";
 	case 1: //Delete
-		return "tilemenu"; //NYI
+		if(theTrackDocument->getCurrentTrack()->tileIsUsed(m_CurrentTile))
+		{
+
+			bool cancelled = false;
+			if(showYNMessageBox(
+				_("This tile is in use in the track. Do you really want to delete it?")
+				, &cancelled) && !cancelled)
+			{
+				theTrackDocument->deleteTile(m_CurrentTile);
+				return "tilesmenu";
+			}
+
+			//Don't remove it
+			return "tilemenu";
+		}
+
+		theTrackDocument->deleteTile(m_CurrentTile);
+		return "tilesmenu";
 	case 2: //Ready
 	default:
 		return "tilesmenu";

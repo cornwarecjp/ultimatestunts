@@ -1,5 +1,5 @@
 /***************************************************************************
-                          staticreflection.h  -  description
+                          staticreflection.h  -  A reflection map from a texture file
                              -------------------
     begin                : za mei 14 2005
     copyright            : (C) 2005 by CJP
@@ -27,7 +27,7 @@
 
 class CStaticReflection : public CReflection , public CTexture {
 public: 
-	CStaticReflection(CDataManager *manager);
+	CStaticReflection();
 	~CStaticReflection();
 
 	bool load(const CString &filename, const CParamList &list);

@@ -20,15 +20,20 @@
 
 class CGraphicWorld;
 
+#include "lconfig.h"
+
 #include "lodtexture.h"
 #include "graphobj.h"
-#include "background.h"
-#include "dashboard.h"
-#include "world.h"
-#include "lconfig.h"
+
 #include "staticreflection.h"
+#include "background.h"
+#include "world.h"
+
+#include "dashboard.h"
 #include "dynamicreflection.h"
 #include "dynamicshadow.h"
+#include "smoke.h"
+
 #include "datamanager.h"
 
 /**
@@ -46,6 +51,8 @@ public:
 	vector<CDynamicReflection> m_Reflections;
 	CDynamicShadow *m_Shadow;
 	CDashboard *m_Dashboard;
+
+	CSmoke m_CrashSmoke;
 };
 
 class CGraphicWorld : public CDataManager
@@ -62,20 +69,21 @@ public:
 
 	CGraphObj *getTile(unsigned int n)
 		{return (CGraphObj *)getObject(CDataObject::eTileModel, n);}
+
 	CGraphObj *getMovObjBound(unsigned int n)
 		{return (CGraphObj *)getObject(CDataObject::eBound, n);}
+
 	const CGraphObj *getMovObjBound(unsigned int n) const
 		{return (const CGraphObj *)getObject(CDataObject::eBound, n);}
+
+	CGraphicMovObj *getMovObj(unsigned int n)
+		{return (CGraphicMovObj *)getObject(CDataObject::eMovingObject, n);}
 	CDynamicReflection *getMovObjReflection(unsigned int n, unsigned int cam)
-	{
-		return &(
-			((CGraphicMovObj *)getObject(CDataObject::eMovingObject, n))->m_Reflections[cam]
-			);
-	}
+		{return &(getMovObj(n)->m_Reflections[cam]);}
 	CDynamicShadow *getMovObjShadow(unsigned int n)
-		{return ((CGraphicMovObj *)getObject(CDataObject::eMovingObject, n))->m_Shadow;}
+		{return getMovObj(n)->m_Shadow;}
 	CDashboard *getMovObjDashboard(unsigned int n)
-		{return ((CGraphicMovObj *)getObject(CDataObject::eMovingObject, n))->m_Dashboard;}
+		{return getMovObj(n)->m_Dashboard;}
 
 	void drawTrackMap();
 

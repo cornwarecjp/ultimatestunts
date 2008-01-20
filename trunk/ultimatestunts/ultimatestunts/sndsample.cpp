@@ -103,11 +103,11 @@ bool CSndSample::load(const CString &filename, const CParamList &list)
 	//the loading procs
 	ALboolean (*alutLoadVorbis)(ALuint, ALvoid *, ALint) =
 		(ALboolean (*)(ALuint, ALvoid *, ALint))
-			alGetProcAddress(VORBISFUNC);
+			alGetProcAddress((const ALchar *)VORBISFUNC);
 
 	ALboolean (*alutLoadMP3)(ALuint, ALvoid *, ALint) =
 		(ALboolean (*)(ALuint, ALvoid *, ALint))
-			alGetProcAddress(MP3FUNC);
+			alGetProcAddress((const ALchar *)MP3FUNC);
 
 	//Now remove AL errors from previous calls
 	{
