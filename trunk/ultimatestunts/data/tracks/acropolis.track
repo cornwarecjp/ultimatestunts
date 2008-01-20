@@ -32,13 +32,16 @@ textures/net.png
 END
 
 BEGIN
-sky = environment/sky3.rgb
+sky = environment/clouds.rgba
 horizon = environment/kyoto-horizon.png
 envmap = environment/spheremap.rgb
 lightdir = -0.69,-0.7,-0.2
-lightcol = 0.4,0.4,0.5
+lightcol = 0.3,0.3,0.4
 ambientcol = 0.0,0.0,0.0
-skycol = 0.1,0.1,0.3
+skycol = 0,0,0
+horizonskycol = 0.1,0.0,0.3
+fogcol = 0.05,0.05,0.05
+envcol = 0.1,0.1,0.3
 END
 
 BEGIN
