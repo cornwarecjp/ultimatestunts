@@ -87,26 +87,23 @@ altijd machten van 2 zijn (4, 8, 16 etc.). Textures met alphakanaal zijn ook
 ondersteund.
 <pre>
 BEGIN
-sky = environment/sky3.rgb
+sky = environment/clouds.rgba
 horizon = environment/kyoto-horizon.png
 envmap = environment/spheremap.rgb
 lightdir = -0.69,-0.7,-0.2
 lightcol = 0.2,0.2,0.5
 ambientcol = 0.0,0.0,0.0
-skycol = 0.1,0.1,0.5
+skycol = 0.3,0.3,0.8
+horizonskycol = 0.9,0.9,0.9
+fogcol = 0.6,0.6,0.35
+envcol = 1,1,1
 END
 </pre>
-In deze sectie worden de omgevings-instellingen geladen. De regels (die
-altijd aanwezig zouden moeten zijn) hebben de volgende betekenissen:
-<ul>
-	<li>sky: Lucht wolken afbeelding texture</li>
-	<li>horizon: Horizon afbeelding texture</li>
-	<li>envmap: Reflectie environment map texture</li>
-	<li>lightdir: Richting waar het zonlicht vandaan komt</li>
-	<li>lightcol: Kleur van het zonlicht (rood,groen,blauw componenten)</li>
-	<li>ambientcol: Kleur van de diffuse verlichting</li>
-	<li>skycol: Kleur van de lucht en horizon</li>
-</ul>
+In deze sectie worden de omgevings-instellingen geladen, zoals achtergrond
+en belichtings-instellingen. De exacte betekenis van deze regels is
+gedocumenteerd in de <a href="fileformats.htm#track">track bestandsformaat
+documentatie</a>. U kunt voorbeelden vinden in bestaande track bestanden, en
+u kunt experimenteren met andere waarden.
 <pre>
 BEGIN
 tiles/empty.glb 0

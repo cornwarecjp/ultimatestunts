@@ -83,26 +83,23 @@ a recognised file format (e.g. *.jpg or *.png), and their sizes should always
 be powers of 2 (4, 8, 16 etc.). Textures with alpha channel are also supported.
 <pre>
 BEGIN
-sky = environment/sky3.rgb
+sky = environment/clouds.rgba
 horizon = environment/kyoto-horizon.png
 envmap = environment/spheremap.rgb
 lightdir = -0.69,-0.7,-0.2
 lightcol = 0.2,0.2,0.5
 ambientcol = 0.0,0.0,0.0
-skycol = 0.1,0.1,0.5
+skycol = 0.3,0.3,0.8
+horizonskycol = 0.9,0.9,0.9
+fogcol = 0.6,0.6,0.35
+envcol = 1,1,1
 END
 </pre>
-In this section, the environment settings are loaded. The lines (which should all be present)
-have the following meanings:
-<ul>
-	<li>sky: Sky cloud picture texture</li>
-	<li>horizon: Horizon picture texture</li>
-	<li>envmap: Reflection environment map texture</li>
-	<li>lightdir: Direction where the sun light comes from</li>
-	<li>lightcol: Color of the sun light (red,green,blue components)</li>
-	<li>ambientcol: Color of the diffuse light</li>
-	<li>skycol: Color of the sky and horizon</li>
-</ul>
+In this section, the environment settings are loaded, like background and
+lighting settings. The exact meaning of these lines
+is documented in the <a href="fileformats.htm#track">track file format
+documentation</a>. You can find examples in existing track files, and you
+can experiment with different values.
 <pre>
 BEGIN
 tiles/empty.glb 0

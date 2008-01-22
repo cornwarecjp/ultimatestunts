@@ -43,19 +43,6 @@ AC_CHECK_HEADER(windows.h)
 
 if test "x$ac_cv_header_windows_h" != "xyes" ; then
 
-  dnl (Disabled):
-  dnl Check for X11
-
-  dnl AC_PATH_XTRA
-
-  dnl x_suffix="$X_LIBS $X_PRE_LIBS $X_EXTRA_LIBS -lm"
-  dnl graphlibs=$x_suffix
-
-  dnl CFLAGS="$CFLAGS $X_CFLAGS"
-  dnl CXXFLAGS="$CXXFLAGS $X_CFLAGS"
-  dnl (End Of Disabled)
-
-
   dnl Reasonable stuff non-windoze variants ... :-)
 
   if test "x`uname -s`" = "xDarwin"; then
@@ -157,16 +144,31 @@ if test "$try_openal" = "yes" ; then
   dnl ------------------------
   dnl Check openAL audio library
   dnl ------------------------
-  AC_CHECK_HEADER(AL/al.h, AC_DEFINE([OPENAL_HEADER], [], [OpenAL headers]))
-  AC_CHECK_LIB(openal, alGetError, soundlibs="-lopenal $soundlibs";AC_DEFINE([HAVE_LIBOPENAL], [], [OpenAL Lib]))
+  AC_CHECK_HEADER(AL/al.h,
+      found_al_header="yes";AC_DEFINE([OPENAL_HEADER], [], [OpenAL headers]),
+      found_al_header="no")
 
-  AC_CHECK_HEADER(AL/alut.h, AC_DEFINE([ALUT_HEADER], [], [ALUT headers]))
-  AC_CHECK_LIB(alut, alutExit, soundlibs="-lalut $soundlibs";AC_DEFINE([HAVE_LIBALUT], [], [ALUT Lib]))
+  AC_CHECK_HEADER(AL/alut.h,
+      found_alut_header="yes";AC_DEFINE([ALUT_HEADER], [], [ALUT headers]),
+      found_alut_header="no")
 
-  dnl Don't try FMOD when OpenAL is found
-  dnl TODO: check whether either OpenAL or ALUT is not present
-  if test "x$soundlibs" != "x" ; then
-    try_fmod="no"
+  AC_CHECK_LIB(openal, alGetError,
+      found_libopenal="yes";AC_DEFINE([HAVE_LIBOPENAL], [], [OpenAL Lib]),
+      found_libopenal="no")
+
+  if test "$found_al_header $found_alut_header $found_libopenal" = "yes yes yes"; then
+
+      AC_CHECK_LIB(alut, alutExit,
+          soundlibs="-lalut -lopenal $soundlibs";AC_DEFINE([HAVE_LIBALUT], [], [ALUT Lib]),
+          [],
+          [-lopenal])
+
+      dnl Now, if soundlibs is not empty, then both AL and ALUT are completely found
+
+      dnl Don't try FMOD when OpenAL is found
+      if test "x$soundlibs" != "x" ; then
+        try_fmod="no"
+      fi
   fi
 fi
 

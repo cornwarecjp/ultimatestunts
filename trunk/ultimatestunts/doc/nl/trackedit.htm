@@ -8,11 +8,20 @@
 
 <h3>Inleiding</h3>
 De Ultimate Stunts track editor zal u in staat stellen om nieuwe banen te maken
-en bestaande banen te bewerken. Op dit moment (versie 0.7.2) is de track editor
+en bestaande banen te bewerken. Op dit moment (versie 0.7.4) is de track editor
 nog erg beperkt: het is slechts mogelijk om tiles te plaatsen/verwijderen op
 de baan, en om banen te importeren vanuit het originele spel Stunts.
 
-<h3>Gebruik</h3>
+<h3>Inhoud</h3>
+<ul>
+	<li><a href="#navigation">Basis-navigatie</a></li>
+	<li><a href="#editing">De baan bewerken</a></li>
+	<li><a href="#tiles">Beheer van de tiles-verzameling</a></li>
+	<li><a href="#import">Stunts banen importeren</a></li>
+</ul>
+
+<a name="navigation"></a>
+<h1>Basis-navigatie</h1>
 Op dit moment is de gebruikersinterface nog vrij eenvoudig. In het hoofdvenster
 zijn de volgende items zichtbaar:
 <ul>
@@ -37,13 +46,13 @@ witte balk van lijnen:
 <br>
 <img src="../nolanguage/trackedit1.jpg">
 
-<h3>De baan bewerken</h3>
+<h1><a name="editing"></a>De baan bewerken</h1>
 Het "knipperen" van de cursor laat twee toestanden van de baan zien: de
 huidige toestand, en hoe het er uit ziet als u op de Enter toets drukt. Soms
 is er geen verschil, en in deze gevallen zult u geen geknipper zien.
 <p>
 Ultimate Stunts zal meerdere bewerkingsgereedschappen ondersteunen, maar op
-dit moment (versie 0.7.2) is er slechts ÈÈn gereedschap, die u in staat
+dit moment (versie 0.7.4) is er slechts ÈÈn gereedschap, die u in staat
 stelt om individuele tiles in te voegen / te verwijderen. De
 gebruikersinterface van dat gereedschap is te zien aan de linkerkant van het
 scherm, maar er zijn ook sneltoetsen.
@@ -74,14 +83,40 @@ De volgende toetsen kunnen als sneltoetsen gebruikt worden:
 	<li><b>Ctrl</b>+<b>Shift</b>+<b>z</b>: doe de laatste ongedaan gemaakte
 		actie opnieuw.</li>
 </ul>
-Op dit moment is de beschikbare set tilemodellen beperkt tot de selectie van
-tiles die al gebruikt worden in de baan. Ook kunnen de afmetingen van de baan
+Op dit moment kunnen de afmetingen van de baan
 niet veranderd worden, route informatie kan niet veranderd worden, en
 omgevings-instellingen (achtergrond, belichting etc.) kunnen niet bewerkt
-worden. Op dit moment moeten deze dingen allemaal handmatig gedaan worden.
+worden. Bij de huidige versie (0.7.4) moeten deze dingen allemaal handmatig
+gedaan worden in het track-bestand.
+
+<a name="tiles"></a>
+<h1>Beheer van de tiles-verzameling</h1>
+<img src="../nolanguage/trackedit-tilecollectiontool.jpg" align=right>
+Vroeg of laat zult u een bepaald tile-type willen gebruiken, maar kunt u het
+niet vinden in de tile-verzameling van uw baan. In deze sectie kunt u lezen
+hoe u tiles kunt toevoegen aan/verwijderen van uw tiles-verzameling. Het
+tile-verzameling gereedschap kan bereikt worden door op de bijbehorende knop
+in de toolbar te klikken (zie afbeelding).
+<p>
+Het hoofd-scherm van het de tiles-verzameling tool ziet eruit als in de
+onderstaande afbeelding. Alle tiles die op dit moment beschikbaar zijn in
+iw verzameling zijn zichtbaar, en u heeft verschillende mogelijkheden om
+deze verzameling te veranderen:
+<ul>
+	<li>U kunt de installingen van een bestaande tile veranderen door er op te klikken</li>
+	<li>U kunt een nieuwe tile toevoegen aan uw verzameling</li>
+	<li>U kunt alle ongebruikte tiles verwijderen. Het is slim on dit te doen zodra
+	uw baan af is, omdat de baan er sneller door laadt.</li>
+	<li>Tot slot kunt u de tiles-verzameling tool verlaten en terugkeren naar het hoofdmenu</li>
+</ul>
+Een enkele tile verwijderen uit de verzameling kunt u doen door er op te klikken,
+en dan te kiezen voor de mogelijkheid om de tile te verwijderen.
+
+<img src="../nolanguage/trackedit-tilecollection1.jpg">
 
 
-<h3>Stunts banen importeren</h3>
+<a name="import"></a>
+<h1>Stunts banen importeren</h1>
 …Èn van de opties in het track editor toolbar is om banen te importeren vanuit
 het originele "Stunts" (4D Sports Driving) spel. Als u vindt dat de huidige
 track editor nog te beperkt is, dan kunt u uw banen in Stunts maken en

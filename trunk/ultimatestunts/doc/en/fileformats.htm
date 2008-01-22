@@ -1,11 +1,13 @@
+<html>
+<body>
 <a name="about">
 <h1>
 About this document
 </h1>
 <p>
-This document describes the file formats as used by UltimateStunts.
+This document describes the file formats as used by Ultimate Stunts.
 The information described here applies to the most recent version,
-which is 0.7.1 at the time of writing, but many things also apply
+which is 0.7.4 at the time of writing, but many things also apply
 to older and newer versions.
 This document does NOT describe the configuration files (*.conf);
 for these files, please have a look at the documentation of the
@@ -93,7 +95,7 @@ should be placed. Outside a section, all data is ignored, but to make
 clear that it is a comment, each comment line should begin with a "#".
 
 <h3>The header</h3>
-The header, consisting of six lines, has the following syntax:
+The header, consisting of four lines, has the following syntax:
 <pre>
 TRACKFILE<i>
 length
@@ -109,10 +111,9 @@ file, or else errors will occur while loading the track.
 <h3>The texture section</h3>
 Each line in the texture section contains a filename of a texture
 image. These filenames are interpreted as being relative to the
-datafiles directory. Currently, the only image format supported is the
-SGI rgb (*.rgb) format (4-channel *.rgba files, which are rgb files with an
-alpha channel, are also supported). Texture images must have a width and height
-that are powers of 2 (8, 16, 32, 128 etc.).<br>
+datafiles directory. The most common file formats (JPEG, PNG etc.) are
+supported through the SDL_image library. Texture images must have a width
+and height that are powers of 2 (8, 16, 32, 128 etc.).<br>
 After the filename, an optional integer parameter <i>scalehint</i> can
 be given. So, the syntax of a texture line becomes
 
@@ -133,15 +134,31 @@ textureless surfaces with the average color of the texture are used.
 This section contains a description of the environment. This section should
 contain a number of "<i>name</i> = <i>value</i>" pairs, with the following meanings:
 <table border=2>
-	<tr><td><b>name</b></td><td><b>meaning</b></td></tr>
-	<tr><td>sky</td><td>The sky texture filename</td></tr>
-	<tr><td>horizon</td><td>The horizon texture filename</td></tr>
-	<tr><td>envmap</td><td>The reflection map filename</td></tr>
-	<tr><td>lightdir</td><td>The direction where the light goes to (three coordinates separated by commas, vector length should be 1)</td></tr>
-	<tr><td>lightcol</td><td>The light color ("diffuse light") (red, green, blue components between 0.0 and 1.0)</td></tr>
-	<tr><td>ambientcol</td><td>The shadow color ("ambient light") (red, green, blue components between 0.0 and 1.0)</td></tr>
-	<tr><td>skycol</td><td>The sky and horizon color (red, green, blue components between 0.0 and 1.0)</td></tr>
+<tr><td><b>name</b></td><td><b>meaning</b></td><td><b>format</b></td></tr>
+<tr><td>sky</td><td>The sky/clouds texture filename</td><td>string</td></tr>
+<tr><td>horizon</td><td>The horizon texture filename</td><td>string</td></tr>
+<tr><td>envmap</td><td>The reflection map filename</td><td>string</td></tr>
+<tr><td>lightdir</td><td>The direction where the light goes to</td><td>three coordinates separated by commas, vector length should be 1</td></tr>
+<tr><td>lightcol</td><td>The light color ("diffuse light")</td><td>red, green, blue components between 0.0 and 1.0</td></tr>
+<tr><td>ambientcol</td><td>The shadow color ("ambient light")</td><td>red, green, blue components between 0.0 and 1.0</td></tr>
+<tr><td>skycol</td><td>The sky color at the Zenith</td><td>red, green, blue components between 0.0 and 1.0</td></tr>
+<tr><td>horizonskycol</td><td>The sky color at the Horizon</td><td>red, green, blue components between 0.0 and 1.0</td></tr>
+<tr><td>fogcol</td><td>The fog color</td><td>red, green, blue components between 0.0 and 1.0</td></tr>
+<tr><td>envcol</td><td>The modulation color of clouds and horizon texture</td><td>red, green, blue components between 0.0 and 1.0</td></tr>
 </table>
+See the image below:
+<ul>
+	<li>1: sky</li>
+	<li>2: horizon</li>
+	<li>3: lightdir</li>
+	<li>4: lightcol</li>
+	<li>5: ambientcol</li>
+	<li>6: skycol</li>
+	<li>7: horizonskycol</li>
+	<li>8: fogcol</li>
+	<li>9: envcol</li>
+</ul>
+<img src="../nolanguage/track-environment.jpg">
 
 <h3>The tile section</h3>
 Each line in the tile section has the following syntax:
@@ -756,4 +773,7 @@ surfaces represent water.
 <h3>Changes in current file formats</h3>
 The boundaries that prevent the cars from leaving the track
 should be defined in the track file.
+
+</body>
+</html>
 

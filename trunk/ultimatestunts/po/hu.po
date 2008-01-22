@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Ultimate Stunts 0.7.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-01-13 21:25+0100\n"
-"PO-Revision-Date: 2005-02-03 14:11+0100\n"
+"PO-Revision-Date: 2008-01-20 14:11+0100\n"
 "Last-Translator: Borbola Balazs \n"
 "Language-Team: Hungarian \n"
 "MIME-Version: 1.0\n"
@@ -434,30 +434,27 @@ msgstr "Fájlok betöltése"
 
 #: trackedit/tegui.cpp:71 trackedit/mainpage.cpp:90
 msgid "Change tiles collection"
-msgstr ""
+msgstr "Pályadarabgyűjtemény változtatása"
 
 #: trackedit/tegui.cpp:89
 msgid "Edit this tile"
-msgstr ""
+msgstr "Pályadarab szerkesztése"
 
 #: trackedit/tegui.cpp:121
-#, fuzzy
 msgid "Add a new tile"
-msgstr "Játékos hozzáadása"
+msgstr "Új pályadarab hozzáadása"
 
 #: trackedit/tegui.cpp:122
 msgid "Remove unused tiles"
-msgstr ""
+msgstr "Használaton kívüli pályadarabok eltüntetése"
 
 #: trackedit/tegui.cpp:127
-#, fuzzy
 msgid "Change the tile model"
-msgstr "Írja be a fájlnevet:"
+msgstr "Pályadarabmodell változtatása"
 
 #: trackedit/tegui.cpp:128
-#, fuzzy
 msgid "Delete this tile"
-msgstr "A játékos törlése"
+msgstr "A pályadarab törlése"
 
 #: trackedit/tegui.cpp:212 trackedit/tegui.cpp:242
 #, c-format
@@ -483,15 +480,15 @@ msgstr "%s mentése sikertelen"
 
 #: trackedit/tegui.cpp:322
 msgid "This tile is in use in the track. Do you really want to change it?"
-msgstr ""
+msgstr "A pályadarabot a pálya használja. Biztos meg akarod változtatni?"
 
 #: trackedit/tegui.cpp:382
 msgid "This tile is in use in the track. Do you really want to delete it?"
-msgstr ""
+msgstr "A pályadarabot a pálya használja. Biztos törölni akarod?"
 
 #: trackedit/tegui.cpp:405
 msgid "Tiles:"
-msgstr ""
+msgstr "Pályadarabok:"
 
 #: trackedit/mainpage.cpp:84
 msgid "Load track"

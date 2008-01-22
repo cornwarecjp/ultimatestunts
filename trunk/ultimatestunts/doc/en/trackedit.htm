@@ -8,11 +8,20 @@
 
 <h3>Introduction</h3>
 The Ultimate Stunts track editor will allow you to make new tracks and edit
-existing tracks. Currently (version 0.7.2), the track editor is still very
+existing tracks. Currently (version 0.7.4), the track editor is still very
 limited: it is only possible to place/remove tiles on the track,
 and to import tracks from the original Stunts game.
 
-<h3>Usage</h3>
+<h3>Contents</h3>
+<ul>
+	<li><a href="#navigation">Basic navigation</a></li>
+	<li><a href="#editing">Track editing</a></li>
+	<li><a href="#tiles">Managing the tiles collection</a></li>
+	<li><a href="#import">Importing Stunts tracks</a></li>
+</ul>
+
+<a name="navigation"></a>
+<h1>Basic navigation</h1>
 Currently, the user interface is still quite simple. In the main window, the
 following items are visible:
 <ul>
@@ -22,6 +31,8 @@ following items are visible:
 	<li>A toolbar on the top of the screen</li>
 	<li>The edit tool on the left</li>
 </ul>
+The toolbar contains buttons for things like loading and saving tracks.
+<p>
 Most items can be used with the mouse. For moving around in the 3D
 view, the following controls can be used:
 <ul>
@@ -36,13 +47,13 @@ of lines:
 <br>
 <img src="../nolanguage/trackedit1.jpg">
 
-<h3>Track editing</h3>
+<h1><a name="editing"></a>Track editing</h1>
 The "blinking" of the cursor shows two states of the track: the current state,
 and what it will look like when you press the Enter key. Sometimes there will
 be no difference, and in those cases, you won't see the blinking.
 <p>
 Ultimate Stunts will support multiple editing tools, but currently (version
-0.7.2) there is only one tool, which allows you to insert/remove individual
+0.7.4) there is only one tool, which allows you to insert/remove individual
 tiles. The user interface of that tool can be seen in the left part of the
 screen, but there are also keyboard shortcuts.
 <p>
@@ -70,13 +81,36 @@ The following keys can be used as shortcuts:
 	<li><b>Ctrl</b>+<b>z</b>: undo the last action.</li>
 	<li><b>Ctrl</b>+<b>Shift</b>+<b>z</b>: redo the last undone action.</li>
 </ul>
-Currently, the available set of tile models is limited by the selection of
-tiles that is already used in the track. Also, the sizes of the track cannot
+Currently, the sizes of the track cannot
 be changed, route information cannot be changed, and environment settings
-(background, lighting etc.) cannot be edited. Currently, all those things need
-to be done manually in the track file.
+(background, lighting etc.) cannot be edited. With the current version (0.7.4),
+all those things need to be done manually in the track file.
 
-<h3>Importing Stunts tracks</h3>
+<a name="tiles"></a>
+<h1>Managing the tiles collection</h1>
+<img src="../nolanguage/trackedit-tilecollectiontool.jpg" align=right>
+Sooner or later, you'll want to use a certain tile type, but you can't find it
+in the tile collection of your track. In this section, you can read how to add
+and remove tiles to/from your tile collection. The tile collection tool can be
+accessed by clicking on its button in the toolbar (see image).
+<p>
+The main screen of the tiles collection tool looks like the image below. All
+tiles currently available in your collection are visible, and you have several
+options for changing this collection:
+<ul>
+	<li>You can change the settings of an existing tile by clicking on it</li>
+	<li>You can add a new tile to your collection</li>
+	<li>You can remove all unused tiles. It's a smart thing to do this once your
+	track is finished, because it will make the track load faster.</li>
+	<li>Finally, you can leave the tile collection tool and return to the main menu</li>
+</ul>
+Removing a single tile from the collection can be done by clicking on that tile,
+and then choose the option to delete it.
+
+<img src="../nolanguage/trackedit-tilecollection1.jpg">
+
+<a name="import"></a>
+<h1>Importing Stunts tracks</h1>
 One of the options in the track editor toolbar is to import a track from the
 original "Stunts" (4D Sports Driving) game. If you feel like the current track
 editor is still too limited, you can make your tracks in Stunts and import
