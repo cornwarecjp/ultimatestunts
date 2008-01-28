@@ -44,10 +44,6 @@ public:
 	CString m_TrackFile;
 	vector<CObjectChoice> m_ObjectList;
 
-	//Buffer sizes per object, and total per frame
-	vector<unsigned int> m_ObjectChunkSize;
-	unsigned int m_FrameChunkSize;
-
 protected:
 	bool fillHeaderInfo();
 	void writeHeader();

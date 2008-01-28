@@ -20,6 +20,8 @@
 #include <cmath>
 #include "pi.h"
 
+#include "lconfig.h"
+
 #include "datafile.h"
 
 #include "background.h"
@@ -34,6 +36,8 @@ bool CBackground::load(const CString &filename, const CParamList &list)
 {
 	if(!CTexture::load(filename, list)) return false;
 
+	m_ShowGradient = theMainConfig->getValue("graphics", "shadows_smooth") == "true";
+
 	m_SkyColor = m_ParamList.getValue("skycol", "0,0,0").toVector();
 	m_HorizonSkyColor = m_ParamList.getValue("horizonskycol", "0,0,0").toVector();
 	m_FogColor = m_ParamList.getValue("fogcol", "0,0,0").toVector();
@@ -46,6 +50,8 @@ bool CBackground::load(const CString &filename, const CParamList &list)
 	
 		int sx = list.getValue("sizex", "256").toInt();
 		int sy = list.getValue("sizey", "256").toInt();
+
+		m_ShowTextures = sx > 4 && sy > 4;
 
 		image = scaleImage(in_image, sx, sy);
 		if(image==NULL)
@@ -103,20 +109,26 @@ CVector CBackground::getClearColor() const
 
 void CBackground::draw() const
 {
+	if(!m_ShowTextures && !m_ShowGradient) return;
+
 	glDisable(GL_LIGHTING);
 	glDisable(GL_CULL_FACE);
 
 	bool fogEnabled = glIsEnabled(GL_FOG);
 	glDisable(GL_FOG);
 
-	drawSkybox();
+	if(m_ShowGradient)
+		drawSkybox();
 
-	glColor3f(m_EnvironmentColor.x, m_EnvironmentColor.y, m_EnvironmentColor.z);
+	if(m_ShowTextures)
+	{
+		glColor3f(m_EnvironmentColor.x, m_EnvironmentColor.y, m_EnvironmentColor.z);
 
-	drawClouds();
-	drawHorizon();
+		drawClouds();
+		drawHorizon();
 
-	glColor3f(1,1,1);
+		glColor3f(1,1,1);
+	}
 
 	if(fogEnabled) glEnable(GL_FOG);
 

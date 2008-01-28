@@ -1027,6 +1027,38 @@ CBinBuffer &CCar::getData(CBinBuffer &b) const
 		b.addFloat8(m_Wheel[i].m_Height, 0.008);
 	}
 
+	//Flag data
+	Uint8 flags = 0;
+	if(m_AllCollisions.size() != 0)
+		flags = flags | 0x1; //collision data will be added to the message
+	if(m_RuleStatus.state == CCarRuleStatus::eCrashed)
+		flags = flags | 0x2;
+	b += flags;
+
+	//Add collision data
+	if(m_AllCollisions.size() != 0)
+	{
+		bool fatal = false;
+		float radMax = 0.0, tangMax = 0.0;
+
+		for(unsigned int i=0; i < m_AllCollisions.size(); i++)
+		{
+			float rad = m_AllCollisions[i].getRadVel();
+			float tang = m_AllCollisions[i].getTangVel();
+
+			if(rad > radMax) radMax = rad;
+			if(tang > tangMax) tangMax = tang;
+			if(m_AllCollisions[i].fatal) fatal = true;
+		}
+
+		if(radMax > 50.0) radMax = 50.0;
+		if(tangMax > 50.0) tangMax = 50.0;
+
+		b.addFloat8(radMax, 0.40);
+		b.addFloat8(tangMax, 0.40);
+		b += (Uint8) fatal;
+	}
+
 	return b;
 }
 
@@ -1052,6 +1084,30 @@ bool CCar::setData(const CBinBuffer &b, unsigned int &pos)
 		m_Wheel[i].m_DesiredSt = b.getFloat8(pos, 0.008);
 		m_Wheel[i].m_SkidVolume = b.getFloat8(pos, 0.008);
 		m_Wheel[i].m_Height = b.getFloat8(pos, 0.008);
+	}
+
+	//Flag data
+	Uint8 flags = b.getUint8(pos);
+	bool hasCollisions = (flags & 0x1) != 0;
+	if((flags & 0x2) != 0)
+		m_RuleStatus.crash();
+
+	//Collision data
+	if(hasCollisions)
+	{
+		float radMax = b.getFloat8(pos, 0.40);
+		float tangMax = b.getFloat8(pos, 0.40);
+		bool fatal = b.getUint8(pos);
+
+		//Make a virtual collision that mimics the collision sound
+		CCollisionData collision;
+		collision.fatal = fatal;
+		collision.nor = CVector(1,0,0);
+		collision.pos = m_Position;
+		collision.vmean = CVector(0,0,0);
+		collision.vdiff = CVector(radMax, 0.0, tangMax);
+
+		m_AllCollisions.push_back(collision);
 	}
 
 	placeBodies();

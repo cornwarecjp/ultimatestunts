@@ -15,9 +15,11 @@
  *                                                                         *
  ***************************************************************************/
 
+#include "netmessages.h"
+
 #include "replayer.h"
 
-#define MAGICHEADER "Ultimate Stunts replay format 0.6.3"
+#define MAGICHEADER "Ultimate Stunts replay format 0.7.4; network version " USNET_SEARCHFORSTUNTS_VERSION
 
 CReplayer::CReplayer(const CPlayerControl *pctrl)
 {
@@ -68,7 +70,7 @@ bool CReplayer::update()
 	if(m_Write)
 	{
 		//if some amount of time has passed:
-		if(now > m_PreviousTime + 0.01) //max. 100 times per second
+		if(now >= m_PreviousTime + 0.01) //max. 100 times per second
 		{
 			m_PreviousTime = now;
 
@@ -118,6 +120,7 @@ void CReplayer::writeHeader()
 		writeBytes(b);
 	}
 
+	/*
 	//Object chunk sizes
 	m_FrameChunkSize = 0;
 	vector<CDataObject *> objs = theWorld->getObjectArray(CDataObject::eMovingObject);
@@ -131,6 +134,7 @@ void CReplayer::writeHeader()
 		m_FrameChunkSize += s;
 		writel(s);
 	}
+	*/
 }
 
 bool CReplayer::readHeader()
@@ -156,6 +160,7 @@ bool CReplayer::readHeader()
 		m_ObjectList.push_back(oc);
 	}
 
+	/*
 	//Object chunk sizes
 	m_FrameChunkSize = 0;
 	vector<CDataObject *> objs = theWorld->getObjectArray(CDataObject::eMovingObject);
@@ -165,6 +170,7 @@ bool CReplayer::readHeader()
 		m_ObjectChunkSize.push_back(s);
 		m_FrameChunkSize += s;
 	}
+	*/
 
 	return true;
 }
@@ -174,13 +180,17 @@ void CReplayer::writeData()
 	//the moving objects:
 	vector<CDataObject *> objs = theWorld->getObjectArray(CDataObject::eMovingObject);
 
-
 	for(unsigned int i=0; i < objs.size(); i++)
 	{
-		CBinBuffer b;
+		CBinBuffer header, data;
+
 		CMovingObject *mo = (CMovingObject *)objs[i];
-		mo->getData(b);
-		writeBytes(b);
+		mo->getData(data);
+
+		header += (Uint16) data.size();
+
+		writeBytes(header);
+		writeBytes(data);
 	}
 }
 
@@ -191,12 +201,17 @@ bool CReplayer::readData()
 
 	for(unsigned int i=0; i < objs.size(); i++)
 	{
-		CBinBuffer b = readBytes(m_ObjectChunkSize[i]);
-		if(b.size() != m_ObjectChunkSize[i]) return false;
+		unsigned int pos = 0;
+		CBinBuffer header = readBytes(2); //16 bits
+		unsigned int dataSize = header.getUint16(pos);
+
+		CBinBuffer data = readBytes(dataSize);
 
 		CMovingObject *mo = (CMovingObject *)objs[i];
-		unsigned int pos = 0;
-		if(!(mo->setData(b, pos))) return false;
+		mo->m_AllCollisions.clear();
+
+		pos = 0;
+		if(!(mo->setData(data, pos))) return false;
 	}
 
 	return true;

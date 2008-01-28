@@ -20,7 +20,7 @@ Dit bestand bevat de volgende secties:
 </p>
 <ul>
 	<li><a href="#about">
-		About this document
+		Over dit document
 	</a></li>
 	<li><a href="#general">
 		General information about tracks
@@ -38,10 +38,10 @@ Dit bestand bevat de volgende secties:
 		The new 3D model (*.glb) format
 	</a></li>
 	<li><a href="#repl">
-                The replay (*.repl) format
-        </a></li>
+		Het replay (*.repl) formaat
+	</a></li>
 	<li><a href="#future">
-		Future developments 
+		Toekomstige ontwikkelingen
 	</a></li>
 </ul>
 
@@ -678,103 +678,120 @@ i (4 byte)
 The index refers to an element in the vertex array of the object.
 
 <a name="repl"></a>
-<h1>Replay (*.repl) format</h1>
-A replay file contains a sort of movie of what happened during a race. For
-every moment in the race, car positions and orientations, and other state
-data are saved. The *.repl format is a mix of binary and UNIX-style text
-elements. So, whenever a "text line" is present, it is a '\n'-terminated
-string. The binary parts all use a format that is also used in network
-communication of Ultimate Stunts multiplayer games. They all use the functions
-in shared/binbuffer.cpp for writing high-level objects like strings or
-vectors.
+<h1>Replay (*.repl) formaat</h1>
+Een replaybestand bevat een soort film van wat er tijdens een race is
+gebeurd. Voor elk momenr in de race zijn autoposities, oriëntaties en andere
+toestandsinformatie opgeslagen. Het *.repl formaat is een mix van binaire
+en UNIX-stijl tekst-elementen. Dus, wanneer er een "tekstregel" aanwezig is,
+dan is het een '\n'-terminated string. De binaire onderdelen gebruiken allemaal
+een formaat dat ook gebruikt wordt in de netwerkcommunicatie van Ultimate Stunts
+multiplayer spelsessies. Ze gebruiken allemaal de functies in shared/binbuffer.cpp
+voor het schrijven van high-level objecten zoals strings of vectoren.
 
 <h3>header</h3>
-The start of the header has the following format:
+Het begin van de header heeft het volgende formaat:
 <pre>
-Magic header text (text line)
-Track filename (text line)
-Number of objects (text line containing decimal number)
+Magische headertekst (tekstregel)
+Track-bestandsnaam (tekstregel)
+Aantal objecten (tekstregel die een decimaal nummer bevat)
 </pre>
-The first line in a .repl file contains a magic header text. This text is
-there to see whether we are dealing with a real .repl file, and whether its
-format version corresponds to the replay loader version. At the time of
-writing (Ultimate Stunts 0.6.2), the header text is:
+De eerste regel in een .repl-bestand bevat een magische headertekst. Deze
+tekst is er om te zien of we te maken hebben met een echt .repl-bestand,
+en of het formaat ervan overeenkomt met de replat-loader versie. Op het
+moment van schrijven (Ultimate Stunts 0.7.4) is de headertekst:
 <pre>
-Ultimate Stunts replay format 0.6.1
+Ultimate Stunts replay format 0.7.4; network version ULTIMATESTUNTS 0.7.4
 </pre>
-The next line contains the filename of the track file. So, the track itself
-is not included in the replay file, only its filename. After the track
-filename, the number of objects (e.g. cars) is written to the file.
+De volgende lijn bevat de bestandsnaam van het trackbestand. Dus, de track
+zelf is niet ingevoegd in het replay-bestand, alleen de bestandsnaam. Na
+de track-bestandsnaam is het aantal objecten (bijv. auto's) geschreven in
+het bestand.
 
-<h3>Objects</h3>
-Then, for every object, the following data is written:
+<h3>Objecten</h3>
+Vervolgens wordt, voor elk object, de volgende data geschreven:
 <pre>
-Number of bytes in description (text line containing decimal number)
-Object description (binary buffer)
+Aantal bytes in beschrijving (tekstregel die een decimaal nummer bevat)
+Objectbeschrijving (binaire buffer)
 </pre>
-The exact format of the object description is defined in
-simulation/objectchoice.cpp. Currently, this has the following format:
+Het exacte formaat van de objectbeschrijving is gedefinieerd in
+simulation/objectchoice.cpp. Op dit moment heeft het het volgende formaat:
 <pre>
-object type (8-bit unsigned integer, value = 5 for cars)
-object's .conf filename (string)
-player's name (string)
+object type (8-bit unsigned integer, waared = 5 voor auto's)
+.conf bestandsnaam van object(string)
+naam van de speler (string)
 </pre>
-<p>
-Next, for every object the state data size is written:
-<pre>
-state data size (text line containing decimal number)
-</pre>
-This is the size of the messagebuffers that contain the object's state data.
 
 <h3>Frame data</h3>
-Finally, for every frame in the "animation", the object state data is written
-in the file. For every object, this is a binary buffer of its state data size.
-Currently the format is as follows:
+Tot slot wordt voor elke frame in de "animatie" de object-toestand-data
+geschreven in het bestand. Een toestand-data frame heeft het volgende
+formaat:
+<pre>
+lengte van eerste object's toestandsdata (16-bit unsigned integer)
+eerste object's toestandsdata
+[lengte van tweede object's toestandsdata (16-bit unsigned integer)
+tweede object's toestandsdata]
+enz...
+</pre>
+De lengte van de toestandsdata van een object wordt in elke frame opnieuw
+geschreven omdat het verschillend kan zijn voor elke frame. De toestandsdata
+van een enkel object is een binaire buffer, gedefinieerd door zijn afgeleide
+implementaties van de getData en setData methods. Meestal (zoals in auto's)
+wordt de basisimplementatie van CMovingObject gebruikt als startpunt. Op dit
+moment is het formaat als volgt:
 <p>
-The first part is the same for all kinds of moving objects (cars and other
-kinds of vehicles):
+Het eerste deel is het zelfde voor alle soorten moving objects (auto's en
+andere soorten voertuigen):
 <pre>
 Object ID (8-bit unsigned integer)
-Frame time (32-bit float, resolution 0.005)
-Position (vector of 32-bit floats, resolution 0.001)
-Orientation (vector of 16-bit floats, resolution 0.0002)
-Velocity (vector of 16-bit floats, resolution 0.01)
-Angular velocity (vector of 16-bit floats, resolution 0.01)
+Frame tijdstip (32-bit float, resolutie 0.005)
+Positie (vector van 32-bit floats, resolutie 0.001)
+Orientatie (vector van 16-bit floats, resolutie 0.0002)
+Snelheid (vector van 16-bit floats, resolutie 0.01)
+Hoeksnelheid (vector van 16-bit floats, resolutie 0.001)
 </pre>
-Next is a type-specific part. For cars (currently the only kind of moving
-objects), this is:
+Het volgende is een type-specifiek deel. Voor auto's (op dit moment het enige
+soort moving objects) is dit op dit moment:
 <pre>
-Steering angle (8-bit float, resolution 0.008)
-X-angle of the body (8-bit float, resolution 0.002)
-Y-angle of the body (8-bit float, resolution 0.002)
+Stuurhoek (8-bit float, resolutie 0.008)
 
-Gear number (8-bit unsigned integer)
-Drive axis angular velocity (16-bit float, resolution 0.4)
-Engine gas fraction (8-bit float, resolution 0.008)
+Versnellingsnummer (8-bit unsigned integer)
+Aandrijfas hoeksnelheid (16-bit float, resolutie 0.4)
+Motor gas-deel (8-bit float, resolutie 0.008)
 
-Wheel 0 angular velocity (16-bit float, resolution 0.4)
-Wheel 0 angle (8-bit float, resolution 0.025)
-Wheel 0 steering angle (8-bit, resolution 0.008)
-Wheel 0 skid volume (8-bit, resolution 0.008)
+Wiel 0 hoeksnelheid (16-bit float, resolutie 0.4)
+Wiel 0 hoek (8-bit float, resolutie 0.025)
+Wiel 0 stuurhoek (8-bit, resolutie 0.008)
+Wiel 0 slipvolume (8-bit, resolutie 0.008)
 
-Wheel 1 angular velocity (16-bit float, resolution 0.4)
-Wheel 1 angle (8-bit float, resolution 0.025)
+Wiel 1 hoeksnelheid (16-bit float, resolutie 0.4)
+Wiel 1 hoek (8-bit float, resolutie 0.025)
 ..etc.
+
+flags (8-bit unsigned integer, gebruikt als bitmasker)
+
+[
+botsing radiale snelheid (8-bit float, resolutie 0.40)
+botsing tangentiale snelheid (8-bit float, resolutie 0.40)
+botsing is fataal (8-bit unsigned integer, gebruikt als boolean)
+]
 </pre>
+Het botsingsdeel is niet altijd aanwezig: de 0x1 positie in de flags
+variabele staat aan als botsingsdata aanwezig is. Bitpositie 0x2 in
+flags staat aan wanneer de auto gecrasht is.
 
 <a name="future"></a>
-<h1>Future developments</h1>
+<h1>Toekomstige ontwikkelingen</h1>
 
-<h3>New file formats</h3>
-When new functionality is added, new file formats will be needed. The collision
-detection information will be fetched from the *.glb files, but it will also
-need, for example, material information, like friction coefficients. Of course,
-that nice Stunts sinking effect won't be possible if we don't know which
-surfaces represent water.
+<h3>Nieuwe bestandsformaten</h3>
+Als nieuwe functionaliteit wordt toegevoegd, zullen nieuwe bestandsformaten
+nodig zijn. De botsingsdetectie-informatie zal uit de *.glb formaten gehaald
+worden, maar het zal bijv. ook materiaal-informatie nodig hebben, zoals
+wrijvings-coëfficiënten. Natuurlijk zal dat mooie Stunts zink-effect niet
+mogelijk zijn als we niet weten welke oppervlaktes water voorstellen.
 
-<h3>Changes in current file formats</h3>
-The boundaries that prevent the cars from leaving the track
-should be defined in the track file.
+<h3>Veranderingen in bestaande bestandsformaten</h3>
+De grenzen die voorkómen dat auto's de track verlaten zouden in het track-bestand
+gedefinieerd moeten worden.
 </body>
 </html>
 

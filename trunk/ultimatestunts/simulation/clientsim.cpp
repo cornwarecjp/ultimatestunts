@@ -104,6 +104,10 @@ bool CClientSim::update()
 		}
 	}
 
+	//clear the collision arrays:
+	for(unsigned int i=0; i < objs.size(); i++)
+		((CMovingObject *)objs[i])->m_AllCollisions.clear();
+
 	//receive object info
 	//the receiveData function was already called by the gamecore
 	for(unsigned int i=0; i < m_Net->m_ReceiveBuffer.size(); i++)

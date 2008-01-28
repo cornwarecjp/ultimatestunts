@@ -153,7 +153,7 @@ CBinBuffer &CMovingObject::getData(CBinBuffer &b) const
 	b.addVector32(p, 0.001);
 	b.addVector16(o, 0.0002);
 	b.addVector16(v, 0.01);
-	b.addVector16(w, 0.01);
+	b.addVector16(w, 0.001);
 
 	return b;
 }
@@ -181,11 +181,11 @@ bool CMovingObject::setData(const CBinBuffer &b, unsigned int &pos)
 
 	//TODO: correct game time for average lag time
 
-		CVector
-			p = b.getVector32(pos, 0.001),
-			o = b.getVector16(pos, 0.0002),
-			v = b.getVector16(pos, 0.01),
-			w = b.getVector16(pos, 0.01);
+	CVector
+		p = b.getVector32(pos, 0.001),
+		o = b.getVector16(pos, 0.0002),
+		v = b.getVector16(pos, 0.01),
+		w = b.getVector16(pos, 0.001);
 
 	/*
 	A little hack:

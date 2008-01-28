@@ -13,7 +13,8 @@
 //                                                                       //
 //***********************************************************************//
 
-# include <math.h>
+#include <string.h>
+#include <math.h>
 #include "3ds.h"
 
 // This file handles all of the code needed to load a .3DS file.

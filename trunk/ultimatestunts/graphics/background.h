@@ -48,6 +48,8 @@ protected:
 
 	GLuint m_HorizonTex;
 
+	bool m_ShowTextures, m_ShowGradient;
+
 	CVector m_SkyColor;
 	CVector m_HorizonSkyColor;
 	CVector m_FogColor;

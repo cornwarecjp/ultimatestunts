@@ -95,7 +95,12 @@ bool CCarRuleStatus::crash()
 {
 	if(!m_CanCrash) return true; //just ignore the crash
 
-	if(state == eRacing)
+	/*
+	It sounds weird to be able to crash when not started, but
+	allowing this is necessary for network games, because
+	the state is transferred in an incomplete way
+	*/
+	if(state == eRacing || state == eNotStarted)
 	{
 		finishTime = theWorld->m_LastTime;	//time when it finished racing
 		state = eCrashed;
