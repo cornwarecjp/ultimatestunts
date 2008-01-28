@@ -1,0 +1,192 @@
+<html>
+<head>
+<title>Ultimate Stunts on Mac OS X - install instructions</title>
+</head>
+<body>
+<h1>Ultimate Stunts on Mac OS X - install instructions</h1>
+
+Notes:
+<ol>
+	<li>This is how I did it, there are other ways (namely using frameworks 
+	and not Unix libs, or using macports or fink)</li>
+	<li>You should at least understand a bit what you are doing, I do not 
+	claim my instructions are perfect. They should get you started in the 
+	right direction however.</li>
+</ol>
+
+<h3>Setting up your environment</h3>
+
+<ul>
+	<li>Install developer tools, either from the OS X Install DVD or from 
+	Apple's website</li>
+
+	<li>Add /usr/local/bin to your PATH, <b><i>before</i></b> /usr/bin 
+	(<a href="http://www.troubleshooters.com/linux/prepostpath.htm">
+	http://www.troubleshooters.com/linux/prepostpath.htm</a>) so that the new 
+	versions of stuff you install are picked over the older ones installed 
+	by default</li>
+
+	<li>pkg-config<br>
+	Download from <a href="http://pkgconfig.freedesktop.org/releases/">
+	http://pkgconfig.freedesktop.org/releases/</a>. Build with:
+	<pre>
+    % cd /path/to/pkg-config-0.22
+    % ./configure
+    % make
+    % sudo make install
+	</pre>
+
+	<li>Autotools<br>
+	Only necessary if you get CVS version (I think)<br>
+	Install more recent autotools (the ones that come with OS X 10.4 are too 
+	old. Maybe 10.5 users don't need this.). For this make sure 
+	/usr/local/bin is in your PATH as described above otherwise it won't 
+	work (will pick old versions).</li>
+</ul>
+
+All the following programs can be built and installed with the following 
+commands on the terminal:
+<pre>
+    % cd /path/to/source_file
+    % ./configure
+    % make
+    % sudo make install
+</pre>
+
+<ul>
+	<li>get M4 from <a href="http://ftp.gnu.org/gnu/m4/">
+	http://ftp.gnu.org/gnu/m4/</a> and install it</li>
+
+	<li>symlink m4 to gm4 since that's how some programs refer to it.
+	<pre>
+    % sudo ln -s /usr/local/bin/m4 /usr/local/bin/gm4
+	</pre></li>
+    <li>Then, build and install autoconf and automake from GNU the same way 
+	as described above
+	<ul>
+		<li><a href="http://www.gnu.org/software/autoconf/">
+			http://www.gnu.org/software/autoconf/</a></li>
+		<li><a href="http://www.gnu.org/software/automake/">
+			http://www.gnu.org/software/automake/</a></li>
+	</ul>
+	</li>
+</ul>
+
+<h3>OpenAL</h3>
+
+The OpenAL framework provided by Apple on OS X 10.4 is too old. Once 
+again maybe 10.5 users will have a more recent one - but anyway
+Ultimate Stunts's build system was not patched for mac frameworks so
+building the library Unix style is easiest.
+
+<ul>
+	<li>Checkout OpenAL SVN (or probably source code of version 1.1 will do 
+	but I didn't test)
+	<pre>
+    % svn checkout http://www.openal.org/repos/openal/trunk openal
+    % cd openal
+	</pre></li>
+	<li>Build OpenAL:
+	<ul>
+		<li>open folder OpenAL-MacOSX, open XCode project</li>
+		<li>select target openal.dylib and build style "deployment"</li>
+		<li>build</li>
+		<li>find /OpenAL-MacOSX/build/Deployment/openal.dylib and copy it to 
+		/usr/local/lib
+		<pre>
+    % sudo cp ./OpenAL-MacOSX/build/Deployment/openal.dylib /usr/local/lib
+		</pre></li>
+	</ul></li>
+	<li>copy headers in /OpenAL-MacOSXbuild/include/AL to /usr/local/include/AL
+	<pre>
+    % sudo cp -r ./include/AL/  /usr/local/include/AL
+	</pre></li>
+	<li>build alut:
+	<pre>
+    % cd /openal/alut
+    % ./autogen.sh
+    % ./configure
+    % make
+    % sudo make install
+	</pre></li>
+</ul>
+
+<h3>Getting the dependencies</h3>
+
+<ul>
+	<li>Get libjpeg from
+	<a href="http://people.imendio.com/richard/gtk-osx/files/jpeg-6b.tar.gz">
+	http://people.imendio.com/richard/gtk-osx/files/jpeg-6b.tar.gz</a> (as of 
+	writing this document my understanding is that the official version of 
+	libjpeg still can't build libraries for mac)
+	<pre>
+    % ./configure --enable-static --enable-shared
+    % make
+    % sudo make install
+	</pre></li>
+	<li>Get libpng (<a href="http://libpng.sourceforge.net/">
+	http://libpng.sourceforge.net/</a>)
+	<pre>
+    % ./configure
+    % make
+    % sudo make install
+	</pre>
+	<li>Get gettext (get gettext source from
+	<a href="ftp://mirrors.kernel.org/gnu/gettext">
+	ftp://mirrors.kernel.org/gnu/gettext</a>) source code
+	<pre>
+    % cd /path/to/gettext-0.16
+    % ./configure
+    % make
+    % sudo make install
+	</pre>
+</ul>
+Install SDL from source with terminal, do not use the binaries they 
+provide (support for the provided SDL binaries can be added in the 
+future but for now building yourself from terminal is easier as it 
+requires less patching of Ultimate Stunts's build system)
+<ul>
+	<li>Get SDL (<a href="http://www.libsdl.org/download-1.2.php">
+	http://www.libsdl.org/download-1.2.php</a>) source code
+	<pre>
+    % cd /path/to/SDL-1.2.13
+    % ./configure --without-x --disable-x11-video
+    % make
+    % sudo make install
+	</pre></li>
+	<li>Get SDL_image source code
+	<pre>
+    % cd /path/to/SDL_image-1.2.6
+    % ./configure --enable-jpg-shared=false --enable-png-shared=false
+    % make
+    % sudo make install
+	</pre></li>
+	<li>symlink include folder of OpenGL framework to /usr/local/include/GL 
+	(Unix programs have an easier time finding it this way)
+	<pre>
+    % sudo ln -s /System/Library/Frameworks/OpenGL.framework/Versions/A/Headers/ /usr/local/include/GL
+	</pre></li>
+</ul>
+
+<h3>Building ultimate Stunts</h3>
+
+<ul>
+	<li>get source code</li>
+	<li>if you need to generate a configure script (like if you got it from 
+	CVS), do "autoconf"</li>
+</ul>
+<pre>
+    %./configure
+    % make
+</pre>
+
+<h3>Running Ultimate Stunts</h3>
+
+<pre>
+    % ./ultimatestunts/ustunts
+</pre>
+
+enjoy =)
+
+</body>
+</html>

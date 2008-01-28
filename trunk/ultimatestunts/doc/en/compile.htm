@@ -2,16 +2,30 @@
 <body>
 <h1>Compilation of Ultimate Stunts</h1>
 
+In a perfect world, compilation would be the same on all OS platforms.
+However, there are some differences that make compilation a bit
+harder on some systems. Ultimate Stunts is developed under Linux, and
+will typically compile best on Linux or similar UNIX-style systems. It
+can also be compiled on some other systems:
+<ul>
+	<li>On windows, <a href="http://www.cygwin.com">Cygwin</a> can be
+	used as a UNIX environment. You can download Cygwin with all the
+	required packages (see below) and follow the instructions in
+	the rest of this document. UltimateStunts will be kept portable 
+	with Cygwin during it's development.</li>
+
+	<li>While Mac OS X is based on a UNIX-kernel, Apple has added a lot
+	of "features" that make it less compatible with typical UNIX
+	systems. A separate <a href="macosx.htm">compilation manual for Mac OS X
+	</a> is	available.</li>
+</ul>
+
 <h3>Requirements</h3>
 
 To compile UltimateStunts, you'll need a UNIX-compatible
-environment with a c/c++ compiler. You'll also need the
+system with a c/c++ compiler. You'll also need the
 program 'make', and a shell-program able to execute the
-configure-script. For Linux- and other UNIX-like users, this
-should be no problem. Windows-users can download
-<a href="http://www.cygwin.com">Cygwin</a>
-to meet those requirements. UltimateStunts will be kept portable 
-with Cygwin during it's development.
+configure-script.
 <p>
 Of course you should also have the right library's and development-packages
 installed. The programs that use graphics need the openGL, SDL and SDL_image libraries

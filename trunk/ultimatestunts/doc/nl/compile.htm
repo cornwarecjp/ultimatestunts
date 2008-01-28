@@ -2,15 +2,29 @@
 <body>
 <h1>Compilatie van Ultimate Stunts</h1>
 
+In een ideale wereld zou compilatie het zelfde zijn op alle OS-platforms.
+Er zijn echter wat verschillen die compilatie een beetje moeilijker
+maken op sommige systemen. Ultimate Stunts wordt ontwikkeld in Linux, en
+zal het beste compileren in Linux en vergelijkbare UNIX-stijl systemen.
+Het kan ook gecompileerd worden op sommige andere systemen:
+<ul>
+	<li>In windows kan <a href="http://www.cygwin.com">Cygwin</a> gebruikt
+	worden als UNIX-omgeving. U kunt Cygwin downloaden met al de
+	vereiste packages (zie hieronder) en de instructies volgen die
+	in de rest van dit document staan. Ultimate Stunts zal portable
+	gehouden worden met Cygwin tijdens de ontwikkeling ervan.</li>
+
+	<li>Mac OS X is weliswaar gebaseerd op een UNIX-kernel, maar Apple heeft
+	een boel "features" toegevoegd die het minder compatible maken met
+	typische UNIX-systemen. Een aparte <a href="../en/macosx.htm">
+	compilatie-handleiding voor Mac OS X</a> is	beschikbaar.</li>
+</ul>
+
 <h3>Vereisten</h3>
 
-Om Ultimate Stunts te compileren heeft u een UNIX-compatible omgeving
+Om Ultimate Stunts te compileren heeft u een UNIX-compatible systeem
 nodig met een c/c++ compiler. U heeft ook het programma 'make' nodig,
 en een shell-programma dat in staat is om het configure-script uit te voeren.
-Voor Linux- en andere UNIX-achtige gebruikers zou dit geen probleem moeten
-zijn. Windows-gebruikers kunnen <a href="http://www.cygwin.com">Cygwin</a>
-downloaden om aan deze vereisten te voldoen. Ultimate Stunts zal portable
-gehouden worden met Cygwin tijdens de ontwikkeling ervan.
 <p>
 Natuurlijk moet u ook de juiste bibliotheken en ontwikkelings-packages
 geinstalleerd hebben. De programma's die graphics gebruiken hebben de
