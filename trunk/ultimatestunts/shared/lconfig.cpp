@@ -36,7 +36,7 @@ CLCData::CStringArray CLCData::findAll(CString sec) const
 	  for (unsigned int i=0;i < m_Data.size(); i++) {
       	  d = m_Data[i];
 
-		  if  (d.sec == sec)  {
+		  if  (d.section == sec)  {
 			  res.push_back(d.line);
 		  }
 	}
@@ -44,15 +44,29 @@ CLCData::CStringArray CLCData::findAll(CString sec) const
 }
 
 
-CString CLCData::find(CString sec, CString field) const
+CString CLCData::find(CString section, CString field) const
 {
 	d_data d;
 	for (unsigned int i=0;i < m_Data.size(); i++)
 	{
 		d = m_Data[i];
-		if ( (d.sec.toUpper() == sec.toUpper()) && (d.field.toUpper() == field.toUpper()) )
+		if ( (d.section.toUpper() == section.toUpper()) && (d.field.toUpper() == field.toUpper()) )
 		{
-			return (d.val);
+			return (d.value);
+		}
+	}
+	return (CString(""));
+}
+
+CString CLCData::findMeta(CString section, CString field) const
+{
+	d_data d;
+	for (unsigned int i=0;i < m_Data.size(); i++)
+	{
+		d = m_Data[i];
+		if ( (d.section.toUpper() == section.toUpper()) && (d.field.toUpper() == field.toUpper()) )
+		{
+			return (d.metadata);
 		}
 	}
 	return (CString(""));
@@ -64,9 +78,9 @@ void CLCData::set(CString sec, CString field, CString value)
 	for (unsigned int i=0;i < m_Data.size(); i++)
 	{
 		d = m_Data[i];
-		if ( (d.sec.toUpper() == sec.toUpper()) && (d.field.toUpper() == field.toUpper()) )
+		if ( (d.section.toUpper() == sec.toUpper()) && (d.field.toUpper() == field.toUpper()) )
 		{
-			m_Data[i].val = value;
+			m_Data[i].value = value;
 		}
 	}
 }
@@ -78,7 +92,7 @@ CLCData::CStringArray CLCData::findAllSections() const
 	CString secUpper, resUpper;
 	for (unsigned int i=0;i < m_Data.size(); i++)
 	{
-		secUpper = m_Data[i].sec;
+		secUpper = m_Data[i].section;
 		secUpper.toUpper();
 
 		bool found = false;
@@ -91,7 +105,7 @@ CLCData::CStringArray CLCData::findAllSections() const
 		}
 		if(found) continue;
 
-		res.push_back(m_Data[i].sec);
+		res.push_back(m_Data[i].section);
 	}
 
 	return res;
@@ -115,13 +129,20 @@ CLCData::CStringArray CLCData::findAllFields(CString sec) const
 }
 
 
-bool CLCData::push(CString sec, CString fie, CString val = "", CString line = "")
+bool CLCData::push(
+	const CString &section,
+	const CString &field,
+	const CString &value,
+	const CString &line,
+	const CString &metadata
+	)
 {
 	d_data d;
-	d.sec = sec;
-	d.field = fie;
-	d.val = val;
+	d.section = section;
+	d.field = field;
+	d.value = value;
 	d.line = line;
+	d.metadata = metadata;
 
 	m_Data.push_back(d);
 	return (true);
@@ -140,11 +161,14 @@ void CLConfig::setValue(const CString &section, const CString &field, const CStr
 	m_data.set(section, field, value);
 }
 
-CString CLConfig::getValue(CString section, CString field) const
+CString CLConfig::getValue(const CString &section, const CString &field) const
 {
- CString s = m_data.find(section, field);
- return (s);
+	return m_data.find(section, field);
+}
 
+CString CLConfig::getMetaData(const CString &section, const CString &field) const
+{
+	return m_data.findMeta(section, field);
 }
 
 vector<CString> CLConfig::getSections() const
@@ -177,7 +201,9 @@ bool CLConfig::setArgs(int argc, char *argv[])
 bool CLConfig::readFile(void)
 {
 	char buffer[512];
+
 	CString cSection;
+	CString cMetaString;
 
 	strcpy(buffer,m_szFilename.c_str());
 
@@ -185,24 +211,42 @@ bool CLConfig::readFile(void)
 	
 	if (f == NULL) return (false);
 	
-	while (fgets(&buffer[0], 512, f) != NULL) {
+	while (fgets(&buffer[0], 512, f) != NULL)
+	{
 		CString tbuf;
         CString s;
 
 		tbuf.assign(buffer);
-		tbuf.Trim();		
-		if (tbuf.length() == 0) continue;			// comments or empty lines
+		tbuf.Trim();
+
+		if (tbuf.length() == 0) continue; //empty lines
+
+		//Check for special meta-information comments
+		if(tbuf.mid(0, 6) == "#meta ")
+		{
+			cMetaString = tbuf.mid(6);
+			continue;
+		}
+
+		//Comments
 		if ((tbuf[0] == '#') ||
 			(tbuf[0] == '\'')) continue;
 
 
-		if (tbuf[0] == '[') {						// check for new section
+		if (tbuf[0] == '[')
+		{						// check for new section
 			int last = tbuf.find_last_of("]");
-			if (last < 0) { fclose(f); return (false); }
+			if (last < 0)
+			{
+				fclose(f);
+				return (false);
+			}
 			cSection = tbuf.subStr(1, last - 1);
-		} else {									// sonst feld == wert
+		}
+		else
+		{									// sonst feld == wert
 			int sep=tbuf.find_first_of("=");
-			if(sep > 0)								//else it is not a valid line, ignore it
+			if(sep > 0)						//else it is not a valid line, ignore it
 			{
 				CString field;
 				CString val;
@@ -211,10 +255,13 @@ bool CLConfig::readFile(void)
 				val = tbuf.subStr(sep+1);
 				field.Trim();
 				val.Trim();
-				m_data.push(cSection, field, val, tbuf);
+				m_data.push(cSection, field, val, tbuf, cMetaString);
+
+				cMetaString = ""; //reset after field was found
 			}
 		}
 	}
+
 	fclose(f);
 	return (true);
 }

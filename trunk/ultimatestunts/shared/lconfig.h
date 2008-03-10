@@ -24,10 +24,11 @@ class CLCData
 private:
 
 	typedef struct {
-		CString sec;
+		CString section;
 		CString field;
-		CString val;
+		CString value;
 		CString line;
+		CString metadata;
 	} d_data;
 
 	typedef vector<CString> CStringArray;
@@ -43,9 +44,17 @@ public:
 
 	CLCData();
 	virtual ~CLCData();
-	bool push(CString, CString, CString, CString);
+	bool push(
+		const CString &section,
+		const CString &field,
+		const CString &value,
+		const CString &line,
+		const CString &metadata=""
+		);
 
-	CString find(CString, CString) const;
+	CString find(CString section, CString field) const;
+	CString findMeta(CString section, CString field) const;
+
 	void set(CString, CString, CString);
 
 	CStringArray findAll(CString) const;
@@ -70,7 +79,8 @@ private:
 public:
 	void setValue(const CString &, const CString &, const CString &);
 
-	CString getValue(const CString, const CString) const;
+	CString getValue(const CString &section, const CString &field) const;
+	CString getMetaData(const CString &section, const CString &field) const;
 	vector<CString> getSections() const;
 	vector<CString> getSection(CString) const;
 	vector<CString> getFieldsInSection(CString) const;

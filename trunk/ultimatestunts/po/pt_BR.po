@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Ultimate Stunts 0.7.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-01-13 21:25+0100\n"
+"POT-Creation-Date: 2008-03-09 15:53+0100\n"
 "PO-Revision-Date: 2007-08-01 14:11+0100\n"
 "Last-Translator: Marcelo De Nardin \n"
 "Language-Team: Brazilian Portuguese \n"
@@ -297,28 +297,28 @@ msgstr ""
 msgid "Saving failed"
 msgstr "Salvamento falhou"
 
-#: ultimatestunts/gamegui.cpp:1097
+#: ultimatestunts/gamegui.cpp:1098
 msgid "Applying the new value failed"
 msgstr "Aplicação do novo valor falhou"
 
-#: ultimatestunts/gamegui.cpp:1137
+#: ultimatestunts/gamegui.cpp:1138
 msgid "  (this race)"
 msgstr " (esta corrida)"
 
-#: ultimatestunts/gamegui.cpp:1160
+#: ultimatestunts/gamegui.cpp:1161
 msgid "Enter the replay filename:"
 msgstr "Escreva o nome do arquivo de replay:"
 
-#: ultimatestunts/gamegui.cpp:1174 trackedit/tegui.cpp:288
+#: ultimatestunts/gamegui.cpp:1175 trackedit/tegui.cpp:288
 #, c-format
 msgid "File %s already exists. Overwrite?"
 msgstr "Arquivo %s já existe. Sobrescrever?"
 
-#: ultimatestunts/gamegui.cpp:1246
+#: ultimatestunts/gamegui.cpp:1247
 msgid "Connecting to the server failed"
 msgstr "Conexão com o servidor falhou"
 
-#: ultimatestunts/gamegui.cpp:1331
+#: ultimatestunts/gamegui.cpp:1332
 #, c-format
 msgid "Player %s was refused"
 msgstr "Jogador %s foi recusado"
@@ -360,7 +360,8 @@ msgstr "Esperando por processos clientes"
 msgid "OK"
 msgstr "OK"
 
-#: graphics/colorselect.cpp:197
+#: graphics/colorselect.cpp:197 graphics/fileselect.cpp:240
+#: graphics/listbox.cpp:166
 msgid "Cancel"
 msgstr "Cancelar"
 
@@ -371,6 +372,43 @@ msgstr "Sim"
 #: graphics/messagebox.cpp:196
 msgid "No"
 msgstr "Não"
+
+#: graphics/gui.cpp:169
+msgid "System's default language"
+msgstr ""
+
+#: graphics/gui.cpp:185
+msgid "Language:"
+msgstr ""
+
+#: graphics/gui.cpp:196
+msgid "Full screen mode?"
+msgstr ""
+
+#: graphics/gui.cpp:203
+msgid "Enter window width:"
+msgstr ""
+
+#: graphics/gui.cpp:205
+msgid "Enter window height:"
+msgstr ""
+
+#: graphics/gui.cpp:212
+msgid "Enter screen resolution width:"
+msgstr ""
+
+#: graphics/gui.cpp:214
+msgid "Enter screen resolution height:"
+msgstr ""
+
+#: graphics/gui.cpp:228
+msgid "Default resolution"
+msgstr ""
+
+#: graphics/gui.cpp:231
+#, fuzzy
+msgid "Select a screen resolution:"
+msgstr "Selecione um servidor:"
 
 #: shared/credits.h:5
 msgid "Programmers:"

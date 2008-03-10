@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Ultimate Stunts 0.7.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-01-13 21:25+0100\n"
+"POT-Creation-Date: 2008-03-09 15:53+0100\n"
 "PO-Revision-Date: 2008-01-20 14:11+0100\n"
 "Last-Translator: Borbola Balazs \n"
 "Language-Team: Hungarian \n"
@@ -299,28 +299,28 @@ msgstr "Néhány beállítás megváltozott. Kívánod ezeket menteni?"
 msgid "Saving failed"
 msgstr "Mentés sikertelen"
 
-#: ultimatestunts/gamegui.cpp:1097
+#: ultimatestunts/gamegui.cpp:1098
 msgid "Applying the new value failed"
 msgstr "Az új érték alkalmazása sikertelen"
 
-#: ultimatestunts/gamegui.cpp:1137
+#: ultimatestunts/gamegui.cpp:1138
 msgid "  (this race)"
 msgstr "  (ez a verseny)"
 
-#: ultimatestunts/gamegui.cpp:1160
+#: ultimatestunts/gamegui.cpp:1161
 msgid "Enter the replay filename:"
 msgstr "Írja be a visszajátszás fájlnevét:"
 
-#: ultimatestunts/gamegui.cpp:1174 trackedit/tegui.cpp:288
+#: ultimatestunts/gamegui.cpp:1175 trackedit/tegui.cpp:288
 #, c-format
 msgid "File %s already exists. Overwrite?"
 msgstr "A fájl %s már létezik. Kívánja felülírni?"
 
-#: ultimatestunts/gamegui.cpp:1246
+#: ultimatestunts/gamegui.cpp:1247
 msgid "Connecting to the server failed"
 msgstr "A kapcsolódás sikertelen"
 
-#: ultimatestunts/gamegui.cpp:1331
+#: ultimatestunts/gamegui.cpp:1332
 #, c-format
 msgid "Player %s was refused"
 msgstr "Játékos visszautasítva: %s"
@@ -361,7 +361,8 @@ msgstr "Várakozás a vendégekre"
 msgid "OK"
 msgstr "Rendben"
 
-#: graphics/colorselect.cpp:197
+#: graphics/colorselect.cpp:197 graphics/fileselect.cpp:240
+#: graphics/listbox.cpp:166
 msgid "Cancel"
 msgstr "Mégse"
 
@@ -372,6 +373,43 @@ msgstr "Igen"
 #: graphics/messagebox.cpp:196
 msgid "No"
 msgstr "Nem"
+
+#: graphics/gui.cpp:169
+msgid "System's default language"
+msgstr ""
+
+#: graphics/gui.cpp:185
+msgid "Language:"
+msgstr ""
+
+#: graphics/gui.cpp:196
+msgid "Full screen mode?"
+msgstr ""
+
+#: graphics/gui.cpp:203
+msgid "Enter window width:"
+msgstr ""
+
+#: graphics/gui.cpp:205
+msgid "Enter window height:"
+msgstr ""
+
+#: graphics/gui.cpp:212
+msgid "Enter screen resolution width:"
+msgstr ""
+
+#: graphics/gui.cpp:214
+msgid "Enter screen resolution height:"
+msgstr ""
+
+#: graphics/gui.cpp:228
+msgid "Default resolution"
+msgstr ""
+
+#: graphics/gui.cpp:231
+#, fuzzy
+msgid "Select a screen resolution:"
+msgstr "Válasszon szervert:"
 
 #: shared/credits.h:5
 msgid "Programmers:"

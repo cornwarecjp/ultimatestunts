@@ -53,7 +53,11 @@ protected:
 	void enter2DMode();
 	void leave2DMode();
 
+	//Meta-function; changes appearance based on metaData
+	CString showSettingBox(const CString &field, const CString &deflt, const CString &metaData, bool *cancelled=NULL);
+
 	CString showInputBox(const CString &title, const CString &deflt="", bool *cancelled=NULL);
+	CString showChoiceBox(const CString &title, const vector<CString> &options, const CString &deflt="", bool *cancelled=NULL);
 	bool showYNMessageBox(const CString &title, bool *cancelled=NULL);
 	void showMessageBox(const CString &title);
 	CVector showColorSelect(const CString &title, CVector deflt, bool *cancelled=NULL);

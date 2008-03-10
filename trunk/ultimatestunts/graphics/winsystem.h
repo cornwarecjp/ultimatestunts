@@ -64,6 +64,8 @@ protected:
 	bool m_Fullscreen;
 	Uint32 m_Flags;
 
+	unsigned int m_DefaultW, m_DefaultH;
+
 	int m_VisibleTiles;
 
 	SDL_Surface *m_Screen;

@@ -15,10 +15,11 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "carwheel.h"
-
 #include <cstdio>
 #include <cmath>
+
+#include "carwheel.h"
+#include "lconfig.h"
 
 CCarWheel::CCarWheel()
 {
@@ -43,6 +44,11 @@ CCarWheel::CCarWheel()
 
 	m_Mu = 1.0;
 	m_Roll = 0.0;
+
+	CString slipmodel = theMainConfig->getValue("simulation", "tire_slip_model");
+	m_SlipModel = eSquare; //default
+	if(slipmodel == "circleproportional") m_SlipModel = eCircleProportional;
+	if(slipmodel == "circlepriority") m_SlipModel = eCirclePriority;
 }
 
 CCarWheel::~CCarWheel(){
@@ -164,9 +170,53 @@ CVector CCarWheel::getGroundForce(
 	float slip_long = klong * vlong_rel;
 	float slip_lat  = klat  * vlat;
 
-	CVector Slip(slip_lat, 0.0, slip_long);
-	staticlimit(contactMu, Slip, m_SkidVolume);
-	//fprintf(stderr, "%.f; %.f; %.f; ", 1000*vlong_rel, 1000*slip_long, 1000*Slip.z);
+	CVector Slip;
+	switch(m_SlipModel)
+	{
+	case eCircleProportional:
+	{
+		Slip = CVector(slip_lat, 0.0, slip_long);
+		staticlimit(contactMu, Slip, m_SkidVolume);
+		//fprintf(stderr, "%.f; %.f; %.f; ", 1000*vlong_rel, 1000*slip_long, 1000*Slip.z);
+		break;
+	}
+	case eCirclePriority:
+	{
+		//Lateral:
+		Slip = CVector(slip_lat, 0.0, 0.0);
+		staticlimit(contactMu, Slip, m_SkidVolume);
+		slip_lat = Slip.x;
+	
+		//Longitudinal
+		//assumes slip_lat <= contactMu
+		float longMu = sqrt(contactMu*contactMu - 0.99*slip_lat*slip_lat);
+		Slip = CVector(0.0, 0.0, slip_long);
+		staticlimit(longMu, Slip, m_SkidVolume);
+		slip_long = Slip.z;
+	
+		//fprintf(stderr, "slip (lat, long) = (%f, %f)\n", slip_lat, slip_long);
+	
+		Slip = CVector(slip_lat, 0.0, slip_long);
+		break;
+	}
+	case eSquare:
+	{
+		//Lateral:
+		Slip = CVector(slip_lat, 0.0, 0.0);
+		staticlimit(contactMu, Slip, m_SkidVolume);
+		slip_lat = Slip.x;
+	
+		//Longitudinal
+		Slip = CVector(0.0, 0.0, slip_long);
+		staticlimit(contactMu, Slip, m_SkidVolume);
+		slip_long = Slip.z;
+	
+		//fprintf(stderr, "slip (lat, long) = (%f, %f)\n", slip_lat, slip_long);
+	
+		Slip = CVector(slip_lat, 0.0, slip_long);
+		break;
+	}
+	};
 
 	//Correct skid volume for velocity difference
 	// (low relative velocity = no skid sound)

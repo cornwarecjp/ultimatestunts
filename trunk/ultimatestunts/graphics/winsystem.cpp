@@ -21,6 +21,7 @@
 #include <cstdlib>
 
 #include "lconfig.h"
+#include "usmacros.h"
 
 #include "mousecursor.h"
 
@@ -53,6 +54,37 @@ CWinSystem::CWinSystem(const CString &caption)
 	SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, 5);
 	SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 16 );
 	SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
+
+	//Determine original screen size:
+	{
+		SDL_Rect **modes = SDL_ListModes(NULL, SDL_OPENGL | SDL_FULLSCREEN | SDL_ANYFORMAT);
+
+		/* Check is there are any modes available */
+		if(modes == NULL)
+		{
+			printf("    No modes available!\n");
+			exit(-1);
+		}
+		
+		/* Check if or resolution is restricted */
+		if(modes == (SDL_Rect **)-1)
+		{
+			printf("    All resolutions available\n");
+
+			m_DefaultW = 1024;
+			m_DefaultH = 768;
+		}
+		else
+		{
+			/* Print valid modes */
+			printf("    Available Modes:\n");
+			for(unsigned int i=0; modes[i] != NULL; i++)
+				printf("      %d x %d\n", modes[i]->w, modes[i]->h);
+
+			m_DefaultW = modes[0]->w;
+			m_DefaultH = modes[0]->h;
+		}
+	}
 
 	reloadConfiguration(); //sets video mode and misc. settings
 
@@ -111,24 +143,35 @@ bool CWinSystem::reloadConfiguration()
 
 	CString cnf = conf.getValue("graphics","display");
 	printf("   Display variable: \"%s\"\n", cnf.c_str());
-	unsigned int pos = cnf.inStr(':');
-	if(pos > 0 && pos < cnf.length()-1) //There is a ':' in cnf_display
+
+	//Resolution
+	newW = m_DefaultW;
+	newH = m_DefaultH;
+	int pos = cnf.inStr(':');
+	if(pos > 0) //There is a ':' in cnf_display
 	{
 		CString s = cnf.mid(pos+1, cnf.length()-pos);
 		cnf = cnf.mid(0, pos);
 		pos = s.inStr('x');
-		if(pos > 0 && pos < s.length()-1)
+		if(pos > 0) //There is a 'x' in the rest
 		{
 			newW = s.mid(0, pos).toInt();
 			newH = s.mid(pos+1, s.length()-pos).toInt();
-			newFlags = SDL_OPENGL |SDL_RESIZABLE|SDL_ANYFORMAT;
-			if(cnf == "fullscreen")
-				newFlags = SDL_OPENGL | SDL_FULLSCREEN | SDL_ANYFORMAT;
 
 			//TODO: support bpp setting
 		}
 	}
 
+	//Flags
+#ifdef WINDOWRESIZE
+	newFlags = SDL_OPENGL | SDL_RESIZABLE | SDL_ANYFORMAT;
+#else
+	newFlags = SDL_OPENGL | SDL_ANYFORMAT;
+#endif
+	if(cnf == "fullscreen")
+		newFlags = SDL_OPENGL | SDL_FULLSCREEN | SDL_ANYFORMAT;
+
+	//Set video mode (if changed)
 	if( (newW != m_W) || (newH != m_H) || (newFlags != m_Flags) )
 	{
 		printf("   Setting resolution to %dx%d:%d...\n", newW, newH, m_BPP);

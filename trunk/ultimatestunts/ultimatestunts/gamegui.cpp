@@ -1086,8 +1086,9 @@ CString CGameGUI::viewOptionsMenu()
 
 	CString option = theMainConfig->getFieldsInSection(m_SelectedOptionsSection)[menu->m_Selected];
 	CString oldValue = theMainConfig->getValue(m_SelectedOptionsSection, option);
+	CString metaData = theMainConfig->getMetaData(m_SelectedOptionsSection, option);
 	bool cancelled = false;
-	CString newValue = showInputBox(option, oldValue, &cancelled);
+	CString newValue = showSettingBox(option, oldValue, metaData, &cancelled);
 	if(!cancelled)
 	{
 		theMainConfig->setValue(m_SelectedOptionsSection, option, newValue);

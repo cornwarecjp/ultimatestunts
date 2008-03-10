@@ -67,6 +67,13 @@ public:
 	CVector m_NeutralPos; //in car coordinates
 	float m_Mu; //static friction limit on asphalt
 	float m_Roll; //roll friction coefficient on asphalt
+
+	//How are longitudinal and lateral forces combined:
+	enum {
+		eCircleProportional, //proportional to stiffness*velocity vector components
+		eCirclePriority,     //place full priority on lateral forces
+		eSquare              //traction square instead of circle (independent forces)
+	} m_SlipModel;
 };
 
 #endif

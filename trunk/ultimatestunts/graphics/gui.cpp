@@ -18,8 +18,14 @@
 #include <cstdio>
 #include <GL/gl.h>
 
+#include "SDL.h"
+
+#include <libintl.h>
+#define _(String) gettext (String)
+
 #include "gui.h"
 #include "inputbox.h"
+#include "listbox.h"
 #include "messagebox.h"
 #include "colorselect.h"
 #include "fileselect.h"
@@ -126,6 +132,172 @@ int CGUI::onRedraw()
 int CGUI::onIdle()
 {
 	return m_ChildWidget->onIdle();
+}
+
+CString CGUI::showSettingBox(const CString &field, const CString &deflt, const CString &metaData, bool *cancelled)
+{
+	CString title;
+	CString options;
+
+	int pos = metaData.inStr('|');
+	if(pos < 0)
+	{
+		title = metaData;
+	}
+	else
+	{
+		title = metaData.mid(0, pos);
+		options = metaData.mid(pos+1);
+	}
+
+	CString options_case = options;
+	options.toUpper();
+
+	//Default title = field name
+	if(title == "") title = field;
+
+	if(options.inStr("YESNO") >= 0)
+	{
+		bool ret = showYNMessageBox(title, cancelled);
+		if(ret) return "true";
+		return "false";
+	}
+
+	if(options.inStr("LANGUAGE") >= 0)
+	{
+		vector<CString> namelist, codelist;
+		codelist.push_back("system"); namelist.push_back(_("System's default language"));
+		codelist.push_back("de_DE");  namelist.push_back("Deutsch");
+		codelist.push_back("en");     namelist.push_back("English");
+		codelist.push_back("fr_FR");  namelist.push_back("Français");
+		codelist.push_back("hu_HU");  namelist.push_back("Magyar");
+		codelist.push_back("nl_NL");  namelist.push_back("Nederlands");
+		codelist.push_back("pt_BR");  namelist.push_back("Português Brasileiro");
+
+		CString defltname = deflt;
+		for(unsigned int i=0; i < codelist.size(); i++)
+			if(codelist[i] == deflt)
+			{
+				defltname = namelist[i];
+				break;
+			}
+
+		CString ret = showChoiceBox(_("Language:"), namelist, defltname, cancelled);
+
+		for(unsigned int i=0; i < codelist.size(); i++)
+			if(namelist[i] == ret)
+				return codelist[i];
+
+		return ret;
+	}
+
+	if(options.inStr("DISPLAY") >= 0)
+	{
+		bool fullscreen = showYNMessageBox(_("Full screen mode?"), cancelled);
+		if(cancelled != NULL && *cancelled) return deflt;
+
+		SDL_Rect **modes = SDL_ListModes(NULL, SDL_OPENGL | SDL_FULLSCREEN | SDL_ANYFORMAT);
+
+		if(!fullscreen)
+		{
+			CString w = showInputBox(_("Enter window width:"), theWinSystem->getWidth(), cancelled);
+			if(cancelled != NULL && *cancelled) return deflt;
+			CString h = showInputBox(_("Enter window height:"), theWinSystem->getHeight(), cancelled);
+			if(cancelled != NULL && *cancelled) return deflt;
+			return CString("window:") + w + "x" + h;
+		}
+
+		if(modes == NULL || modes == (SDL_Rect **)-1)
+		{
+			CString w = showInputBox(_("Enter screen resolution width:"), theWinSystem->getWidth(), cancelled);
+			if(cancelled != NULL && *cancelled) return deflt;
+			CString h = showInputBox(_("Enter screen resolution height:"), theWinSystem->getHeight(), cancelled);
+			if(cancelled != NULL && *cancelled) return deflt;
+			return CString("fullscreen:") + w + "x" + h;
+		}
+
+		//List fullscreen modes:
+		vector<CString> list;
+
+		for(unsigned int i=0; modes[i] != NULL; i++)
+		{
+			CString modename;
+			modename.format("%dx%d", 80, modes[i]->w, modes[i]->h);
+			list.push_back(modename);
+		}
+		list.push_back(_("Default resolution"));
+
+		CString defltmode; defltmode.format("%dx%d", 80, theWinSystem->getWidth(), theWinSystem->getHeight());
+		CString ret = showChoiceBox(_("Select a screen resolution:"), list, defltmode, cancelled);
+
+		if(ret == list.back()) return "fullscreen";
+
+		return CString("fullscreen:") + ret;
+	}
+
+	if(options.inStr("SWITCH") >= 0)
+	{
+		//Read possible options from options string
+		vector<CString> list;
+
+		int pos = options.inStr("SWITCH");
+		CString liststring = options_case.mid(pos+6);
+		pos = liststring.inStr(':');
+		if(pos >= 0)
+		{
+			liststring = liststring.mid(pos+1);
+
+			while(true)
+			{
+				pos = liststring.inStr(';');
+				if(pos >= 0)
+				{
+					list.push_back(liststring.mid(0, pos));
+					liststring = liststring.mid(pos+1);
+				}
+				else
+				{
+					list.push_back(liststring);
+					break;
+				}
+			}
+		}
+
+		return showChoiceBox(title, list, deflt, cancelled);
+	}
+
+	//Fall-back: a simple input box
+	return showInputBox(title, deflt, cancelled);
+}
+
+CString CGUI::showChoiceBox(const CString &title, const vector<CString> &options, const CString &deflt, bool *cancelled)
+{
+	CListBox *listbox = new CListBox;
+	listbox->setTitle(title);
+	listbox->setOptions(options);
+
+	//Set default
+	for(unsigned int i=0; i < options.size(); i++)
+		if(options[i] == deflt)
+		{
+			listbox->setSelected(i);
+			break;
+		}
+
+	listbox->m_Wrel = 0.5;
+	listbox->m_Hrel = 0.5;
+	listbox->m_Xrel = 0.25;
+	listbox->m_Yrel = 0.25;
+	m_ChildWidget->m_Widgets.push_back(listbox);
+	m_WinSys->runLoop(this);
+	CString ret = options[listbox->getSelected()];
+	if(cancelled != NULL)
+		*cancelled = listbox->m_Cancelled;
+
+	m_ChildWidget->m_Widgets.resize(m_ChildWidget->m_Widgets.size()-1); //removes messagebox
+	delete listbox;
+
+	return ret;
 }
 
 CString CGUI::showInputBox(const CString &title, const CString &deflt, bool *cancelled)

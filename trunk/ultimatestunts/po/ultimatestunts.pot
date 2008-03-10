@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-01-13 21:25+0100\n"
+"POT-Creation-Date: 2008-03-09 15:53+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -297,28 +297,28 @@ msgstr ""
 msgid "Saving failed"
 msgstr ""
 
-#: ultimatestunts/gamegui.cpp:1097
+#: ultimatestunts/gamegui.cpp:1098
 msgid "Applying the new value failed"
 msgstr ""
 
-#: ultimatestunts/gamegui.cpp:1137
+#: ultimatestunts/gamegui.cpp:1138
 msgid "  (this race)"
 msgstr ""
 
-#: ultimatestunts/gamegui.cpp:1160
+#: ultimatestunts/gamegui.cpp:1161
 msgid "Enter the replay filename:"
 msgstr ""
 
-#: ultimatestunts/gamegui.cpp:1174 trackedit/tegui.cpp:288
+#: ultimatestunts/gamegui.cpp:1175 trackedit/tegui.cpp:288
 #, c-format
 msgid "File %s already exists. Overwrite?"
 msgstr ""
 
-#: ultimatestunts/gamegui.cpp:1246
+#: ultimatestunts/gamegui.cpp:1247
 msgid "Connecting to the server failed"
 msgstr ""
 
-#: ultimatestunts/gamegui.cpp:1331
+#: ultimatestunts/gamegui.cpp:1332
 #, c-format
 msgid "Player %s was refused"
 msgstr ""
@@ -360,7 +360,8 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: graphics/colorselect.cpp:197
+#: graphics/colorselect.cpp:197 graphics/fileselect.cpp:240
+#: graphics/listbox.cpp:166
 msgid "Cancel"
 msgstr ""
 
@@ -370,6 +371,42 @@ msgstr ""
 
 #: graphics/messagebox.cpp:196
 msgid "No"
+msgstr ""
+
+#: graphics/gui.cpp:169
+msgid "System's default language"
+msgstr ""
+
+#: graphics/gui.cpp:185
+msgid "Language:"
+msgstr ""
+
+#: graphics/gui.cpp:196
+msgid "Full screen mode?"
+msgstr ""
+
+#: graphics/gui.cpp:203
+msgid "Enter window width:"
+msgstr ""
+
+#: graphics/gui.cpp:205
+msgid "Enter window height:"
+msgstr ""
+
+#: graphics/gui.cpp:212
+msgid "Enter screen resolution width:"
+msgstr ""
+
+#: graphics/gui.cpp:214
+msgid "Enter screen resolution height:"
+msgstr ""
+
+#: graphics/gui.cpp:228
+msgid "Default resolution"
+msgstr ""
+
+#: graphics/gui.cpp:231
+msgid "Select a screen resolution:"
 msgstr ""
 
 #: shared/credits.h:5

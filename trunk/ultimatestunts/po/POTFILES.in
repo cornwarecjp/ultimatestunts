@@ -4,7 +4,10 @@ ultimatestunts/gamegui.cpp
 ultimatestunts/uscore.cpp
 stuntsserver/gamecorethread.cpp
 graphics/colorselect.cpp
+graphics/fileselect.cpp
 graphics/messagebox.cpp
+graphics/listbox.cpp
+graphics/gui.cpp
 shared/credits.h
 shared/hello.cpp
 shared/usmisc.cpp
