@@ -248,14 +248,24 @@ bool CGraphicWorld::loadWorld()
 	unloadAll(CDataObject::eTileModel);
 	for(unsigned int i=0; i<m_World->getNumObjects(CDataObject::eTileModel); i++)
 	{
+		//Modify the texture subset:
 		CString texture_indices = m_World->getTileModel(i)->getSubset();
-		CParamList plist = m_World->getTileModel(i)->getParamList();
+		texture_indices = CTrack::translateTextureIndices(texture_indices, trackTextures);
 
+		CParamList plist = m_World->getTileModel(i)->getParamList();
 		for(unsigned int j=0; j < plist.size(); j++)
 			if(plist[j].name == "subset")
-				plist[j].value = CTrack::translateTextureIndices(plist[j].value, trackTextures);
+			{
+				plist.erase(plist.begin() + j);
+				break;
+			}
+		SParameter p;
+		p.name = "subset";
+		p.value = texture_indices;
+		plist.push_back(p);
 
-		loadObject(m_World->getTileModel(i)->getFilename(), plist, CDataObject::eTileModel);
+		//Load as GLB file with modified subset
+		loadObject(m_World->getTileModel(i)->getGLBFilename(), plist, CDataObject::eTileModel);
 	}
 
 	printf("  Loading background and environment map:\n");

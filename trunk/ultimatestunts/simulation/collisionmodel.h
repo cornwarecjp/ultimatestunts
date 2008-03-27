@@ -36,6 +36,8 @@ public:
 	virtual bool load(const CString &filename, const CParamList &list);
 
 	CString getSubset() const;
+	CString getGLBFilename() const;
+	CString getConfFilename() const;
 
 	//Bounded volume data:
 	float m_BSphere_r; //Bounding sphere
@@ -45,21 +47,15 @@ public:
 	vector<CCollisionFace> m_Faces;
 
 protected:
-	enum ePrimitiveType {
-		None,
-		Triangles,
-		Quads,
-		Trianglestrip,
-		Quadstrip,
-		Polygon
-	};
-
+	CString m_ConfFilename;
+	CString m_GLBFilename;
 	CString m_Subset;
 
 	void determineOBVs();
 	void determinePlaneEquations();
 
 	bool loadGLB(const CString &filename, const CParamList &list);
+	bool loadConf(const CString &filename, const CParamList &list);
 };
 
 #endif

@@ -19,6 +19,8 @@
 #include <cmath>
 #include "collisionmodel.h"
 #include "datafile.h"
+
+#include "lconfig.h"
 #include "glbfile.h"
 
 CCollisionModel::CCollisionModel(CDataManager *manager) : CDataObject(manager, CDataObject::eCollisionModel)
@@ -32,11 +34,50 @@ CString CCollisionModel::getSubset() const
 	return m_Subset;
 }
 
+CString CCollisionModel::getGLBFilename() const
+{
+	return m_GLBFilename;
+}
+
+CString CCollisionModel::getConfFilename() const
+{
+	return m_ConfFilename;
+}
+
 bool CCollisionModel::load(const CString &filename, const CParamList &list)
 {
 	CDataObject::load(filename, list);
 
-	return loadGLB(filename, list);
+	if(filename.mid(filename.length()-4) == ".glb")
+	{
+		m_Subset = m_ParamList.getValue("subset", "");
+		m_GLBFilename = filename;
+		m_ConfFilename = "";
+		return loadGLB(filename, list);
+	}
+
+	//Default for other extensions: .conf loader
+	m_ConfFilename = filename;
+	return loadConf(filename, list);
+}
+
+bool CCollisionModel::loadConf(const CString &filename, const CParamList &list)
+{
+	CDataFile df(filename);
+	CLConfig file(df.useExtern());
+
+	m_GLBFilename = file.getValue("model", "glbfile");
+	if(m_GLBFilename == "")
+	{
+		printf("Error: conf file \"%s\" does not contain a model\\glbfile value\n",
+			filename.c_str());
+		return false;
+	}
+
+	CString textures = file.getValue("model", "textures");
+	m_Subset = m_DataManager->loadFilesFromString(CDataObject::eMaterial, textures);
+
+	return loadGLB(m_GLBFilename, list);
 }
 
 bool CCollisionModel::loadGLB(const CString &filename, const CParamList &list)
@@ -44,7 +85,6 @@ bool CCollisionModel::loadGLB(const CString &filename, const CParamList &list)
 	CGLBFile f;
 	if(!f.load(filename)) return false;
 
-	m_Subset = m_ParamList.getValue("subset", "");
 	vector<CDataObject *> matarray;
 	if(m_Subset != "")
 		matarray = m_DataManager->getSubset(CDataObject::eMaterial, m_Subset);

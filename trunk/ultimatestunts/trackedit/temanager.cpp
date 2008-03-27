@@ -50,59 +50,7 @@ CDataObject *CTEManager::createObject(const CString &filename, const CParamList 
 
 CString CTEManager::getTextureSubset(const CString &textureString)
 {
-	CString theString = textureString;
-	theString.Trim();
-
-	//printf("theString = \"%s\"\n", theString.c_str());
-
-	CString ret;
-
-	while(theString != "")
-	{
-		CString thisTexture;
-		int semicol = theString.inStr(';');
-		if(semicol < 0)
-		{
-			thisTexture = theString;
-			theString = "";
-		}
-		else
-		{
-			thisTexture = theString.mid(0, semicol);
-			theString   = theString.mid(semicol+1);
-		}
-
-		thisTexture.Trim();
-
-		//printf("thisTexture = \"%s\"\n", thisTexture.c_str());
-
-		CString texfile;
-		CParamList plist;
-		int space = thisTexture.inStr(' ');
-		if(space < 0)
-		{
-			texfile = thisTexture;
-		}
-		else
-		{
-			texfile = thisTexture.mid(0, space);
-			thisTexture = thisTexture.mid(space+1);
-
-			//Texture parameters
-			plist = CParamList(thisTexture);
-		}
-
-		//printf("texfile = \"%s\"\n", texfile.c_str());
-
-		int texID = loadObject(texfile, plist, CDataObject::eMaterial);
-
-		if(ret == "")
-			{ret = CString(texID);}
-		else
-			{ret += CString(" ") + texID;}
-	}
-
-	return ret;
+	return loadFilesFromString(CDataObject::eMaterial, textureString);
 }
 
 void CTEManager::removeUnusedTextures()

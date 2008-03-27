@@ -77,7 +77,9 @@ commands on the terminal:
 The OpenAL framework provided by Apple on OS X 10.4 is too old. Once 
 again maybe 10.5 users will have a more recent one - but anyway
 Ultimate Stunts's build system was not patched for mac frameworks so
-building the library Unix style is easiest.
+building the library Unix style is easiest. <b>This part is currently a
+little mess, and we're not even building with .ogg support (which
+means no music) so this will really need to be improved.</b>
 
 <ul>
 	<li>Checkout OpenAL SVN (or probably source code of version 1.1 will do 
@@ -92,15 +94,34 @@ building the library Unix style is easiest.
 		<li>select target openal.dylib and build style "deployment"</li>
 		<li>build</li>
 		<li>find /OpenAL-MacOSX/build/Deployment/openal.dylib and copy it to 
-		/usr/local/lib
+		/usr/local/lib, renaming it to libopenal.dylib
 		<pre>
-    % sudo cp ./OpenAL-MacOSX/build/Deployment/openal.dylib /usr/local/lib
+            % sudo cp ./OpenAL-MacOSX/build/Deployment/openal.dylib /usr/local/lib/libopenal.dylib
+            % sudo install_name_tool -id /usr/local/lib/libopenal.dylib /usr/local/lib/libopenal.dylib
 		</pre></li>
 	</ul></li>
 	<li>copy headers in /OpenAL-MacOSXbuild/include/AL to /usr/local/include/AL
 	<pre>
     % sudo cp -r ./include/AL/  /usr/local/include/AL
 	</pre></li>
+	
+	
+    <li>create <i>openal.pc</i> in /usr/local/lib/pkgconfig 
+<pre>
+prefix=/usr/local
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: OpenAL
+Description: OpenAL blah blah blah not an official .pc file
+Requires:
+Version: 1.1.0
+Libs: -L${libdir} -lopenal
+Cflags: -I${includedir}
+<pre>
+
+	</li>
 	<li>build alut:
 	<pre>
     % cd /openal/alut

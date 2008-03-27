@@ -33,6 +33,44 @@
 #include "filecontrol.h"
 #include "cfile.h"
 
+#ifdef __APPLE__
+// dynamic data path location on OS X
+
+#include <CoreFoundation/CoreFoundation.h>
+
+bool setPathIfInBundle(CString& returnpath)
+{
+	char path[1024];
+
+	CFBundleRef mainBundle = CFBundleGetMainBundle();
+	assert(mainBundle);
+
+	CFURLRef mainBundleURL = CFBundleCopyBundleURL(mainBundle);
+	assert(mainBundleURL);
+
+	CFStringRef cfStringRef =
+		CFURLCopyFileSystemPath(mainBundleURL, kCFURLPOSIXPathStyle);
+	assert(cfStringRef);
+
+	CFStringGetCString(cfStringRef, path, 1024, kCFStringEncodingASCII);
+
+	CFRelease(mainBundleURL);
+	CFRelease(cfStringRef);
+
+	CString contents = CString(path) + "/Contents/Resources";
+	if(contents.find(".app") != std::string::npos)
+	{
+		// executable is inside an app bundle, use app bundle-relative paths
+		returnpath = contents;
+		return true;
+	}
+	else
+	{
+		// executable is installed Unix-style, use default paths
+		return false;
+	}
+}
+#endif
 
 bool copyConfiguration(CString &conffile)
 {
@@ -46,6 +84,13 @@ bool copyConfiguration(CString &conffile)
 	locations.push_back("/etc/ultimatestunts.conf");
 	locations.push_back("/usr/local/etc/ultimatestunts.conf");
 	locations.push_back("./ultimatestunts.conf");
+
+#if defined(__APPLE__)
+	// find config path dynamically
+	CString osx_path;
+	if(setPathIfInBundle(osx_path))
+		locations.push_back(osx_path + "/etc/ultimatestunts.conf");
+#endif
 
 	CString sourceConffile;
 	for(unsigned int i=0; i < locations.size(); i++)
@@ -209,9 +254,20 @@ void update_shared_configuration()
 		SaveDir = "./saveddata/";
 	}
 
-	//find the absolute path
-	//very long paths might cause segfaults
-	CString absdir = getAbsDir(DataDir);
+#ifdef __APPLE__
+
+	if(DataDir == "@appbundle/")
+	{
+		// find data path dynamically
+		CString osx_path;
+		if(setPathIfInBundle(osx_path))
+		{
+			DataDir = osx_path + "/data/";
+		}
+	}
+
+#endif
+
 	printf("DataDir is \"%s\"\n", DataDir.c_str());
 	printf("SaveDir is \"%s\"\n", SaveDir.c_str());
 	if(fctl == NULL) fctl = new CFileControl; //TODO: find a way to delete this object
@@ -258,6 +314,10 @@ void update_shared_configuration()
 
 		setenv("LANGUAGE", conf_lang.c_str(), 1);
 	}
+
+	//find the absolute path
+	//very long paths might cause segfaults
+	CString absdir = getAbsDir(DataDir);
 
 	//select the Ultimate Stunts domain
 	//We can only use ISO 8859-1 because of the font texture

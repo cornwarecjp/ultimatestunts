@@ -46,7 +46,13 @@ public:
 
 	vector<CDataObject *> getObjectArray(CDataObject::eDataType type);
 	vector<const CDataObject *> getObjectArray(CDataObject::eDataType type) const;
+
+	//Get array of objects from string containing integer IDs
 	vector<CDataObject *> getSubset(CDataObject::eDataType type, const CString &subset);
+
+	//Input: string with filenames and parameters
+	//Output: string with integers that can be given to getSubset
+	CString loadFilesFromString(CDataObject::eDataType type, const CString &files);
 
 	//This invalidates all IDs >= i:
 	virtual void unloadObject(unsigned int type, unsigned int i);

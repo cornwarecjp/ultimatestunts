@@ -164,6 +164,63 @@ vector<CDataObject *> CDataManager::getSubset(CDataObject::eDataType type, const
 	return ret;
 }
 
+CString CDataManager::loadFilesFromString(CDataObject::eDataType type, const CString &files)
+{
+	CString theString = files;
+	theString.Trim();
+
+	//printf("theString = \"%s\"\n", theString.c_str());
+
+	CString ret;
+
+	while(theString != "")
+	{
+		CString thisFile;
+		int semicol = theString.inStr(';');
+		if(semicol < 0)
+		{
+			thisFile = theString;
+			theString = "";
+		}
+		else
+		{
+			thisFile = theString.mid(0, semicol);
+			theString   = theString.mid(semicol+1);
+		}
+
+		thisFile.Trim();
+
+		//printf("thisFile = \"%s\"\n", thisFile.c_str());
+
+		CString filename;
+		CParamList plist;
+		int space = thisFile.inStr(' ');
+		if(space < 0)
+		{
+			filename = thisFile;
+		}
+		else
+		{
+			filename = thisFile.mid(0, space);
+			thisFile = thisFile.mid(space+1);
+
+			//Texture parameters
+			plist = CParamList(thisFile);
+		}
+
+		//printf("filename = \"%s\"\n", filename.c_str());
+
+		int ID = loadObject(filename, plist, type);
+
+		if(ret == "")
+			{ret = CString(ID);}
+		else
+			{ret += CString(" ") + ID;}
+	}
+
+	return ret;
+}
+
 CDataObject *CDataManager::createObject(const CString &filename, const CParamList &plist, CDataObject::eDataType type)
 {
 	if(type == CDataObject::eNone)

@@ -11,26 +11,6 @@ heigth
 #This track file is created manually
 
 BEGIN
-textures/grass2.jpg mu=0.8 roll=20
-textures/road2.jpg mu=1 roll=1
-textures/concrete1.jpg
-textures/startfinish.jpg
-textures/splits1.jpg mu=1 roll=1
-textures/water1.jpg scale=2
-textures/sand1.jpg mu=0.8 roll=40
-textures/road1.jpg mu=1 roll=1
-textures/bricks2.jpg scale=2
-textures/cornerblocks.jpg mu=0.9 roll=1
-textures/bricks1.jpg scale=4
-textures/stonebricks.jpg
-textures/metal.jpg mu=0.8 roll=0.1
-textures/wood.jpg
-textures/pine.png
-textures/wall1.jpg
-textures/door1.jpg
-textures/window1.jpg
-textures/fence.png scale=16
-textures/glass.jpg
 END
 
 BEGIN
@@ -47,41 +27,41 @@ envcol = 1.0,0.9,0.8
 END
 
 BEGIN
-tiles/empty.glb 0
-tiles/horiz.glb 0
-tiles/corner.glb 0 1
-tiles/roadhoriz.glb 0 1
-tiles/startfinish.glb:s 0 1 2 3
-tiles/startfinish.glb:f 0 1 2 3
-tiles/diag1.glb 0
-tiles/diag2.glb 0
-tiles/diag3.glb 0
-tiles/diag4.glb 0
-tiles/diag5.glb 0
-tiles/roaddiag.glb 0 1
-tiles/splitsleft1.glb 0 1 4
-tiles/splitsright1.glb 0 1 4
-tiles/water1.glb 6 5
-tiles/wateredge1.glb 0 5
-tiles/wateredge2.glb 0 5 6
-tiles/wateredge3.glb 0 5
-tiles/tunnelin1.glb 0 7 8 2
-tiles/tunnelhoriz.glb 7 8 2
-tiles/corner2x2_inleft.glb 0 1 9
-tiles/corner2x2_inright.glb 0 1 9
-tiles/corner2x2_mid.glb 0 1 9
-tiles/bridgeroad2.glb 7 10
-tiles/jump2.glb 7 2
-tiles/wall.glb 0 11
-tiles/wallcorner.glb 0 11
-tiles/wallgate.glb 0 1 11 12
-tiles/pinetree.glb 0 13 14
-tiles/hotel.glb 0 15 16 17 18
-tiles/church.glb 0 11 10 13 16 19
-tiles/cren.glb 11
-tiles/crencorner.glb 11
-tiles/pillars.glb 2
-tiles/ship.glb 0
+tiles/empty.conf
+tiles/horiz.conf
+tiles/corner.conf
+tiles/roadhoriz.conf
+tiles/start.conf:s
+tiles/finish.conf:f
+tiles/diag1.conf
+tiles/diag2.conf
+tiles/diag3.conf
+tiles/diag4.conf
+tiles/diag5.conf
+tiles/roaddiag.conf
+tiles/splitsleft1.conf
+tiles/splitsright1.conf
+tiles/water1.conf
+tiles/wateredge1.conf
+tiles/wateredge2.conf
+tiles/wateredge3.conf
+tiles/tunnelin1.conf
+tiles/tunnelhoriz.conf
+tiles/corner2x2_inleft.conf
+tiles/corner2x2_inright.conf
+tiles/corner2x2_mid.conf
+tiles/bridgeroad2.conf
+tiles/jump2.conf
+tiles/wall.conf
+tiles/wallcorner.conf
+tiles/wallgate.conf
+tiles/pinetree.conf
+tiles/hotel.conf
+tiles/church.conf
+tiles/cren.conf
+tiles/crencorner.conf
+tiles/pillars.conf
+tiles/ship.conf
 END
 
 #tile_id/rotation/heigth
