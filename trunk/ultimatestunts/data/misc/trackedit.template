@@ -9,35 +9,6 @@ width
 heigth
 
 BEGIN
-textures/grass2.jpg mu=0.9 roll=20
-textures/water1.jpg scale=2
-textures/sand1.jpg mu=0.8 roll=40
-textures/road2.jpg mu=1 roll=1
-textures/concrete1.jpg
-textures/startfinish.jpg
-textures/cornerblocks.jpg mu=0.9 roll=1
-textures/road1.jpg mu=1 roll=1
-textures/bricks1.jpg scale=4
-textures/metal1.png scale=8 mu=0.9 roll=1
-textures/splits1.jpg mu=1 roll=1
-textures/wood.jpg
-textures/pine.png
-textures/metal.jpg
-textures/net.png scale=16
-textures/tenniscourt.jpg mu=0.9 roll=20
-textures/wall1.jpg
-textures/farmdoor1.jpg
-textures/tulips.png
-textures/fence.png scale=16
-textures/window1.jpg
-textures/door1.jpg
-textures/stonebricks.jpg
-textures/bricks2.jpg scale=2
-textures/joes.jpg
-textures/dirtroad1.jpg mu=0.9 roll=10
-textures/iceroad1.jpg mu=0.7 roll=0.5
-textures/splits1-dirt.jpg mu=0.9 roll=10
-textures/splits1-ice.jpg mu=0.7 roll=0.5
 END
 
 BEGIN
@@ -54,93 +25,93 @@ envcol = 1,1,1
 END
 
 BEGIN
-tiles/empty.glb 0
-tiles/horiz.glb 0
-tiles/water1.glb 2 1
-tiles/wateredge1.glb 0 1 2
-tiles/wateredge2.glb 0 1 2
-tiles/wateredge3.glb 0 1 2
-tiles/diag1.glb 0
-tiles/diag2.glb 0
-tiles/diag3.glb 0
-tiles/diag4.glb 0
-tiles/diag5.glb 0
-tiles/startfinish.glb:sf 0 3 4 5
-tiles/roadhoriz.glb 0 3
-tiles/roaddiag.glb 0 3
-tiles/corner.glb 0 3
-tiles/corner2x2_inleft.glb 0 3 6
-tiles/corner2x2_inright.glb 0 3 6
-tiles/corner2x2_mid.glb 0 3 6
-tiles/pillars.glb 4
-tiles/bridgeroad2.glb 7 8
-tiles/jump1.glb 0 7 4
-tiles/bankedroad_in1.glb 0 7 8
-tiles/bankedroad_in2.glb 0 7 8
-tiles/bankedroad1.glb 0 7 8
-tiles/bankedcorner_inleft.glb 0 7 8
-tiles/bankedcorner_inright.glb 0 7 8
-tiles/bankedcorner_mid.glb 0 7 8
-tiles/looping-bottom.glb 0 7 4
-tiles/looping-mid.glb 7
-tiles/looping-top.glb 7
-tiles/tunnels.glb 0 8 4 7
-tiles/pipe1.glb 0 7 8 9
-tiles/pipein1.glb 0 7 8
-tiles/splitsleft1.glb 0 3 10
-tiles/splitsright1.glb 0 3 10
-tiles/corklr.glb 0 3 9 8
-tiles/bridgehoriz1.glb 0 8
-tiles/bridgeroad1.glb 7 8
-tiles/viaduct1.glb 0 8 3 4
-tiles/bridgeroadcorner2x2_inleft.glb 7 8
-tiles/bridgeroadcorner2x2_inright.glb 7 8
-tiles/bridgeroadcorner2x2_mid.glb 7 8
-tiles/hroade.glb 0 3 8
-tiles/hroad.glb 0 3 8 11 12
-tiles/slalom.glb 0 3 4
-tiles/palmtree.glb 0 11
-tiles/pinetree.glb 0 11 12
-tiles/tenniscourt.glb 0 13 14 15
-tiles/farmhouse.glb 0 16 17 8 20 18 19
-tiles/hotel.glb 0 16 21 20 19
-tiles/mill.glb 0 22 8 11 14 21
-tiles/joes.glb 0 23 21 20 11 24
-tiles/bridgediag1.glb 0 8
-tiles/crossroad1.glb 0 3
-tiles/roadhoriz.glb 0 25
-tiles/roaddiag.glb 0 25
-tiles/corner.glb 0 25
-tiles/corner2x2_inleft.glb 0 25 6
-tiles/corner2x2_inright.glb 0 25 6
-tiles/corner2x2_mid.glb 0 25 6
-tiles/roadhoriz-reflect.glb 0 26
-tiles/roaddiag-reflect.glb 0 26
-tiles/corner-reflect.glb 0 26
-tiles/corner2x2_inleft-reflect.glb 0 26 6
-tiles/corner2x2_inright-reflect.glb 0 26 6
-tiles/corner2x2_mid-reflect.glb 0 26 6
-tiles/crossroad1.glb 0 25
-tiles/crossroad1-reflect.glb 0 26
-tiles/startfinish.glb:sf 0 25 4 5
-tiles/startfinish-reflect.glb:sf 0 26 4 5
-tiles/splitsleft1.glb 0 25 27
-tiles/splitsright1.glb 0 25 27
-tiles/splitsleft1-reflect.glb 0 26 28
-tiles/splitsright1-reflect.glb 0 26 28
-tiles/crkbridgeleft1.glb 7 8 4
-tiles/crkbridgeleft2.glb 7 8 4
-tiles/crkbridgeleft3.glb 7 8 4
-tiles/crkbridgeleft4.glb 7 8 4
-tiles/crkbridgeright1.glb 7 8 4
-tiles/crkbridgeright2.glb 7 8 4
-tiles/crkbridgeright3.glb 7 8 4
-tiles/crkbridgeright4.glb 7 8 4
-tiles/ship.glb 0
-tiles/blockedpipe1.glb 0 7 8 9
-tiles/leftrightcorner_inleft.glb 0 3
-tiles/leftrightcorner_inright.glb 0 3
-tiles/leftrightcorner_mid.glb 0 3
+tiles/empty.conf
+tiles/horiz.conf
+tiles/water1.conf
+tiles/wateredge1.conf
+tiles/wateredge2.conf
+tiles/wateredge3.conf
+tiles/diag1.conf
+tiles/diag2.conf
+tiles/diag3.conf
+tiles/diag4.conf
+tiles/diag5.conf
+tiles/startfinish.conf
+tiles/roadhoriz.conf
+tiles/roaddiag.conf
+tiles/corner.conf
+tiles/corner2x2_inleft.conf
+tiles/corner2x2_inright.conf
+tiles/corner2x2_mid.conf
+tiles/pillars.conf
+tiles/bridgeroad2.conf
+tiles/jump1.conf
+tiles/bankedroad_in1.conf
+tiles/bankedroad_in2.conf
+tiles/bankedroad1.conf
+tiles/bankedcorner_inleft.conf
+tiles/bankedcorner_inright.conf
+tiles/bankedcorner_mid.conf
+tiles/looping-bottom.conf
+tiles/looping-mid.conf
+tiles/looping-top.conf
+tiles/tunnels.conf
+tiles/pipe1.conf
+tiles/pipein1.conf
+tiles/splitsleft1.conf
+tiles/splitsright1.conf
+tiles/corklr.conf
+tiles/bridgehoriz1.conf
+tiles/bridgeroad1.conf
+tiles/viaduct1.conf
+tiles/bridgeroadcorner2x2_inleft.conf
+tiles/bridgeroadcorner2x2_inright.conf
+tiles/bridgeroadcorner2x2_mid.conf
+tiles/hroade.conf
+tiles/hroad.conf
+tiles/slalom.conf
+tiles/palmtree.conf
+tiles/pinetree.conf
+tiles/tenniscourt.conf
+tiles/farmhouse.conf
+tiles/hotel.conf
+tiles/mill.conf
+tiles/joes.conf
+tiles/bridgediag1.conf
+tiles/crossroad1.conf
+tiles/roadhoriz-dirt.conf
+tiles/roaddiag-dirt.conf
+tiles/corner-dirt.conf
+tiles/corner2x2_inleft-dirt.conf
+tiles/corner2x2_inright-dirt.conf
+tiles/corner2x2_mid-dirt.conf
+tiles/roadhoriz-ice.conf
+tiles/roaddiag-ice.conf
+tiles/corner-ice.conf
+tiles/corner2x2_inleft-ice.conf
+tiles/corner2x2_inright-ice.conf
+tiles/corner2x2_mid-ice.conf
+tiles/crossroad1-dirt.conf
+tiles/crossroad1-ice.conf
+tiles/startfinish-dirt.conf
+tiles/startfinish-ice.conf
+tiles/splitsleft1-dirt.conf
+tiles/splitsright1-dirt.conf
+tiles/splitsleft1-ice.conf
+tiles/splitsright1-ice.conf
+tiles/crkbridgeleft1.conf
+tiles/crkbridgeleft2.conf
+tiles/crkbridgeleft3.conf
+tiles/crkbridgeleft4.conf
+tiles/crkbridgeright1.conf
+tiles/crkbridgeright2.conf
+tiles/crkbridgeright3.conf
+tiles/crkbridgeright4.conf
+tiles/ship.conf
+tiles/blockedpipe1.conf
+tiles/leftrightcorner_inleft.conf
+tiles/leftrightcorner_inright.conf
+tiles/leftrightcorner_mid.conf
 END
 
 #tile_id/rotation/heigth
