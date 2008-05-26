@@ -29,11 +29,11 @@ envcol = 0.1,0.1,0.3
 END
 
 BEGIN
-tiles/empty.glb 0
-tiles/horiz.glb 0
-tiles/corner.glb 0 1
-tiles/roadhoriz.glb 0 1
-tiles/startfinish.glb:sf 0 1 2 3
+tiles/empty.conf
+tiles/horiz.conf
+tiles/corner.conf
+tiles/roadhoriz.conf
+tiles/startfinish.conf
 END
 
 #tile_id/rotation/heigth

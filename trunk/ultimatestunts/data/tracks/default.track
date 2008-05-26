@@ -31,8 +31,8 @@ tiles/empty.conf
 tiles/horiz.conf
 tiles/corner.conf
 tiles/roadhoriz.conf
-tiles/start.conf:s
-tiles/finish.conf:f
+tiles/start.conf
+tiles/finish.conf
 tiles/diag1.conf
 tiles/diag2.conf
 tiles/diag3.conf

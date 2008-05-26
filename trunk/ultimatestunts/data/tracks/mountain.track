@@ -9,30 +9,6 @@ width
 heigth
 
 BEGIN
-textures/grass2.jpg mu=0.8 roll=20
-textures/road2.jpg mu=1 roll=1
-textures/concrete1.jpg
-textures/startfinish.jpg
-textures/road1.jpg mu=1 roll=1
-textures/wall1.jpg scale=4 mu=0.9 roll=5
-textures/bricks2.jpg scale=2
-textures/splits1.jpg mu=1 roll=1
-textures/concrete2.jpg mu=0.9 roll=1
-textures/metal.jpg mu=0.8 roll=0.8
-textures/door1.jpg
-textures/window1.jpg
-textures/fence.png scale=8
-textures/wood.jpg
-textures/pine.png
-textures/bricks1.jpg
-textures/stonebricks.jpg
-textures/cornerblocks.jpg mu=0.9 roll=1
-textures/farmdoor1.jpg
-textures/tulips.png
-textures/net.png scale=16
-textures/tenniscourt.jpg mu=0.9 roll=20
-textures/metal1.png mu=0.9 roll=1
-textures/rock1.jpg
 END
 
 BEGIN
@@ -49,52 +25,52 @@ envcol = 1,1,1
 END
 
 BEGIN
-tiles/empty.glb 0
-tiles/horiz.glb 0
-tiles/corner.glb 0 1
-tiles/roadhoriz.glb 0 1
-tiles/startfinish.glb:sf 0 1 2 3
-tiles/diag2.glb 0
-tiles/roaddiag.glb 0 1
-tiles/diag1.glb 0
-tiles/jump1.glb 0 4 2
-tiles/bridgeroad2.glb 4 15
-tiles/splitsleft1.glb 0 1 7
-tiles/splitsright1.glb 0 1 7
-tiles/tunnelin1.glb 0 4 6 2
-tiles/tunnelhoriz.glb 4 6 2
-tiles/trench1.glb 0 8
-tiles/trenche.glb 0 8
-tiles/trench2.glb 0 8 9
-tiles/trench3.glb 0 8 9
-tiles/trench1c.glb 0 8 9
-tiles/trench2c.glb 0 8 9
-tiles/trench3c.glb 0 8 9
-tiles/canyone.glb 0 1 23
-tiles/canyon.glb 0 1 23
-tiles/canyoni.glb 0 1 23 4 2
-tiles/hotel.glb 0 8 10 11 12
-tiles/hroade.glb 0 4 8
-tiles/hroad.glb 0 4 8 13 14
-tiles/hroadj.glb 0 4 8 13 14
-tiles/heroad.glb 4 15
-tiles/heroade.glb 4 15
-tiles/wall.glb 0 16
-tiles/wallcorner.glb 0 16
-tiles/wallgate.glb 0 1 16 9
-tiles/corner2x2_inleft.glb 0 1 17
-tiles/corner2x2_inright.glb 0 1 17
-tiles/corner2x2_mid.glb 0 1 17
-tiles/bridgeroadcorner2x2_inleft.glb 4 15
-tiles/bridgeroadcorner2x2_inright.glb 4 15
-tiles/bridgeroadcorner2x2_mid.glb 4 15
-tiles/farmhouse.glb 0 5 18 15 11 19 12
-tiles/tenniscourt.glb 0 9 20 21
-tiles/looping-bottom.glb 0 4 2
-tiles/looping-mid.glb 4
-tiles/looping-top.glb 4
-tiles/climb.glb 4 15
-tiles/corklr.glb 0 1 22 15
+tiles/empty.conf
+tiles/horiz.conf
+tiles/corner.conf
+tiles/roadhoriz.conf
+tiles/startfinish.conf
+tiles/diag2.conf
+tiles/roaddiag.conf
+tiles/diag1.conf
+tiles/jump1.conf
+tiles/bridgeroad2.conf
+tiles/splitsleft1.conf
+tiles/splitsright1.conf
+tiles/tunnelin1.conf
+tiles/tunnelhoriz.conf
+tiles/trench1.conf
+tiles/trenche.conf
+tiles/trench2.conf
+tiles/trench3.conf
+tiles/trench1c.conf
+tiles/trench2c.conf
+tiles/trench3c.conf
+tiles/canyone.conf
+tiles/canyon.conf
+tiles/canyoni.conf
+tiles/hotel.conf
+tiles/hroade.conf
+tiles/hroad.conf
+tiles/hroadj.conf
+tiles/heroad.conf
+tiles/heroade.conf
+tiles/wall.conf
+tiles/wallcorner.conf
+tiles/wallgate.conf
+tiles/corner2x2_inleft.conf
+tiles/corner2x2_inright.conf
+tiles/corner2x2_mid.conf
+tiles/bridgeroadcorner2x2_inleft.conf
+tiles/bridgeroadcorner2x2_inright.conf
+tiles/bridgeroadcorner2x2_mid.conf
+tiles/farmhouse.conf
+tiles/tenniscourt.conf
+tiles/looping-bottom.conf
+tiles/looping-mid.conf
+tiles/looping-top.conf
+tiles/climb.conf
+tiles/corklr.conf
 END
 
 #tile_id/rotation/heigth
