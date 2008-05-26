@@ -46,9 +46,6 @@ public:
 	vector<STile> m_Track; //refer to tile model elements in the manager object
 	int m_L, m_W, m_H;
 
-	//int m_FinishRouteCounter; //same meaning as in the tile data
-	//float m_FinishTime;
-
 	//New rule data format:
 	class CCheckpoint
 	{
@@ -61,7 +58,10 @@ public:
 	class CRoute : public vector<CCheckpoint>
 	{
 	public:
+		//Point on "parent route" where this route starts (0 for primary route):
 		unsigned int startRoute, startTile;
+
+		//Point on "parent route" where this route ends (0 for primary route):
 		unsigned int finishRoute, finishTile;
 	};
 	vector<CRoute> m_Routes;

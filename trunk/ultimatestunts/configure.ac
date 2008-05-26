@@ -1,11 +1,13 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT([Ultimate Stunts], [0.7.5], [cornware-cjp@users.sourceforge.net], [ultimatestunts])
+AC_INIT([Ultimate Stunts], 0.7.5, [cornware-cjp@users.sourceforge.net], [ultimatestunts])
 AC_CONFIG_SRCDIR([ultimatestunts/main.cpp])
 AM_CONFIG_HEADER(config.h)
 AC_CANONICAL_TARGET
 
 AM_INIT_AUTOMAKE
+
+AC_USE_SYSTEM_EXTENSIONS
 
 dnl Set prefix dir explicitly if not already done by user
 if test "x$prefix" = "xNONE" ; then

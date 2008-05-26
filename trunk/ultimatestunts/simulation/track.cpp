@@ -16,6 +16,8 @@
  ***************************************************************************/
 
 #include <cstdio>
+#include <cmath>
+
 #include "track.h"
 #include "datafile.h"
 #include "world.h"
@@ -228,9 +230,9 @@ bool CTrack::load(const CString &filename, const CParamList &list)
 
 			//New route tracker:
 			CCheckpoint newPoint;
-			newPoint.x = (int)(p.x+0.1);
-			newPoint.y = (int)(p.z+0.1);
-			newPoint.z = (int)(p.y+0.1);
+			newPoint.x = (int)roundf(p.x);
+			newPoint.y = (int)roundf(p.z);
+			newPoint.z = (int)roundf(p.y);
 
 			STile &t = m_Track[newPoint.y + m_H * (newPoint.z+m_W*newPoint.x)];
 			CDataObject *tmodel = m_DataManager->getObject(CDataObject::eTileModel, t.m_Model);

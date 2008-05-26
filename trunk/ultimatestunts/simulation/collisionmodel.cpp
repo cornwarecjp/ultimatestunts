@@ -77,6 +77,10 @@ bool CCollisionModel::loadConf(const CString &filename, const CParamList &list)
 	CString textures = file.getValue("model", "textures");
 	m_Subset = m_DataManager->loadFilesFromString(CDataObject::eMaterial, textures);
 
+	//Override flags with value from conf file:
+	CString flags = file.getValue("model", "flags");
+	m_ParamList.setValue("flags", flags);
+
 	return loadGLB(m_GLBFilename, list);
 }
 

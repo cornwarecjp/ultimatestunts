@@ -96,6 +96,23 @@ CString CParamList::getValue(const CString &var, const CString &deflt) const
 	return deflt;
 }
 
+void CParamList::setValue(const CString &name, const CString &value)
+{
+	for(unsigned int i=0; i < size(); i++)
+		if ((*this)[i].name == name)
+		{
+			(*this)[i].value = value;
+			return;
+		}
+
+	SParameter p;
+	p.name = name;
+	p.value = value;
+	push_back(p);
+}
+
+
+
 CDataObject::CDataObject(CDataManager *manager, eDataType type)
 {
 	m_DataManager = manager;

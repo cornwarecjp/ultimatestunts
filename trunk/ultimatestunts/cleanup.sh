@@ -19,3 +19,4 @@ rm -rf autom4te.cache
 
 rm -f stamp*
 
+rm -f *~ */*~

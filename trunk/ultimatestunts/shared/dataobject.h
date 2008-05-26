@@ -44,6 +44,8 @@ public:
 
 	bool operator==(const CParamList &val) const;
 	CString getValue(const CString &var, const CString &deflt) const;
+
+	void setValue(const CString &name, const CString &value);
 };
 
 class CDataObject {
@@ -73,6 +75,9 @@ public:
 	CString getFilename() const {return m_Filename;}
 	const CParamList &getParamList() const {return m_ParamList;}
 	eDataType getType() const {return m_DataType;}
+
+	inline CDataManager *getManager() const
+		{return m_DataManager;}
 
 protected:
 	CDataManager *m_DataManager;

@@ -4,12 +4,13 @@
 #Purpose: choose between binaries
 #Fill in the applications below
 
+echo $PWD
 
 PATH="./ultimatestunts:./stuntsserver:./stuntsai:./stunts3dedit:./trackedit:$PATH"
 #ustuntsserver
-#ustuntstrackedit
+ustuntstrackedit
 #ustunts3dedit
-ustunts 2> debuglog.txt
+#ustunts 2> debuglog.txt
 
 echo "Program stopped. Press Enter."
 read

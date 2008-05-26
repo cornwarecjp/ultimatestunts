@@ -88,6 +88,7 @@ CATOBJEXT = @CATOBJEXT@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
+CFLAG_VISIBILITY = @CFLAG_VISIBILITY@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CXX = @CXX@
@@ -106,12 +107,16 @@ ENABLE_XMESA_FX_FALSE = @ENABLE_XMESA_FX_FALSE@
 ENABLE_XMESA_FX_TRUE = @ENABLE_XMESA_FX_TRUE@
 EXEEXT = @EXEEXT@
 GENCAT = @GENCAT@
+GETTEXT_MACRO_VERSION = @GETTEXT_MACRO_VERSION@
 GLIBC2 = @GLIBC2@
 GLIBC21 = @GLIBC21@
 GMSGFMT = @GMSGFMT@
+GMSGFMT_015 = @GMSGFMT_015@
+GREP = @GREP@
 HAVE_ASPRINTF = @HAVE_ASPRINTF@
 HAVE_POSIX_PRINTF = @HAVE_POSIX_PRINTF@
 HAVE_SNPRINTF = @HAVE_SNPRINTF@
+HAVE_VISIBILITY = @HAVE_VISIBILITY@
 HAVE_WPRINTF = @HAVE_WPRINTF@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
@@ -126,14 +131,22 @@ INTL_MACOSX_LIBS = @INTL_MACOSX_LIBS@
 LDFLAGS = @LDFLAGS@
 LIBICONV = @LIBICONV@
 LIBINTL = @LIBINTL@
+LIBMULTITHREAD = @LIBMULTITHREAD@
 LIBOBJS = @LIBOBJS@
+LIBPTH = @LIBPTH@
+LIBPTH_PREFIX = @LIBPTH_PREFIX@
 LIBS = @LIBS@
+LIBTHREAD = @LIBTHREAD@
+LTLIBC = @LTLIBC@
 LTLIBICONV = @LTLIBICONV@
 LTLIBINTL = @LTLIBINTL@
+LTLIBMULTITHREAD = @LTLIBMULTITHREAD@
 LTLIBOBJS = @LTLIBOBJS@
+LTLIBPTH = @LTLIBPTH@
+LTLIBTHREAD = @LTLIBTHREAD@
 MAKEINFO = @MAKEINFO@
-MKINSTALLDIRS = @MKINSTALLDIRS@
 MSGFMT = @MSGFMT@
+MSGFMT_015 = @MSGFMT_015@
 MSGMERGE = @MSGMERGE@
 OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
@@ -144,6 +157,7 @@ PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 POSUB = @POSUB@
+PRI_MACROS_BROKEN = @PRI_MACROS_BROKEN@
 RANLIB = @RANLIB@
 SDL_CFLAGS = @SDL_CFLAGS@
 SDL_CONFIG = @SDL_CONFIG@
@@ -154,11 +168,14 @@ STRIP = @STRIP@
 USE_INCLUDED_LIBINTL = @USE_INCLUDED_LIBINTL@
 USE_NLS = @USE_NLS@
 VERSION = @VERSION@
+WINDRES = @WINDRES@
+WOE32 = @WOE32@
+WOE32DLL = @WOE32DLL@
 XGETTEXT = @XGETTEXT@
+XGETTEXT_015 = @XGETTEXT_015@
+XGETTEXT_EXTRA_OPTIONS = @XGETTEXT_EXTRA_OPTIONS@
 ac_ct_CC = @ac_ct_CC@
 ac_ct_CXX = @ac_ct_CXX@
-ac_ct_RANLIB = @ac_ct_RANLIB@
-ac_ct_STRIP = @ac_ct_STRIP@
 am__fastdepCC_FALSE = @am__fastdepCC_FALSE@
 am__fastdepCC_TRUE = @am__fastdepCC_TRUE@
 am__fastdepCXX_FALSE = @am__fastdepCXX_FALSE@
@@ -175,6 +192,9 @@ build_cpu = @build_cpu@
 build_os = @build_os@
 build_vendor = @build_vendor@
 datadir = @datadir@
+datarootdir = @datarootdir@
+docdir = @docdir@
+dvidir = @dvidir@
 exec_prefix = @exec_prefix@
 graphlibs = @graphlibs@
 host = @host@
@@ -182,18 +202,22 @@ host_alias = @host_alias@
 host_cpu = @host_cpu@
 host_os = @host_os@
 host_vendor = @host_vendor@
+htmldir = @htmldir@
 includedir = @includedir@
 infodir = @infodir@
 install_sh = @install_sh@
 libdir = @libdir@
 libexecdir = @libexecdir@
+localedir = @localedir@
 localstatedir = @localstatedir@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
 netlibs = @netlibs@
 oldincludedir = @oldincludedir@
+pdfdir = @pdfdir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
+psdir = @psdir@
 sbindir = @sbindir@
 sdllibs = @sdllibs@
 sharedstatedir = @sharedstatedir@
@@ -234,9 +258,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  ultimatestunts/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  ultimatestunts/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign  ultimatestunts/Makefile
+	  $(AUTOMAKE) --gnu  ultimatestunts/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
