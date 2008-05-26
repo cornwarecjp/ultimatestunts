@@ -59,6 +59,7 @@ protected:
 	struct STileDescr
 	{
 		CString description;
+		CString conffile;
 		CString glbfile;
 		CString textures;
 		CString flags;

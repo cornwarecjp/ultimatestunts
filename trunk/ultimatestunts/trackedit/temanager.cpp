@@ -37,7 +37,7 @@ CDataObject *CTEManager::createObject(const CString &filename, const CParamList 
 		return new CLODTexture(this);
 
 	if(type == CDataObject::eTileModel)
-		return new CGraphObj(this, CDataObject::eTileModel);
+		return new CTETile(this);
 
 	if(type == CDataObject::eBound)
 		return new CGraphObj(this, CDataObject::eBound);

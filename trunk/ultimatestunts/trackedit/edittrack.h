@@ -35,6 +35,9 @@ public:
 
 	bool tileIsUsed(int ID) const;
 
+	void sortPillars();
+	void sortPillar(unsigned int x, unsigned int z);
+
 protected:
 	void placeItem(unsigned int offset, const CString &item);
 	void followTRKRoutes(const CTRKFile &file, CTrack::CCheckpoint start, int dir);

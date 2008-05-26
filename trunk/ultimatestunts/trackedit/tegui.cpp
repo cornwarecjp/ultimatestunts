@@ -45,6 +45,7 @@ CTEGUI::CTEGUI(CWinSystem *winsys) : CGUI(winsys)
 			CLConfig conf(dfile.useExtern());
 
 			STileDescr tile;
+			tile.conffile = "tiles/" + conffiles[i];
 			tile.description = conf.getValue("description", "text");
 			tile.glbfile     = conf.getValue("model"      , "glbfile");
 			tile.textures    = conf.getValue("model"      , "textures");
@@ -423,7 +424,8 @@ CString CTEGUI::viewLoadTileMenu()
 	CTEManager *manager = theTrackDocument->m_DataManager;
 
 	const STileDescr &td = m_TileFiles[menu->m_Selected];
-	CString newfile = td.glbfile;
+	CString newfile = td.conffile;
+	/*
 	CString texSubset = manager->getTextureSubset(td.textures);
 
 	printf("Textures: \"%s\"\n", td.textures.c_str());
@@ -437,15 +439,16 @@ CString CTEGUI::viewLoadTileMenu()
 	p.name = "flags";
 	p.value = td.flags;
 	plist.push_back(p);
+	*/
 
 	if(m_CurrentTile >= 0)
 	{
 		CDataObject *tile = manager->getTile(m_CurrentTile);
-		tile->load(newfile, plist);
+		tile->load(newfile, CParamList());
 	}
 	else
 	{
-		m_CurrentTile = manager->loadObject(newfile, plist, CDataObject::eTileModel);
+		m_CurrentTile = manager->loadObject(newfile, CParamList(), CDataObject::eTileModel);
 		if(m_CurrentTile < 0) return "tilesmenu"; //TODO: error message
 	}
 

@@ -186,6 +186,51 @@ bool CEditTrack::save(const CString &filename) const
 	return true;
 }
 
+void CEditTrack::sortPillars()
+{
+	printf("Sorting pillars in track\n");
+
+	for(int z=0; z<m_W; z++)
+	for(int x=0; x<m_L; x++)
+		sortPillar(x, z);
+}
+
+void CEditTrack::sortPillar(unsigned int x, unsigned int z)
+{
+	unsigned int offset = m_H * (m_W*x + z);
+
+	//printf("Sorting pillar %d, %d:\n", x, z);
+
+	//First thing to do: remove all empty tiles below non-empty tiles.
+	//You can see this as a kind of a de-fragmentation sweep
+	{
+		int writePos = 0;
+
+		for(int readPos=0; readPos < m_H; readPos++)
+		{
+			if(m_Track[offset+readPos].m_Model == 0)
+			{
+				//printf("    Skipping %d\n", readPos);
+				continue;
+			}
+
+			//printf("    Moving %d -> %d\n", readPos, writePos);
+			m_Track[offset+writePos] = m_Track[offset+readPos];
+			writePos++;
+		}
+
+		if(writePos < m_H)
+		for(; writePos < m_H; writePos++)
+		{
+			//printf("    Clearing %d\n", writePos);
+			m_Track[offset+writePos].m_Model = 0;
+			m_Track[offset+writePos].m_Z = m_Track[offset+m_H-1].m_Z;
+		}
+	}
+
+	//TODO: sort non-empty tiles
+}
+
 bool CEditTrack::import(const CString &filename)
 {
 	//Load all the data from the file

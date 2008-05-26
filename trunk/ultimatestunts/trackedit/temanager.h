@@ -20,7 +20,7 @@
 
 #include "datamanager.h"
 #include "edittrack.h"
-#include "graphobj.h"
+#include "tetile.h"
 
 /**
   *@author CJP
@@ -35,10 +35,10 @@ public:
 		{return (const CEditTrack *)getObject(CDataObject::eTrack, 0);}
 	CEditTrack *getTrack()
 		{return (CEditTrack *)getObject(CDataObject::eTrack, 0);}
-	CGraphObj *getTile(unsigned int ID)
-		{return (CGraphObj *)getObject(CDataObject::eTileModel, ID);}
-	const CGraphObj *getTile(unsigned int ID) const
-		{return (CGraphObj *)getObject(CDataObject::eTileModel, ID);}
+	CTETile *getTile(unsigned int ID)
+		{return (CTETile *)getObject(CDataObject::eTileModel, ID);}
+	const CTETile *getTile(unsigned int ID) const
+		{return (CTETile *)getObject(CDataObject::eTileModel, ID);}
 
 	void removeUnusedTextures();
 

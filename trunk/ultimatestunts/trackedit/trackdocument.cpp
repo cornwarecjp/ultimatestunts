@@ -18,6 +18,8 @@
 #include "usmacros.h"
 #include "timer.h"
 
+#include "routetracker.h"
+
 #include "trackdocument.h"
 
 CTrackDocument *theTrackDocument = NULL;
@@ -87,6 +89,7 @@ void CTrackDocument::applyAction()
 
 	if(m_Action == NULL) return;
 	m_Action->doAction(m_FutureTrack);
+	CRouteTracker(m_FutureTrack).trackRoutes();
 }
 
 void CTrackDocument::commitAction()
@@ -135,6 +138,13 @@ bool CTrackDocument::load()
 	CEditTrack track(m_DataManager);
 	if(!track.load(m_Trackname, CParamList()))
 		return false; //loading failed
+
+	track.sortPillars();
+
+	//This will be done at the first action:
+	//By not doing it now, we allow the user
+	//to see the original routes.
+	//CRouteTracker(&track).trackRoutes();
 
 	m_UndoHistory.clear();
 	m_UndoHistory.push_back(track);

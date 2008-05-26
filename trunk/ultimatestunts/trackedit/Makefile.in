@@ -55,11 +55,12 @@ AR = ar
 ARFLAGS = cru
 libtrackedit_a_AR = $(AR) $(ARFLAGS)
 libtrackedit_a_LIBADD =
-am_libtrackedit_a_OBJECTS = actionwidget.$(OBJEXT) edittrack.$(OBJEXT) \
-	mainpage.$(OBJEXT) replaceaction.$(OBJEXT) tecamera.$(OBJEXT) \
-	tegui.$(OBJEXT) temanager.$(OBJEXT) terenderer.$(OBJEXT) \
-	tileselect.$(OBJEXT) trackdocument.$(OBJEXT) trkfile.$(OBJEXT) \
-	replaceactionwidget.$(OBJEXT) compass.$(OBJEXT)
+am_libtrackedit_a_OBJECTS = actionwidget.$(OBJEXT) compass.$(OBJEXT) \
+	edittrack.$(OBJEXT) mainpage.$(OBJEXT) replaceaction.$(OBJEXT) \
+	replaceactionwidget.$(OBJEXT) routetracker.$(OBJEXT) \
+	tecamera.$(OBJEXT) tegui.$(OBJEXT) temanager.$(OBJEXT) \
+	terenderer.$(OBJEXT) tileselect.$(OBJEXT) tetile.$(OBJEXT) \
+	trackdocument.$(OBJEXT) trkfile.$(OBJEXT)
 libtrackedit_a_OBJECTS = $(am_libtrackedit_a_OBJECTS)
 am__installdirs = "$(DESTDIR)$(bindir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
@@ -99,6 +100,7 @@ CATOBJEXT = @CATOBJEXT@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
+CFLAG_VISIBILITY = @CFLAG_VISIBILITY@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CXX = @CXX@
@@ -117,12 +119,16 @@ ENABLE_XMESA_FX_FALSE = @ENABLE_XMESA_FX_FALSE@
 ENABLE_XMESA_FX_TRUE = @ENABLE_XMESA_FX_TRUE@
 EXEEXT = @EXEEXT@
 GENCAT = @GENCAT@
+GETTEXT_MACRO_VERSION = @GETTEXT_MACRO_VERSION@
 GLIBC2 = @GLIBC2@
 GLIBC21 = @GLIBC21@
 GMSGFMT = @GMSGFMT@
+GMSGFMT_015 = @GMSGFMT_015@
+GREP = @GREP@
 HAVE_ASPRINTF = @HAVE_ASPRINTF@
 HAVE_POSIX_PRINTF = @HAVE_POSIX_PRINTF@
 HAVE_SNPRINTF = @HAVE_SNPRINTF@
+HAVE_VISIBILITY = @HAVE_VISIBILITY@
 HAVE_WPRINTF = @HAVE_WPRINTF@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
@@ -137,14 +143,22 @@ INTL_MACOSX_LIBS = @INTL_MACOSX_LIBS@
 LDFLAGS = @LDFLAGS@
 LIBICONV = @LIBICONV@
 LIBINTL = @LIBINTL@
+LIBMULTITHREAD = @LIBMULTITHREAD@
 LIBOBJS = @LIBOBJS@
+LIBPTH = @LIBPTH@
+LIBPTH_PREFIX = @LIBPTH_PREFIX@
 LIBS = @LIBS@
+LIBTHREAD = @LIBTHREAD@
+LTLIBC = @LTLIBC@
 LTLIBICONV = @LTLIBICONV@
 LTLIBINTL = @LTLIBINTL@
+LTLIBMULTITHREAD = @LTLIBMULTITHREAD@
 LTLIBOBJS = @LTLIBOBJS@
+LTLIBPTH = @LTLIBPTH@
+LTLIBTHREAD = @LTLIBTHREAD@
 MAKEINFO = @MAKEINFO@
-MKINSTALLDIRS = @MKINSTALLDIRS@
 MSGFMT = @MSGFMT@
+MSGFMT_015 = @MSGFMT_015@
 MSGMERGE = @MSGMERGE@
 OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
@@ -155,6 +169,7 @@ PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 POSUB = @POSUB@
+PRI_MACROS_BROKEN = @PRI_MACROS_BROKEN@
 RANLIB = @RANLIB@
 SDL_CFLAGS = @SDL_CFLAGS@
 SDL_CONFIG = @SDL_CONFIG@
@@ -165,11 +180,14 @@ STRIP = @STRIP@
 USE_INCLUDED_LIBINTL = @USE_INCLUDED_LIBINTL@
 USE_NLS = @USE_NLS@
 VERSION = @VERSION@
+WINDRES = @WINDRES@
+WOE32 = @WOE32@
+WOE32DLL = @WOE32DLL@
 XGETTEXT = @XGETTEXT@
+XGETTEXT_015 = @XGETTEXT_015@
+XGETTEXT_EXTRA_OPTIONS = @XGETTEXT_EXTRA_OPTIONS@
 ac_ct_CC = @ac_ct_CC@
 ac_ct_CXX = @ac_ct_CXX@
-ac_ct_RANLIB = @ac_ct_RANLIB@
-ac_ct_STRIP = @ac_ct_STRIP@
 am__fastdepCC_FALSE = @am__fastdepCC_FALSE@
 am__fastdepCC_TRUE = @am__fastdepCC_TRUE@
 am__fastdepCXX_FALSE = @am__fastdepCXX_FALSE@
@@ -186,6 +204,9 @@ build_cpu = @build_cpu@
 build_os = @build_os@
 build_vendor = @build_vendor@
 datadir = @datadir@
+datarootdir = @datarootdir@
+docdir = @docdir@
+dvidir = @dvidir@
 exec_prefix = @exec_prefix@
 graphlibs = @graphlibs@
 host = @host@
@@ -193,18 +214,22 @@ host_alias = @host_alias@
 host_cpu = @host_cpu@
 host_os = @host_os@
 host_vendor = @host_vendor@
+htmldir = @htmldir@
 includedir = @includedir@
 infodir = @infodir@
 install_sh = @install_sh@
 libdir = @libdir@
 libexecdir = @libexecdir@
+localedir = @localedir@
 localstatedir = @localstatedir@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
 netlibs = @netlibs@
 oldincludedir = @oldincludedir@
+pdfdir = @pdfdir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
+psdir = @psdir@
 sbindir = @sbindir@
 sdllibs = @sdllibs@
 sharedstatedir = @sharedstatedir@
@@ -230,11 +255,13 @@ INCLUDES = -I$(top_srcdir)/graphics -I$(top_srcdir)/intl -I$(top_srcdir)/shared 
 
 # the library search path.
 ustuntstrackedit_LDFLAGS = $(all_libraries) 
-noinst_HEADERS = tileselect.h actionwidget.h replaceactionwidget.h compass.h
+noinst_HEADERS = actionwidget.h compass.h replaceactionwidget.h routetracker.h \
+	tetile.h tileselect.h
+
 noinst_LIBRARIES = libtrackedit.a
-libtrackedit_a_SOURCES = actionwidget.cpp edittrack.cpp \
-		mainpage.cpp	replaceaction.cpp tecamera.cpp tegui.cpp temanager.cpp terenderer.cpp	tileselect.cpp \
-		trackdocument.cpp trkfile.cpp replaceactionwidget.cpp compass.cpp
+libtrackedit_a_SOURCES = actionwidget.cpp compass.cpp edittrack.cpp \
+	mainpage.cpp	replaceaction.cpp replaceactionwidget.cpp routetracker.cpp tecamera.cpp tegui.cpp \
+	temanager.cpp terenderer.cpp	tileselect.cpp tetile.cpp trackdocument.cpp trkfile.cpp
 
 all: all-am
 
@@ -249,9 +276,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  trackedit/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  trackedit/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign  trackedit/Makefile
+	  $(AUTOMAKE) --gnu  trackedit/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -316,10 +343,12 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mainpage.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/replaceaction.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/replaceactionwidget.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/routetracker.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tecamera.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tegui.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/temanager.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/terenderer.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tetile.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tileselect.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/trackdocument.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/trkfile.Po@am__quote@
