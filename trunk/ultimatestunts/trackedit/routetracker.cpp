@@ -73,7 +73,7 @@ void CRouteTracker::trackRoutes()
 		return;
 	}
 
-	printf("Start tile: %d, %d, %d\n", start.x, start.y, start.z);
+	//printf("Start tile: %d, %d, %d\n", start.x, start.y, start.z);
 
 	//Add the start of the first route
 	CTrack::CRoute mainRoute;
@@ -84,25 +84,35 @@ void CRouteTracker::trackRoutes()
 	//Then track all routes (including the other ones that will be added during the process)
 	for(unsigned int i=0; i < m_Track->m_Routes.size(); i++)
 		trackSingleRoute(i);
+
+	//Then erase all empty routes:
+	for(unsigned int i=0; i < m_Track->m_Routes.size(); i++)
+		if(m_Track->m_Routes[i].empty())
+		{
+			m_Track->m_Routes.erase(m_Track->m_Routes.begin() + i);
+			i--;
+		}
 }
 
 void CRouteTracker::trackSingleRoute(unsigned int routenr)
 {
+	//printf("\nStart of route %d\n", routenr);
+
 	if(routenr >= m_Track->m_Routes.size())
 	{
 		printf("Error: routenr >= number of routes\n");
 		return;
 	}
 
-	CTrack::CRoute &theRoute = m_Track->m_Routes[routenr];
+	CTrack::CRoute *theRoute = &(m_Track->m_Routes[routenr]);
 
-	if(theRoute.empty())
+	if(theRoute->empty())
 	{
 		printf("Error: route has no start tile\n");
 		return;
 	}
 
-	CTrack::CCheckpoint currentPos = theRoute[0];
+	CTrack::CCheckpoint currentPos = (*theRoute)[0];
 	bool currentIsForward = true; //direction of current route
 
 	unsigned int currentTileRoute = 0;
@@ -128,19 +138,42 @@ void CRouteTracker::trackSingleRoute(unsigned int routenr)
 		unsigned int newTileRoute = currentTileRoute;
 		bool newIsForward = currentIsForward;
 
+		bool hasReturnedToSplit = false;
+
 		if(!findNextTile(newPos, newTileRoute, newIsForward))
 		{
-			printf("Error: end of route\n");
-			return;
+			//printf("End of route\n");
+
+			if(!goBackToLastSplit(routenr, newPos, newTileRoute, newIsForward))
+			{
+				//printf("Route is invalid\n");
+
+				//Route is invalid.
+				//Remove it if it's not the primary route:
+				if(routenr != 0) //Only remove non-primary routes:
+					theRoute->clear(); //empty routes will be deleted
+
+				return;
+			}
+
+			//printf("Returned to last split\n");
+
+			//Update the route pointer, because goBackToLastSplit
+			//makes changes to the route array:
+			theRoute = &(m_Track->m_Routes[routenr]);
+
+			hasReturnedToSplit = true;
 		}
 
 		//printf("New pos: %d, %d, %d\n", newPos.x, newPos.y, newPos.z);
-		theRoute.push_back(newPos);
+		theRoute->push_back(newPos);
 
 		//Check for finish:
 		if(isFinish(newPos))
 		{
-			printf("Route stops at finish\n");
+			//printf("Route stops at finish\n");
+			theRoute->finishRoute = 0;
+			theRoute->finishTile = 0;
 			return;
 		}
 
@@ -152,35 +185,99 @@ void CRouteTracker::trackSingleRoute(unsigned int routenr)
 		{
 			if(newIsForward)
 			{
-				printf("Processing split\n");
+				if(!hasReturnedToSplit)
+				{
+					//printf("Processing split\n");
+	
+					CTrack::CRoute newRoute;
+					newRoute.finishRoute = newRoute.finishTile = 0;
+					newRoute.startRoute = routenr;
+					newRoute.startTile = theRoute->size()-1;
+					newRoute.push_back(newPos);
+	
+					//printf("  Created new route %d: startTile = %d; "
+					//	"startPos = %d,%d,%d\n",
+					//	m_Track->m_Routes.size(), newRoute.startTile,
+					//	newPos.x, newPos.y, newPos.z);
 
-				CTrack::CRoute newRoute;
-				newRoute.finishRoute = newRoute.finishTile = 0;
-				newRoute.startRoute = routenr;
-				newRoute.startTile = theRoute.size()-1;
-				newRoute.push_back(newPos);
+					m_Track->m_Routes.push_back(newRoute);
 
-				m_Track->m_Routes.push_back(newRoute);
+					//Update the route pointer, because we
+					//made a change to the route array:
+					theRoute = &(m_Track->m_Routes[routenr]);
 
+				}
 			}
 			else
 			{
-				printf("Processing join\n");
+				//printf("Processing join\n");
 
 				//Find previous route, if any:
-				if(routenr > 0)
-				for(unsigned int j=0; j < routenr; j++)
+				for(unsigned int j=0; j <= routenr; j++)
 				{
 					CTrack::CRoute &prevRoute = m_Track->m_Routes[j];
-					for(unsigned int k=0; k < prevRoute.size(); k++)
+					for(unsigned int k=0; k+1 < prevRoute.size(); k++)
 					if(prevRoute[k] == newPos)
 					{
-						printf("Route stops at join\n");
+						//printf("Found an existing route\n");
 						//Found an existing route:
-						//We stop tracking this route now
-						theRoute.finishRoute = j;
-						theRoute.finishTile = k;
-						return;
+
+						//Now check if the join is valid:
+						CTrack::CCheckpoint newPos2 = newPos;
+						unsigned int newTileRoute2 = newTileRoute;
+						bool newIsForward2 = newIsForward;
+
+						if(!findNextTile(newPos2, newTileRoute2, newIsForward2))
+						{
+							printf("Unexpected error: end of route\n");
+							return;
+						}
+
+						CTrack::CCheckpoint forwardPos = prevRoute[k+1];
+						if(j != routenr && newPos2 == forwardPos)
+						{
+							//printf("Route stops at join\n");
+							//The route joins as it should
+							//We stop tracking this route now
+							theRoute->finishRoute = j;
+							theRoute->finishTile = k;
+							return;
+						}
+
+						/*
+						printf("The join is not correct:\n");
+						if(j == routenr)
+							printf("  The route joins itself\n");
+						if(newPos2 != forwardPos)
+						{
+							printf("  The route joins in the wrong direction:\n"
+								"%d,%d,%d should be %d,%d,%d\n",
+								newPos2.x, newPos2.y, newPos2.z,
+								forwardPos.x, forwardPos.y, forwardPos.z
+								);
+						}
+						*/
+
+						//The route joins in the wrong direction,
+						//or it joins itself:
+
+						if(!goBackToLastSplit(routenr, newPos, newTileRoute, newIsForward))
+						{
+							//Route is invalid.
+							//Remove it if it's not the primary route:
+							if(routenr != 0) //Only remove non-primary routes:
+								theRoute->clear(); //empty routes will be deleted
+			
+							return;
+						}
+
+						//Update the route pointer, because we
+						//made a change to the route array:
+						theRoute = &(m_Track->m_Routes[routenr]);
+
+						//Add the last split position again:
+						//printf("New pos: %d, %d, %d\n", newPos.x, newPos.y, newPos.z);
+						theRoute->push_back(newPos);
 					}
 				}
 			}
@@ -189,6 +286,80 @@ void CRouteTracker::trackSingleRoute(unsigned int routenr)
 		currentPos = newPos;
 		currentTileRoute = newTileRoute;
 		currentIsForward = newIsForward;
+	}
+}
+
+bool CRouteTracker::goBackToLastSplit(
+	unsigned int routenr,
+	CTrack::CCheckpoint &pos, unsigned int &route, bool &forward
+	)
+{
+	//printf("goBackToLastSplit on route %d\n", routenr);
+
+	//First find the split-up route number.
+	//All candidates are after this route in the route array.
+	//The last split is the last item that starts at our route.
+	unsigned int splitRoute = 0;
+	if(routenr+1 >= m_Track->m_Routes.size()) return false; //There are no split-up routes
+	for(unsigned int i = m_Track->m_Routes.size()-1; i != routenr; i--)
+		if(m_Track->m_Routes[i].startRoute == routenr)
+		{
+			splitRoute = i;
+			break;
+		}
+	if(splitRoute == 0) return false; //We didn't find a route splitting from this route
+
+	unsigned int splitTile = m_Track->m_Routes[splitRoute].startTile;
+
+	//printf("Found split route %d, starting on tile %d\n", splitRoute, splitTile);
+
+	CTrack::CRoute &theRoute = m_Track->m_Routes[routenr];
+
+	if(m_Track->m_Routes[splitRoute].size() != 1)
+	{
+		printf("Bug in route tracking: split-up route does not contain 1 position\n");
+		return false;
+	}
+
+	if(theRoute[splitTile] != (m_Track->m_Routes[splitRoute])[0])
+	{
+		printf("Bug in route tracking: split-up route positions don't match\n");
+		return false;
+	}
+
+	//The return state:
+	pos = theRoute[splitTile];
+	route = 1; //TODO: more advanced check to find the alternative route
+	forward = true;
+
+	//Remove later tiles in this route (including the split, which will be added again later):
+	theRoute.resize(splitTile);
+
+	//Remove the split-up route:
+	m_Track->m_Routes.erase(m_Track->m_Routes.begin() + splitRoute);
+
+	//printf("goBackToLastSplit finished succesfully\n");
+
+	return true;
+}
+
+void CRouteTracker::removeSplitRoutes(unsigned int routenr)
+{
+	while(true)
+	{
+		if(routenr+1 >= m_Track->m_Routes.size()) return; //no more split routes
+
+		bool found = false;
+		for(unsigned int i=routenr+1; i < m_Track->m_Routes.size(); i++)
+			if(m_Track->m_Routes[i].startRoute == routenr)
+			{
+				m_Track->m_Routes.erase(m_Track->m_Routes.begin() + i);
+
+				found = true;
+				break;
+			}
+
+		if(!found) return; //no more split routes found
 	}
 }
 
@@ -210,9 +381,9 @@ bool CRouteTracker::findNextTile(CTrack::CCheckpoint &pos, unsigned int &route, 
 		currentForward? theTileRoute.outPos : theTileRoute.inPos;
 
 	//Extended positions are useful for jumps, ramps etc.
-	//Currently we go from 0 to 3, but more could be added in the future.
+	//Currently we go from 0 to 1, but more could be added in the future.
 	//See also getRoutePosition for their exact effect.
-	for(unsigned int extendedPos=0; extendedPos < 4; extendedPos++)
+	for(unsigned int extendedPos=0; extendedPos < 2; extendedPos++)
 	for(unsigned int i=0; i < exitPoints.size(); i++)
 	{
 		pos = getRoutePosition(
@@ -369,7 +540,7 @@ bool CRouteTracker::isInTrack(const CTrack::CCheckpoint &pos) const
 {
 	return
 		pos.x >= 0 && pos.x < m_Track->m_L &&
-		pos.y >= 0 && pos.y < m_Track->m_W;
+		pos.z >= 0 && pos.z < m_Track->m_W;
 }
 
 bool CRouteTracker::isFinish(const CTrack::CCheckpoint &pos) const

@@ -42,6 +42,14 @@ protected:
 
 	bool findNextTile(CTrack::CCheckpoint &pos, unsigned int &route, bool &forward) const;
 
+	//Result is true if there was a split:
+	bool goBackToLastSplit(
+		unsigned int routenr,
+		CTrack::CCheckpoint &pos, unsigned int &route, bool &forward
+		);
+
+	void removeSplitRoutes(unsigned int routenr);
+
 	//Tool functions:
 
 	CTrack::CCheckpoint getRoutePosition(
@@ -50,7 +58,6 @@ protected:
 		int rotation,
 		unsigned int extendedPos=0
 		) const;
-
 
 	//Result is a "matching score": higher is better; 0 is non-matching
 	unsigned int backtrackScore(
