@@ -52,8 +52,11 @@ public:
 	public:
 		int x, y, z;
 
-		bool operator==(const CCheckpoint &val) const
+		inline bool operator==(const CCheckpoint &val) const
 			{return x==val.x && y==val.y && z==val.z;}
+
+		inline bool operator!=(const CCheckpoint &val) const
+			{return x!=val.x || y!=val.y || z!=val.z;}
 	};
 	class CRoute : public vector<CCheckpoint>
 	{
