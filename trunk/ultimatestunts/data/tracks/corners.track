@@ -11,6 +11,13 @@ TRACKFILE
 #This track file is created by the Ultimate Stunts track editor
 
 BEGIN
+textures/grass2.jpg mu=0.9 roll=20
+textures/road2.jpg mu=1 roll=1
+textures/concrete1.jpg
+textures/startfinish.jpg
+textures/cornerblocks.jpg mu=0.9 roll=1
+textures/wood.jpg
+textures/pine.png
 END
 
 BEGIN
@@ -20,10 +27,10 @@ envmap = environment/spheremap.rgb
 lightdir = -0.010000,-0.300000,0.900000
 lightcol = 1.000000,0.800000,0.300000
 ambientcol = 0.000000,0.000000,0.000000
-skycol = 0.3,0.3,1.0
-horizonskycol = 1,0.8,0.4
-fogcol = 0.5,0.4,0.4
-envcol = 1.0,0.9,0.8
+skycol = 0.300000,0.300000,1.000000
+horizonskycol = 1.000000,0.800000,0.400000
+fogcol = 0.500000,0.400000,0.400000
+envcol = 1.000000,0.900000,0.800000
 END
 
 BEGIN
@@ -31,7 +38,7 @@ tiles/empty.conf
 tiles/horiz.conf
 tiles/corner.conf
 tiles/roadhoriz.conf
-tiles/startfinish.conf
+tiles/startfinish.conf:sf
 tiles/corner2x2_inleft.conf
 tiles/corner2x2_inright.conf
 tiles/corner2x2_mid.conf
