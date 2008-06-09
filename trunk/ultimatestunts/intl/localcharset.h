@@ -1,5 +1,6 @@
-/* OS dependent parts of libintl.
-   Copyright (C) 2001-2002, 2006 Free Software Foundation, Inc.
+/* Determine a canonical name for the current locale's character encoding.
+   Copyright (C) 2000-2003 Free Software Foundation, Inc.
+   This file is part of the GNU CHARSET Library.
 
    This program is free software; you can redistribute it and/or modify it
    under the terms of the GNU Library General Public License as published
@@ -16,11 +17,26 @@
    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,
    USA.  */
 
-#if defined __CYGWIN__
-# include "intl-exports.c"
-#elif defined __EMX__
-# include "os2compat.c"
-#else
-/* Avoid AIX compiler warning.  */
-typedef int dummy;
+#ifndef _LOCALCHARSET_H
+#define _LOCALCHARSET_H
+
+
+#ifdef __cplusplus
+extern "C" {
 #endif
+
+
+/* Determine the current locale's character encoding, and canonicalize it
+   into one of the canonical names listed in config.charset.
+   The result must not be freed; it is statically allocated.
+   If the canonical name cannot be determined, the result is a non-canonical
+   name.  */
+extern const char * locale_charset (void);
+
+
+#ifdef __cplusplus
+}
+#endif
+
+
+#endif /* _LOCALCHARSET_H */
