@@ -9,14 +9,6 @@ width
 heigth
 
 BEGIN
-textures/grass2.jpg mu=1.0 roll=20
-textures/road2.jpg mu=1.0 roll=1
-textures/concrete1.jpg
-textures/startfinish.jpg
-textures/wall1.jpg
-textures/door1.jpg
-textures/window1.jpg
-textures/fence.png scale=16
 END
 
 BEGIN
@@ -33,13 +25,13 @@ envcol = 1,1,1
 END
 
 BEGIN
-tiles/empty.glb 0
-tiles/horiz.glb 0
-tiles/corner.glb 0 1
-tiles/roadhoriz.glb 0 1
-tiles/startfinish.glb:sf 0 1 2 3
-tiles/jump1.glb 0 1 2
-tiles/hotel.glb 0 4 5 6 7
+tiles/empty.conf
+tiles/horiz.conf
+tiles/corner.conf
+tiles/roadhoriz.conf
+tiles/startfinish.conf
+tiles/jump1.conf
+tiles/hotel.conf
 END
 
 #tile_id/rotation/heigth

@@ -9,10 +9,6 @@ width
 heigth
 
 BEGIN
-textures/grass2.jpg mu=0.8 roll=20
-textures/road2.jpg mu=1  roll=1
-textures/concrete1.jpg
-textures/startfinish.jpg
 END
 
 BEGIN
@@ -29,12 +25,12 @@ envcol = 1.0,0.9,0.8
 END
 
 BEGIN
-tiles/empty.glb 0
-tiles/horiz.glb 0
-tiles/corner.glb 0 1
-tiles/roadhoriz.glb 0 1
-tiles/startfinish.glb:s 0 1 2 3
-tiles/startfinish.glb:f 0 1 2 3
+tiles/empty.conf
+tiles/horiz.conf
+tiles/corner.conf
+tiles/roadhoriz.conf
+tiles/start.conf
+tiles/finish.conf
 END
 
 #tile_id/rotation/heigth

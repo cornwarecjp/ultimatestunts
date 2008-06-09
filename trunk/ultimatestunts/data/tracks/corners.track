@@ -11,13 +11,6 @@ TRACKFILE
 #This track file is created by the Ultimate Stunts track editor
 
 BEGIN
-textures/grass2.jpg mu=0.9 roll=20
-textures/road2.jpg mu=1 roll=1
-textures/concrete1.jpg
-textures/startfinish.jpg
-textures/cornerblocks.jpg mu=0.9 roll=1
-textures/wood.jpg
-textures/pine.png
 END
 
 BEGIN

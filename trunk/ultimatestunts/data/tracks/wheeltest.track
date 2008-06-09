@@ -8,11 +8,11 @@ length
 width
 heigth
 
+#This track still uses a .glb directly, to allow
+#for manual setting of surface properties.
+
 BEGIN
 textures/test.rgb mu=1 roll=0
-textures/road2.jpg mu=1 roll=0
-textures/concrete1.jpg
-textures/startfinish.jpg
 END
 
 BEGIN
@@ -29,11 +29,11 @@ envcol = 0.1,0.1,0.3
 END
 
 BEGIN
-tiles/empty.glb 0
+tiles/empty.conf
 tiles/horiz.glb 0
-tiles/corner.glb 0 1
-tiles/roadhoriz.glb 0 1
-tiles/startfinish.glb:sf 0 1 2 3
+tiles/corner.conf
+tiles/roadhoriz.conf
+tiles/startfinish.conf
 END
 
 #tile_id/rotation/heigth
