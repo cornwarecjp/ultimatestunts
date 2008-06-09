@@ -6,7 +6,7 @@
 
 #Author: CJP
 
-make clean
+make distclean
 rm -f Makefile */Makefile
 rm -rf */.deps
 
@@ -20,3 +20,5 @@ rm -rf autom4te.cache
 rm -f stamp*
 
 rm -f *~ */*~
+
+rm -f ultimatestunts.conf

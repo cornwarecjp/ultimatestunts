@@ -46,6 +46,9 @@ protected:
 		int &dir, int &height, int &altdir);
 
 	CString hexStr(unsigned char x);
+
+	//Check whether we need a textures section in the saved file
+	bool needsTextureSection() const;
 };
 
 #endif

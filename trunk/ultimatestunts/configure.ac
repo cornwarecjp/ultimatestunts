@@ -9,12 +9,6 @@ AM_INIT_AUTOMAKE
 
 AC_USE_SYSTEM_EXTENSIONS
 
-dnl Set prefix dir explicitly if not already done by user
-if test "x$prefix" = "xNONE" ; then
-  prefix="/usr/local"
-fi
-
-
 dnl Checks for programs.
 AC_PROG_CC
 AC_PROG_CPP
@@ -104,11 +98,11 @@ AC_CHECK_LIB(SDL_image, IMG_Load, graphlibs="-lSDL_image $graphlibs";AC_DEFINE([
 
 dnl -------------
 dnl added "-mconsole" for stdio in windows
-dnl added "-DWIN32" for correct setting of libintl in windows
+dnl added "-D_WIN32" for correct setting of included libintl in windows
 dnl -------------
 if test "x$ac_cv_header_windows_h" = "xyes" ; then
   sdllibs="$sdllibs -mconsole"
-  CFLAGS="$CFLAGS -DWIN32"
+  CFLAGS="$CFLAGS -D_WIN32"
 fi
 
 dnl ---------------------
@@ -126,11 +120,6 @@ AC_HEADER_STDC
 
 AC_CHECK_HEADER(GL/gl.h)
 AC_CHECK_HEADER(GL/glext.h,AC_DEFINE([HAVE_GLEXT_H], [], [glext.h header]),[], [#include <GL/gl.h>])
-
-dnl AC_CHECK_HEADER(windows.h, AC_DEFINE(WIN32))
-dnl AC_CHECK_HEADER(joystick.h, AC_DEFINE(JOYSTICK_IS_PRESENT))
-dnl AC_CHECK_HEADER(linux/joystick.h, AC_DEFINE(LINUX_JOYSTICK_IS_PRESENT))
-
 
 try_openal="yes"
 try_fmod="yes"
@@ -251,27 +240,48 @@ fi
 dnl -------------------
 dnl i18n
 dnl -------------------
+AC_LANG_PUSH(C)
 AM_GNU_GETTEXT
 AM_GNU_GETTEXT_VERSION
-
+AC_LANG_POP(C)
 
 dnl ------------------
 dnl The directory locations
 dnl ------------------
-usdatadir="${prefix}/share/ultimatestunts/"
 
-AC_DEFINE_UNQUOTED([PREFIXDIR], ["$prefix"], [Prefix dir])
+dnl Set prefix dir explicitly if not already done by user
+dnl if (test "$prefix" = "NONE"); then
+dnl 	prefix=$ac_default_prefix
+dnl fi
+
+dnl The location of the data files:
+usdatadir='${datadir}/ultimatestunts/'
+
+dnl The configure-time values of these variables:
+dnl sysconfdir_configure_time=`eval eval eval eval echo "${sysconfdir}"`
+dnl usdatadir_configure_time=`eval eval eval eval echo "${usdatadir}"`
+
+dnl One directory where ultimatestunts.conf is searched:
+dnl AC_DEFINE_UNQUOTED([SYSCONFDIR], ["${sysconfdir_configure_time}"], [Sysconf dir])
+
+dnl Specify sysconfdir directly on commandline (so that it can still be changed at make-time):
+CPPFLAGS="-DSYSCONFDIR=\"\\\"\$(sysconfdir)\\\"\" $CPPFLAGS"
 
 AC_SUBST(netlibs)
 AC_SUBST(soundlibs)
 AC_SUBST(graphlibs)
 AC_SUBST(sdllibs)
 
-AC_SUBST(PACKAGE_VERSION)
+dnl usdatadir is used as the data file install location
 AC_SUBST(usdatadir)
 
-AC_CONFIG_FILES([ultimatestunts.conf Makefile intl/Makefile po/Makefile.in data/Makefile shared/Makefile simulation/Makefile graphics/Makefile stuntsserver/Makefile stuntsai/Makefile stunts3dedit/Makefile trackedit/Makefile ultimatestunts/Makefile])
+AC_CONFIG_FILES([Makefile intl/Makefile po/Makefile.in data/Makefile shared/Makefile simulation/Makefile graphics/Makefile stuntsserver/Makefile stuntsai/Makefile stunts3dedit/Makefile trackedit/Makefile ultimatestunts/Makefile])
 AC_OUTPUT
+
+
+if (test "$prefix" = "NONE"); then
+	prefix=$ac_default_prefix
+fi
 
 dnl ------
 dnl Output
@@ -283,7 +293,6 @@ echo "Sound libraries: \"$soundlibs\""
 echo "Graphics libraries: \"$graphlibs\""
 echo "SDL libraries: \"$sdllibs\""
 echo "Prefix dir: \"$prefix\""
-echo "usdatadir: \"$usdatadir\""
 
 dnl -------------
 dnl Some warnings

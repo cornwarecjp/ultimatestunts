@@ -39,10 +39,10 @@ host_triplet = @host@
 target_triplet = @target@
 DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/config.h.in \
-	$(srcdir)/ultimatestunts.conf.in $(top_srcdir)/configure \
-	$(top_srcdir)/intl/Makefile.in AUTHORS COPYING ChangeLog \
-	INSTALL TODO config.guess config.sub depcomp install-sh \
-	missing mkinstalldirs
+	$(top_srcdir)/configure $(top_srcdir)/intl/Makefile.in \
+	ABOUT-NLS AUTHORS COPYING ChangeLog INSTALL TODO config.guess \
+	config.rpath config.sub depcomp install-sh missing \
+	mkinstalldirs
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -52,7 +52,7 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno configure.status.lineno
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = config.h
-CONFIG_CLEAN_FILES = ultimatestunts.conf intl/Makefile
+CONFIG_CLEAN_FILES = intl/Makefile
 SOURCES =
 DIST_SOURCES =
 RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
@@ -240,7 +240,7 @@ target_os = @target_os@
 target_vendor = @target_vendor@
 usdatadir = @usdatadir@
 sysconf_DATA = ultimatestunts.conf
-EXTRA_DIST = ultimatestunts.conf ultimatestunts.kdevprj AUTHORS COPYING ChangeLog INSTALL README TODO
+EXTRA_DIST = config.rpath ultimatestunts.conf ultimatestunts.kdevprj AUTHORS COPYING ChangeLog INSTALL README TODO
 AUTOMAKE_OPTIONS = foreign 1.9
 SUBDIRS = intl po data shared simulation graphics stuntsserver stuntsai stunts3dedit trackedit ultimatestunts
 all: config.h
@@ -297,8 +297,6 @@ $(srcdir)/config.h.in:  $(am__configure_deps)
 
 distclean-hdr:
 	-rm -f config.h stamp-h1
-ultimatestunts.conf: $(top_builddir)/config.status $(srcdir)/ultimatestunts.conf.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
 intl/Makefile: $(top_builddir)/config.status $(top_srcdir)/intl/Makefile.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 uninstall-info-am:
@@ -455,7 +453,7 @@ distclean-tags:
 distdir: $(DISTFILES)
 	$(am__remove_distdir)
 	mkdir $(distdir)
-	$(mkdir_p) $(distdir)/. $(distdir)/intl $(distdir)/po
+	$(mkdir_p) $(distdir)/intl $(distdir)/po
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
@@ -693,6 +691,9 @@ uninstall-info: uninstall-info-recursive
 	mostlyclean-recursive pdf pdf-am ps ps-am tags tags-recursive \
 	uninstall uninstall-am uninstall-info-am uninstall-sysconfDATA
 
+
+ultimatestunts.conf: ultimatestunts.conf.in
+	sed 's,@usdatadir\@,$(usdatadir),;s,@PACKAGE_VERSION\@,$(PACKAGE_VERSION),' < $< > $@
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

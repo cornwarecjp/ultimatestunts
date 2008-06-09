@@ -274,9 +274,6 @@
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
 
-/* Prefix dir */
-#undef PREFIXDIR
-
 /* Define if <inttypes.h> exists and defines unusable PRI* macros. */
 #undef PRI_MACROS_BROKEN
 

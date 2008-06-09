@@ -18,6 +18,8 @@
 #include "edittrack.h"
 #include "datafile.h"
 
+#include "tetile.h"
+
 #include "trkfile.h"
 #include "lconfig.h"
 
@@ -62,20 +64,23 @@ bool CEditTrack::save(const CString &filename) const
 
 	//Write the materials section
 	tfile.writel("BEGIN");
-	vector<CDataObject *> materials = m_DataManager->getObjectArray(CDataObject::eMaterial);
-	for(unsigned int i=0; i < materials.size(); i++)
+	if(needsTextureSection())
 	{
-		const CDataObject *o = materials[i];
-		CString filename = o->getFilename();
-		const CParamList &params = o->getParamList();
-
-		CString line = filename;
-		for(unsigned int j=0; j < params.size(); j++)
+		vector<CDataObject *> materials = m_DataManager->getObjectArray(CDataObject::eMaterial);
+		for(unsigned int i=0; i < materials.size(); i++)
 		{
-			line += " " + params[j].name + "=" + params[j].value;
+			const CDataObject *o = materials[i];
+			CString filename = o->getFilename();
+			const CParamList &params = o->getParamList();
+	
+			CString line = filename;
+			for(unsigned int j=0; j < params.size(); j++)
+			{
+				line += " " + params[j].name + "=" + params[j].value;
+			}
+	
+			tfile.writel(line);
 		}
-
-		tfile.writel(line);
 	}
 	tfile.writel("END");
 	tfile.writel("");
@@ -184,6 +189,21 @@ bool CEditTrack::save(const CString &filename) const
 	tfile.writel("");
 
 	return true;
+}
+
+bool CEditTrack::needsTextureSection() const
+{
+	vector<CDataObject *> tiles = m_DataManager->getObjectArray(CDataObject::eTileModel);
+	for(unsigned int i=0; i < tiles.size(); i++)
+	{
+		const CTETile *tile = (const CTETile *)(tiles[i]);
+
+		//If the tile doesn't have a known conf file:
+		if(tile->m_ConfFilename == "") return true;
+	}
+
+	//All files have a conf file containing the texture info:
+	return false;
 }
 
 void CEditTrack::sortPillars()

@@ -76,11 +76,11 @@ bool copyConfiguration(CString &conffile)
 {
 	printf("File %s not found. Searching on alternative locations...\n", conffile.c_str());
 
-	CString prefixdir = PREFIXDIR;
-	printf("prefix = %s\n", prefixdir.c_str());
+	CString sysconfdir = SYSCONFDIR;
+	printf("sysconfdir = %s\n", sysconfdir.c_str());
 
 	std::vector<CString> locations;
-	locations.push_back(prefixdir + "/etc/ultimatestunts.conf");
+	locations.push_back(sysconfdir + "/ultimatestunts.conf");
 	locations.push_back("/etc/ultimatestunts.conf");
 	locations.push_back("/usr/local/etc/ultimatestunts.conf");
 	locations.push_back("./ultimatestunts.conf");
