@@ -5,7 +5,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Ultimate Stunts 0.7.4\n"
+"Project-Id-Version: Ultimate Stunts 0.7.5\n"
 "Report-Msgid-Bugs-To: cornware-cjp@users.sourceforge.net\n"
 "POT-Creation-Date: 2008-06-08 14:16+0200\n"
 "PO-Revision-Date: 2008-01-20 00:30+0100\n"
@@ -374,40 +374,39 @@ msgstr "Non"
 
 #: graphics/gui.cpp:169
 msgid "System's default language"
-msgstr ""
+msgstr "Langue par défaut du système"
 
 #: graphics/gui.cpp:185
 msgid "Language:"
-msgstr ""
+msgstr "Langue:"
 
 #: graphics/gui.cpp:196
 msgid "Full screen mode?"
-msgstr ""
+msgstr "Mode plein-écran ?"
 
 #: graphics/gui.cpp:203
 msgid "Enter window width:"
-msgstr ""
+msgstr "Entrez la largeur de la fenêtre:"
 
 #: graphics/gui.cpp:205
 msgid "Enter window height:"
-msgstr ""
+msgstr "Entrez la hauteur de la fenêtre:"
 
 #: graphics/gui.cpp:212
 msgid "Enter screen resolution width:"
-msgstr ""
+msgstr "Entrez la largeur de la résolution d'écran:"
 
 #: graphics/gui.cpp:214
 msgid "Enter screen resolution height:"
-msgstr ""
+msgstr "Entrez la hauteur de la résolution d'écran:"
 
 #: graphics/gui.cpp:228
 msgid "Default resolution"
-msgstr ""
+msgstr "Résolution par défaut"
 
 #: graphics/gui.cpp:231
-#, fuzzy
 msgid "Select a screen resolution:"
-msgstr "Sélectionnez un serveur:"
+msgstr "Sélectionnez une résolution d'écran:"
 
 #: shared/credits.h:5
 msgid "Programmers:"

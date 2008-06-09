@@ -5,10 +5,10 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Ultimate Stunts 0.7.2\n"
+"Project-Id-Version: Ultimate Stunts 0.7.5\n"
 "Report-Msgid-Bugs-To: cornware-cjp@users.sourceforge.net\n"
 "POT-Creation-Date: 2008-06-08 14:16+0200\n"
-"PO-Revision-Date: 2007-08-01 14:11+0100\n"
+"PO-Revision-Date: 2008-06-09 15:00-0300\n"
 "Last-Translator: Marcelo De Nardin \n"
 "Language-Team: Brazilian Portuguese \n"
 "MIME-Version: 1.0\n"
@@ -128,7 +128,7 @@ msgstr "Selecionar uma pista"
 
 #: ultimatestunts/gamegui.cpp:489
 msgid "Edit track"
-msgstr "Carregar pista"
+msgstr "Editar pista"
 
 #: ultimatestunts/gamegui.cpp:490
 msgid "View best time replay"
@@ -291,7 +291,7 @@ msgstr "Configurações: %s"
 #: ultimatestunts/gamegui.cpp:1025 ultimatestunts/gamegui.cpp:1057
 msgid "Some settings are changed. Do you wish to save the settings?"
 msgstr ""
-"Algumas configurações estão alteradas. Você deseja salvar as configurações?"
+"Algumas configurações foram alteradas. Você deseja salvar as configurações?"
 
 #: ultimatestunts/gamegui.cpp:1032 ultimatestunts/gamegui.cpp:1064
 msgid "Saving failed"
@@ -336,8 +336,8 @@ msgstr "Esperando o servidor iniciar"
 #, c-format
 msgid "Waiting for %d remaining player to join"
 msgid_plural "Waiting for %d remaining players to join"
-msgstr[0] "Esperando por %d jogador restante entrar"
-msgstr[1] "Esperando por %d jogadores restantes entrarem"
+msgstr[0] "Esperando %d jogador restante entrar"
+msgstr[1] "Esperando %d jogadores restantes entrarem"
 
 #: stuntsserver/gamecorethread.cpp:98
 msgid "Running a game"
@@ -375,40 +375,39 @@ msgstr "Não"
 
 #: graphics/gui.cpp:169
 msgid "System's default language"
-msgstr ""
+msgstr "Linguagem padrão do sistema"
 
 #: graphics/gui.cpp:185
 msgid "Language:"
-msgstr ""
+msgstr "Linguagem:"
 
 #: graphics/gui.cpp:196
 msgid "Full screen mode?"
-msgstr ""
+msgstr "Modo de tela cheia?"
 
 #: graphics/gui.cpp:203
 msgid "Enter window width:"
-msgstr ""
+msgstr "Escreva a largura da janela"
 
 #: graphics/gui.cpp:205
 msgid "Enter window height:"
-msgstr ""
+msgstr "Escreva a altura da janela"
 
 #: graphics/gui.cpp:212
 msgid "Enter screen resolution width:"
-msgstr ""
+msgstr "Escreva a resolução da largura da tela"
 
 #: graphics/gui.cpp:214
 msgid "Enter screen resolution height:"
-msgstr ""
+msgstr "Escreva a resolução da altura da tela"
 
 #: graphics/gui.cpp:228
 msgid "Default resolution"
-msgstr ""
+msgstr "Resolução padrão"
 
 #: graphics/gui.cpp:231
-#, fuzzy
 msgid "Select a screen resolution:"
-msgstr "Selecione um servidor:"
+msgstr "Selecione uma resolução de tela:"
 
 #: shared/credits.h:5
 msgid "Programmers:"
@@ -471,30 +470,27 @@ msgstr "Carregando arquivos"
 
 #: trackedit/tegui.cpp:72 trackedit/mainpage.cpp:90
 msgid "Change tiles collection"
-msgstr ""
+msgstr "Mudar coleção de tiles"
 
 #: trackedit/tegui.cpp:90
 msgid "Edit this tile"
-msgstr ""
+msgstr "Editar este tile"
 
 #: trackedit/tegui.cpp:122
-#, fuzzy
 msgid "Add a new tile"
-msgstr "Adicionar um jogador"
+msgstr "Adicionar um novo tile"
 
 #: trackedit/tegui.cpp:123
 msgid "Remove unused tiles"
-msgstr ""
+msgstr "Remover tiles não utilizados"
 
 #: trackedit/tegui.cpp:128
-#, fuzzy
 msgid "Change the tile model"
-msgstr "Escreva o nome do arquivo:"
+msgstr "Mudar o modelo do tile"
 
 #: trackedit/tegui.cpp:129
-#, fuzzy
 msgid "Delete this tile"
-msgstr "Apagar este jogador"
+msgstr "Apagar este tile"
 
 #: trackedit/tegui.cpp:213 trackedit/tegui.cpp:243
 #, c-format
@@ -520,15 +516,15 @@ msgstr "Salvamento de %s falhou"
 
 #: trackedit/tegui.cpp:323
 msgid "This tile is in use in the track. Do you really want to change it?"
-msgstr ""
+msgstr "Este tile está em uso na pista. Você realmente deseja mudá-lo?"
 
 #: trackedit/tegui.cpp:383
 msgid "This tile is in use in the track. Do you really want to delete it?"
-msgstr ""
+msgstr "Este tile está em uso na pista. Você realmente deseja apagá-lo?"
 
 #: trackedit/tegui.cpp:406
 msgid "Tiles:"
-msgstr ""
+msgstr "Tiles:"
 
 #: trackedit/mainpage.cpp:84
 msgid "Load track"
