@@ -5,7 +5,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Ultimate Stunts 0.7.2\n"
+"Project-Id-Version: Ultimate Stunts 0.7.5\n"
 "Report-Msgid-Bugs-To: cornware-cjp@users.sourceforge.net\n"
 "POT-Creation-Date: 2008-06-08 14:16+0200\n"
 "PO-Revision-Date: 2008-01-20 14:11+0100\n"
@@ -376,40 +376,39 @@ msgstr "Nem"
 
 #: graphics/gui.cpp:169
 msgid "System's default language"
-msgstr ""
+msgstr "Alapértelmezett nyelv"
 
 #: graphics/gui.cpp:185
 msgid "Language:"
-msgstr ""
+msgstr "Nyelv:"
 
 #: graphics/gui.cpp:196
 msgid "Full screen mode?"
-msgstr ""
+msgstr "Teljes képernyő?"
 
 #: graphics/gui.cpp:203
 msgid "Enter window width:"
-msgstr ""
+msgstr "Ablak szélessége:"
 
 #: graphics/gui.cpp:205
 msgid "Enter window height:"
-msgstr ""
+msgstr "Ablak magassága:"
 
 #: graphics/gui.cpp:212
 msgid "Enter screen resolution width:"
-msgstr ""
+msgstr "Képernyőfelbontás szélessége:"
 
 #: graphics/gui.cpp:214
 msgid "Enter screen resolution height:"
-msgstr ""
+msgstr "Képernyőfelbontás magassága:"
 
 #: graphics/gui.cpp:228
 msgid "Default resolution"
-msgstr ""
+msgstr "Alapértelmezett felbontás"
 
 #: graphics/gui.cpp:231
-#, fuzzy
 msgid "Select a screen resolution:"
-msgstr "Válasszon szervert:"
+msgstr "Válasszon képernyőfelbontást:"
 
 #: shared/credits.h:5
 msgid "Programmers:"
