@@ -8,10 +8,10 @@ Syntax:
 
 BEGIN
 6
-textures/grass2.jpg
 textures/road1.jpg
-textures/road2.jpg
-textures/rock1.jpg
-textures/concrete1.jpg
+textures/bricks1.jpg
+textures/test.rgb
+textures/test.rgb
+textures/test.rgb
 textures/test.rgb
 END
