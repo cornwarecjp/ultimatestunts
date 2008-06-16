@@ -252,9 +252,10 @@ bool CTrack::load(const CString &filename, const CParamList &list)
 
 			if(isEnd)
 			{
+				bool isFinish = tmodel->getParamList().getValue("flags", "").inStr('f') >= 0;
+
 				if(m_Routes.size() == 1) //End of basic route
 				{
-					bool isFinish = tmodel->getParamList().getValue("flags", "").inStr('f') >= 0;
 					if(!isFinish)
 					{
 						printf("Error: end of first route is not a finish tile\n");
@@ -265,15 +266,24 @@ bool CTrack::load(const CString &filename, const CParamList &list)
 				}
 				else
 				{
-					if(exroute < 0)
+					if(exroute < 0 && !isFinish)
 					{
-						printf("Error: end of new route is not on an existing route\n");
+						printf("Error: end of new route is not on an existing route or a finish\n");
 						return false;
 					}
 
 					//printf("End of new route\n");
-					m_Routes.back().finishRoute = exroute;
-					m_Routes.back().finishTile = extile;
+
+					if(isFinish)
+					{
+						m_Routes.back().finishRoute = 0;
+						m_Routes.back().finishTile = 0;
+					}
+					else
+					{
+						m_Routes.back().finishRoute = exroute;
+						m_Routes.back().finishTile = extile;
+					}
 				}
 
 				//Normal adding to the latest route

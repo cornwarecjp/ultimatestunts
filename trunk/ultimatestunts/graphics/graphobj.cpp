@@ -50,7 +50,9 @@ bool CGraphObj::load(const CString &filename, const CParamList &list)
 	CDataObject::load(filename, list);
 
 	CString subset = m_ParamList.getValue("subset", "");
-	vector<CDataObject *> matarray = m_DataManager->getSubset(CDataObject::eMaterial, subset);
+	vector<CDataObject *> matarray;
+	if(m_DataManager != NULL)
+		matarray = m_DataManager->getSubset(CDataObject::eMaterial, subset);
 
 	unsigned int waterTesselation = theMainConfig->getValue("animation", "watertesselation").toInt();
 
