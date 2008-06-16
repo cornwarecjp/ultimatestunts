@@ -43,7 +43,7 @@ public:
 protected:
 	virtual void updateScreenSize();
 
-	void setColor(bool selected);
+	void setColor(bool selected, bool north=false);
 	void drawCompass();
 	void drawUpDown();
 };

@@ -99,7 +99,7 @@ void CCompass::updateScreenSize()
 	CRenderer::m_H = CWidget::m_H;
 }
 
-void CCompass::setColor(bool selected)
+void CCompass::setColor(bool selected, bool north)
 {
 	if(selected)
 	{
@@ -108,7 +108,11 @@ void CCompass::setColor(bool selected)
 	}
 	else
 	{
-		glColor3f(1,1,1);
+		if(north)
+			{glColor3f(1,0,0);}
+		else
+			{glColor3f(1,1,1);}
+
 		glLineWidth(1.0);
 	}
 }
@@ -158,7 +162,7 @@ void CCompass::drawCompass()
 	glEnd();
 
 	//Z-
-	setColor(m_Selection == eZdn);
+	setColor(m_Selection == eZdn, true); //North
 	glBegin(GL_LINES);
 	glVertex3f( 0  , 0, 0  );
 	glVertex3f( 0  , 0,-2  );

@@ -18,6 +18,8 @@
 #ifndef TERENDERER_H
 #define TERENDERER_H
 
+#include "graphobj.h"
+
 #include "renderer.h"
 #include "temanager.h"
 #include "edittrack.h"
@@ -40,6 +42,8 @@ protected:
 	int tgtx, tgty, tgtz; //tile position of the target
 
 	CEditTrack *m_TrackCache;
+
+	CGraphObj *m_RouteErrorMarker;
 
 	void drawTrack();
 	void viewTrackPart(

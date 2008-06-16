@@ -38,6 +38,13 @@ public:
 	void sortPillars();
 	void sortPillar(unsigned int x, unsigned int z);
 
+	struct SMarker
+	{
+		CTrack::CCheckpoint pos;
+		//enum {eRouteError} type;
+	};
+	vector<SMarker> m_Markers;
+
 protected:
 	void placeItem(unsigned int offset, const CString &item);
 	void followTRKRoutes(const CTRKFile &file, CTrack::CCheckpoint start, int dir);

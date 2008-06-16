@@ -31,6 +31,8 @@ CRouteTracker::~CRouteTracker()
 
 void CRouteTracker::trackRoutes()
 {
+	m_Track->m_Markers.clear();
+
 	m_Track->m_Routes.clear();
 
 	const unsigned int L = m_Track->m_L;
@@ -56,6 +58,17 @@ void CRouteTracker::trackRoutes()
 			if(found) //already found another one
 			{
 				printf("Error: found multiple start tiles\n");
+
+				CEditTrack::SMarker marker;
+
+				marker.pos = start;
+				m_Track->m_Markers.push_back(marker);
+
+				marker.pos.x = x;
+				marker.pos.y = t.m_Z;
+				marker.pos.z = z;
+				m_Track->m_Markers.push_back(marker);
+
 				return;
 			}
 
@@ -143,6 +156,10 @@ void CRouteTracker::trackSingleRoute(unsigned int routenr)
 		if(!findNextTile(newPos, newTileRoute, newIsForward))
 		{
 			//printf("End of route\n");
+
+			CEditTrack::SMarker marker;
+			marker.pos = currentPos;
+			m_Track->m_Markers.push_back(marker);
 
 			if(!goBackToLastSplit(routenr, newPos, newTileRoute, newIsForward))
 			{

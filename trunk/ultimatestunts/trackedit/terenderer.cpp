@@ -33,10 +33,14 @@ CTERenderer::CTERenderer()
 	m_TrackCache = NULL;
 
 	m_Settings.m_VisibleTiles = 100; //make sure that a lot of tiles are visible
+
+	m_RouteErrorMarker = new CGraphObj(NULL, CDataObject::eGraphObj);
+	m_RouteErrorMarker->load("misc/routeerror.glb", CParamList());
 }
 
 CTERenderer::~CTERenderer()
 {
+	delete m_RouteErrorMarker;
 }
 
 void CTERenderer::updateScreenSize()
@@ -71,6 +75,21 @@ void CTERenderer::update()
 	//Draw the track
 	glDisable(GL_FOG);
 	drawTrack();
+
+	//Draw the markers:
+	vector<CEditTrack::SMarker> &markers = m_TrackCache->m_Markers;
+	for(unsigned int i=0; i < markers.size(); i++)
+	{
+		glPushMatrix();
+		glTranslatef(
+			TILESIZE*markers[i].pos.x,
+			VERTSIZE*markers[i].pos.y,
+			TILESIZE*markers[i].pos.z);
+
+		m_RouteErrorMarker->draw(&m_Settings, NULL, 1, 0.0);
+
+		glPopMatrix();
+	}
 
 	//Some line graphics
 	float color[] = {1.0, 1.0, 1.0, 1.0};
@@ -117,21 +136,6 @@ void CTERenderer::update()
 
 	glColor3f(1,1,1); //back to white
 
-	//The coordinate axes
-	glBegin(GL_LINES);
-
-	glVertex3f(-TILESIZE/2,0.0,0.0);
-	glVertex3f(TILESIZE/2,0.0,0.0);
-
-	glVertex3f(0.0,0.0,-TILESIZE/2);
-	glVertex3f(0.0,0.0,TILESIZE/2);
-
-	glVertex3f(0.0,0.0,0.0);
-	glVertex3f(0.0,VERTSIZE,0.0);
-
-	glEnd();
-
-	
 	//The active tile
 	int  lengte = m_TrackCache->m_L;
 	int  breedte = m_TrackCache->m_W;
