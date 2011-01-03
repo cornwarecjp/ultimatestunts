@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Ultimate Stunts 0.7.5\n"
 "Report-Msgid-Bugs-To: cornware-cjp@users.sourceforge.net\n"
-"POT-Creation-Date: 2008-06-08 14:16+0200\n"
+"POT-Creation-Date: 2010-12-31 16:01+0100\n"
 "PO-Revision-Date: 2008-01-20 14:11+0100\n"
 "Last-Translator: Borbola Balazs \n"
 "Language-Team: Hungarian \n"
@@ -20,312 +20,312 @@ msgstr ""
 msgid "Status: "
 msgstr "Helyzet: "
 
-#: ultimatestunts/gamegui.cpp:127
+#: ultimatestunts/gamegui.cpp:158
 msgid "Anonymous"
 msgstr "Ismeretlen"
 
-#: ultimatestunts/gamegui.cpp:427
+#: ultimatestunts/gamegui.cpp:477
 msgid "Computer"
 msgstr "Számítógép"
 
-#: ultimatestunts/gamegui.cpp:428
+#: ultimatestunts/gamegui.cpp:478
 msgid "Human   "
 msgstr "Ember   "
 
-#: ultimatestunts/gamegui.cpp:432
+#: ultimatestunts/gamegui.cpp:482
 msgid "Main menu"
 msgstr "Fõmenü"
 
-#: ultimatestunts/gamegui.cpp:435
+#: ultimatestunts/gamegui.cpp:485
 msgid "Drive!"
 msgstr "Rajt!"
 
-#: ultimatestunts/gamegui.cpp:436
+#: ultimatestunts/gamegui.cpp:486
 msgid "Set the game type"
 msgstr "Játék típusának beállítása"
 
-#: ultimatestunts/gamegui.cpp:437
+#: ultimatestunts/gamegui.cpp:487
 msgid "Select the track"
 msgstr "A pálya kiválasztása"
 
-#: ultimatestunts/gamegui.cpp:438
+#: ultimatestunts/gamegui.cpp:488
 msgid "Players and cars"
 msgstr "Játékosok és autók"
 
-#: ultimatestunts/gamegui.cpp:439
+#: ultimatestunts/gamegui.cpp:489
 msgid "View a replay"
 msgstr "Visszajátszás megtekintése"
 
-#: ultimatestunts/gamegui.cpp:440
+#: ultimatestunts/gamegui.cpp:490
 msgid "Settings"
 msgstr "Beállítások"
 
-#: ultimatestunts/gamegui.cpp:441 ultimatestunts/gamegui.cpp:553
+#: ultimatestunts/gamegui.cpp:491 ultimatestunts/gamegui.cpp:603
 msgid "Credits and License"
 msgstr "Szerzök és Lincensz"
 
-#: ultimatestunts/gamegui.cpp:442 trackedit/mainpage.cpp:87
+#: ultimatestunts/gamegui.cpp:492 trackedit/mainpage.cpp:87
 msgid "Exit"
 msgstr "Kilépés"
 
-#: ultimatestunts/gamegui.cpp:446
+#: ultimatestunts/gamegui.cpp:496
 msgid " [Local Game]"
 msgstr " [Helyi Játék]"
 
-#: ultimatestunts/gamegui.cpp:451
+#: ultimatestunts/gamegui.cpp:501
 #, c-format
 msgid " [Running server %s]"
 msgstr " [Szerver (%s) elindítva]"
 
-#: ultimatestunts/gamegui.cpp:457
+#: ultimatestunts/gamegui.cpp:507
 #, c-format
 msgid " [Joining game on server %s]"
 msgstr " [Csatlakozás a szerverhez: %s]"
 
-#: ultimatestunts/gamegui.cpp:458
+#: ultimatestunts/gamegui.cpp:508
 msgid " [server will choose one]"
 msgstr " [a szerver fog választani egyet]"
 
-#: ultimatestunts/gamegui.cpp:463
+#: ultimatestunts/gamegui.cpp:513
 #, c-format
 msgid " [%d player selected]"
 msgid_plural " [%d players selected]"
 msgstr[0] " [%d játékos kiválasztva]"
 
-#: ultimatestunts/gamegui.cpp:468
+#: ultimatestunts/gamegui.cpp:518
 msgid "Select the game type:"
 msgstr "Válassza ki a játék típusát:"
 
-#: ultimatestunts/gamegui.cpp:471
+#: ultimatestunts/gamegui.cpp:521
 msgid "Local game"
 msgstr "Helyi Játék"
 
-#: ultimatestunts/gamegui.cpp:472
+#: ultimatestunts/gamegui.cpp:522
 msgid "Join an existing LAN/network game"
 msgstr "Csatlakozás egy létezö LAN játékhoz"
 
-#: ultimatestunts/gamegui.cpp:473
+#: ultimatestunts/gamegui.cpp:523
 msgid "Start a new LAN/network game"
 msgstr "Új LAN játék kezdeményezése"
 
-#: ultimatestunts/gamegui.cpp:474
+#: ultimatestunts/gamegui.cpp:524
 msgid "Join an existing online game"
 msgstr "Csatlakozás egy létezö online játékhoz"
 
-#: ultimatestunts/gamegui.cpp:475
+#: ultimatestunts/gamegui.cpp:525
 msgid "Start a new online game"
 msgstr "Új online játék kezdeményezése"
 
-#: ultimatestunts/gamegui.cpp:478
+#: ultimatestunts/gamegui.cpp:528
 msgid "Select a server:"
 msgstr "Válasszon szervert:"
 
-#: ultimatestunts/gamegui.cpp:488 ultimatestunts/gamegui.cpp:494
-#: trackedit/tegui.cpp:60
+#: ultimatestunts/gamegui.cpp:538 ultimatestunts/gamegui.cpp:544
+#: trackedit/tegui.cpp:65
 msgid "Select a track"
 msgstr "Válassza ki a pályát:"
 
-#: ultimatestunts/gamegui.cpp:489
+#: ultimatestunts/gamegui.cpp:539
 msgid "Edit track"
 msgstr "Pálya szerkesztése"
 
-#: ultimatestunts/gamegui.cpp:490
+#: ultimatestunts/gamegui.cpp:540
 msgid "View best time replay"
 msgstr "A legjobb idö visszajátszása"
 
-#: ultimatestunts/gamegui.cpp:491 ultimatestunts/gamegui.cpp:518
-#: ultimatestunts/gamegui.cpp:549 ultimatestunts/gamegui.cpp:567
-#: trackedit/tegui.cpp:124
+#: ultimatestunts/gamegui.cpp:541 ultimatestunts/gamegui.cpp:568
+#: ultimatestunts/gamegui.cpp:599 ultimatestunts/gamegui.cpp:617
+#: trackedit/tegui.cpp:145 trackedit/tegui.cpp:163
 msgid "Return to main menu"
 msgstr "Vissza a fõmenübe"
 
-#: ultimatestunts/gamegui.cpp:499
+#: ultimatestunts/gamegui.cpp:549
 msgid "Select a replay file:"
 msgstr "Válasszon egy visszajátszást"
 
-#: ultimatestunts/gamegui.cpp:504
+#: ultimatestunts/gamegui.cpp:554
 msgid "Players menu:"
 msgstr "Játékos menü:"
 
-#: ultimatestunts/gamegui.cpp:517
+#: ultimatestunts/gamegui.cpp:567
 msgid "Add a player"
 msgstr "Játékos hozzáadása"
 
-#: ultimatestunts/gamegui.cpp:521
+#: ultimatestunts/gamegui.cpp:571
 msgid "Configure Player:"
 msgstr "Játékos Beállítása:"
 
-#: ultimatestunts/gamegui.cpp:523
+#: ultimatestunts/gamegui.cpp:573
 msgid "manual"
 msgstr "kézi"
 
-#: ultimatestunts/gamegui.cpp:525
+#: ultimatestunts/gamegui.cpp:575
 msgid "automatic"
 msgstr "automata"
 
-#: ultimatestunts/gamegui.cpp:529
+#: ultimatestunts/gamegui.cpp:579
 msgid "Player type: "
 msgstr "Játékos tipusa: "
 
-#: ultimatestunts/gamegui.cpp:530
+#: ultimatestunts/gamegui.cpp:580
 msgid "Name       : "
 msgstr "Név           : "
 
-#: ultimatestunts/gamegui.cpp:531
+#: ultimatestunts/gamegui.cpp:581
 msgid "Car        : "
 msgstr "Autó          : "
 
-#: ultimatestunts/gamegui.cpp:532
+#: ultimatestunts/gamegui.cpp:582
 msgid "Gearbox    : "
 msgstr "Sebességváltó : "
 
-#: ultimatestunts/gamegui.cpp:533
+#: ultimatestunts/gamegui.cpp:583
 msgid "Choose a car color"
 msgstr "Válasszon színt"
 
-#: ultimatestunts/gamegui.cpp:534
+#: ultimatestunts/gamegui.cpp:584
 msgid "Delete this player"
 msgstr "A játékos törlése"
 
-#: ultimatestunts/gamegui.cpp:535 ultimatestunts/gamegui.cpp:1012
-#: simulation/gamecore.cpp:221 trackedit/tegui.cpp:130
+#: ultimatestunts/gamegui.cpp:585 ultimatestunts/gamegui.cpp:1067
+#: simulation/gamecore.cpp:221 trackedit/tegui.cpp:151
 msgid "Ready"
 msgstr "Kész"
 
-#: ultimatestunts/gamegui.cpp:539
+#: ultimatestunts/gamegui.cpp:589
 #, c-format
 msgid "Select a car for %s:"
 msgstr "Válasszon autót %s számára"
 
-#: ultimatestunts/gamegui.cpp:546
+#: ultimatestunts/gamegui.cpp:596
 msgid "Settings menu:"
 msgstr "Beállítások menü"
 
-#: ultimatestunts/gamegui.cpp:558 stuntsserver/gamecorethread.cpp:359
+#: ultimatestunts/gamegui.cpp:608 stuntsserver/gamecorethread.cpp:359
 msgid "Loading"
 msgstr "Betöltés"
 
-#: ultimatestunts/gamegui.cpp:561
+#: ultimatestunts/gamegui.cpp:611
 msgid "Hiscore"
 msgstr "Toplista"
 
-#: ultimatestunts/gamegui.cpp:564
+#: ultimatestunts/gamegui.cpp:614
 msgid "View replay"
 msgstr "Visszajátszás megtekintése"
 
-#: ultimatestunts/gamegui.cpp:565
+#: ultimatestunts/gamegui.cpp:615
 msgid "Save replay"
 msgstr "Visszajátszás mentése"
 
-#: ultimatestunts/gamegui.cpp:566
+#: ultimatestunts/gamegui.cpp:616
 msgid "Play again"
 msgstr "Verseny újraindítása"
 
-#: ultimatestunts/gamegui.cpp:613 trackedit/tegui.cpp:160
+#: ultimatestunts/gamegui.cpp:664 trackedit/tegui.cpp:196
 msgid "Do you really want to quit?"
 msgstr "Biztos ki akar lépni?"
 
-#: ultimatestunts/gamegui.cpp:640
+#: ultimatestunts/gamegui.cpp:692
 msgid "The track must be selected on the server"
 msgstr "A pályát a szerveren kell kiválasztani"
 
-#: ultimatestunts/gamegui.cpp:678 ultimatestunts/gamegui.cpp:727
+#: ultimatestunts/gamegui.cpp:730 ultimatestunts/gamegui.cpp:779
 msgid "Enter the port number:"
 msgstr "Írja be a portot:"
 
-#: ultimatestunts/gamegui.cpp:703
+#: ultimatestunts/gamegui.cpp:755
 #, c-format
 msgid "Connected to server \"%s\""
 msgstr "Csatlakozva a \"%s\" nevû szerverhez"
 
-#: ultimatestunts/gamegui.cpp:708
+#: ultimatestunts/gamegui.cpp:760
 msgid "Could not find a server. Do you want to set it manually?"
 msgstr "Nem találtam szervert. Kívánja manuálisan megkeresni?"
 
-#: ultimatestunts/gamegui.cpp:711
+#: ultimatestunts/gamegui.cpp:763
 msgid "Enter the host name or IP number of the server:"
 msgstr "Írja be a szerver IP címét vagy gépnevét:"
 
-#: ultimatestunts/gamegui.cpp:729
+#: ultimatestunts/gamegui.cpp:781
 msgid "Enter a name for the server:"
 msgstr "Írja be a szerver nevét:"
 
-#: ultimatestunts/gamegui.cpp:731
+#: ultimatestunts/gamegui.cpp:783
 msgid "Minimum number of players to wait for (including AI players):"
 msgstr ""
 "A minimális számú játékos, akikre várunk (beleértve a számítógép-"
 "játékosokat):"
 
-#: ultimatestunts/gamegui.cpp:775
+#: ultimatestunts/gamegui.cpp:827
 msgid "No best time available"
 msgstr "A legjobb idö nem elérhetö"
 
-#: ultimatestunts/gamegui.cpp:779
+#: ultimatestunts/gamegui.cpp:831
 msgid "Best time: "
 msgstr "Legjobb idö: "
 
-#: ultimatestunts/gamegui.cpp:809
+#: ultimatestunts/gamegui.cpp:861
 msgid "The best time replay for this track does not exist"
 msgstr ""
 "Ehhez a pályához nem létezik visszajátszás, melyen a legjobb futott idö "
 "látható."
 
-#: ultimatestunts/gamegui.cpp:937
+#: ultimatestunts/gamegui.cpp:992
 msgid "Enter the name:"
 msgstr "Írja be a nevet:"
 
-#: ultimatestunts/gamegui.cpp:949
+#: ultimatestunts/gamegui.cpp:1004
 msgid "Car color:"
 msgstr "Autó színe:"
 
-#: ultimatestunts/gamegui.cpp:955
+#: ultimatestunts/gamegui.cpp:1010
 msgid "Can't delete: there needs to be at least one player"
 msgstr "Nem törölhetõ: legalább egy játékos kell, hogy legyen"
 
-#: ultimatestunts/gamegui.cpp:958
+#: ultimatestunts/gamegui.cpp:1013
 msgid "Delete this player?"
 msgstr "Törli ezt a játékost?"
 
-#: ultimatestunts/gamegui.cpp:990
+#: ultimatestunts/gamegui.cpp:1045
 #, c-format
 msgid "Settings: %s"
 msgstr "Beállítások: %s"
 
-#: ultimatestunts/gamegui.cpp:1025 ultimatestunts/gamegui.cpp:1057
+#: ultimatestunts/gamegui.cpp:1080 ultimatestunts/gamegui.cpp:1112
 msgid "Some settings are changed. Do you wish to save the settings?"
 msgstr "Néhány beállítás megváltozott. Kívánod ezeket menteni?"
 
-#: ultimatestunts/gamegui.cpp:1032 ultimatestunts/gamegui.cpp:1064
+#: ultimatestunts/gamegui.cpp:1087 ultimatestunts/gamegui.cpp:1119
 msgid "Saving failed"
 msgstr "Mentés sikertelen"
 
-#: ultimatestunts/gamegui.cpp:1098
+#: ultimatestunts/gamegui.cpp:1153
 msgid "Applying the new value failed"
 msgstr "Az új érték alkalmazása sikertelen"
 
-#: ultimatestunts/gamegui.cpp:1138
+#: ultimatestunts/gamegui.cpp:1193
 msgid "  (this race)"
 msgstr "  (ez a verseny)"
 
-#: ultimatestunts/gamegui.cpp:1161
+#: ultimatestunts/gamegui.cpp:1216
 msgid "Enter the replay filename:"
 msgstr "Írja be a visszajátszás fájlnevét:"
 
-#: ultimatestunts/gamegui.cpp:1175 trackedit/tegui.cpp:289
+#: ultimatestunts/gamegui.cpp:1230
 #, c-format
 msgid "File %s already exists. Overwrite?"
 msgstr "A fájl %s már létezik. Kívánja felülírni?"
 
-#: ultimatestunts/gamegui.cpp:1247
+#: ultimatestunts/gamegui.cpp:1302
 msgid "Connecting to the server failed"
 msgstr "A kapcsolódás sikertelen"
 
-#: ultimatestunts/gamegui.cpp:1332
+#: ultimatestunts/gamegui.cpp:1387
 #, c-format
 msgid "Player %s was refused"
 msgstr "Játékos visszautasítva: %s"
 
-#: ultimatestunts/uscore.cpp:116
+#: ultimatestunts/uscore.cpp:119
 #, c-format
 msgid "Frame rate: %.1f FPS"
 msgstr "Képkocka/másodperc: %.1f FPS"
@@ -374,39 +374,43 @@ msgstr "Igen"
 msgid "No"
 msgstr "Nem"
 
-#: graphics/gui.cpp:169
+#: graphics/keyinputbox.cpp:62
+msgid "<press a key>"
+msgstr ""
+
+#: graphics/gui.cpp:170
 msgid "System's default language"
 msgstr "Alapértelmezett nyelv"
 
-#: graphics/gui.cpp:185
+#: graphics/gui.cpp:186
 msgid "Language:"
 msgstr "Nyelv:"
 
-#: graphics/gui.cpp:196
+#: graphics/gui.cpp:197
 msgid "Full screen mode?"
 msgstr "Teljes képernyő?"
 
-#: graphics/gui.cpp:203
+#: graphics/gui.cpp:204
 msgid "Enter window width:"
 msgstr "Ablak szélessége:"
 
-#: graphics/gui.cpp:205
+#: graphics/gui.cpp:206
 msgid "Enter window height:"
 msgstr "Ablak magassága:"
 
-#: graphics/gui.cpp:212
+#: graphics/gui.cpp:213
 msgid "Enter screen resolution width:"
 msgstr "Képernyőfelbontás szélessége:"
 
-#: graphics/gui.cpp:214
+#: graphics/gui.cpp:215
 msgid "Enter screen resolution height:"
 msgstr "Képernyőfelbontás magassága:"
 
-#: graphics/gui.cpp:228
+#: graphics/gui.cpp:229
 msgid "Default resolution"
 msgstr "Alapértelmezett felbontás"
 
-#: graphics/gui.cpp:231
+#: graphics/gui.cpp:232
 msgid "Select a screen resolution:"
 msgstr "Válasszon képernyőfelbontást:"
 
@@ -443,24 +447,24 @@ msgstr "Licensz:"
 msgid "Hello, world!\n"
 msgstr "Helló világ!\n"
 
-#: simulation/rulecontrol.cpp:76
+#: simulation/rulecontrol.cpp:80
 msgid "GO!"
 msgstr "Rajt!"
 
-#: simulation/rulecontrol.cpp:399
+#: simulation/rulecontrol.cpp:421
 msgid "Penalty time: "
 msgstr "Büntetés: "
 
-#: simulation/rulecontrol.cpp:410
+#: simulation/rulecontrol.cpp:432
 msgid "You finished (waiting for other players)"
 msgstr "Célba értél (várjuk a többi játékost)"
 
-#: simulation/rulecontrol.cpp:433
+#: simulation/rulecontrol.cpp:455
 #, c-format
 msgid "Error: more than one start in the track\n"
 msgstr "Hiba: több, mint egy rajt van a pályán\n"
 
-#: simulation/rulecontrol.cpp:444
+#: simulation/rulecontrol.cpp:467
 #, c-format
 msgid "Error: more than one finish in the track\n"
 msgstr "Hiba: több, mint egy cél van a pályán\n"
@@ -469,63 +473,171 @@ msgstr "Hiba: több, mint egy cél van a pályán\n"
 msgid "Loading files"
 msgstr "Fájlok betöltése"
 
-#: trackedit/tegui.cpp:72 trackedit/mainpage.cpp:90
+#: simulation/gamecore.cpp:294
+msgid "Game paused"
+msgstr ""
+
+#: trackedit/tegui.cpp:77 trackedit/mainpage.cpp:90
 msgid "Change tiles collection"
 msgstr "Pályadarabgyűjtemény változtatása"
 
-#: trackedit/tegui.cpp:90
+#: trackedit/tegui.cpp:95
 msgid "Edit this tile"
 msgstr "Pályadarab szerkesztése"
 
-#: trackedit/tegui.cpp:122
+#: trackedit/tegui.cpp:111 trackedit/mainpage.cpp:91
+msgid "Change scenery settings"
+msgstr ""
+
+#: trackedit/tegui.cpp:143
 msgid "Add a new tile"
 msgstr "Új pályadarab hozzáadása"
 
-#: trackedit/tegui.cpp:123
+#: trackedit/tegui.cpp:144
 msgid "Remove unused tiles"
 msgstr "Használaton kívüli pályadarabok eltüntetése"
 
-#: trackedit/tegui.cpp:128
+#: trackedit/tegui.cpp:149
 msgid "Change the tile model"
 msgstr "Pályadarabmodell változtatása"
 
-#: trackedit/tegui.cpp:129
+#: trackedit/tegui.cpp:150
 msgid "Delete this tile"
 msgstr "A pályadarab törlése"
 
-#: trackedit/tegui.cpp:213 trackedit/tegui.cpp:243
+#: trackedit/tegui.cpp:155
+#, fuzzy
+msgid "Change the cloud image"
+msgstr "Pályadarabmodell változtatása"
+
+#: trackedit/tegui.cpp:156
+msgid "Change the background image"
+msgstr ""
+
+#: trackedit/tegui.cpp:157
+#, fuzzy
+msgid "Change the sky color"
+msgstr "Pályadarabgyűjtemény változtatása"
+
+#: trackedit/tegui.cpp:158
+#, fuzzy
+msgid "Change the horizon sky color"
+msgstr "Pályadarabmodell változtatása"
+
+#: trackedit/tegui.cpp:159
+msgid "Change the cloud and background color"
+msgstr ""
+
+#: trackedit/tegui.cpp:160
+#, fuzzy
+msgid "Change the fog color"
+msgstr "Pályadarabmodell változtatása"
+
+#: trackedit/tegui.cpp:161
+#, fuzzy
+msgid "Change the light color"
+msgstr "Pályadarabmodell változtatása"
+
+#: trackedit/tegui.cpp:162
+#, fuzzy
+msgid "Change the light direction"
+msgstr "Pályadarabgyűjtemény változtatása"
+
+#: trackedit/tegui.cpp:255 trackedit/tegui.cpp:285
 #, c-format
 msgid "Error: %s could not be loaded"
 msgstr "Hiba: %s nem tölthetõ be"
 
-#: trackedit/tegui.cpp:227
+#: trackedit/tegui.cpp:269
 msgid "Select the Stunts track"
 msgstr "Válassza ki a Stunts pályát"
 
-#: trackedit/tegui.cpp:255
+#: trackedit/tegui.cpp:297
 msgid "Tracks:"
 msgstr "Pályák:"
 
-#: trackedit/tegui.cpp:274
+#: trackedit/tegui.cpp:316
 msgid "Enter the filename:"
 msgstr "Írja be a fájlnevet:"
 
-#: trackedit/tegui.cpp:296
+#: trackedit/tegui.cpp:331
+#, fuzzy, c-format
+msgid ""
+"File %s already exists. Overwrite? The hiscore of the track will be reset."
+msgstr "A fájl %s már létezik. Kívánja felülírni?"
+
+#: trackedit/tegui.cpp:346
 #, c-format
 msgid "Saving of %s failed"
 msgstr "%s mentése sikertelen"
 
-#: trackedit/tegui.cpp:323
+#: trackedit/tegui.cpp:373
 msgid "This tile is in use in the track. Do you really want to change it?"
 msgstr "A pályadarabot a pálya használja. Biztos meg akarod változtatni?"
 
-#: trackedit/tegui.cpp:383
+#: trackedit/tegui.cpp:433
 msgid "This tile is in use in the track. Do you really want to delete it?"
 msgstr "A pályadarabot a pálya használja. Biztos törölni akarod?"
 
-#: trackedit/tegui.cpp:406
+#: trackedit/tegui.cpp:456
 msgid "Tiles:"
 msgstr "Pályadarabok:"
+
+#: trackedit/tegui.cpp:532
+#, fuzzy
+msgid "Cloud image file:"
+msgstr "Fájlok betöltése"
+
+#: trackedit/tegui.cpp:537
+msgid "Background image file:"
+msgstr ""
+
+#: trackedit/tegui.cpp:542
+#, fuzzy
+msgid "Sky color:"
+msgstr "Autó színe:"
+
+#: trackedit/tegui.cpp:547
+msgid "Horizon sky color:"
+msgstr ""
+
+#: trackedit/tegui.cpp:552
+msgid "Cloud and background color:"
+msgstr ""
+
+#: trackedit/tegui.cpp:557
+#, fuzzy
+msgid "Fog color:"
+msgstr "Autó színe:"
+
+#: trackedit/tegui.cpp:562
+#, fuzzy
+msgid "Light color:"
+msgstr "Autó színe:"
+
+#: trackedit/tegui.cpp:583
+msgid "Light compass direction (degrees):"
+msgstr ""
+
+#: trackedit/tegui.cpp:587
+msgid "Light angle above the horizon (degrees):"
+msgstr ""
+
+#: trackedit/tegui.cpp:634
+msgid "Number of tiles to add on the west side (negative = remove tiles): "
+msgstr ""
+
+#: trackedit/tegui.cpp:638
+msgid "Number of tiles to add on the east side (negative = remove tiles): "
+msgstr ""
+
+#: trackedit/tegui.cpp:642
+msgid "Number of tiles to add on the north side (negative = remove tiles): "
+msgstr ""
+
+#: trackedit/tegui.cpp:646
+msgid "Number of tiles to add on the south side (negative = remove tiles): "
+msgstr ""
 
 #: trackedit/mainpage.cpp:84
 msgid "Load track"
@@ -546,6 +658,11 @@ msgstr "Visszavonás"
 #: trackedit/mainpage.cpp:89
 msgid "Redo"
 msgstr "Mégis"
+
+#: trackedit/mainpage.cpp:92
+#, fuzzy
+msgid "Resize the track"
+msgstr "A pálya kiválasztása"
 
 #~ msgid "Top speed in this session: %.1f km/h"
 #~ msgstr "Csúcssebesség ebben a szakaszban: %.1f km/h"

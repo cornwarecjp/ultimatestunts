@@ -226,70 +226,72 @@ en/of de achter-downforce verkleinen. Merk op dat dit ook stuurgedrag zal
 beinvloeden.
 
 
-<h5>steering</h5>
-The way how a car behaves when taking corners is essential in how the car handling is
-experienced by a driver. Unfortunately, this is a complicated subject, and it is not described
-easily.
+<h5>sturen</h5>
+De manier waarop een auto zich gedraagt bij het nemen van bochten is essentieel voor hoe
+het weggedrag wordt ervaren door een bestuurder. Helaas is dit een ingewikkeld onderwerp,
+en het is niet makkelijk te beschrijven.
 <p>
-If a car needs to follow a circle-shaped path, then it needs to accelerate towards the center
-of that circle. This means that the tires need to generate sideward forces. Also, the car needs
-to rotate, so that it remains aligned with the circle. About the sideward forces, you already
-guessed it: they are limited by the tires, just like engine and brake forces. Also, if engine
-or brake forces are applied on a certain wheel, then there is less force "left" for steering.
-Weight transfer effects are extremely important in corners. Because of the steering, the outer
-wheels get more weight, and the inner wheels less. Also, if the rear wheels get more grip, then
-the car will understeer, and if the front wheels get more grip, the car will oversteer. The
-distribution of normal force between front and rear wheels depends on a lot of things, so it
-can also be tuned in a lot of ways. The weight transfer due to accelerating and braking can be
-increased / reduced by putting the center of gravity lower or higher, the neutral weight
-distribution can be changed by moving the center of gravity forward or backward, the distribution
-at high speeds can be changed with the front and rear downforce, and the grip can be tuned by
-changing the static friction coefficient of the front or rear tires a little bit.
+Als een auto een cirkelvormig traject moet afleggen, dan moet het naar het midden van die
+cirkel toe versnellen. Dit betekent dat de banden zijwaartse krachten moeten genereren. Ook
+moet de auto roteren, zodat het uitgelijnd blijft met de cirkel. Wat die zijwaartse krachten
+betreft heb je het al geraden: die worden beperkt door de banden, net zoals motor- en
+remkrachten. Ook is het zo als er motor- of remkrachten worden uitgeoefend op een bepaald
+wiel, dat er minder kracht "over" is om te sturen. "Weight transfer" effecten zijn
+extreem belangrijk in bochten. Als gevolg van het sturen krijgen de buitenste wielen meer
+gewicht en de binnenste wielen minder. Ook is het zo dat als de achterwielen meer grip krijgen,
+dat de auto onderstuur zal hebben, en als de voorwielen meer grip krijgen, dat de auto zal
+oversturen. De verdeling van normaalkrachten tussen de voor- en achterwielen hangt af van veel
+dingen, dus het kan ook op veel manieren getuned worden. De weight transfer als gevolg van
+accelereren en remmen kan vergroot / verkleind worden door het zwaartepunt hoger of lager te
+plaatsen, de neutrale gewichtsverdeling kan veranderd worden door het zwaartepunt naar voren of
+naar achteren te verplaatsen, de verdeling bij hoge snelheden kan veranderd worden met de
+downforce aan de voorkant en achterkant, en de grip kan getuned worden door de statische
+wrijvingscoëfficienten van de voor/achterbanden een beetje te veranderen.
 <p>
-Another thing that needs to be tuned is how fast the car rotates. When turning into a corner,
-the front wheels' rotation is changed, so that a sideward force is generated on the front wheels.
-As this force is initially not present at the rear wheels, the car starts rotating. How fast it
-starts rotating depends on many things, one of them being the moment of inertia of the car.
-The moment of inertia is to rotations what mass is to linear motions. If the moment of inertia is
-extremely high, then the car will respond very slowly to steering forces: it takes a long time
-before the car starts steering, and after the corner it takes a long time before the car drives
-in a straight line again. If the moment of inertia is low, then the car will respond very quickly
-to changes: small changes in steering, gas or braking will cause an overreaction in the orientation
-of the car.
+Iets anders dat getuned moet worden is hoe snel de auto roteert. Bij het insturen in een bocht
+wordt de rotatie van de voorwielen veranderd, zodat een zijwaartse kracht gegenereerd wordt op
+de voorwielen. Doordat deze kracht in eerste instantie niet aanwezig is op de achterwielen,
+begint de auto te roteren. Hoe snel de auto begint te roteren hangt af van veel dingen, en één
+ervan is het traagheidsmoment van de auto. Het traagheidsmoment is voor rotaties wat massa is
+voor lineaire bewegingen. Als het traagheidsmoment extreem hoog is, dan zal de auto erg traag
+reageren op stuurkrachten: het duurt lang voordat de auto begint te sturen, en na de bocht duurt
+het lang voordat de auto weer in een recht lijn beweegt. Als het traagheidsmoment laag is, dan
+zal de auto snel reageren op veranderingen: kleine veranderingen in sturen, gas of remmen zullen
+een overreactie veroorzaken in de oriëntatie van de auto.
 <p>
-The following formulas give some general information on how fast corners can be taken with a
-given tire quality.
+De volgende formules geven wat algemene informatie over hoe snel bochten genomen kunnen worden
+bij een gegeven bandenkwaliteit.
 <pre>
-#Symbols
-R = radius of a corner
-v_max = maximum speed in this corner
-m = mass of the car
-g = gravitation constant (9.81 m/s^2)
-F = maximum total sideways force of the tires
-Fn = total normal force on the tires
-mu = static friction coefficient of the tires
+#Symbolen
+R = straal van een bocht
+v_max = maximale snelheid in deze bocht
+m = massa van de auto
+g = zwaartekrachtsconstante (9.81 m/s^2)
+F = maximale totale zijwaartse kracht van de banden
+Fn = totale normaalkracht op de banden
+mu = statische wrijvingscoëfficient van de banden
 
 F = m * v_max^2 / R = mu * Fn = mu * m * g
 vmax = sqrt(R * mu * g)
 </pre>
 
-<h3>Physical phenomena</h3>
-aerodynamics
-tires
+<h3>Fysische verschijnselen</h3>
+aerodynamica
+banden
 weight transfer
-suspension
-oversteer/understeer
+wielophanging
+overstuur/onderstuur
 
-<h3>Parameters of an Ultimate Stunts car</h3>
+<h3>Parameters van een Ultimate Stunts auto</h3>
 
 
-<h3>General order of tuning a car</h3>
+<h3>Algemene volgorde bij het tunen van een auto</h3>
 
-engine power
-gear ratios
-max speed
+motorvermogen
+versnellings-verhoudingen
+topsnelheid
 grip
-oversteer/understeer
+overstuur/onderstuur
 
 </body>
 </html>

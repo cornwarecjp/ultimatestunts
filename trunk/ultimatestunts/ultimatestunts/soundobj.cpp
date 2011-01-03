@@ -222,6 +222,7 @@ void CSoundObj::playOnce()
 
 #ifdef HAVE_LIBOPENAL
 	alSourcePlay(m_Source);
+	alSourcei(m_Source, AL_LOOPING, AL_FALSE);
 #endif
 
 	m_PlayStartTime = CTimer::getTime();

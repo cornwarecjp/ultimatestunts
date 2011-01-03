@@ -33,12 +33,6 @@ class CBinBuffer : public vector<Uint8>
 {
 public:
 
-	enum eError {
-		eEndOfBuffer=1,
-		eOtherError=2
-	};
-
-
 //	CBinBuffer & operator += (const char unsigned & c); //better use Uint8 ??
 	CBinBuffer & operator += (const char unsigned * c);
 	CBinBuffer & operator = (const char unsigned * c);

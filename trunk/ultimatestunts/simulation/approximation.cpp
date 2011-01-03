@@ -29,6 +29,9 @@ CApproximation::~CApproximation()
 
 bool CApproximation::update()
 {
+	//Skip the rest if paused:
+	if(theWorld->m_Paused) return true;
+
 	vector<CDataObject *> objs = theWorld->getObjectArray(CDataObject::eMovingObject);
 
 	float dt = theWorld->m_Lastdt;

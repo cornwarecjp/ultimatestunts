@@ -30,7 +30,8 @@
 
 CRuleControl::CRuleControl()
 {
-	firstUpdate = true;
+	m_FirstUpdate = true;
+	m_BeforeStart = true;
 }
 
 CRuleControl::~CRuleControl(){
@@ -39,20 +40,22 @@ CRuleControl::~CRuleControl(){
 bool CRuleControl::update()
 {
 	//Place everybody at the start (only the first update of course)
-	if(firstUpdate)
+	if(m_FirstUpdate)
 	{
-		firstUpdate = false;
+		m_FirstUpdate = false;
 
 		if(!findStartFinish()) //error with starts/finishes
 			return false; //stop
 
 		placeStart();
 		theWorld->m_Paused = true;
+		m_BeforeStart = true;
 	}
 
-	if(theWorld->m_Paused)
+	if(m_BeforeStart)
 	{
 		//Pause state before the start of the game
+		theWorld->m_Paused = true;
 
 		float t = theWorld->m_LastTime;
 
@@ -60,6 +63,7 @@ bool CRuleControl::update()
 		{
 			theWorld->m_Paused = false;
 			placeStart(); //sets start times
+			m_BeforeStart = false;
 		}
 
 		static int timedif = 4;
@@ -79,7 +83,7 @@ bool CRuleControl::update()
 			theWorld->m_ChatSystem.sendMessage(msg);
 		}
 	}
-	else
+	else if(!theWorld->m_Paused)
 	{
 		//Normal racing rule update
 		vector<CDataObject *> objs = theWorld->getObjectArray(CDataObject::eMovingObject);
@@ -232,13 +236,14 @@ void CRuleControl::updateCarRules(unsigned int movObjIndex, CCar *car)
 				to.route = status.currentRoute;
 				to.tile = status.currentTile;
 			}
+
 			float minDistance = getSmallestDistance(status, from, to); //fills in from
 
 			//Calculate minimum distance following a straight line
-			printf("Searching path to route %d tile %d\n", to.route, to.tile);
+			//printf("Searching path to route %d tile %d\n", to.route, to.tile);
 			float lineDistance = getDirectDistance(from, to);
 
-			printf("Valid distance: %.1f; Line distance: %.1f\n", minDistance, lineDistance);
+			//printf("Valid distance: %.1f; Line distance: %.1f\n", minDistance, lineDistance);
 
 			float dx = minDistance - lineDistance;
 			if(dx > 0) //expected to be always true, but you never know
@@ -252,7 +257,7 @@ void CRuleControl::updateCarRules(unsigned int movObjIndex, CCar *car)
 		}
 		else
 		{
-			//printf("You are not supposed to be on route %d tile %d\n", routenr, tilenr);
+			printf("You are not supposed to be on route %d tile %d\n", routenr, tilenr);
 		}
 
 		if(status.lastPosition[routenr] >= tilenr) //we are legally on this position
@@ -309,7 +314,6 @@ void CRuleControl::updateCarRules(unsigned int movObjIndex, CCar *car)
 		if(fabsf(dist2) < r || dist1 / dist2 < 0.0)
 			finish(car);
 	}
-
 }
 
 void CRuleControl::reachRouteRecursive(CCarRuleStatus &status, unsigned int route, unsigned int tile)
@@ -327,7 +331,10 @@ void CRuleControl::reachRouteRecursive(CCarRuleStatus &status, unsigned int rout
 	}
 }
 
-float CRuleControl::getSmallestDistance(const CCarRuleStatus &status, SRoutePos &from, SRoutePos to)
+float CRuleControl::getSmallestDistance(
+	const CCarRuleStatus &status,
+	SRoutePos &from, SRoutePos to,
+	vector<unsigned int> traversedRoutes)
 {
 	//End of recursion situation:
 	if(status.lastPosition[to.route] >= (int)(to.tile))
@@ -345,24 +352,39 @@ float CRuleControl::getSmallestDistance(const CCarRuleStatus &status, SRoutePos 
 	{
 		SRoutePos mid = to;
 		mid.tile--;
-		ret = getSmallestDistance(status, from, mid) + getDirectDistance(mid, to);
+		ret =
+			getSmallestDistance(status, from, mid, traversedRoutes) +
+			getDirectDistance(mid, to);
 	}
 	else //to.tile == 0, follow a split upstream
 	{
 		SRoutePos to2;
 		to2.route = track.m_Routes[to.route].startRoute;
 		to2.tile = track.m_Routes[to.route].startTile;
-		ret = getSmallestDistance(status, from, to2);
+		traversedRoutes.push_back(to.route);
+		ret = getSmallestDistance(status, from, to2, traversedRoutes);
 	}
 
 	//Follow joins upstream
 	for(unsigned int i=0; i < track.m_Routes.size(); i++)
 		if(track.m_Routes[i].finishRoute == to.route && track.m_Routes[i].finishTile == to.tile)
 		{
+			//First check if we already traversed this route
+			bool alreadyTraversed = false;
+			for(unsigned int j=0; j < traversedRoutes.size(); j++)
+				if(traversedRoutes[j] == i)
+				{
+					alreadyTraversed = true;
+					break;
+				}
+			if(alreadyTraversed)
+				continue;
+
+			//Traverse the joining route
 			SRoutePos to2, from2;
 			to2.route = i;
 			to2.tile = track.m_Routes[i].size()-1;
-			float ret2 = getSmallestDistance(status, from2, to2);
+			float ret2 = getSmallestDistance(status, from2, to2, traversedRoutes);
 
 			if(ret2 < ret)
 			{
@@ -428,7 +450,7 @@ bool CRuleControl::findStartFinish()
 				STile &tile = track.m_Track[index];
 				
 				if(theWorld->getTileModel(tile.m_Model)->m_isStart)
-
+				{
 					if(founds) //more than 1 start position
 						{printf(_("Error: more than one start in the track\n")); return false;}
 					else
@@ -437,9 +459,10 @@ bool CRuleControl::findStartFinish()
 						m_StartX = x; m_StartY = y; m_StartH = tile.m_Z; m_StartRot = tile.m_R;
 						m_StartIndex = index;
 					}
+				}
 
 				if(theWorld->getTileModel(tile.m_Model)->m_isFinish)
-
+				{
 					if(foundf) //more than 1 finish position
 						{printf(_("Error: more than one finish in the track\n")); return false;}
 					else
@@ -448,6 +471,7 @@ bool CRuleControl::findStartFinish()
 						m_FinishX = x; m_FinishY = y; m_FinishH = tile.m_Z; m_FinishRot = tile.m_R;
 						m_FinishIndex = index;
 					}
+				}
 			}
 
 	if(!founds || !foundf) //no start or finish position

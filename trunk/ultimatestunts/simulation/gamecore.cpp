@@ -264,29 +264,60 @@ void CGameCore::setStartTime(float offset)
 	m_TimerOffset = m_GlobalTimeAccel * tnow - theWorld->m_LastTime;
 	m_FPS = 0.0;
 
+	m_World->m_Paused = false;
+
 	usleep(1000); //< 1000 fps. Just to avoid getting too high FPS in the first frame
 }
 
-bool CGameCore::update() //true = continue false = leave
+bool CGameCore::update()
 {
 	//Game time info:
-	float currTime = m_GlobalTimeAccel * m_Timer.getTime() - m_TimerOffset;
+	if(m_World->m_Paused && theWorld->m_LastTime > 0.0)
+	{
+		{
+			float currTime = m_GlobalTimeAccel * m_Timer.getTime();
+			float dt = currTime - m_PauseStartTime + 0.00001; //to avoid division by zero
 
-	float dt = currTime - theWorld->m_LastTime + 0.00001; //to avoid division by zero
+			theWorld->m_Lastdt = dt;
+			m_PauseStartTime = currTime;
+		}
 
-	if(dt > 0.5)
+		//Pause message:
+		{
+			static int time = -1;
+			int timeNow = int(theWorld->m_LastTime);
+			if(timeNow != time)
+			{
+				time = timeNow;
+	
+				CChatMessage msg;
+				msg.m_Message = _("Game paused");
+	
+				msg.m_ToMovingObject = -1;
+				theWorld->m_ChatSystem.sendMessage(msg);
+			}
+		}
+	}
+	else
+	{
+		float currTime = m_GlobalTimeAccel * m_Timer.getTime() - m_TimerOffset;
+	
+		float dt = currTime - theWorld->m_LastTime + 0.00001; //to avoid division by zero
+	
+		theWorld->m_Lastdt = dt;
+		theWorld->m_LastTime = currTime;
+	}
+
+	if(theWorld->m_Lastdt > 0.5)
 	{
 #ifdef DEBUGMSG
 		printf("Warning: Low update time detected\n");
 #endif
-		dt = 0.5;
+		theWorld->m_Lastdt = 0.5;
 	}
 
-	theWorld->m_Lastdt = dt;
-	theWorld->m_LastTime = currTime;
-
 	//FPS:
-	float fpsnu = m_GlobalTimeAccel / dt;
+	float fpsnu = m_GlobalTimeAccel / theWorld->m_Lastdt;
 	m_FPS = 0.9 * m_FPS + 0.1 * fpsnu;
 
 	if(m_GameType == eNetworkGame)
@@ -339,6 +370,23 @@ bool CGameCore::update() //true = continue false = leave
 	}
 
 	return retval;
+}
+
+void CGameCore::setPause(bool pause)
+{
+	if(m_GameType != eLocalGame && m_GameType != eReplayGame) return;
+	if(theWorld->m_LastTime <= 0.0) return;
+
+	m_World->m_Paused = pause;
+
+	if(pause)
+	{
+		m_PauseStartTime = m_GlobalTimeAccel * m_Timer.getTime();
+	}
+	else
+	{
+		m_TimerOffset = m_GlobalTimeAccel * m_Timer.getTime() - theWorld->m_LastTime;
+	}
 }
 
 void CGameCore::stopGame(bool saveHiscore)

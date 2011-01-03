@@ -81,20 +81,22 @@ CMainPage::CMainPage() : CGUIPage()
 	m_IconBar->m_Yrel = 0.9;
 	m_IconBar->m_Wrel = 1.0;
 	m_IconBar->m_Hrel = 0.1;
-	m_IconBar->addIcon(CIconList::eLoad, 0.1, _("Load track"));
-	m_IconBar->addIcon(CIconList::eImport, 1.1, _("Import Stunts track"));
-	m_IconBar->addIcon(CIconList::eSave, 1.1, _("Save track"));
-	m_IconBar->addIcon(CIconList::eQuit, 1.1, _("Exit"));
-	m_IconBar->addIcon(CIconList::eUndo, 2.1, _("Undo"));
-	m_IconBar->addIcon(CIconList::eRedo, 1.1, _("Redo"));
-	m_IconBar->addIcon(CIconList::eTiles, 2.1, _("Change tiles collection"));
+	m_IconBar->addIcon(CIconList::eLoad       , 0.1, _("Load track"));
+	m_IconBar->addIcon(CIconList::eImport     , 1.1, _("Import Stunts track"));
+	m_IconBar->addIcon(CIconList::eSave       , 1.1, _("Save track"));
+	m_IconBar->addIcon(CIconList::eQuit       , 1.1, _("Exit"));
+	m_IconBar->addIcon(CIconList::eUndo       , 2.1, _("Undo"));
+	m_IconBar->addIcon(CIconList::eRedo       , 1.1, _("Redo"));
+	m_IconBar->addIcon(CIconList::eTiles      , 2.1, _("Change tiles collection"));
+	m_IconBar->addIcon(CIconList::eScenery    , 1.1, _("Change scenery settings"));
+	m_IconBar->addIcon(CIconList::eResizeTrack, 1.1, _("Resize the track"));
 	m_Widgets.push_back(m_IconBar);
 
 	m_NormalNumWidgets = m_Widgets.size();
 
 	m_DrawBackground = false;
 
-	theTrackDocument->setNewAction(m_ActionWidget->m_Action);
+	enableActionWidgetAction();
 
 	m_PrevMouseX = m_PrevMouseY = -1;
 	m_TrackCache = NULL;
@@ -125,6 +127,11 @@ void CMainPage::updateDocInfo()
 	m_Title = "";
 }
 
+void CMainPage::enableActionWidgetAction()
+{
+	theTrackDocument->setNewAction(m_ActionWidget->m_Action);
+}
+
 int CMainPage::onKeyPress(int key)
 {
 	SDLMod modState = SDL_GetModState();
@@ -140,6 +147,8 @@ int CMainPage::onKeyPress(int key)
 		//Otherwise, default key handling
 		switch(key)
 		{
+		case SDLK_ESCAPE:
+			return WIDGET_CANCELLED | WIDGET_QUIT;
 		case SDLK_PAGEUP:
 			movement.y = 1;
 			break;

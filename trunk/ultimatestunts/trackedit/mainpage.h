@@ -51,6 +51,10 @@ public:
 	void resetCameraPosition();
 	void updateDocInfo(); //e.g. filename
 
+	//in case it is disabled by someone else,
+	//or if there is a new action widget:
+	void enableActionWidgetAction();
+
 	CIconList::eIconID getSelection();
 
 protected:

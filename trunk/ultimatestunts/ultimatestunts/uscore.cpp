@@ -94,7 +94,10 @@ bool CUSCore::update()
 	bool retval = true;
 
 	//Escape:
-	retval = retval && ( !(m_WinSys->globalKeyWasPressed(eExit)) );
+	retval = retval && ( !(m_WinSys->wasPressed(SDLK_ESCAPE)) );
+
+	if(m_WinSys->globalKeyWasPressed(ePause))
+		setPause(!m_World->m_Paused);
 
 	//Cameras:
 	for(unsigned int i=0; i < m_NumCameras; i++)

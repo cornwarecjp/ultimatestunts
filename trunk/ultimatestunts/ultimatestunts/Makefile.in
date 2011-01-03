@@ -54,8 +54,8 @@ am_ustunts_OBJECTS = carviewer.$(OBJEXT) gamecamera.$(OBJEXT) \
 	gamegui.$(OBJEXT) gamerenderer.$(OBJEXT) \
 	gamewinsystem.$(OBJEXT) humanplayer.$(OBJEXT) main.$(OBJEXT) \
 	music.$(OBJEXT) sndsample.$(OBJEXT) sound.$(OBJEXT) \
-	soundobj.$(OBJEXT) soundworld.$(OBJEXT) uscore.$(OBJEXT) \
-	usserver.$(OBJEXT)
+	soundobj.$(OBJEXT) soundtools.$(OBJEXT) soundworld.$(OBJEXT) \
+	uscore.$(OBJEXT) usserver.$(OBJEXT)
 ustunts_OBJECTS = $(am_ustunts_OBJECTS)
 ustunts_DEPENDENCIES = $(top_builddir)/trackedit/libtrackedit.a \
 	$(top_builddir)/graphics/libgraphics.a \
@@ -154,8 +154,10 @@ PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
 PACKAGE_NAME = @PACKAGE_NAME@
 PACKAGE_STRING = @PACKAGE_STRING@
 PACKAGE_TARNAME = @PACKAGE_TARNAME@
+PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
+PKG_CONFIG = @PKG_CONFIG@
 POSUB = @POSUB@
 PRI_MACROS_BROKEN = @PRI_MACROS_BROKEN@
 RANLIB = @RANLIB@
@@ -229,15 +231,17 @@ target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
 usdatadir = @usdatadir@
+vorbisfile_CFLAGS = @vorbisfile_CFLAGS@
+vorbisfile_LIBS = @vorbisfile_LIBS@
 ustunts_SOURCES = carviewer.cpp gamecamera.cpp gamegui.cpp gamerenderer.cpp \
-	gamewinsystem.cpp humanplayer.cpp main.cpp music.cpp sndsample.cpp sound.cpp soundobj.cpp \
-	soundworld.cpp uscore.cpp usserver.cpp
+	gamewinsystem.cpp humanplayer.cpp main.cpp music.cpp sndsample.cpp \
+	sound.cpp soundobj.cpp soundtools.cpp soundworld.cpp uscore.cpp usserver.cpp
 
 ustunts_LDADD = $(top_builddir)/trackedit/libtrackedit.a \
 	$(top_builddir)/graphics/libgraphics.a $(top_builddir)/simulation/libsimulation.a \
 	$(top_builddir)/shared/libshared.a @sdllibs@ @graphlibs@ @soundlibs@ @netlibs@ @LIBINTL@
 
-EXTRA_DIST = carviewer.cpp carviewer.h gamecamera.cpp gamecamera.h gamegui.cpp gamegui.h gamerenderer.cpp gamerenderer.h gamewinsystem.cpp gamewinsystem.h humanplayer.cpp humanplayer.h main.cpp music.cpp music.h sndsample.cpp sndsample.h sound.cpp sound.h soundobj.cpp soundobj.h soundworld.cpp soundworld.h uscore.cpp uscore.h usserver.cpp usserver.h
+EXTRA_DIST = carviewer.cpp carviewer.h gamecamera.cpp gamecamera.h gamegui.cpp gamegui.h gamerenderer.cpp gamerenderer.h gamewinsystem.cpp gamewinsystem.h humanplayer.cpp humanplayer.h main.cpp music.cpp music.h sndsample.cpp sndsample.h sound.cpp sound.h soundobj.cpp soundobj.h soundtools.cpp soundtools.h soundworld.cpp soundworld.h uscore.cpp uscore.h usserver.cpp usserver.h
 # set the include path found by configure
 INCLUDES = -I$(top_srcdir)/graphics -I$(top_srcdir)/intl -I$(top_srcdir)/shared \
 	-I$(top_srcdir)/simulation -I$(top_srcdir)/trackedit $(all_includes)
@@ -258,9 +262,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  ultimatestunts/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  ultimatestunts/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign  ultimatestunts/Makefile
+	  $(AUTOMAKE) --gnu  ultimatestunts/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -322,6 +326,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sndsample.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sound.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/soundobj.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/soundtools.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/soundworld.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/uscore.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/usserver.Po@am__quote@

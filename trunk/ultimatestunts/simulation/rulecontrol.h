@@ -40,7 +40,8 @@ public:
 	//while playing:
 	virtual bool update();
 protected:
-	bool firstUpdate;
+	bool m_FirstUpdate; //only true on the first iteration
+	bool m_BeforeStart; //true as long as t < 0
 
 	bool findStartFinish();
 
@@ -53,7 +54,10 @@ protected:
 		unsigned int route;
 		unsigned int tile;
 	};
-	float getSmallestDistance(const CCarRuleStatus &status, SRoutePos &from, SRoutePos to);
+	float getSmallestDistance(
+		const CCarRuleStatus &status,
+		SRoutePos &from, SRoutePos to,
+		vector<unsigned int> traversedRoutes = vector<unsigned int>());
 	float getDirectDistance(SRoutePos from, SRoutePos to);
 	void reachRouteRecursive(CCarRuleStatus &status, unsigned int route, unsigned int tile);
 	void addPenaltytime(CCar *car, float t);

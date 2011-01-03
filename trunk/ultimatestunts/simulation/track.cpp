@@ -101,27 +101,27 @@ bool CTrack::load(const CString &filename, const CParamList &list)
 		name.Trim(); value.Trim();
 
 		if(name == "sky")
-			{m_SkyFilename = value;}
+			{m_Environment.m_SkyFilename = value;}
 		else if(name == "horizon")
-			{m_HorizonFilename = value;}
+			{m_Environment.m_HorizonFilename = value;}
 		else if(name == "envmap")
-			{m_EnvMapFilename = value;}
+			{m_Environment.m_EnvMapFilename = value;}
 
 		else if(name == "lightdir")
-			{m_LightDirection = value.toVector();}
+			{m_Environment.m_LightDirection = value.toVector();}
 		else if(name == "lightcol")
-			{m_LightColor = value.toVector();}
+			{m_Environment.m_LightColor = value.toVector();}
 		else if(name == "ambientcol")
-			{m_AmbientColor = value.toVector();}
+			{m_Environment.m_AmbientColor = value.toVector();}
 
 		else if(name == "skycol")
-			{m_SkyColor = value.toVector();}
+			{m_Environment.m_SkyColor = value.toVector();}
 		else if(name == "horizonskycol")
-			{m_HorizonSkyColor = value.toVector();}
+			{m_Environment.m_HorizonSkyColor = value.toVector();}
 		else if(name == "fogcol")
-			{m_FogColor = value.toVector();}
+			{m_Environment.m_FogColor = value.toVector();}
 		else if(name == "envcol")
-			{m_EnvironmentColor = value.toVector();}
+			{m_Environment.m_EnvironmentColor = value.toVector();}
 	}
 
 	//Second: loading collision (and graphics) data
@@ -331,8 +331,8 @@ bool CTrack::load(const CString &filename, const CParamList &list)
 		}
 	}
 
-	//Remove last empty track
-	if(m_Routes.back().size() == 0)
+	//Remove last empty route
+	if(m_Routes.size() > 0 && m_Routes.back().size() == 0)
 	{
 		m_Routes.resize(m_Routes.size()-1);
 	}

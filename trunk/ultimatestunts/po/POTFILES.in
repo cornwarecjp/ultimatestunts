@@ -7,6 +7,7 @@ graphics/colorselect.cpp
 graphics/fileselect.cpp
 graphics/messagebox.cpp
 graphics/listbox.cpp
+graphics/keyinputbox.cpp
 graphics/gui.cpp
 shared/credits.h
 shared/hello.cpp

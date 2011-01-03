@@ -57,7 +57,11 @@ CString CConsoleThread::getInput(CString question)
 	char input[80];
 	while(true)
 	{
-		scanf("%s", input);
+		if(scanf("%s", input) != 1)
+		{
+			printf("Error reading input\n");
+		}
+
 		out += input;
 		char c = getchar();
 		if(c == '\n') break;

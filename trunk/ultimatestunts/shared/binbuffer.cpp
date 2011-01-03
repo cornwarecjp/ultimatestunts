@@ -71,7 +71,10 @@ CBinBuffer & CBinBuffer::operator += (const Uint8 & i)
 
 Uint8 CBinBuffer::getUint8(int unsigned &pos) const
 {
-	if (pos > this->size()-1) throw(eEndOfBuffer);
+	//Removed: there is no exception handling in Ultimate Stunts.
+	//Now the caller is responsible for checking the
+	//length of the binary buffer.
+	//if (pos > this->size()-1) throw(eEndOfBuffer);
 	Uint8 ret = (Uint8) (*this)[pos];
 	pos++;
 	return ret;

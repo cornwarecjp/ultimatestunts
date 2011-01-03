@@ -197,109 +197,167 @@ void CRouteTracker::trackSingleRoute(unsigned int routenr)
 		STile newTile = getTile(newPos);
 		const CTETile *newModel = getModel(newTile);
 
-		//Check for split/join tiles:
-		if(newModel->m_RouteType == CTETile::eSplit)
+		//Check for splits
+		if(newModel->m_RouteType == CTETile::eSplit && newIsForward)
 		{
-			if(newIsForward)
+			if(newIsForward && !hasReturnedToSplit)
 			{
-				if(!hasReturnedToSplit)
+				//Add new route for alternative direction
+				CTrack::CRoute newRoute;
+				newRoute.finishRoute = newRoute.finishTile = 0;
+				newRoute.startRoute = routenr;
+				newRoute.startTile = theRoute->size()-1;
+				newRoute.push_back(newPos);
+	
+				//printf("  Created new route %d: startTile = %d; "
+				//	"startPos = %d,%d,%d\n",
+				//	m_Track->m_Routes.size(), newRoute.startTile,
+				//	newPos.x, newPos.y, newPos.z);
+
+				m_Track->m_Routes.push_back(newRoute);
+
+				//Update the route pointer, because we
+				//made a change to the route array:
+				theRoute = &(m_Track->m_Routes[routenr]);
+			}
+
+			//don't check for joins:
+			//move to new position
+			currentPos = newPos;
+			currentTileRoute = newTileRoute;
+			currentIsForward = newIsForward;
+			continue;
+		}
+
+		//Check for joins:
+		for(unsigned int j=0; j <= routenr; j++)
+		{
+			CTrack::CRoute &prevRoute = m_Track->m_Routes[j];
+			for(unsigned int k=1; k+1 < prevRoute.size(); k++)
+			if(prevRoute[k] == newPos)
+			{
+				//printf("Found existing route on the new pos\n");
+
+				//Now check if the join is valid:
+				CTrack::CCheckpoint newPos2 = newPos;
+				unsigned int newTileRoute2 = newTileRoute;
+				bool newIsForward2 = newIsForward;
+
+				if(!findNextTile(newPos2, newTileRoute2, newIsForward2))
 				{
-					//printf("Processing split\n");
-	
-					CTrack::CRoute newRoute;
-					newRoute.finishRoute = newRoute.finishTile = 0;
-					newRoute.startRoute = routenr;
-					newRoute.startTile = theRoute->size()-1;
-					newRoute.push_back(newPos);
-	
-					//printf("  Created new route %d: startTile = %d; "
-					//	"startPos = %d,%d,%d\n",
-					//	m_Track->m_Routes.size(), newRoute.startTile,
-					//	newPos.x, newPos.y, newPos.z);
+					//End of route
 
-					m_Track->m_Routes.push_back(newRoute);
+					//Go back to the last split,
+					//or, if that fails, remove the entire route and return
 
+					if(!goBackToLastSplit(routenr, newPos, newTileRoute, newIsForward))
+					{
+						//Entire route is invalid.
+						//Remove it if it's not the primary route:
+						if(routenr != 0) //Only remove non-primary routes:
+							{theRoute->clear();} //empty routes will be deleted
+						else
+						{
+							CEditTrack::SMarker marker;
+							marker.pos = currentPos;
+							m_Track->m_Markers.push_back(marker);
+						}
+
+						return;
+					}
+	
 					//Update the route pointer, because we
 					//made a change to the route array:
 					theRoute = &(m_Track->m_Routes[routenr]);
+	
+					//Add the last split position again:
+					//printf("New pos: %d, %d, %d\n", newPos.x, newPos.y, newPos.z);
+					theRoute->push_back(newPos);
 
+					//move to new position
+					currentPos = newPos;
+					currentTileRoute = newTileRoute;
+					currentIsForward = newIsForward;
+					continue;
 				}
-			}
-			else
-			{
-				//printf("Processing join\n");
 
-				//Find previous route, if any:
-				for(unsigned int j=0; j <= routenr; j++)
+				CTrack::CCheckpoint backwardPos = prevRoute[k-1];
+				CTrack::CCheckpoint forwardPos = prevRoute[k+1];
+
+				if(newPos2 == forwardPos) //join in the same direction
 				{
-					CTrack::CRoute &prevRoute = m_Track->m_Routes[j];
-					for(unsigned int k=0; k+1 < prevRoute.size(); k++)
-					if(prevRoute[k] == newPos)
+					if(j == routenr) //joining itself: this is invalid
 					{
-						//printf("Found an existing route\n");
-						//Found an existing route:
-
-						//Now check if the join is valid:
-						CTrack::CCheckpoint newPos2 = newPos;
-						unsigned int newTileRoute2 = newTileRoute;
-						bool newIsForward2 = newIsForward;
-
-						if(!findNextTile(newPos2, newTileRoute2, newIsForward2))
-						{
-							printf("Unexpected error: end of route\n");
-							return;
-						}
-
-						CTrack::CCheckpoint forwardPos = prevRoute[k+1];
-						if(j != routenr && newPos2 == forwardPos)
-						{
-							//printf("Route stops at join\n");
-							//The route joins as it should
-							//We stop tracking this route now
-							theRoute->finishRoute = j;
-							theRoute->finishTile = k;
-							return;
-						}
-
-						/*
-						printf("The join is not correct:\n");
-						if(j == routenr)
-							printf("  The route joins itself\n");
-						if(newPos2 != forwardPos)
-						{
-							printf("  The route joins in the wrong direction:\n"
-								"%d,%d,%d should be %d,%d,%d\n",
-								newPos2.x, newPos2.y, newPos2.z,
-								forwardPos.x, forwardPos.y, forwardPos.z
-								);
-						}
-						*/
-
-						//The route joins in the wrong direction,
-						//or it joins itself:
+						//Go back to the last split,
+						//or, if that fails, remove the entire route and return
 
 						if(!goBackToLastSplit(routenr, newPos, newTileRoute, newIsForward))
 						{
-							//Route is invalid.
+							//Entire route is invalid.
 							//Remove it if it's not the primary route:
 							if(routenr != 0) //Only remove non-primary routes:
-								theRoute->clear(); //empty routes will be deleted
-			
+								{theRoute->clear();} //empty routes will be deleted
+							else
+							{
+								CEditTrack::SMarker marker;
+								marker.pos = currentPos;
+								m_Track->m_Markers.push_back(marker);
+							}
+
 							return;
 						}
-
+	
 						//Update the route pointer, because we
 						//made a change to the route array:
 						theRoute = &(m_Track->m_Routes[routenr]);
-
+	
 						//Add the last split position again:
 						//printf("New pos: %d, %d, %d\n", newPos.x, newPos.y, newPos.z);
 						theRoute->push_back(newPos);
 					}
+					else
+					{
+						//Stop route at the join
+						theRoute->finishRoute = j;
+						theRoute->finishTile = k;
+						return;
+					}
+				}
+				else if(newPos2 == backwardPos) //join in opposite direction
+				{
+					//this is inavlid in the current game version
+
+					//Go back to the last split,
+					//or, if that fails, remove the entire route and return
+
+					if(!goBackToLastSplit(routenr, newPos, newTileRoute, newIsForward))
+					{
+						//Entire route is invalid.
+						//Remove it if it's not the primary route:
+						if(routenr != 0) //Only remove non-primary routes:
+							{theRoute->clear();} //empty routes will be deleted
+						else
+						{
+							CEditTrack::SMarker marker;
+							marker.pos = currentPos;
+							m_Track->m_Markers.push_back(marker);
+						}
+
+						return;
+					}
+	
+					//Update the route pointer, because we
+					//made a change to the route array:
+					theRoute = &(m_Track->m_Routes[routenr]);
+	
+					//Add the last split position again:
+					//printf("New pos: %d, %d, %d\n", newPos.x, newPos.y, newPos.z);
+					theRoute->push_back(newPos);
 				}
 			}
 		}
 
+		//move to new position
 		currentPos = newPos;
 		currentTileRoute = newTileRoute;
 		currentIsForward = newIsForward;
@@ -398,9 +456,9 @@ bool CRouteTracker::findNextTile(CTrack::CCheckpoint &pos, unsigned int &route, 
 		currentForward? theTileRoute.outPos : theTileRoute.inPos;
 
 	//Extended positions are useful for jumps, ramps etc.
-	//Currently we go from 0 to 1, but more could be added in the future.
+	//Currently we go from 0 to 2, but more could be added in the future.
 	//See also getRoutePosition for their exact effect.
-	for(unsigned int extendedPos=0; extendedPos < 2; extendedPos++)
+	for(unsigned int extendedPos=0; extendedPos < 3; extendedPos++)
 	for(unsigned int i=0; i < exitPoints.size(); i++)
 	{
 		pos = getRoutePosition(
@@ -441,7 +499,7 @@ bool CRouteTracker::findNextTile(CTrack::CCheckpoint &pos, unsigned int &route, 
 
 				if(score > bestScore)
 				{
-					//printf("Found foward: %s\n", newModel->getFilename().c_str());
+					//printf("Found forward: %s\n", newModel->getFilename().c_str());
 					forward = true;
 					route = j;
 					bestScore = score;
@@ -521,6 +579,9 @@ CTrack::CCheckpoint CRouteTracker::getRoutePosition(
 		{
 		case 1:
 			relpos.y = -1;
+			break;
+		case 2:
+			relpos.y = -2;
 			break;
 		}
 	}

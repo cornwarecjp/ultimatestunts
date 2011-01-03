@@ -101,6 +101,7 @@ void scaleFunc()
 	//determine center
 	CVector center = CVector(0,0,0);
 	if(cg)
+	{
 		if(scene)
 		{
 			int num = 0;
@@ -126,6 +127,7 @@ void scaleFunc()
 			}
 			center /= num;
 		}
+	}
 
 	//determine scalefactor
 	float min = 1.0e10;

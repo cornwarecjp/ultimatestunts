@@ -57,12 +57,19 @@ protected:
 	CString showSettingBox(const CString &field, const CString &deflt, const CString &metaData, bool *cancelled=NULL);
 
 	CString showInputBox(const CString &title, const CString &deflt="", bool *cancelled=NULL);
+	CString showKeyInputBox(const CString &title, const CString &deflt="", bool *cancelled=NULL);
 	CString showChoiceBox(const CString &title, const vector<CString> &options, const CString &deflt="", bool *cancelled=NULL);
 	bool showYNMessageBox(const CString &title, bool *cancelled=NULL);
 	void showMessageBox(const CString &title);
 	CVector showColorSelect(const CString &title, CVector deflt, bool *cancelled=NULL);
 	CString showFileSelect(const CString &title, CString extension, bool *cancelled=NULL);
-	
+
+	//To be implemented in a derived class.
+	//Implementation is only required for correct
+	//functioning of the key input box
+	virtual CString key2name(int key) const;
+	virtual int name2key(const CString &name) const;
+
 private:
 	bool m_in2DMode;
 };

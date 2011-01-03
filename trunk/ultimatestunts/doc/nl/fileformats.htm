@@ -8,7 +8,7 @@ Over dit document
 <p>
 Dit document beschrijft de bestandsformaten die door Ultimate Stunts
 gebruikt worden. De informatie die hier beschreven wordt is van
-toepassing op de meest recente versie, dat is 0.7.4 op het moment van
+toepassing op de meest recente versie, dat is 0.7.5 op het moment van
 schrijven, maar veel dingen gelden ook voor oudere en nieuwere versies.
 
 Dit document beschrijft NIET de configuratiebestanden (*.conf);
@@ -72,10 +72,6 @@ In one track, more than one of these grids can be used. This way, a
 threedimensional grid is created effectively, and tiles can be placed
 above each other. This results in the possibility of underground
 tunnels, viaducts crossing each other, etc. etc.
-<p>
-Tiles are using textures. In most situations, different tiles are
-using the same textures. To prevent the same texture from being loaded
-more than once, textures are managed on the track level.
 
 <a name="track"></a>
 <h1>Het track-bestand (*.track) formaat</h1>
@@ -85,9 +81,9 @@ files, so you should be able to edit them with a text editor. A track
 file has the following sections (in this order):
 <ul>
 	<li>The header</li>
-	<li>The texture section</li>
+	<li>De texture-sectie</li>
 	<li>De achtergrond-sectie</li>
-	<li>The tiles section</li>
+	<li>De tiles-sectie</li>
 	<li>The grid sections</li>
 	<li>The checkpoint section</li>
 </ul>
@@ -110,27 +106,47 @@ sizes of the grids, and <i>height</i> is the number of grids used.
 Every number in the header must be consistent with the rest of the
 file, or else errors will occur while loading the track.
 
-<h3>The texture section</h3>
-Each line in the texture section contains a filename of a texture
-image. These filenames are interpreted as being relative to the
-datafiles directory. The most common file formats (JPEG, PNG etc.) are
-supported through the SDL_image library. Texture images must have a width
-and height that are powers of 2 (8, 16, 32, 128 etc.).<br>
-After the filename, an optional integer parameter <i>scalehint</i> can
-be given. So, the syntax of a texture line becomes
-
-<pre><i>filename</i> [<i>scalehint</i>]</pre>
-
-If the scalehint (which must be a power of 2) is larger than
-1, a smaller texture resolution is used. The resolution is calculated
-the following way:
+<h3>De texture-sectie</h3>
+De texture-sectie kan gebruikt worden om bepaalde textures als eerste
+te laden. Vanaf versie 0.7.5 is het niet meer nodig om alle textures
+op deze manier te laden, dus het zal meestal leeg zijn. Echter, zelfs
+als het leeg is, dan moeten de "BEGIN" en "END" tags nog steeds
+aanwezig zijn.
+<p>
+Elke regel in de texture-sectie bevat een bestandsnaam van een
+texture-afbeelding. Deze bestandsnamen worden geïnterpreteerd als
+relatief ten opzichte van de datafiles directory. De meest
+gebruikte bestandsformaten (JPEG, PNG etc.) worden ondersteund via
+de SDL_image bibliotheek. Texture-afbeeldingen moeten een breedte en
+hoogte hebben die machten van 2 zijn (8, 16, 32, 128 enz.).<br>
+<br>
+Na de bestandsnaam kunnen enkele optionele parameters gegeven worden,
+in de vorm van <i>naam</i>=<i>waarde</i> paren, gescheiden door spaties.
+De volgende parameters kunnen ingesteld worden:
+<ul>
+	<li><b>scale</b>:
+	verandert de resolutie van de afbeelding (zie hieronder)
+	</li>
+	<li><b>mu</b>:
+	De statische wrijvingscoëfficiënt van het oppervlak, relatief
+	ten opzichte van asfalt. Dus voor asfalt moet dit 1.0 zijn.
+	</li>
+	<li><b>roll</b>:
+	De rolweerstandscoëfficiënt van het oppervlak, relatief
+	ten opzichte van asfalt. Dus voor asfalt moet dit 1.0 zijn.
+	</li>
+</ul>
+Als de schaal-parameter (die een macht van 2 moet zijn) groter is dan
+1, dan wordt een kleinere texture-resolutie gebruikt. De resolutie
+wordt op de volgende manier berekend:
 <pre>resolution_used = texture_maxsize / (scalehint * lod)</pre>
-The lod (Level Of Detail) used depends on the distance between tile
-and camera; a texture is loaded with lod = 1, 2, 4 and 8.<br>
-If the size of the texture in the file is smaller than
-resolution_used, then the file resolution is used. If resolution_used
-is smaller than 8, then no texture is used. Instead,
-textureless surfaces with the average color of the texture are used.
+De gebruikte lod (Level Of Detail) hangt af van de afstand tussen de
+tile en de camera; een texture wordt geladen met lod = 1, 2, 4 en 8.<br>
+Als de grootte van de texture in het bestand kleiner is dan
+resolution_used, dan wordt de bestands-resolutie gebruikt. Als
+resolution_used kleiner is dan 8, dan wordt geen texture gebruikt. In
+plaats daarvan worden texture-loze oppervlaktes met de gemiddelde
+kleur van de texture gebruikt.
 
 <h3>De achtergrond-sectie</h3>
 Deze sectie bevat een beschrijving van de omgeving. Deze sectie moet
@@ -162,35 +178,43 @@ Zie de onderstaande afbeelding:
 	<li>9: envcol</li>
 </ul>
 <img src="../nolanguage/track-environment.jpg">
-<h3>The tile section</h3>
-Each line in the tile section has the following syntax:
+<h3>De tiles-sectie</h3>
+Elke regel in de tile-sectie heeft de volgende syntax:
 <pre>
-<i>filename</i>[:<i>flags</i>] [<i>texture_id_0</i> [... [<i>texture_id_n</i>]]]
+<i>bestandsnaam</i>[:<i>flags</i>] [<i>texture_id_0</i> [... [<i>texture_id_n</i>]]]
 </pre>
-The <i>filename</i>, relative to the datafile dir, refers to the 
-3D-model to be used. The <i>flags</i> give some additional information to
-Ultimate Stunts. Currently, these flags are recognised:
+De <i>bestandsnaam</i>, relatief ten opzichte van de datafile dir,
+verwijst naar het gebruikte 3D-model. Dit kan ofwel een .glb bestand zijn,
+ofwel (vanaf versie 0.7.5) een .conf-bestand van een tile. In het geval van
+een .conf-bestand zijn de <i>flags</i> en <i>texture_id</i> waarden
+niet nodig, en zouden niet moeten worden gebruikt. Het wordt aangeraden
+om altijd .conf-bestanden te gebruiken in deze sectie als dat mogelijk is.
+Bij het gebruik van .glb bestanden kan het nodig zijn om de <i>flags</i>
+en <i>texture_id</i> waarden op te geven:
+<p>
+De <i>flags</i> geven wat extra informatie aan Ultimate Stunts. Op dit moment
+worden de volgende flags herkend:
 <ul>
-	<li>s: the start tile</li>
-	<li>f: the finish tile</li>
+	<li>s: de start tile</li>
+	<li>f: de finish tile</li>
 </ul>
-The <i>texture_id</i> parameters are indices to
-the textures section. (The first texture has id=0, the second id=1
-etc.) These parameters describe which textures are used by this tile.
-This way, it is even possible to use the same tile with different
-textures:
+De <i>texture_id</i> parameters zijn indices naar de textures sectie.
+(De eerste texture heeft id=0, de tweede id=1 enz.) Deze parameters
+beschrijven welke textures worden gebruikt door de tile. Op deze
+manier is het zelfs mogelijk om de zelfde tile met verschillende textures
+te gebruiken:
 <pre>
 BEGIN
 ...
-the_same_filename.gl 1 2 3
-the_same_filename.gl 4 5 6
+de_zelfde_bestandsnaam.glb 1 2 3
+de_zelfde_bestandsnaam.glb 4 5 6
 ...
 END
 </pre>
-The order in which the indices are given is important: e.g. for a road
-tile the first index could refer to a road texture, and the second to
-a grass texture. When swapping them, you get effects you don't want.
-:-)
+De volgorde waarin de indices worden gegeven is belangrijk: bijv.
+voor een weg-tile zou de eerste index kunnen verwijzen naar een
+weg-texture en de tweede naar een gras-texture. Bij het verwisselen
+krijg je effecten die je niet wilt. :-)
 
 <h3>The grid sections</h3>
 Every grid section contains the data of one grid. The first grid

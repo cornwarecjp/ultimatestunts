@@ -7,7 +7,7 @@ About this document
 <p>
 This document describes the file formats as used by Ultimate Stunts.
 The information described here applies to the most recent version,
-which is 0.7.4 at the time of writing, but many things also apply
+which is 0.7.5 at the time of writing, but many things also apply
 to older and newer versions.
 This document does NOT describe the configuration files (*.conf);
 for these files, please have a look at the documentation of the
@@ -70,10 +70,6 @@ In one track, more than one of these grids can be used. This way, a
 threedimensional grid is created effectively, and tiles can be placed
 above each other. This results in the possibility of underground
 tunnels, viaducts crossing each other, etc. etc.
-<p>
-Tiles are using textures. In most situations, different tiles are
-using the same textures. To prevent the same texture from being loaded
-more than once, textures are managed on the track level.
 
 <a name="track"></a>
 <h1>The track-file (*.track) format</h1>
@@ -109,17 +105,33 @@ Every number in the header must be consistent with the rest of the
 file, or else errors will occur while loading the track.
 
 <h3>The texture section</h3>
+The texture section can be used to pre-load certain textures. Starting
+from version 0.7.5, it is no longer necessary to load all textures in
+this way, so usually it will be empty. However, even when it is empty,
+its "BEGIN" and "END" tags should still be present.
+<p>
 Each line in the texture section contains a filename of a texture
 image. These filenames are interpreted as being relative to the
 datafiles directory. The most common file formats (JPEG, PNG etc.) are
 supported through the SDL_image library. Texture images must have a width
-and height that are powers of 2 (8, 16, 32, 128 etc.).<br>
-After the filename, an optional integer parameter <i>scalehint</i> can
-be given. So, the syntax of a texture line becomes
-
-<pre><i>filename</i> [<i>scalehint</i>]</pre>
-
-If the scalehint (which must be a power of 2) is larger than
+and height that are powers of 2 (8, 16, 32, 128 etc.).
+<br>
+After the filename, some optional parameters can be given, in the form
+of <i>name</i>=<i>value</i> pairs, separated by spaces. The following
+parameters can be set:
+<ul>
+	<li><b>scale</b>:
+	changes the resolution of the image (see below)
+	</li>
+	<li><b>mu</b>:
+	The static friction coefficient of the surface, relative to
+	asphalt. So, for asphalt, it should be 1.0.
+	</li>
+	<li><b>roll</b>: The roll resistance coefficient of the
+	surface, relative to asphalt. So, for asphalt, it should be 1.0.
+	</li>
+</ul>
+If the scale parameter (which must be a power of 2) is larger than
 1, a smaller texture resolution is used. The resolution is calculated
 the following way:
 <pre>resolution_used = texture_maxsize / (scalehint * lod)</pre>
@@ -166,7 +178,14 @@ Each line in the tile section has the following syntax:
 <i>filename</i>[:<i>flags</i>] [<i>texture_id_0</i> [... [<i>texture_id_n</i>]]]
 </pre>
 The <i>filename</i>, relative to the datafile dir, refers to the 
-3D-model to be used. The <i>flags</i> give some additional information to
+3D-model to be used. This can either be a .glb file, or (version 0.7.5
+or later) a tile's .conf file. In the case of a .conf file, the <i>flags</i>
+and <i>texture_id</i> values are not necessary, and should not be used.
+It is recommended to use .conf files whenever possible in this section.
+When using .glb files, you may need to specify the <i>flags</i> and
+<i>texture_id</i> values:
+<p>
+The <i>flags</i> give some additional information to
 Ultimate Stunts. Currently, these flags are recognised:
 <ul>
 	<li>s: the start tile</li>
@@ -180,8 +199,8 @@ textures:
 <pre>
 BEGIN
 ...
-the_same_filename.gl 1 2 3
-the_same_filename.gl 4 5 6
+the_same_filename.glb 1 2 3
+the_same_filename.glb 4 5 6
 ...
 END
 </pre>

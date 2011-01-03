@@ -42,6 +42,58 @@ bool CEditTrack::tileIsUsed(int ID) const
 	return false;
 }
 
+void CEditTrack::setHeight(unsigned int newHeight)
+{
+	if(newHeight == (unsigned int)m_H) return;
+
+	vector<STile> oldTrack = m_Track;
+	unsigned int oldHeight = (unsigned int)m_H;
+
+	unsigned int lowestHeight = oldHeight < newHeight ? oldHeight : newHeight;
+
+	m_H = newHeight;
+	m_Track.resize(m_L*m_W*m_H);
+
+	//Initialize empty
+	STile emptyTile;
+	emptyTile.m_Model = emptyTile.m_Z = emptyTile.m_R = 0;
+	for(int i=0; i < m_W*m_L*m_H; i++)
+		m_Track[i] = emptyTile;
+
+	//Copy from old track
+	for(int i=0; i < m_W*m_L; i++)
+	{
+		unsigned int readOffset  = oldHeight*i;
+		unsigned int writeOffset = newHeight*i;
+
+		for(unsigned int j=0; j < lowestHeight; j++)
+			m_Track[writeOffset+j] = oldTrack[readOffset+j];
+	}
+}
+
+void CEditTrack::minimizeHeight()
+{
+	sortPillars(); //make sure all pillars are defragmented
+
+	unsigned int minHeight = 1; //keep at least 1 layer
+
+	for(int i=0; i < m_W*m_L; i++)
+	{
+		unsigned int pillarOffset  = m_H*i;
+		for(int j=minHeight; j < m_H; j++)
+			if(m_Track[pillarOffset+j].m_Model == 0)
+				{break;}
+			else
+				{minHeight = j+1;}
+
+		if(minHeight == (unsigned int)m_H)
+			return;
+	}
+
+	printf("Setting height from %d to %d\n", m_H, minHeight);
+	setHeight(minHeight);
+}
+
 bool CEditTrack::save(const CString &filename) const
 {
 	//Open the track file
@@ -87,16 +139,16 @@ bool CEditTrack::save(const CString &filename) const
 
 	//Write the environment section
 	tfile.writel("BEGIN");
-	tfile.writel(CString("sky = ") + m_SkyFilename);
-	tfile.writel(CString("horizon = ") + m_HorizonFilename);
-	tfile.writel(CString("envmap = ") + m_EnvMapFilename);
-	tfile.writel(CString("lightdir = ") + m_LightDirection);
-	tfile.writel(CString("lightcol = ") + m_LightColor);
-	tfile.writel(CString("ambientcol = ") + m_AmbientColor);
-	tfile.writel(CString("skycol = ") + m_SkyColor);
-	tfile.writel(CString("horizonskycol = ") + m_HorizonSkyColor);
-	tfile.writel(CString("fogcol = ") + m_FogColor);
-	tfile.writel(CString("envcol = ") + m_EnvironmentColor);
+	tfile.writel(CString("sky = ") + m_Environment.m_SkyFilename);
+	tfile.writel(CString("horizon = ") + m_Environment.m_HorizonFilename);
+	tfile.writel(CString("envmap = ") + m_Environment.m_EnvMapFilename);
+	tfile.writel(CString("lightdir = ") + m_Environment.m_LightDirection);
+	tfile.writel(CString("lightcol = ") + m_Environment.m_LightColor);
+	tfile.writel(CString("ambientcol = ") + m_Environment.m_AmbientColor);
+	tfile.writel(CString("skycol = ") + m_Environment.m_SkyColor);
+	tfile.writel(CString("horizonskycol = ") + m_Environment.m_HorizonSkyColor);
+	tfile.writel(CString("fogcol = ") + m_Environment.m_FogColor);
+	tfile.writel(CString("envcol = ") + m_Environment.m_EnvironmentColor);
 	tfile.writel("END");
 	tfile.writel("");
 
@@ -283,19 +335,19 @@ bool CEditTrack::import(const CString &filename)
 	switch(trk.m_Skybox)
 	{
 	case 0: //desert
-		m_HorizonFilename = conf.getValue("trkimport", "background_desert");
+		m_Environment.m_HorizonFilename = conf.getValue("trkimport", "background_desert");
 		break;
 	case 1: //tropical
-		m_HorizonFilename = conf.getValue("trkimport", "background_tropical");
+		m_Environment.m_HorizonFilename = conf.getValue("trkimport", "background_tropical");
 		break;
 	case 2: //alpine
-		m_HorizonFilename = conf.getValue("trkimport", "background_alpine");
+		m_Environment.m_HorizonFilename = conf.getValue("trkimport", "background_alpine");
 		break;
 	case 3: //city
-		m_HorizonFilename = conf.getValue("trkimport", "background_city");
+		m_Environment.m_HorizonFilename = conf.getValue("trkimport", "background_city");
 		break;
 	case 4: //country
-		m_HorizonFilename = conf.getValue("trkimport", "background_country");
+		m_Environment.m_HorizonFilename = conf.getValue("trkimport", "background_country");
 		break;
 	}
 

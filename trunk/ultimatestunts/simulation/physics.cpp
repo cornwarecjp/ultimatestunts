@@ -55,71 +55,71 @@ bool CPhysics::update()
 		mo->m_LastUpdateTime = theWorld->m_LastTime;
 	}
 
-	if(!(theWorld->m_Paused))
+	//Skip the rest if paused:
+	if(theWorld->m_Paused) return true;
+
+	float dtreal = dt;
+	unsigned int N = 0;
+
+	if(m_FastCPUMode)
 	{
+		N = (unsigned int)(dtreal / m_dtMin);
+		dt = m_dtMin;
 
-		float dtreal = dt;
-		unsigned int N = 0;
-
-		if(m_FastCPUMode)
+		if(N > m_NMax)
 		{
-			N = (unsigned int)(dtreal / m_dtMin);
-			dt = m_dtMin;
-
-			if(N > m_NMax)
-			{
-				m_FastCPUMode = false;
-				N = m_NMax;
-				dt = dtreal / m_NMax;
-			}
-		}
-		else
-		{
+			m_FastCPUMode = false;
 			N = m_NMax;
 			dt = dtreal / m_NMax;
-
-			if(dt < m_dtMin)
-			{
-				m_FastCPUMode = true;
-				N = (unsigned int)(dtreal / m_dtMin);
-				dt = m_dtMin;
-			}
-		}
-
-		if(N == 0) N = 1; //should not be necesary
-
-		//clear the collision arrays:
-		for(unsigned int i=0; i < objs.size(); i++)
-			((CMovingObject *)objs[i])->m_AllCollisions.clear();
-		
-		for(unsigned int step=0; step < N; step++)
-		{
-			//simulation
-			for(unsigned int i=0; i < objs.size(); i++)
-			{
-				CMovingObject *mo = (CMovingObject *)objs[i];
-				mo->update(this, dt);
-			}
-
-			//collision detection
-			for(unsigned int i=0; i < objs.size(); i++)
-			{
-				CMovingObject *mo = (CMovingObject *)objs[i];
-				mo->m_SimCollisions = theWorld->m_Detector.getCollisions(mo);
-			}
-
-			//collision response
-			for(unsigned int i=0; i < objs.size(); i++)
-				((CMovingObject *)objs[i])->correctCollisions();
-
-			//Add to m_AllCollisions
-			for(unsigned int i=0; i < objs.size(); i++)
-			{
-				CMovingObject *mo = (CMovingObject *)objs[i];
-				for(unsigned int j=0; j < mo->m_SimCollisions.size(); j++)
-					mo->m_AllCollisions.push_back(mo->m_SimCollisions[j]);
-			}
 		}
 	}
+	else
+	{
+		N = m_NMax;
+		dt = dtreal / m_NMax;
+
+		if(dt < m_dtMin)
+		{
+			m_FastCPUMode = true;
+			N = (unsigned int)(dtreal / m_dtMin);
+			dt = m_dtMin;
+		}
+	}
+
+	if(N == 0) N = 1; //should not be necesary
+
+	//clear the collision arrays:
+	for(unsigned int i=0; i < objs.size(); i++)
+		((CMovingObject *)objs[i])->m_AllCollisions.clear();
+	
+	for(unsigned int step=0; step < N; step++)
+	{
+		//simulation
+		for(unsigned int i=0; i < objs.size(); i++)
+		{
+			CMovingObject *mo = (CMovingObject *)objs[i];
+			mo->update(this, dt);
+		}
+
+		//collision detection
+		for(unsigned int i=0; i < objs.size(); i++)
+		{
+			CMovingObject *mo = (CMovingObject *)objs[i];
+			mo->m_SimCollisions = theWorld->m_Detector.getCollisions(mo);
+		}
+
+		//collision response
+		for(unsigned int i=0; i < objs.size(); i++)
+			((CMovingObject *)objs[i])->correctCollisions();
+
+		//Add to m_AllCollisions
+		for(unsigned int i=0; i < objs.size(); i++)
+		{
+			CMovingObject *mo = (CMovingObject *)objs[i];
+			for(unsigned int j=0; j < mo->m_SimCollisions.size(); j++)
+				mo->m_AllCollisions.push_back(mo->m_SimCollisions[j]);
+		}
+	}
+
 	return true;
 }

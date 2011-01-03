@@ -15,6 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
+#include <cstdio>
+
 #include "SDL.h"
 
 #include "lconfig.h"
@@ -40,6 +42,7 @@ SDLK_LAST .. SDLK_LAST+256:	First joystick
 #define JOY0_BTN2 (SDLK_LAST+6)
 #define JOY0_BTN3 (SDLK_LAST+7)
 
+vector<CGameWinSystem::SKeyName> CGameWinSystem::m_KeyNames;
 
 CGameWinSystem::CGameWinSystem(const CString &caption) : CWinSystem(caption)
 {
@@ -62,8 +65,8 @@ bool CGameWinSystem::reloadConfiguration()
 	CLConfig &conf = *theMainConfig;
 
 	//set default values
-	m_GlobalKeyCode[eExit] = getKeyCodeFromString(conf.getValue("input_global", "exit"));
-	m_GlobalKeyCode[eNextSong] = getKeyCodeFromString(conf.getValue("input_global", "nextsong"));
+	m_GlobalKeyCode[eNextSong] = name2key(conf.getValue("input_global", "nextsong"));
+	m_GlobalKeyCode[ePause]    = name2key(conf.getValue("input_global", "pause"));
 
 	setupKeys("input_player0", 0);
 	setupKeys("input_player1", 1);
@@ -80,15 +83,15 @@ CGameWinSystem::~CGameWinSystem()
 void CGameWinSystem::setupKeys(const CString &section, unsigned int player)
 {
 	CLConfig &conf = *theMainConfig;
-	m_PlayerKeyCode[player][eShiftUp] = getKeyCodeFromString(conf.getValue(section, "shiftup"));
-	m_PlayerKeyCode[player][eShiftDown] = getKeyCodeFromString(conf.getValue(section, "shiftdown"));
-	m_PlayerKeyCode[player][eHorn] = getKeyCodeFromString(conf.getValue(section, "horn"));
-	m_PlayerKeyCode[player][eCameraChange] = getKeyCodeFromString(conf.getValue(section, "camerachange"));
-	m_PlayerKeyCode[player][eCameraToggle] = getKeyCodeFromString(conf.getValue(section, "cameratoggle"));
-	m_PlayerControlCode[player][eUp] = getKeyCodeFromString(conf.getValue(section, "up"));
-	m_PlayerControlCode[player][eDown] = getKeyCodeFromString(conf.getValue(section, "down"));
-	m_PlayerControlCode[player][eLeft] = getKeyCodeFromString(conf.getValue(section, "left"));
-	m_PlayerControlCode[player][eRight] = getKeyCodeFromString(conf.getValue(section, "right"));
+	m_PlayerKeyCode[player][eShiftUp]      = name2key(conf.getValue(section, "shiftup"));
+	m_PlayerKeyCode[player][eShiftDown]    = name2key(conf.getValue(section, "shiftdown"));
+	m_PlayerKeyCode[player][eHorn]         = name2key(conf.getValue(section, "horn"));
+	m_PlayerKeyCode[player][eCameraChange] = name2key(conf.getValue(section, "camerachange"));
+	m_PlayerKeyCode[player][eCameraToggle] = name2key(conf.getValue(section, "cameratoggle"));
+	m_PlayerControlCode[player][eUp]       = name2key(conf.getValue(section, "up"));
+	m_PlayerControlCode[player][eDown]     = name2key(conf.getValue(section, "down"));
+	m_PlayerControlCode[player][eLeft]     = name2key(conf.getValue(section, "left"));
+	m_PlayerControlCode[player][eRight]    = name2key(conf.getValue(section, "right"));
 }
 
 
@@ -124,91 +127,128 @@ unsigned int CGameWinSystem::getKeyFromGlobalKey(eGlobalKey key)
 	return getGlobalKeyCode(key);
 }
 
-//String to keycode conversion
-unsigned int CGameWinSystem::getKeyCodeFromString(const CString &s)
+void CGameWinSystem::initKeyNameTranslationTable()
 {
-	if(s.length() == 0) return 0;
+	m_KeyNames.clear();
 
-	//single character
-	if(s.length() == 1) return s[0];
+	//single character key names:
+	CString c = " ";
+	for(char i = 'a'; i <= 'z'; i++)
+	{
+		c[0] = i;
+		m_KeyNames.push_back(SKeyName(i , c));
+	}
+	for(char i = '0'; i <= '9'; i++)
+	{
+		c[0] = i;
+		m_KeyNames.push_back(SKeyName(i , c));
+	}
+	c = "`~!@#$%^&*()-=_+[]{}\\|;\':\",./<>?";
+	for(unsigned int i=0; i < c.length(); i++)
+	{
+		m_KeyNames.push_back(SKeyName(c[i] , c.mid(i, 1)));
+	}
 
 	//misc keys
-	if(s == "return") return SDLK_RETURN;
-	if(s == "space") return ' ';
-	if(s == "tab") return SDLK_TAB;
-	if(s == "escape") return SDLK_ESCAPE;
-	if(s == "backspace") return SDLK_BACKSPACE;
+	m_KeyNames.push_back(SKeyName(SDLK_RETURN   , "return"));
+	m_KeyNames.push_back(SKeyName(' '           , "space"));
+	m_KeyNames.push_back(SKeyName(SDLK_TAB      , "tab"));
+	m_KeyNames.push_back(SKeyName(SDLK_ESCAPE   , "escape"));
+	m_KeyNames.push_back(SKeyName(SDLK_BACKSPACE, "backspace"));
 
 	//modifier keys
-	if(s == "lctrl") return SDLK_LCTRL;
-	if(s == "rctrl") return SDLK_RCTRL;
-	if(s == "lshift") return SDLK_LSHIFT;
-	if(s == "rshift") return SDLK_RSHIFT;
-	if(s == "lalt") return SDLK_LALT;
-	if(s == "ralt") return SDLK_RALT;
-	if(s == "lmeta") return SDLK_LMETA;
-	if(s == "rmeta") return SDLK_RMETA;
+	m_KeyNames.push_back(SKeyName(SDLK_LCTRL , "lctrl"));
+	m_KeyNames.push_back(SKeyName(SDLK_RCTRL , "rctrl"));
+	m_KeyNames.push_back(SKeyName(SDLK_LSHIFT, "lshift"));
+	m_KeyNames.push_back(SKeyName(SDLK_RSHIFT, "rshift"));
+	m_KeyNames.push_back(SKeyName(SDLK_LALT  , "lalt"));
+	m_KeyNames.push_back(SKeyName(SDLK_RALT  , "ralt"));
+	m_KeyNames.push_back(SKeyName(SDLK_LMETA , "lmeta"));
+	m_KeyNames.push_back(SKeyName(SDLK_RMETA , "rmeta"));
 
 	//keypad
-	if(s == "kp0") return SDLK_KP0;
-	if(s == "kp1") return SDLK_KP1;
-	if(s == "kp2") return SDLK_KP2;
-	if(s == "kp3") return SDLK_KP3;
-	if(s == "kp4") return SDLK_KP4;
-	if(s == "kp5") return SDLK_KP5;
-	if(s == "kp6") return SDLK_KP6;
-	if(s == "kp7") return SDLK_KP7;
-	if(s == "kp8") return SDLK_KP8;
-	if(s == "kp9") return SDLK_KP9;
-	if(s == "kpenter") return SDLK_KP_ENTER;
-	if(s == "kp/") return SDLK_KP_DIVIDE;
-	if(s == "kp*") return SDLK_KP_MULTIPLY;
-	if(s == "kp+") return SDLK_KP_PLUS;
-	if(s == "kp-") return SDLK_KP_MINUS;
-	if(s == "kp.") return SDLK_KP_PERIOD;
-	if(s == "kp=") return SDLK_KP_EQUALS;
+	m_KeyNames.push_back(SKeyName(SDLK_KP0, "kp0"));
+	m_KeyNames.push_back(SKeyName(SDLK_KP1, "kp1"));
+	m_KeyNames.push_back(SKeyName(SDLK_KP2, "kp2"));
+	m_KeyNames.push_back(SKeyName(SDLK_KP3, "kp3"));
+	m_KeyNames.push_back(SKeyName(SDLK_KP4, "kp4"));
+	m_KeyNames.push_back(SKeyName(SDLK_KP5, "kp5"));
+	m_KeyNames.push_back(SKeyName(SDLK_KP6, "kp6"));
+	m_KeyNames.push_back(SKeyName(SDLK_KP7, "kp7"));
+	m_KeyNames.push_back(SKeyName(SDLK_KP8, "kp8"));
+	m_KeyNames.push_back(SKeyName(SDLK_KP9, "kp9"));
+	m_KeyNames.push_back(SKeyName(SDLK_KP_ENTER   , "kpenter"));
+	m_KeyNames.push_back(SKeyName(SDLK_KP_DIVIDE  , "kp/"));
+	m_KeyNames.push_back(SKeyName(SDLK_KP_MULTIPLY, "kp*"));
+	m_KeyNames.push_back(SKeyName(SDLK_KP_PLUS    , "kp+"));
+	m_KeyNames.push_back(SKeyName(SDLK_KP_MINUS   , "kp-"));
+	m_KeyNames.push_back(SKeyName(SDLK_KP_PERIOD  , "kp."));
+	m_KeyNames.push_back(SKeyName(SDLK_KP_EQUALS  , "kp="));
 
 	//navigation island
-	if(s == "insert") return SDLK_INSERT;
-	if(s == "delete") return SDLK_DELETE;
-	if(s == "home") return SDLK_HOME;
-	if(s == "end") return SDLK_END;
-	if(s == "pageup") return SDLK_PAGEUP;
-	if(s == "pagedown") return SDLK_PAGEDOWN;
+	m_KeyNames.push_back(SKeyName(SDLK_INSERT  , "insert"));
+	m_KeyNames.push_back(SKeyName(SDLK_DELETE  , "delete"));
+	m_KeyNames.push_back(SKeyName(SDLK_HOME    , "home"));
+	m_KeyNames.push_back(SKeyName(SDLK_END     , "end"));
+	m_KeyNames.push_back(SKeyName(SDLK_PAGEUP  , "pageup"));
+	m_KeyNames.push_back(SKeyName(SDLK_PAGEDOWN, "pagedown"));
+
+	m_KeyNames.push_back(SKeyName(SDLK_PAUSE  , "pause"));
 
 	//function keys
-	if(s == "f1") return SDLK_F1;
-	if(s == "f2") return SDLK_F2;
-	if(s == "f3") return SDLK_F3;
-	if(s == "f4") return SDLK_F4;
-	if(s == "f5") return SDLK_F5;
-	if(s == "f6") return SDLK_F6;
-	if(s == "f7") return SDLK_F7;
-	if(s == "f8") return SDLK_F8;
-	if(s == "f9") return SDLK_F9;
-	if(s == "f10") return SDLK_F10;
-	if(s == "f11") return SDLK_F11;
-	if(s == "f12") return SDLK_F12;
+	m_KeyNames.push_back(SKeyName(SDLK_F1 , "f1"));
+	m_KeyNames.push_back(SKeyName(SDLK_F2 , "f2"));
+	m_KeyNames.push_back(SKeyName(SDLK_F3 , "f3"));
+	m_KeyNames.push_back(SKeyName(SDLK_F4 , "f4"));
+	m_KeyNames.push_back(SKeyName(SDLK_F5 , "f5"));
+	m_KeyNames.push_back(SKeyName(SDLK_F6 , "f6"));
+	m_KeyNames.push_back(SKeyName(SDLK_F7 , "f7"));
+	m_KeyNames.push_back(SKeyName(SDLK_F8 , "f8"));
+	m_KeyNames.push_back(SKeyName(SDLK_F9 , "f9"));
+	m_KeyNames.push_back(SKeyName(SDLK_F10, "f10"));
+	m_KeyNames.push_back(SKeyName(SDLK_F11, "f11"));
+	m_KeyNames.push_back(SKeyName(SDLK_F12, "f12"));
 
 	//cursor keys
-	if(s == "up") return SDLK_UP;
-	if(s == "down") return SDLK_DOWN;
-	if(s == "left") return SDLK_LEFT;
-	if(s == "right") return SDLK_RIGHT;
+	m_KeyNames.push_back(SKeyName(SDLK_UP   , "up"));
+	m_KeyNames.push_back(SKeyName(SDLK_DOWN , "down"));
+	m_KeyNames.push_back(SKeyName(SDLK_LEFT , "left"));
+	m_KeyNames.push_back(SKeyName(SDLK_RIGHT, "right"));
 
 	//first joystick
-	if(s == "joy0up") return JOY0_UP;
-	if(s == "joy0down") return JOY0_DOWN;
-	if(s == "joy0left") return JOY0_LEFT;
-	if(s == "joy0right") return JOY0_RIGHT;
-	if(s == "joy0button0") return JOY0_BTN0;
-	if(s == "joy0button1") return JOY0_BTN1;
-	if(s == "joy0button2") return JOY0_BTN2;
-	if(s == "joy0button3") return JOY0_BTN3;
-
-	//unknown string
-	return 0;
+	m_KeyNames.push_back(SKeyName(JOY0_UP   , "joy0up"));
+	m_KeyNames.push_back(SKeyName(JOY0_DOWN , "joy0down"));
+	m_KeyNames.push_back(SKeyName(JOY0_LEFT , "joy0left"));
+	m_KeyNames.push_back(SKeyName(JOY0_RIGHT, "joy0right"));
+	m_KeyNames.push_back(SKeyName(JOY0_BTN0 , "joy0button0"));
+	m_KeyNames.push_back(SKeyName(JOY0_BTN1 , "joy0button1"));
+	m_KeyNames.push_back(SKeyName(JOY0_BTN2 , "joy0button2"));
+	m_KeyNames.push_back(SKeyName(JOY0_BTN3 , "joy0button3"));
 }
+
+CString CGameWinSystem::key2name(unsigned int key) const
+{
+	if(m_KeyNames.size() == 0) initKeyNameTranslationTable();
+
+	for(unsigned int i=0; i < m_KeyNames.size(); i++)
+		if(m_KeyNames[i].key == (int)key)
+			return m_KeyNames[i].name;
+
+	printf("Key %d is unknown\n", key);
+	return ""; //not found
+}
+
+unsigned int CGameWinSystem::name2key(const CString &name) const
+{
+	if(m_KeyNames.size() == 0) initKeyNameTranslationTable();
+
+	for(unsigned int i=0; i < m_KeyNames.size(); i++)
+		if(m_KeyNames[i].name == name)
+			return m_KeyNames[i].key;
+
+	return 0; //not found
+}
+
 
 //Enum to keycode conversion
 

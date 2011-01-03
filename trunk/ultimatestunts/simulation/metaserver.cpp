@@ -481,7 +481,7 @@ CString CMetaServer::readStr(unsigned int maxlen)
 
 	/* Make zero-terminated */
 	buffer[n] = '\0';
-	return CString(buffer);
+	return CString((char *)buffer);
 }
 
 bool CMetaServer::writeStr(const CString &data)

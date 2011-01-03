@@ -25,6 +25,7 @@
 
 #include "gui.h"
 #include "inputbox.h"
+#include "keyinputbox.h"
 #include "listbox.h"
 #include "messagebox.h"
 #include "colorselect.h"
@@ -266,6 +267,13 @@ CString CGUI::showSettingBox(const CString &field, const CString &deflt, const C
 		return showChoiceBox(title, list, deflt, cancelled);
 	}
 
+	if(options.inStr("KEY") >= 0)
+	{
+		CString ret = showKeyInputBox(title, deflt, cancelled);
+		if(cancelled != NULL && *cancelled) return deflt;
+		return ret;
+	}
+
 	//Fall-back: a simple input box
 	return showInputBox(title, deflt, cancelled);
 }
@@ -305,10 +313,6 @@ CString CGUI::showInputBox(const CString &title, const CString &deflt, bool *can
 	CInputBox *inputbox = new CInputBox;
 	inputbox->setTitle(title);
 	inputbox->m_Text = deflt;
-	//determine maximum size
-	//unsigned int s = 25;
-	//if(title.length() > s) s = title.length();
-	//if(deflt.length() > s) s = deflt.length();
 
 	inputbox->m_Wrel = 0.5;
 	inputbox->m_Hrel = 0.4;
@@ -318,6 +322,32 @@ CString CGUI::showInputBox(const CString &title, const CString &deflt, bool *can
 	m_WinSys->runLoop(this);
 
 	CString ret = inputbox->m_Text;
+	if(cancelled != NULL)
+		*cancelled = inputbox->m_Cancelled;
+
+	if(inputbox->m_Cancelled)
+		ret = deflt;
+
+	m_ChildWidget->m_Widgets.resize(m_ChildWidget->m_Widgets.size()-1); //removes inputbox
+	delete inputbox;
+
+	return ret;
+}
+
+CString CGUI::showKeyInputBox(const CString &title, const CString &deflt, bool *cancelled)
+{
+	CKeyInputBox *inputbox = new CKeyInputBox;
+	inputbox->setTitle(title);
+	inputbox->m_Key = name2key(deflt);
+
+	inputbox->m_Wrel = 0.5;
+	inputbox->m_Hrel = 0.4;
+	inputbox->m_Xrel = 0.25;
+	inputbox->m_Yrel = 0.3;
+	m_ChildWidget->m_Widgets.push_back(inputbox);
+	m_WinSys->runLoop(this);
+
+	CString ret = key2name(inputbox->m_Key);
 	if(cancelled != NULL)
 		*cancelled = inputbox->m_Cancelled;
 
@@ -421,3 +451,12 @@ CString CGUI::showFileSelect(const CString &title, CString extension, bool *canc
 	return ret;
 }
 
+CString CGUI::key2name(int key) const
+{
+	return "";
+}
+
+int CGUI::name2key(const CString &name) const
+{
+	return -1;
+}

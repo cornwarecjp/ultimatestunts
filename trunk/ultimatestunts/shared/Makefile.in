@@ -152,8 +152,10 @@ PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
 PACKAGE_NAME = @PACKAGE_NAME@
 PACKAGE_STRING = @PACKAGE_STRING@
 PACKAGE_TARNAME = @PACKAGE_TARNAME@
+PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
+PKG_CONFIG = @PKG_CONFIG@
 POSUB = @POSUB@
 PRI_MACROS_BROKEN = @PRI_MACROS_BROKEN@
 RANLIB = @RANLIB@
@@ -227,6 +229,8 @@ target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
 usdatadir = @usdatadir@
+vorbisfile_CFLAGS = @vorbisfile_CFLAGS@
+vorbisfile_LIBS = @vorbisfile_LIBS@
 noinst_LIBRARIES = libshared.a
 libshared_a_SOURCES = binbuffer.cpp bthread.cpp cfile.cpp cstring.cpp datafile.cpp datamanager.cpp dataobject.cpp generalmatrix.cpp generalvector.cpp glbfile.cpp hello.cpp ipnumber.cpp lconfig.cpp matrix.cpp timer.cpp usmisc.cpp vector.cpp
 INCLUDES = -I$(top_srcdir)/intl $(all_includes)
@@ -244,9 +248,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  shared/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  shared/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign  shared/Makefile
+	  $(AUTOMAKE) --gnu  shared/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \

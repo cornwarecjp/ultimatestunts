@@ -67,9 +67,21 @@ protected:
 	//Line tile test
 	float LineTileTest(const CVector &pos, const CVector &dir, int xtile, int ztile, int htile);
 
-	//Generic
+
+	//Generic tests
+
+	//return true if there could be a collision
 	bool sphereTest(const CVector &p1, const CCollisionModel *b1, const CVector &p2, const CCollisionModel *b2);
-	bool faceTest(const CVector &p1, const CMatrix &o1, const CBound *b1, const CVector &p2, const CMatrix &o2, const CBound *b2, const CCollisionFace &theFace);
+
+	/*
+	Test whether bodies 1 and 2 are separated in direction dir
+	Positive returned distance = no collision
+	Negative = penetration depth
+	*/
+	float dirTest(
+		const CVector &p1, const CMatrix &o1, const CBound *b1,
+		const CVector &p2, const CMatrix &o2, const CBound *b2,
+		const CVector &dir);
 };
 
 #endif

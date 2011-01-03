@@ -20,6 +20,7 @@
 #include <sys/stat.h>
 
 #include "sndsample.h"
+#include "soundtools.h"
 #include "datafile.h"
 
 #ifdef HAVE_LIBFMOD
@@ -71,18 +72,206 @@ CSndSample::~CSndSample()
 	}
 }
 
+#ifdef HAVE_LIBOPENAL
+
+#ifdef HAVE_VORBISFILE
+unsigned int CSndSample::loadVorbisChunk(OggVorbis_File *vf, char *buffer, unsigned int bufSize)
+{
+	int current_section;
+	char *readPtr = buffer;
+	int remainingBytes = (int)bufSize;
+	while(remainingBytes > 0)
+	{
+		long ret = ov_read(
+			vf, //file info object
+			readPtr, //output buffer
+			remainingBytes, //size of output buffer
+			0, //0 = little endian
+			2, //2 bytes per sample
+			1, //1 = signed data
+			&current_section //logical bitstream
+			);
+		if (ret == 0)
+		{
+			break; //end of file
+		}
+		else if (ret < 0)
+		{
+			printf("Received error %d while reading Ogg stream\n", (int)ret);
+		}
+		else
+		{
+			//TODO: check for sample rate changes
+			readPtr += ret;
+			remainingBytes -= ret;
+		}
+	}
+
+	return (unsigned int)(readPtr - buffer);
+}
+#endif
+
+void CSndSample::loadOgg(const CString &filename)
+{
+	m_isLoaded = true;
+
+	//data (and default values)
+	void *wave = NULL;
+	ALsizei size = 0;
+
+	//the loading extention from ALUT
+	ALboolean (*alutLoadVorbis)(ALuint, ALvoid *, ALint) =
+		(ALboolean (*)(ALuint, ALvoid *, ALint))
+			alGetProcAddress((const ALchar *)VORBISFUNC);
+
+	if(alutLoadVorbis != NULL)
+	{
+		//The data
+		struct stat sbuf;
+		stat(filename.c_str(), &sbuf);
+		size = sbuf.st_size;
+		wave = malloc(size);
+		FILE *fp = fopen(filename.c_str(), "r");
+		if(fread(wave, size, 1, fp) != (size_t)size)
+		{
+			printf("Failed to read from file\n");
+		}
+		fclose(fp);
+
+		alGenBuffers(1, &m_Buffer);
+		if(alutLoadVorbis(m_Buffer, wave, size) != AL_TRUE)
+		{
+			printf("alutLoadVorbis failed\n");
+			alDeleteBuffers(1, &m_Buffer);
+			m_isLoaded = false;
+		}
+
+		free(wave);
+	}
+	else
+#ifdef HAVE_VORBISFILE
+	{
+		//Load an Ogg vorbis file into OpenAL,
+		//using libvorbisfile
+
+		m_isLoaded = true;
+
+		FILE *fp = fopen(filename.c_str(), "r");
+		OggVorbis_File vf;
+		if(ov_open(fp, &vf, NULL, 0) < 0)
+		{
+			printf("Input does not appear to be an Ogg bitstream.\n");
+			m_isLoaded = false;
+			fclose(fp);
+			return;
+		}
+
+		ogg_int64_t size = ov_pcm_total(&vf, -1);
+
+		int numBytes = 4*size; //16bit stereo
+		char *pcmData = new char[numBytes];
+
+		loadVorbisChunk(&vf, pcmData, numBytes);
+
+		alGenBuffers(1, &m_Buffer);
+		alBufferData(
+			m_Buffer,
+			AL_FORMAT_STEREO16,
+			pcmData, numBytes,
+			44100); //TODO: get sample rate from Ogg file
+
+		delete pcmData;
+
+		ov_clear(&vf);
+		//ov_clear has already called fclose(fp)
+	}
+#else
+	{
+		printf("Warning: trying to load a .ogg file,"
+			"but ALUT ogg extention is not present.\n");
+		loadOther(filename);
+	}
+#endif
+}
+
+void CSndSample::loadMP3(const CString &filename)
+{
+	m_isLoaded = true;
+
+	//data (and default values)
+	void *wave = NULL;
+	ALsizei size = 0;
+
+	//the loading extention from ALUT
+	ALboolean (*alutLoadMP3)(ALuint, ALvoid *, ALint) =
+		(ALboolean (*)(ALuint, ALvoid *, ALint))
+			alGetProcAddress((const ALchar *)MP3FUNC);
+
+	if(alutLoadMP3 != NULL)
+	{
+		//The data
+		struct stat sbuf;
+		stat(filename.c_str(), &sbuf);
+		size = sbuf.st_size;
+		wave = malloc(size);
+		FILE *fp = fopen(filename.c_str(), "r");
+		if(fread(wave, size, 1, fp) != (size_t)size)
+		{
+			printf("Failed to read from file\n");
+		}
+		fclose(fp);
+
+		alGenBuffers(1, &m_Buffer);
+		if(alutLoadMP3(m_Buffer, wave, size) != AL_TRUE)
+		{
+			printf("alutLoadMP3 failed\n");
+			alDeleteBuffers(1, &m_Buffer);
+			m_isLoaded = false;
+		}
+
+		free(wave);
+	}
+	else
+	{
+		printf("Warning: trying to load a .mp3 file,"
+			"but ALUT mp3 extention is not present.\n");
+		loadOther(filename);
+	}
+}
+
+void CSndSample::loadOther(const CString &filename)
+{
+	m_isLoaded = true;
+
+	m_Buffer = alutCreateBufferFromFile(filename.c_str());
+
+	if(m_Buffer == AL_NONE)
+	{
+		printf("    Failed to load %s\n", filename.c_str());
+		printf("    ALUT error was: %s\n", alutGetErrorString(alutGetError()));
+
+		m_Buffer = 0;
+		m_isLoaded = false;
+	}
+}
+
+#endif
+
 bool CSndSample::load(const CString &filename, const CParamList &list)
 {
 	CDataObject::load(filename, list);
 	CDataFile f(m_Filename);
 
 #ifdef HAVE_LIBFMOD
+	m_isLoaded = true;
+
 	m_Sample = FSOUND_Sample_Load(FSOUND_FREE, f.useExtern().c_str(), FSOUND_HW3D, 0, 0);
 
 	if (!m_Sample)
 	{
 		printf("   FMOD error: %s\n", FMOD_ErrorString(FSOUND_GetError()));
-		return false;
+		m_isLoaded = false;
+		return m_isLoaded;
 	}
 
 	// increasing mindistnace makes it louder in 3d space
@@ -93,103 +282,31 @@ bool CSndSample::load(const CString &filename, const CParamList &list)
 #ifdef HAVE_LIBOPENAL
 	CString realfile = f.useExtern();
 
-	//data (and default values)
-	void *wave = NULL;
-	ALsizei size = 0;
-
 	CString extension = realfile.mid(realfile.length() - 4);
 	extension.toLower();
 
-	//the loading procs
-	ALboolean (*alutLoadVorbis)(ALuint, ALvoid *, ALint) =
-		(ALboolean (*)(ALuint, ALvoid *, ALint))
-			alGetProcAddress((const ALchar *)VORBISFUNC);
-
-	ALboolean (*alutLoadMP3)(ALuint, ALvoid *, ALint) =
-		(ALboolean (*)(ALuint, ALvoid *, ALint))
-			alGetProcAddress((const ALchar *)MP3FUNC);
-
 	//Now remove AL errors from previous calls
+	checkForALError("before loading");
+
+	if(extension == ".ogg") //.ogg: load as ogg vorbis file
 	{
-		ALenum err = alGetError();
-		if(err != AL_NO_ERROR)
-		{
-			printf("An OpenAL error occurred before loading %s:\n", filename.c_str());
-			printf("  %s\n", alGetString(err));
-		}
+		loadOgg(realfile);
 	}
-
-
-	m_isLoaded = true;
-
-	if(alutLoadVorbis != NULL && extension == ".ogg") //.ogg: load as ogg vorbis file
+	else if(extension == ".mp3") //.mp3: load as MP3 file
 	{
-		//The data
-		struct stat sbuf;
-		stat(realfile.c_str(), &sbuf);
-		size = sbuf.st_size;
-		wave = malloc(size);
-		FILE *fp = fopen(realfile.c_str(), "r");
-		fread(wave, size, 1, fp);
-		fclose(fp);
-
-		alGenBuffers(1, &m_Buffer);
-		if(alutLoadVorbis(m_Buffer, wave, size) != AL_TRUE)
-		{
-			printf("alutLoadVorbis failed\n");
-			alDeleteBuffers(1, &m_Buffer);
-			m_isLoaded = false;
-		}
+		loadMP3(realfile);
 	}
-	else if(alutLoadMP3 != NULL && extension == ".mp3") //.mp3: load as MP3 file
+	else
 	{
-		//The data
-		struct stat sbuf;
-		stat(realfile.c_str(), &sbuf);
-		size = sbuf.st_size;
-		wave = malloc(size);
-		FILE *fp = fopen(realfile.c_str(), "r");
-		fread(wave, size, 1, fp);
-		fclose(fp);
-
-		alGenBuffers(1, &m_Buffer);
-		if(alutLoadMP3(m_Buffer, wave, size) != AL_TRUE)
-		{
-			printf("alutLoadMP3 failed\n");
-			alDeleteBuffers(1, &m_Buffer);
-			m_isLoaded = false;
-		}
+		loadOther(realfile);
 	}
-	else //default ALUT loader
-	{
-		m_Buffer = alutCreateBufferFromFile(realfile.c_str());
-
-		if(m_Buffer == AL_NONE)
-		{
-			printf("    Failed to load %s\n", realfile.c_str());
-			printf("    ALUT error was: %s\n", alutGetErrorString(alutGetError()));
-
-			m_Buffer = 0;
-			m_isLoaded = false;
-			return false;
-		}
-	}
-
-	free(wave);
 
 	//Check for errors
-	{
-		ALenum err = alGetError();
-		if(err != AL_NO_ERROR)
-		{
-			printf("An OpenAL error occurred when loading %s:\n", filename.c_str());
-			printf("  %s\n", alGetString(err));
-		}
-	}
+	checkForALError("after loading");
 
 #endif
 
-	return true;
+	return m_isLoaded;
 }
 
 int CSndSample::attachToChannel(int c)

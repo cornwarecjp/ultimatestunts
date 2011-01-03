@@ -17,21 +17,26 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <cmath>
 #include <unistd.h>
 
 #include <libintl.h>
 #define _(String) gettext (String)
 #define N_(String1, String2, n) ngettext ((String1), (String2), (n))
 
+#include "pi.h"
 #include "lconfig.h"
 #include "usmacros.h"
 #include "datafile.h"
 #include "trackdocument.h"
 #include "edittrack.h"
+#include "environmentaction.h"
+#include "resizeaction.h"
 
 #include "longmenu.h"
 #include "tileselect.h"
 #include "objectviewwidget.h"
+#include "scenerypreview.h"
 
 #include "tegui.h"
 
@@ -103,6 +108,22 @@ CTEGUI::CTEGUI(CWinSystem *winsys) : CGUI(winsys)
 	menu->m_AlignLeft = true;
 	m_TilePage.m_Widgets.push_back(menu);
 
+	m_SceneryPage.m_Title = _("Change scenery settings");
+	CSceneryPreview *preview = new CSceneryPreview;
+	preview->m_Xrel = 0.3;
+	preview->m_Yrel = 0.5;
+	preview->m_Wrel = 0.4;
+	preview->m_Hrel = 0.3;
+	m_SceneryPage.m_Widgets.push_back(preview);
+	menu = new CMenu;
+	menu->m_Xrel = 0.1;
+	menu->m_Yrel = 0.1;
+	menu->m_Wrel = 0.8;
+	menu->m_Hrel = 0.4;
+	menu->m_Selected = 0;
+	menu->m_AlignLeft = true;
+	m_SceneryPage.m_Widgets.push_back(menu);
+
 	m_ChildWidget = &m_MainPage;
 }
 
@@ -116,6 +137,7 @@ void CTEGUI::updateMenuTexts()
 
 	CMenu *menu = (CMenu *)(m_LoadPage.m_Widgets[0]);
 	menu->m_Lines = getDataDirContents("tracks", ".track");
+	menu->m_Selected = 0;
 
 	menu = (CMenu *)(m_TilesPage.m_Widgets[1]);
 	menu->m_Lines.clear();
@@ -128,6 +150,18 @@ void CTEGUI::updateMenuTexts()
 	menu->m_Lines.push_back(_("Change the tile model"));
 	menu->m_Lines.push_back(_("Delete this tile"));
 	menu->m_Lines.push_back(_("Ready"));
+
+	menu = (CMenu *)(m_SceneryPage.m_Widgets[1]);
+	menu->m_Lines.clear();
+	menu->m_Lines.push_back(_("Change the cloud image"));
+	menu->m_Lines.push_back(_("Change the background image"));
+	menu->m_Lines.push_back(_("Change the sky color"));
+	menu->m_Lines.push_back(_("Change the horizon sky color"));
+	menu->m_Lines.push_back(_("Change the cloud and background color"));
+	menu->m_Lines.push_back(_("Change the fog color"));
+	menu->m_Lines.push_back(_("Change the light color"));
+	menu->m_Lines.push_back(_("Change the light direction"));
+	menu->m_Lines.push_back(_("Return to main menu"));
 }
 
 void CTEGUI::start()
@@ -153,14 +187,18 @@ void CTEGUI::start()
 			section = viewTileMenu();
 		else if(section=="loadtilemenu")
 			section = viewLoadTileMenu();
+		else if(section=="scenerymenu")
+			section = viewSceneryMenu();
 		else
 			{printf("Error: unknown menu\n");}
 
 		if(section == "exit" || section == "")
+		{
 			if(showYNMessageBox(_("Do you really want to quit?")) )
 				{break;}
 			else
 				{section = "mainmenu";}
+		}
 	}
 
 	leave2DMode();
@@ -190,6 +228,11 @@ CString CTEGUI::viewMainMenu()
 			return "mainmenu";
 		case CIconList::eTiles:
 			return "tilesmenu";
+		case CIconList::eScenery:
+			return "scenerymenu";
+		case CIconList::eResizeTrack:
+			resizeTrack();
+			return "mainmenu";
 		default:
 			printf("Error: received Iconbar event with unknown ID\n");
 			return "mainmenu"; //unknown: do nothing
@@ -200,6 +243,7 @@ CString CTEGUI::viewMainMenu()
 
 CString CTEGUI::viewLoadMenu()
 {
+	m_LoadPage.m_Title = _("Select a track");
 	m_ChildWidget = &m_LoadPage;
 	if(!m_WinSys->runLoop(this))
 		return "mainmenu";
@@ -286,11 +330,19 @@ CString CTEGUI::viewSaveAsMenu()
 		if(dataFileExists(theTrackDocument->m_Trackname, true)) //search only locally
 		{
 			CString q;
-			q.format(_("File %s already exists. Overwrite?"), 256, theTrackDocument->m_Trackname.c_str());
+			q.format(_("File %s already exists. Overwrite? The hiscore of the track will be reset."), 256, theTrackDocument->m_Trackname.c_str());
 			if(!showYNMessageBox(q)) return "mainmenu"; //and don't save
 		}
 
-		if(!theTrackDocument->save())
+		if(theTrackDocument->save())
+		{
+			//Remove the hiscore file
+			CString hiscoreFile = theTrackDocument->m_Trackname;
+			hiscoreFile =
+				hiscoreFile.mid(0, hiscoreFile.length()-6) + ".high";
+			deleteDataFile(hiscoreFile);
+		}
+		else
 		{
 			CString msg;
 			msg.format(_("Saving of %s failed"), 256, theTrackDocument->m_Trackname.c_str());
@@ -454,3 +506,165 @@ CString CTEGUI::viewLoadTileMenu()
 
 	return "tilemenu";
 }
+
+CString CTEGUI::viewSceneryMenu()
+{
+	CSceneryPreview *preview =
+		(CSceneryPreview *)(m_SceneryPage.m_Widgets[0]);
+
+	static bool enteredFromOutside = true;
+
+	if(enteredFromOutside)
+		preview->m_Environment =
+			theTrackDocument->getCurrentTrack()->m_Environment;
+
+	bool toMainMenu = false;
+
+	m_ChildWidget = &m_SceneryPage;
+	if(!m_WinSys->runLoop(this))
+		toMainMenu = true;
+
+	if(!toMainMenu)
+	{
+		CMenu *menu = (CMenu *)(m_SceneryPage.m_Widgets[1]);
+		switch(menu->m_Selected)
+		{
+		case 0: //cloud image
+			preview->m_Environment.m_SkyFilename =
+				showInputBox(_("Cloud image file:"),
+					preview->m_Environment.m_SkyFilename);
+			break;
+		case 1: //background image
+			preview->m_Environment.m_HorizonFilename =
+				showInputBox(_("Background image file:"),
+					preview->m_Environment.m_HorizonFilename);
+			break;
+		case 2: //sky color
+			preview->m_Environment.m_SkyColor =
+				showColorSelect(_("Sky color:"),
+					preview->m_Environment.m_SkyColor);
+			break;
+		case 3: //horizon sky color
+			preview->m_Environment.m_HorizonSkyColor =
+				showColorSelect(_("Horizon sky color:"),
+					preview->m_Environment.m_HorizonSkyColor);
+			break;
+		case 4: //cloud and background color
+			preview->m_Environment.m_EnvironmentColor =
+				showColorSelect(_("Cloud and background color:"),
+					preview->m_Environment.m_EnvironmentColor);
+			break;
+		case 5: //fog color
+			preview->m_Environment.m_FogColor =
+				showColorSelect(_("Fog color:"),
+					preview->m_Environment.m_FogColor);
+			break;
+		case 6: //light color
+			preview->m_Environment.m_LightColor =
+				showColorSelect(_("Light color:"),
+					preview->m_Environment.m_LightColor);
+			break;
+		case 7: //light direction
+			{
+				float lightY = asin(
+					-preview->m_Environment.m_LightDirection.normal().y
+					);
+				float lightX = atan2f(
+					-preview->m_Environment.m_LightDirection.x,
+					 preview->m_Environment.m_LightDirection.z);
+				lightX *= 180.0 / M_PI;
+				lightY *= 180.0 / M_PI;
+				if(lightX < 0.0) lightX += 360.0;
+
+				//printf("%s\n", CString(
+				//	preview->m_Environment.m_LightDirection).c_str()
+				//	);
+				//printf("%f, %f\n", lightX, lightY);
+
+				lightX =
+					showInputBox(_("Light compass direction (degrees):"),
+						CString(lightX)).toFloat();
+
+				lightY =
+					showInputBox(_("Light angle above the horizon (degrees):"),
+						CString(lightY)).toFloat();
+
+				//printf("%f, %f\n", lightX, lightY);
+
+				lightX *= M_PI/180.0;
+				lightY *= M_PI/180.0;
+
+				preview->m_Environment.m_LightDirection =
+					CVector(
+						-cos(lightY)*sin(lightX),
+						-sin(lightY),
+						cos(lightY)*cos(lightX)
+					);
+
+				//printf("%s\n", CString(
+				//	preview->m_Environment.m_LightDirection).c_str()
+				//	);
+			}
+			break;
+		case 8: //main menu
+			toMainMenu = true;
+			break;
+		}
+	}
+
+	if(toMainMenu)
+	{
+		//Apply the changes to the track:
+		CEnvironmentAction a(preview->m_Environment);
+		theTrackDocument->setNewAction(&a);
+		theTrackDocument->commitAction();
+
+		m_MainPage.enableActionWidgetAction();
+
+		enteredFromOutside = true;
+		return "mainmenu";
+	}
+
+	enteredFromOutside = false;
+	return "scenerymenu";
+}
+
+void CTEGUI::resizeTrack()
+{
+	bool cancelled = false;
+	int dx_min = showInputBox(
+		_("Number of tiles to add on the west side (negative = remove tiles): "),
+		"0", &cancelled).toInt();
+	if(cancelled) return;
+	int dx_max = showInputBox(
+		_("Number of tiles to add on the east side (negative = remove tiles): "),
+		"0", &cancelled).toInt();
+	if(cancelled) return;
+	int dz_min = showInputBox(
+		_("Number of tiles to add on the north side (negative = remove tiles): "),
+		"0", &cancelled).toInt();
+	if(cancelled) return;
+	int dz_max = showInputBox(
+		_("Number of tiles to add on the south side (negative = remove tiles): "),
+		"0", &cancelled).toInt();
+	if(cancelled) return;
+
+	//Apply the changes to the track:
+	CResizeAction a(dx_min, dx_max, dz_min, dz_max);
+	theTrackDocument->setNewAction(&a);
+	theTrackDocument->commitAction();
+
+	//Move cursor inside the new track
+	theTrackDocument->moveCursor(
+		theTrackDocument->getCursorX() + dx_min,
+		theTrackDocument->getCursorY(),
+		theTrackDocument->getCursorZ() + dz_min
+		);
+
+	//TODO: find some way to update the camera
+
+	//Enable the original action
+	m_MainPage.enableActionWidgetAction();
+}
+
+

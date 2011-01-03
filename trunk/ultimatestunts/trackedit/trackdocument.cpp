@@ -183,9 +183,10 @@ bool CTrackDocument::import(const CString &filename)
 
 bool CTrackDocument::save()
 {
-	const CEditTrack *track = getCurrentTrack();
-
+	CEditTrack *track = getCurrentTrack();
 	if(track == NULL) return false;
+
+	track->minimizeHeight();
 
 	return track->save(m_Trackname);
 }

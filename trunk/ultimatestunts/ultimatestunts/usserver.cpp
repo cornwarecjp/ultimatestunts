@@ -82,7 +82,9 @@ void CUSServer::giveCmd(const CString &cmd)
 
 	//while(true);
 
-	write(m_ServerFD, cmd2.c_str(), cmd2.length());
+	if(write(m_ServerFD, cmd2.c_str(), cmd2.length())
+		!= (ssize_t)(cmd2.length()))
+			printf("write error.\n");
 
 	//printf("End of giveCmd(..)\n");
 }

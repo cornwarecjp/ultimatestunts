@@ -77,119 +77,158 @@ static void ConvertUint(GLuint *array, unsigned int length)
 
 static rawImageRec *RawImageOpen(const char *fileName)
 {
-    union {
-	int testWord;
-	char testByte[4];
-    } endianTest;
-    rawImageRec *raw;
-    int swapFlag;
-    int x;
+	union
+	{
+		int testWord;
+		char testByte[4];
+	} endianTest;
 
-    endianTest.testWord = 1;
-    if (endianTest.testByte[0] == 1) {
-	swapFlag = 1;
-    } else {
-	swapFlag = 0;
-    }
+	rawImageRec *raw;
+	int swapFlag;
+	int x;
 
-    raw = (rawImageRec *)malloc(sizeof(rawImageRec));
-    if (raw == NULL) {
-	fprintf(stderr, "Out of memory!\n");
-	exit(1);
-    }
-    if ((raw->file = fopen(fileName, "rb")) == NULL) {
-	perror(fileName);
-	exit(1);
-    }
-
-    fread(raw, 1, 12, raw->file);
-
-    if (swapFlag) {
-	ConvertShort(&raw->imagic, 6);
-    }
-
-    raw->tmp = (unsigned char *)malloc(raw->sizeX*256);
-    raw->tmpR = (unsigned char *)malloc(raw->sizeX*256);
-    raw->tmpG = (unsigned char *)malloc(raw->sizeX*256);
-    raw->tmpB = (unsigned char *)malloc(raw->sizeX*256);
-    raw->tmpA = (unsigned char *)malloc(raw->sizeX*256);
-    if (raw->tmp == NULL || raw->tmpR == NULL || raw->tmpG == NULL ||
-	raw->tmpB == NULL || raw->tmpA == NULL) {
-	fprintf(stderr, "Out of memory!\n");
-	exit(1);
-    }
-
-    if ((raw->type & 0xFF00) == 0x0100) {
-	x = raw->sizeY * raw->sizeZ * (int) sizeof(GLuint);
-	raw->rowStart = (GLuint *)malloc(x);
-	raw->rowSize = (GLint *)malloc(x);
-	if (raw->rowStart == NULL || raw->rowSize == NULL) {
-	    fprintf(stderr, "Out of memory!\n");
-	    exit(1);
+	endianTest.testWord = 1;
+	if (endianTest.testByte[0] == 1)
+	{
+		swapFlag = 1;
+	} else {
+		swapFlag = 0;
 	}
-	raw->rleEnd = 512 + (2 * x);
-	fseek(raw->file, 512, SEEK_SET);
-	fread(raw->rowStart, 1, x, raw->file);
-	fread(raw->rowSize, 1, x, raw->file);
-	if (swapFlag) {
-	    ConvertUint(raw->rowStart,
-	        (unsigned int) (x/sizeof(GLuint)));
-	    ConvertUint((GLuint *)raw->rowSize,
-	        (unsigned int) (x/sizeof(GLint)));
-	}
-    }
 
-    return raw;
+	raw = (rawImageRec *)malloc(sizeof(rawImageRec));
+	if (raw == NULL)
+	{
+		fprintf(stderr, "Out of memory!\n");
+		exit(1);
+	}
+	if ((raw->file = fopen(fileName, "rb")) == NULL)
+	{
+		perror(fileName);
+		exit(1);
+	}
+
+	if(fread(raw, 1, 12, raw->file) != 12)
+	{
+		fprintf(stderr, "Failed to read from file!\n");
+		exit(1);
+	}
+
+	if (swapFlag)
+	{
+		ConvertShort(&raw->imagic, 6);
+	}
+
+	raw->tmp = (unsigned char *)malloc(raw->sizeX*256);
+	raw->tmpR = (unsigned char *)malloc(raw->sizeX*256);
+	raw->tmpG = (unsigned char *)malloc(raw->sizeX*256);
+	raw->tmpB = (unsigned char *)malloc(raw->sizeX*256);
+	raw->tmpA = (unsigned char *)malloc(raw->sizeX*256);
+	if (raw->tmp == NULL || raw->tmpR == NULL || raw->tmpG == NULL ||
+		raw->tmpB == NULL || raw->tmpA == NULL)
+	{
+		fprintf(stderr, "Out of memory!\n");
+		exit(1);
+	}
+
+	if ((raw->type & 0xFF00) == 0x0100)
+	{
+		x = raw->sizeY * raw->sizeZ * (int) sizeof(GLuint);
+		raw->rowStart = (GLuint *)malloc(x);
+		raw->rowSize = (GLint *)malloc(x);
+		if (raw->rowStart == NULL || raw->rowSize == NULL)
+		{
+			fprintf(stderr, "Out of memory!\n");
+			exit(1);
+		}
+		raw->rleEnd = 512 + (2 * x);
+		fseek(raw->file, 512, SEEK_SET);
+
+		if(fread(raw->rowStart, 1, x, raw->file) != x)
+		{
+			fprintf(stderr, "Failed to read from file!\n");
+			exit(1);
+		}
+		if(fread(raw->rowSize, 1, x, raw->file) != x)
+		{
+			fprintf(stderr, "Failed to read from file!\n");
+			exit(1);
+		}
+		if (swapFlag) {
+			ConvertUint(raw->rowStart,
+				(unsigned int) (x/sizeof(GLuint)));
+			ConvertUint((GLuint *)raw->rowSize,
+				(unsigned int) (x/sizeof(GLint)));
+		}
+	}
+
+	return raw;
 }
 
 static void RawImageClose(rawImageRec *raw)
 {
-
-    fclose(raw->file);
-    free(raw->tmp);
-    free(raw->tmpR);
-    free(raw->tmpG);
-    free(raw->tmpB);
-    free(raw->tmpA);
-    free(raw->rowStart); //Added by CJP
-    free(raw->rowSize); //Added by CJP
-    free(raw);
+	fclose(raw->file);
+	free(raw->tmp);
+	free(raw->tmpR);
+	free(raw->tmpG);
+	free(raw->tmpB);
+	free(raw->tmpA);
+	free(raw->rowStart); //Added by CJP
+	free(raw->rowSize); //Added by CJP
+	free(raw);
 }
 
 static void RawImageGetRow(rawImageRec *raw, unsigned char *buf, int y, int z)
 {
-    unsigned char *iPtr, *oPtr, pixel;
-    int count;
+	unsigned char *iPtr, *oPtr, pixel;
+	int count;
+	size_t rowSize = (size_t)raw->rowSize[y+z*raw->sizeY];
 
-    if ((raw->type & 0xFF00) == 0x0100) {
-	fseek(raw->file, (long) raw->rowStart[y+z*raw->sizeY], SEEK_SET);
-	fread(raw->tmp, 1, (unsigned int)raw->rowSize[y+z*raw->sizeY],
-	      raw->file);
+	if ((raw->type & 0xFF00) == 0x0100)
+	{
+		fseek(raw->file, (long) raw->rowStart[y+z*raw->sizeY], SEEK_SET);
+		if(fread(raw->tmp, 1, rowSize, raw->file) != rowSize)
+		{
+			fprintf(stderr, "Failed to read from file!\n");
+			exit(1);
+		}
 
-	iPtr = raw->tmp;
-	oPtr = buf;
-	for (;;) {
-	    pixel = *iPtr++;
-	    count = (int)(pixel & 0x7F);
-	    if (!count) {
-		return;
-	    }
-	    if (pixel & 0x80) {
-		while (count--) {
-		    *oPtr++ = *iPtr++;
+		iPtr = raw->tmp;
+		oPtr = buf;
+		for (;;)
+		{
+			pixel = *iPtr++;
+			count = (int)(pixel & 0x7F);
+			if (!count)
+			{
+				return;
+			}
+			if (pixel & 0x80)
+			{
+				while (count--)
+				{
+					*oPtr++ = *iPtr++;
+				}
+			}
+			else
+			{
+				pixel = *iPtr++;
+				while (count--)
+				{
+					*oPtr++ = pixel;
+				}
+			}
 		}
-	    } else {
-		pixel = *iPtr++;
-		while (count--) {
-		    *oPtr++ = pixel;
-		}
-	    }
 	}
-    } else {
-	fseek(raw->file, 512+(y*raw->sizeX)+(z*raw->sizeX*raw->sizeY),
-	      SEEK_SET);
-	fread(buf, 1, raw->sizeX, raw->file);
-    }
+	else
+	{
+		fseek(raw->file, 512+(y*raw->sizeX)+(z*raw->sizeX*raw->sizeY),
+			SEEK_SET);
+		if(fread(buf, 1, raw->sizeX, raw->file) != raw->sizeX)
+		{
+			fprintf(stderr, "Failed to read from file!\n");
+			exit(1);
+		}
+	}
 }
 
 static void RawImageGetData(rawImageRec *raw, RGBImageRec *final)

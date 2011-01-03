@@ -49,7 +49,7 @@ enum ePlayerControl
 enum eGlobalKey
 {
 	eNextSong=0,
-	eExit=1
+	ePause=1
 };
 
 class CGameWinSystem : public CWinSystem  {
@@ -67,14 +67,16 @@ public:
 
 	//For use in e.g. the menu interface
 	unsigned int getKeyFromGlobalKey(eGlobalKey key);
+
+	CString key2name(unsigned int key) const;
+	unsigned int name2key(const CString &name) const;
+
 protected:
 	/*
 	Key codes are a general way to point to boolean input resources
 	They have nothing implementation specific
 	except that you should not rely on specific meanings of values
 	*/
-
-	unsigned int getKeyCodeFromString(const CString &s);
 
 	unsigned int getGlobalKeyCode(eGlobalKey key);
 	unsigned int getPlayerKeyCode(ePlayerKey key, unsigned int player);
@@ -85,6 +87,18 @@ protected:
 	float getControlCodeState(unsigned int code);
 
 private:
+
+	static void initKeyNameTranslationTable();
+	struct SKeyName
+	{
+		SKeyName(int k, const CString &n)
+			: key(k), name(n)
+			{}
+
+		int key;
+		CString name;
+	};
+	static vector<SKeyName> m_KeyNames;
 
 	//user-defined key codes
 	typedef vector<unsigned int> tCodeArray;

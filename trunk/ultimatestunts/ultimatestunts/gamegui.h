@@ -43,8 +43,12 @@ public:
 	virtual bool reloadConfiguration();
 
 	virtual int onKeyPress(int key);
+	virtual int onIdle();
 
 protected:
+	virtual CString key2name(int key) const;
+	virtual int name2key(const CString &name) const;
+
 	//Core things that are to be managed
 	CUSCore *m_GameCore;
 	CSound *m_SoundSystem;

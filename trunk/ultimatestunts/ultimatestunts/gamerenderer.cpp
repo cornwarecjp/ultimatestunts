@@ -74,8 +74,8 @@ bool CGameRenderer::loadTrackData()
 
 	//Lighting:
 	CTrack *theTrack = theWorld->getTrack();
-	CVector lightCol = theTrack->m_LightColor;
-	CVector ambCol = theTrack->m_AmbientColor;
+	CVector lightCol = theTrack->m_Environment.m_LightColor;
+	CVector ambCol = theTrack->m_Environment.m_AmbientColor;
 
 	GLfloat light_color[] = {lightCol.x, lightCol.y, lightCol.z, 1.0};
 	GLfloat specular_color[] = {3.0*lightCol.x, 3.0*lightCol.y, 3.0*lightCol.z, 1.0};
@@ -157,9 +157,9 @@ void CGameRenderer::updateShadows()
 {
 	if(m_Settings.m_ShadowSize <= 4) return;
 
-	CVector lightDir     = theWorld->getTrack()->m_LightDirection;
-	CVector lightColor   = theWorld->getTrack()->m_LightColor;
-	CVector ambientColor = theWorld->getTrack()->m_AmbientColor;
+	CVector lightDir     = theWorld->getTrack()->m_Environment.m_LightDirection;
+	CVector lightColor   = theWorld->getTrack()->m_Environment.m_LightColor;
+	CVector ambientColor = theWorld->getTrack()->m_Environment.m_AmbientColor;
 
 	CVector totalColor = 1.4*lightColor + ambientColor;
 
@@ -371,7 +371,7 @@ void CGameRenderer::renderScene()
 	//fprintf(stderr, "renderTrack start: %.3f\n", _DebugTimer.getTime());
 
 	//Lighting:
-	CVector lightDir = theWorld->getTrack()->m_LightDirection;
+	CVector lightDir = theWorld->getTrack()->m_Environment.m_LightDirection;
 	GLfloat light_direction[] = {-lightDir.x, -lightDir.y, -lightDir.z, 0.0};
 	glLightfv(GL_LIGHT0, GL_POSITION, light_direction);
 
@@ -661,7 +661,7 @@ void CGameRenderer::viewMovObj(unsigned int n)
 	//TODO: cache the results of this for split screen
 	bool inShadow = false;
 	{
-		CVector lightdir = -(theWorld->getTrack()->m_LightDirection);
+		CVector lightdir = -(theWorld->getTrack()->m_Environment.m_LightDirection);
 
 		//Check whether we are in the shadow of something
 		CCollisionDetector &detector = theWorld->m_Detector;
@@ -724,7 +724,7 @@ void CGameRenderer::viewMovObj(unsigned int n)
 		const CCollisionFace *plane = theWorld->m_Detector.getGroundFace(r);
 		if(plane != NULL)
 		{
-			CVector lightDir = theWorld->getTrack()->m_LightDirection.normal();
+			CVector lightDir = theWorld->getTrack()->m_Environment.m_LightDirection.normal();
 			float ldotn = lightDir.dotProduct(plane->nor);
 			if(ldotn < -0.001) //plane is lighted
 			{
@@ -826,14 +826,14 @@ void CGameRenderer::viewLensFlare()
 	//No lens flare if no images are specified
 	if(m_GraphicWorld->m_LensFlare.size() == 0) return;
 
-	CVector lightdir = -(theWorld->getTrack()->m_LightDirection);
+	CVector lightdir = -(theWorld->getTrack()->m_Environment.m_LightDirection);
 
 	//Check whether we are in the shadow of something
 	CCollisionDetector &detector = theWorld->m_Detector;
 	float colDist = detector.getLineCollision(m_Camera->getPosition(), lightdir);
 	if(colDist > 0.0) return; //collision: we are in a shadow
 
-	CVector lightcol = theWorld->getTrack()->m_LightColor;
+	CVector lightcol = theWorld->getTrack()->m_Environment.m_LightColor;
 	const CMatrix &cammat = m_Camera->getOrientation();
 
 	lightdir /= cammat;

@@ -87,6 +87,37 @@ bool loadingCallback(const CString &status, float progress)
 	return !exit;
 }
 
+/*
+Small convenience class to add some functionality
+to the track editor
+*/
+class CTEGUI_InGameGUI : public CTEGUI
+{
+public:
+	CTEGUI_InGameGUI(CWinSystem *winsys, CSound *soundsys) : CTEGUI(winsys)
+	{
+		m_SoundSystem = soundsys;
+	}
+
+	virtual int onKeyPress(int key)
+	{
+		CGameWinSystem *winsys = (CGameWinSystem *)m_WinSys;
+		if((unsigned int)key == winsys->getKeyFromGlobalKey(eNextSong))
+			m_SoundSystem->playNextSong();
+
+		return CTEGUI::onKeyPress(key);
+	}
+
+	virtual int onIdle()
+	{
+		m_SoundSystem->update();
+		return CTEGUI::onIdle();
+	}
+
+protected:
+	CSound *m_SoundSystem;
+};
+
 CGameGUI::CGameGUI(CGameWinSystem *winsys) : CGUI(winsys)
 {
 	printf("---Sound system\n");
@@ -420,6 +451,25 @@ int CGameGUI::onKeyPress(int key)
 	return CGUI::onKeyPress(key);
 }
 
+int CGameGUI::onIdle()
+{
+	m_SoundSystem->update();
+
+	return CGUI::onIdle();
+}
+
+CString CGameGUI::key2name(int key) const
+{
+	CGameWinSystem *winsys = (CGameWinSystem *)m_WinSys;
+	return winsys->key2name(key);
+}
+
+int CGameGUI::name2key(const CString &name) const
+{
+	CGameWinSystem *winsys = (CGameWinSystem *)m_WinSys;
+	return winsys->name2key(name);
+}
+
 void CGameGUI::updateMenuTexts()
 {
 	//some texts that are used more than one time:
@@ -610,10 +660,12 @@ void CGameGUI::start()
 			{printf("Error: unknown menu\n");}
 
 		if(section == "exit" || section == "")
+		{
 			if(showYNMessageBox(_("Do you really want to quit?")) )
 				{break;}
 			else
 				{section = "mainmenu";}
+		}
 	}
 
 	leave2DMode();
@@ -831,7 +883,10 @@ CString CGameGUI::viewTrackMenu()
 CString CGameGUI::editTrack()
 {
 	theTrackDocument = new CTrackDocument(m_TrackFile);
-	CTEGUI *gui = new CTEGUI(m_WinSys);
+
+	//The class that is used here, is defined in the
+	//top part of this file.
+	CTEGUI *gui = new CTEGUI_InGameGUI(m_WinSys, m_SoundSystem);
 
 	leave2DMode();
 	gui->start();

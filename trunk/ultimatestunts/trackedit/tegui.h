@@ -45,12 +45,17 @@ protected:
 	CString viewTilesMenu();
 	CString viewTileMenu();
 	CString viewLoadTileMenu();
+	CString viewSceneryMenu();
 
 	//The menu pages
 	CMainPage m_MainPage;
 	CGUIPage m_LoadPage;
 	CGUIPage m_TilesPage;
 	CGUIPage m_TilePage;
+	CGUIPage m_SceneryPage;
+
+	//Some misc. actions:
+	void resizeTrack();
 
 	//State data for the menus:
 	int m_CurrentTile; //Negative = none selected

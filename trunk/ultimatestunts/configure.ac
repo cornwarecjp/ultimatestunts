@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT([Ultimate Stunts], 0.7.5, [cornware-cjp@users.sourceforge.net], [ultimatestunts])
+AC_INIT([Ultimate Stunts], 0.7.6, [cornware-cjp@users.sourceforge.net], [ultimatestunts])
 AC_CONFIG_SRCDIR([ultimatestunts/main.cpp])
 AM_CONFIG_HEADER(config.h)
 AC_CANONICAL_TARGET
@@ -8,6 +8,8 @@ AC_CANONICAL_TARGET
 AM_INIT_AUTOMAKE
 
 AC_USE_SYSTEM_EXTENSIONS
+
+PKG_PROG_PKG_CONFIG
 
 dnl Checks for programs.
 AC_PROG_CC
@@ -156,9 +158,17 @@ if test "$try_openal" = "yes" ; then
 
       dnl Now, if soundlibs is not empty, then both AL and ALUT are completely found
 
-      dnl Don't try FMOD when OpenAL is found
       if test "x$soundlibs" != "x" ; then
+
+        dnl Don't try FMOD when OpenAL is found
         try_fmod="no"
+
+        dnl When using openAL, also try to use vorbisfile
+        PKG_CHECK_MODULES([vorbisfile], [vorbisfile >= 1.0.0],
+            [AC_DEFINE([HAVE_VORBISFILE], [], [Vorbisfile Lib])])
+        soundlibs="$vorbisfile_LIBS $soundlibs"
+        CFLAGS="$vorbisfile_CFLAGS $CFLAGS"
+        CXXFLAGS="$vorbisfile_CFLAGS $CXXFLAGS"
       fi
   fi
 fi
@@ -223,9 +233,9 @@ dnl -------------------
 AC_LANG_PUSH(C)
 OLDCFLAGS=$CFLAGS
 CFLAGS="-finput-charset=ISO-8859-1 -fexec-charset=ISO-8859-1"
-AC_CACHE_CHECK(whether $CC accepts -finput-charset and -fexec-charset, cc_charset_setting,
-	       [AC_COMPILE_IFELSE([AC_LANG_PROGRAM()], [cc_charset_setting=yes],
-							[cc_charset_setting=no])])
+AC_CACHE_CHECK(whether $CC accepts -finput-charset and -fexec-charset, cc_cv_charset_setting,
+	       [AC_COMPILE_IFELSE([AC_LANG_PROGRAM()], [cc_cv_charset_setting=yes],
+							[cc_cv_charset_setting=no])])
 CFLAGS=$OLDCFLAGS
 AC_LANG_POP(C)
 

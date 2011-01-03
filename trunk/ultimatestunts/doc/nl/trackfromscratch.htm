@@ -27,25 +27,16 @@ Een gedetailleerde beschrijving van het baan-bestandsformaat is
 <a href="fileformats.htm#track">hier</a> beschikbaar. U zult al die
 informatie nodig hebben, dus ik raad het aan om het te lezen.
 
-<h1>Enkele tiles en textures die we zullen gebruiken</h1>
-Een baan is opgebouwd uit tiles, die textures gebruiken (afbeeldingen die
-op de 3D geometrie geplakt worden). We moeten definiëren welke tiles en
-textures gebruikt zullen worden. Er zijn enkele tiles en textures beschikbaar
-in de standaard databestanden, en we zullen er enkele van gebruiken. Als eerste
-de textures:
+<h1>Enkele tiles die we zullen gebruiken</h1>
+Een baan is opgebouwd uit tiles. We moeten definiëren welke tiles gebruikt
+zullen worden. Er zijn enkele tiles beschikbaar
+in de standaard databestanden, en we zullen er enkele van gebruiken:
 <ul>
-	<li>textures/grass2.jpg: Gras texture</li>
-	<li>textures/road2.jpg: Weg texture</li>
-	<li>textures/concrete1.jpg: Beton texture</li>
-	<li>textures/startfinish.jpg: Start/Finish vlag</li>
-</ul>
-Vervolgens de tiles:
-<ul>
-	<li>tiles/empty.glb: Lege tile</li>
-	<li>tiles/hjoriz.glb: Horizontaal vlak zonder wegen</li>
-	<li>tiles/corner.glb: Scherpe bocht</li>
-	<li>tiles/roadhoriz.glb: Rechte weg</li>
-	<li>tiles/startfinish.glb: Start/Finish tile</li>
+	<li>tiles/empty.conf: Lege tile</li>
+	<li>tiles/hjoriz.conf: Horizontaal vlak zonder wegen</li>
+	<li>tiles/corner.conf: Scherpe bocht</li>
+	<li>tiles/roadhoriz.conf: Rechte weg</li>
+	<li>tiles/startfinish.conf: Start/Finish tile</li>
 </ul>
 
 <h1>Een eenvoudige baan</h1>
@@ -75,16 +66,11 @@ Eigenlijk zou u hier alles kunnen schrijven, omdat de lader alles negeert
 totdat het BEGIN leest.
 <pre>
 BEGIN
-textures/grass2.jpg
-textures/road2.jpg
-textures/concrete1.jpg
-textures/startfinish.jpg
 END
 </pre>
-Deze sectie beschrijft welke textures geladen worden. Textures moeten altijd
-van een herkend formaat zijn (bijv. *.jpg of *.png), en hun afmetingen moeten
-altijd machten van 2 zijn (4, 8, 16 etc.). Textures met alphakanaal zijn ook
-ondersteund.
+Deze eerste sectie stelt u in staat om bepaalde textures vooraf te laden.
+We zullen dit hier niet gebruiken, omdat we alleen de standaard-textures
+op de tiles gebruiken. Daarom blijft deze sectie leeg.
 <pre>
 BEGIN
 sky = environment/clouds.rgba
@@ -106,31 +92,16 @@ documentatie</a>. U kunt voorbeelden vinden in bestaande track bestanden, en
 u kunt experimenteren met andere waarden.
 <pre>
 BEGIN
-tiles/empty.glb 0
-tiles/horiz.glb 0
-tiles/corner.glb 0 1
-tiles/roadhoriz.glb 0 1
-tiles/startfinish.glb:sf 0 1 2 3
+tiles/empty.conf
+tiles/horiz.conf
+tiles/corner.conf
+tiles/roadhoriz.conf
+tiles/startfinish.conf
 END
 </pre>
-Hier worden de tiles geladen. Elke regel bestaat uit de tile-bestandsnaam en
-een lijst van nummers. Deze nummers verwijzen naar de textures die gebruikt
-moeten worden door de tile. 0 is de eerste texture, 1 de tweede etc..
-Bijvoorbeeld, de horizontaal-vlak tile tiles/horiz.glb wordt geladen met de
-gras-texture erop. De rechte-weg tile tiles/roadhoriz.glb wordt geladen met
-een gras- en een weg-texture. De volgorde waarin u verwijst naar de textures is
-belangrijk. Bijvoorbeeld, als u "tiles/roadhoriz.glb 0 1" verandert in
-"tiles/roadhoriz.glb 1 0", dan zou het een compleet geasfalteerde tile worden
-met een band van gras in het midden.
-<p>
-Wees er van bewust dat een geheugen-toegangsfout, of een segmentatiefout, kan
-optreden als u naar te weinig textures verwijst voor een tile. Het zelfde kan
-gebeuren als u naar een texture verwijst die niet bestaat, bijv. als u naar
-nr 10 verwijst terwijl u slechts 5 textures heeft geladen.
-<p>
-De laatste regel van deze sectie laat iets interessants zien: na de tile
-bestandsnaam segt het ":sf". Dit betekent dat deze tile gebruikt wordt als
-start/finish tile.
+Hier worden de tiles geladen. Op elke regel staat de bestandsnaam van
+het .conf-bestand van een tile. Het eerste bestand moet altijd de
+lege tile zijn.
 <pre>
 #tile_id/rotation/heigth
 </pre>
@@ -164,7 +135,7 @@ Het tweede nummer definieert de rotatie. 0 is een niet-geroteerde tile, 1
 betekent een 90 graden rotatie tegen de klok in, 2 is een 180 graden rotatie,
 en 3 is een 270 graden rotatie tegen de klok in, wat uiteraard overeen komt
 met een 90 graden rotatie met de klok mee. Zoals u kunt zien hebben de rechte
-weg en de start/finish tile hun oorspronkelijke oriëntatie. De bocht tiles
+weg en de start/finish tile hun oorspronkelijke oriëntatie. De bocht-tiles
 hebben uiteraard elk een andere oriëntatie. Soms is trial and error de snelste
 manier om de juiste oriëntatie te vinden.
 <p>
@@ -188,8 +159,8 @@ auto's deze route niet volgen krijgen ze penalty-tijd.
 Elk item in deze sectie bestaat uit drie indices (gescheiden door komma's),
 een ":", en dan (optioneel) een tijd. De drie indices verwijzen naar een
 bepaalde tile, en de tijd werd in een oudere Ultimate Stunts versie ooit
-gebruikt om de penalty-tijd te berekenen. Zie ook de baan bestandsformaat
-definitie.
+gebruikt om de penalty-tijd te berekenen. Zie ook de
+track-bestandsformaatsdefinitie.
 
 <h1>De baan uitbreiden</h1>
 De beschreven baan is een volledig geldig baanbestand, maar het is behoorlijk
@@ -224,16 +195,16 @@ we gaan een heuvel maken. Om dat te doen hebben we wat nieuwe tile-types nodig
 voor de hellingen. Verander de tile sectie in dit:
 <pre>
 BEGIN
-tiles/empty.glb 0
-tiles/horiz.glb 0
-tiles/corner.glb 0 1
-tiles/roadhoriz.glb 0 1
-tiles/startfinish.glb:sf 0 1 2 3
-tiles/diag2.glb 0
-tiles/roaddiag.glb 0 1
+tiles/empty.conf
+tiles/horiz.conf
+tiles/corner.conf
+tiles/roadhoriz.conf
+tiles/startfinish.conf
+tiles/diag2.conf
+tiles/roaddiag.conf
 END
 </pre>
-diag2.glb is een helling zonder weg, en roaddiag.glb is een helling met een weg
+diag2.conf is een helling zonder weg, en roaddiag.conf is een helling met een weg
 erop. Nu veranderen we de baan-sectie in:
 <pre>
 BEGIN
@@ -251,7 +222,7 @@ END
 </pre>
 Dit heeft een boel veranderingen vergeleken met het vorige voorbeeld, dus ik
 zal het hier proberen uit te leggen. Als eerste de tile ID nummers. De nieuwe
-nummers 5 en 6 verwijzen naar de nieuwe tiles diag2.glb en roaddiag.glb. U
+nummers 5 en 6 verwijzen naar de nieuwe tiles diag2.conf en roaddiag.conf. U
 ziet dat ik de enen heb vervangen door vijven en de drieën door zessen om de
 hellingen te krijgen. Vervolgens het rotatienummer. De "zuid"-helling heeft
 rotatie 0 omdat de helling-tiles toevallig de juiste oriëntatie hebben voor
@@ -291,10 +262,6 @@ width
 heigth
 
 BEGIN
-textures/grass2.jpg
-textures/road2.jpg
-textures/concrete1.jpg
-textures/startfinish.jpg
 END
 
 BEGIN
@@ -308,11 +275,11 @@ skycol = 0.1,0.1,0.5
 END
 
 BEGIN
-tiles/empty.glb 0
-tiles/horiz.glb 0
-tiles/corner.glb 0 1
-tiles/roadhoriz.glb 0 1
-tiles/startfinish.glb:sf 0 1 2 3
+tiles/empty.conf
+tiles/horiz.conf
+tiles/corner.conf
+tiles/roadhoriz.conf
+tiles/startfinish.conf
 END
 
 #tile_id/rotation/heigth
@@ -349,7 +316,7 @@ aantal lagen gebruiken, zolang het overeen komt met het getal aan het begin
 van het bestand.
 <p>
 Zoals u kunt zien heb ik de tweede laag gevuld met lege tiles (0, verwijzend
-naar tiles/empty.glb). Als u werkt met meerdere lagen, zult u de lege tile
+naar tiles/empty.conf). Als u werkt met meerdere lagen, zult u de lege tile
 vaak gebruiken, omdat u de extra lagen alleen nodig heeft op bepaalde plaatsen.
 Recente Ultimate Stunts versies hebben een optimalisatie die het renderen stopt
 zodra een tile ID 0 wordt gevonden. Dit betekent dat de baan-maker moet zorgen
@@ -368,44 +335,22 @@ controleert dit nog niet, dus u zou (rendering) fouten kunnen krijgen als u
 deze regel niet volgt.
 <p>
 We zullen deze kennis gebruiken om een tunnel te bouwen. Maar voordat we dat
-kunnen doen, moeten we een texture voor de muren van de tunnel, en de tunnel
-tiles zelf, laden:
+kunnen doen, moeten we de tunnel-tiles zelf laden:
 <pre>
 BEGIN
-textures/grass2.jpg
-textures/road2.jpg
-textures/concrete1.jpg
-textures/startfinish.jpg
-textures/bricks2.jpg
-textures/road1.jpg
-END
-
-BEGIN
-sky = environment/sky3.rgb
-horizon = environment/kyoto-horizon.png
-envmap = environment/spheremap.rgb
-lightdir = -0.69,-0.7,-0.2
-lightcol = 0.2,0.2,0.5
-ambientcol = 0.0,0.0,0.0
-skycol = 0.1,0.1,0.5
-END
-
-BEGIN
-tiles/empty.glb 0
-tiles/horiz.glb 0
-tiles/corner.glb 0 1
-tiles/roadhoriz.glb 0 1
-tiles/startfinish.glb:sf 0 1 2 3
-tiles/tunnelin1.glb 0 5 4 2
-tiles/tunnelhoriz.glb 5 4 2
-tiles/diag2.glb 0
+tiles/empty.conf
+tiles/horiz.conf
+tiles/corner.conf
+tiles/roadhoriz.conf
+tiles/startfinish.conf
+tiles/tunnelin1.conf
+tiles/tunnelhoriz.conf
+tiles/diag2.conf
 END
 </pre>
-We hebben een extra texture voor de muren geladen (bricks2.jpg), en één voor
-de weg in de tunnel (road1.jpg), die een klein beetje verschilt van de
-texture die buiten de tunnel gebruikt wordt. De nieuwe tiles zijn tunnelin1.glb,
-wat de tunnelingang is, tunnelhoriz.glb, wat een normale rechte tunnel-tile is,
-en diag2.glb, die we al kennen. Nu kunnen we de eerste laag definiëren:
+De nieuwe tiles zijn tunnelin1.conf, wat de tunnelingang is, tunnelhoriz.conf,
+wat een normale rechte tunnel-tile is, en diag2.conf, die we al kennen.
+Nu kunnen we de eerste laag definiëren:
 <pre>
 BEGIN
 	1/0/0	1/0/0	1/0/0	1/0/0

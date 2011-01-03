@@ -69,6 +69,7 @@ public:
 
 	//step 5: Play
 	virtual bool update(); //true = continue false = leave
+	void setPause(bool pause = true);
 
 	//step 6: Get hiscore+replay data and stop game (go back to step 1 or 2)
 	//this does not undo step 1
@@ -102,6 +103,7 @@ protected:
 
 	CTimer m_Timer; //for the FPS counter
 	float m_TimerOffset; //timer offset relative to game time
+	float m_PauseStartTime; //timer time when the last pause started
 	float m_GlobalTimeAccel; //time acceleration (1.0 = normal)
 	float m_FPS;
 

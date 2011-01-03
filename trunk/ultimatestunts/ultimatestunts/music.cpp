@@ -18,7 +18,10 @@
 #include <cstdio>
 
 #include "music.h"
+#include "soundtools.h"
 #include "datafile.h"
+
+void (CALLBACKFUN *_endCallbackFunc)() = NULL;
 
 #ifdef HAVE_LIBFMOD
 
@@ -27,7 +30,6 @@
 #include <fmod/fmod_errors.h>
 #endif
 
-void (CALLBACKFUN *_endCallbackFunc)();
 bool _true = true;
 bool _false = false;
 
@@ -73,6 +75,9 @@ int CMusic::attachToChannel(int c)
   return FSOUND_Stream_PlayEx(c, m_Stream, NULL, true);
 }
 
+void CMusic::update()
+{;}
+
 void CMusic::setEndCallback(void (CALLBACKFUN *endfunc)())
 {
 	if(endfunc == NULL) //disable callback
@@ -94,27 +99,141 @@ void CMusic::setEndCallback(void (CALLBACKFUN *endfunc)())
 #include <AL/alut.h>
 #endif
 
+//Vorbisfile library
+#ifdef HAVE_VORBISFILE
+#include "vorbis/codec.h"
+#include "vorbis/vorbisfile.h"
+#endif
+
 CMusic::CMusic(CDataManager *manager) : CSndSample(manager)
 {
+	m_isLoaded = false;
+	m_isStreaming = false;
+	m_Source = 0;
 }
 
 CMusic::~CMusic()
 {
+#ifdef HAVE_LIBOPENAL
+	if(m_isLoaded && m_isStreaming)
+	{
+#ifdef HAVE_VORBISFILE
+		ov_clear(&m_VorbisFile);
+#endif
+
+		//Remove all streamed OpenALbuffers
+		for(unsigned int i=0; i < m_StreamBuffers.size(); i++)
+			alDeleteBuffers(1, &(m_StreamBuffers[i]));
+
+		m_isLoaded = false;
+	}
+#endif
 }
 
 bool CMusic::load(const CString &filename, const CParamList &list)
 {
-	//TODO: streaming
+#ifdef HAVE_VORBISFILE
+	CString extension = filename.mid(filename.length() - 4);
+	extension.toLower();
+	if(extension == ".ogg")
+	{
+		//We have streaming support for Ogg vorbis
+		m_isLoaded = true;
+		m_isStreaming = true;
+		m_streamIsFinished = false;
+
+		CDataObject::load(filename, list);
+		CDataFile f(m_Filename);
+		CString realfile = f.useExtern();
+
+		FILE *fp = fopen(realfile.c_str(), "r");
+		if(ov_open(fp, &m_VorbisFile, NULL, 0) < 0)
+		{
+			printf("Input does not appear to be an Ogg bitstream.\n");
+			m_isLoaded = false;
+			fclose(fp);
+			return m_isLoaded;
+		}
+
+		printf("    Loaded music file with streaming functionality\n");
+		return m_isLoaded;
+	}
+#endif
+
+	m_isStreaming = false;
 	return CSndSample::load(filename, list);
 }
 
 int CMusic::attachToChannel(int c)
 {
+	if(m_isStreaming)
+	{
+		m_Source = c;
+
+		//places first data in queue:
+		for(unsigned int i=0; i<10; i++)
+			update();
+
+		return 0;
+	}
+
 	return CSndSample::attachToChannel(c);
 }
 
+void CMusic::update()
+{
+	if(m_isStreaming)
+	{
+		if(_endCallbackFunc != NULL)
+		{
+			checkForALError("before retrieving the music state");
+			ALenum sourceState;
+			alGetSourcei(m_Source, AL_SOURCE_STATE, &sourceState);
+			checkForALError("when retrieving the music state");
+			if(sourceState == AL_STOPPED)
+			{
+				printf("Music has stopped; starting next song..\n");
+				_endCallbackFunc();
+			}
+		}
+
+#ifdef HAVE_VORBISFILE
+		if(!m_streamIsFinished)
+		{
+			const unsigned int bufferSize = 4096*16;
+			char pcmData[bufferSize];
+	
+			unsigned int ret = loadVorbisChunk(
+				&m_VorbisFile, pcmData, bufferSize);
+	
+			if (ret == 0)
+			{
+				m_streamIsFinished = true;
+				printf("Finished loading Ogg music file (used %d buffers)\n",
+					m_StreamBuffers.size());
+			}
+			else
+			{
+				//TODO: check for sample rate changes
+				alGenBuffers(1, &m_Buffer);
+				alBufferData(
+					m_Buffer,
+					AL_FORMAT_STEREO16,
+					pcmData, ret,
+					44100);
+				alSourceQueueBuffers(m_Source, 1, &m_Buffer);
+				checkForALError("when streaming music data");
+				m_StreamBuffers.push_back(m_Buffer);
+			}
+		}
+#endif
+	}
+}
+
 void CMusic::setEndCallback(void (CALLBACKFUN *endfunc)())
-{;}
+{
+	_endCallbackFunc = endfunc;
+}
 
 #else //libfmod and libopenal
 
@@ -134,7 +253,10 @@ int CMusic::attachToChannel(int c)
   return -1; //no sound implementation
 }
 
+void CMusic::update()
+{;}
+
 void CMusic::setEndCallback(void (CALLBACKFUN *endfunc)())
 {;}
 
-#endif //libfmod
+#endif //libfmod and libopenal

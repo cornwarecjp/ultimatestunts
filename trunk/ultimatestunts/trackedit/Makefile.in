@@ -56,8 +56,10 @@ ARFLAGS = cru
 libtrackedit_a_AR = $(AR) $(ARFLAGS)
 libtrackedit_a_LIBADD =
 am_libtrackedit_a_OBJECTS = actionwidget.$(OBJEXT) compass.$(OBJEXT) \
-	edittrack.$(OBJEXT) mainpage.$(OBJEXT) replaceaction.$(OBJEXT) \
-	replaceactionwidget.$(OBJEXT) routetracker.$(OBJEXT) \
+	edittrack.$(OBJEXT) environmentaction.$(OBJEXT) \
+	mainpage.$(OBJEXT) replaceaction.$(OBJEXT) \
+	replaceactionwidget.$(OBJEXT) resizeaction.$(OBJEXT) \
+	routetracker.$(OBJEXT) scenerypreview.$(OBJEXT) \
 	tecamera.$(OBJEXT) tegui.$(OBJEXT) temanager.$(OBJEXT) \
 	terenderer.$(OBJEXT) tileselect.$(OBJEXT) tetile.$(OBJEXT) \
 	trackdocument.$(OBJEXT) trkfile.$(OBJEXT)
@@ -166,8 +168,10 @@ PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
 PACKAGE_NAME = @PACKAGE_NAME@
 PACKAGE_STRING = @PACKAGE_STRING@
 PACKAGE_TARNAME = @PACKAGE_TARNAME@
+PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
+PKG_CONFIG = @PKG_CONFIG@
 POSUB = @POSUB@
 PRI_MACROS_BROKEN = @PRI_MACROS_BROKEN@
 RANLIB = @RANLIB@
@@ -241,6 +245,8 @@ target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
 usdatadir = @usdatadir@
+vorbisfile_CFLAGS = @vorbisfile_CFLAGS@
+vorbisfile_LIBS = @vorbisfile_LIBS@
 ustuntstrackedit_SOURCES = main.cpp
 ustuntstrackedit_LDADD = $(top_builddir)/trackedit/libtrackedit.a \
 	$(top_builddir)/graphics/libgraphics.a $(top_builddir)/simulation/libsimulation.a \
@@ -255,13 +261,14 @@ INCLUDES = -I$(top_srcdir)/graphics -I$(top_srcdir)/intl -I$(top_srcdir)/shared 
 
 # the library search path.
 ustuntstrackedit_LDFLAGS = $(all_libraries) 
-noinst_HEADERS = actionwidget.h compass.h replaceactionwidget.h routetracker.h \
-	tetile.h tileselect.h
+noinst_HEADERS = actionwidget.h compass.h environmentaction.h \
+	replaceactionwidget.h resizeaction.h routetracker.h scenerypreview.h tetile.h tileselect.h
 
 noinst_LIBRARIES = libtrackedit.a
 libtrackedit_a_SOURCES = actionwidget.cpp compass.cpp edittrack.cpp \
-	mainpage.cpp	replaceaction.cpp replaceactionwidget.cpp routetracker.cpp tecamera.cpp tegui.cpp \
-	temanager.cpp terenderer.cpp	tileselect.cpp tetile.cpp trackdocument.cpp trkfile.cpp
+	environmentaction.cpp mainpage.cpp	replaceaction.cpp replaceactionwidget.cpp resizeaction.cpp \
+	routetracker.cpp scenerypreview.cpp tecamera.cpp tegui.cpp temanager.cpp \
+	terenderer.cpp	tileselect.cpp tetile.cpp trackdocument.cpp trkfile.cpp
 
 all: all-am
 
@@ -276,9 +283,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  trackedit/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  trackedit/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign  trackedit/Makefile
+	  $(AUTOMAKE) --gnu  trackedit/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -339,11 +346,14 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/actionwidget.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/compass.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/edittrack.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/environmentaction.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mainpage.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/replaceaction.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/replaceactionwidget.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/resizeaction.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/routetracker.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/scenerypreview.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tecamera.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tegui.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/temanager.Po@am__quote@

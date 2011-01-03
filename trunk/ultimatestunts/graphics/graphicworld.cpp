@@ -282,26 +282,26 @@ bool CGraphicWorld::loadWorld()
 	p.value = m_TexSmooth;
 	plist.push_back(p);
 
-	m_EnvMap->load(m_World->getTrack()->m_EnvMapFilename, plist);
+	m_EnvMap->load(m_World->getTrack()->m_Environment.m_EnvMapFilename, plist);
 
 	//Extra parameters for background object
 	p.name = "horizon";
-	p.value = m_World->getTrack()->m_HorizonFilename;
+	p.value = m_World->getTrack()->m_Environment.m_HorizonFilename;
 	plist.push_back(p);
 	p.name = "skycol";
-	p.value = m_World->getTrack()->m_SkyColor;
+	p.value = m_World->getTrack()->m_Environment.m_SkyColor;
 	plist.push_back(p);
 	p.name = "horizonskycol";
-	p.value = m_World->getTrack()->m_HorizonSkyColor;
+	p.value = m_World->getTrack()->m_Environment.m_HorizonSkyColor;
 	plist.push_back(p);
 	p.name = "fogcol";
-	p.value = m_World->getTrack()->m_FogColor;
+	p.value = m_World->getTrack()->m_Environment.m_FogColor;
 	plist.push_back(p);
 	p.name = "envcol";
-	p.value = m_World->getTrack()->m_EnvironmentColor;
+	p.value = m_World->getTrack()->m_Environment.m_EnvironmentColor;
 	plist.push_back(p);
 
-	m_Background->load(m_World->getTrack()->m_SkyFilename, plist);
+	m_Background->load(m_World->getTrack()->m_Environment.m_SkyFilename, plist);
 
 	printf("  Loading track map\n");
 	loadTrackMap();

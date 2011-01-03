@@ -34,11 +34,13 @@
 #endif
 
 #include "sound.h"
+#include "soundtools.h"
 
 #include "vector.h"
 #include "usmacros.h"
 #include "datafile.h"
 #include "car.h"
+#include "world.h"
 
 #include "lconfig.h"
 
@@ -56,7 +58,7 @@ CSound::CSound()
 #ifdef HAVE_LIBOPENAL
 	int argc = 1;
 	char *argv[1];
-	argv[0] = "ultimatestunts";
+	argv[0] = (char *)"ultimatestunts";
 	ALboolean ret = alutInit(&argc, argv);
 
 	if(ret == AL_FALSE)
@@ -144,6 +146,8 @@ CSound::CSound()
 
 	reloadConfiguration();
 
+	m_Camera = NULL;
+
 	//Loading music data:
 	playNextSong();
 }
@@ -208,6 +212,7 @@ bool CSound::load()
 void CSound::unload()
 {
 	m_SoundWorld->unloadObjects();
+	m_Camera = NULL;
 }
 
 void CSound::playNextSong()
@@ -222,7 +227,7 @@ void CSound::playNextSong()
 	if(m_Playlist.size() == 0) return; //just don't play music
 
 	m_Music = new CMusic(NULL);
-	m_MusicObject = new CSoundObj(-1);
+	m_MusicObject = new CSoundObj(-1, false); //false = not looping
 
 	m_PlaylistItem++;
 	if(m_PlaylistItem >= m_Playlist.size()) m_PlaylistItem = 0;
@@ -230,23 +235,27 @@ void CSound::playNextSong()
 	//printf("   Loading music file %s\n\n", m_Playlist[m_PlaylistItem].c_str());
 	m_Music->load(m_Playlist[m_PlaylistItem], CParamList());
 
-	//printf("setSample\n");
 	m_MusicObject->setSample(m_Music);
-	//printf("setEndCallback\n");
 #ifndef __CYGWIN__
 	m_Music->setEndCallback(musicEndCallback);
 #endif
-	//printf("setVolume\n");
 	m_MusicObject->setVolume(m_MusicVolume);
-	//printf("done\n");
+	m_MusicObject->playOnce();
 	_song_has_ended = false;
 }
 
 void CSound::update()
 {
 	//Music:
+	m_Music->update();
 	if(_song_has_ended)
 		playNextSong();
+
+	//Abuse the camera pointer to see whether we
+	//are in-game or in-GUI.
+	//If in-GUI, only the music needs attention.
+	if(m_Camera == NULL)
+		return;
 
 	//Microphone:
 	CVector p = m_Camera->getPosition();
@@ -254,13 +263,20 @@ void CSound::update()
 	const CMatrix &ori = m_Camera->getOrientation();
 
 #ifdef HAVE_LIBOPENAL
-	//Arguments: pos, vel, front x,y,z, top x,y,z
 	float ori_arr[] =
-		{-ori.Element(0,2), -ori.Element(1,2), -ori.Element(2,2),
-		  ori.Element(0,1),  ori.Element(1,1),  ori.Element(2,1)};
+		{-ori.Element(2,0), -ori.Element(2,1), -ori.Element(2,2),
+		  ori.Element(1,0),  ori.Element(1,1),  ori.Element(1,2)};
 	alListener3f(AL_POSITION, p.x, p.y, p.z);
 	alListener3f(AL_VELOCITY, v.x, v.y, v.z);
 	alListenerfv(AL_ORIENTATION, ori_arr);
+
+	if(theWorld != NULL)
+	{
+		if(theWorld->m_Paused && theWorld->m_LastTime > 0.0)
+			{alListenerf(AL_GAIN, 0.0);} //mute all when paused
+		else
+			{alListenerf(AL_GAIN, 1.0);}
+	}
 
 	//Debug:
 	/*
@@ -295,7 +311,6 @@ void CSound::update()
 	);
 #endif
 
-
 	//Objects:
 	for(unsigned int i=0; i<m_SoundWorld->m_Channels.size(); i++)
 	{
@@ -326,7 +341,7 @@ void CSound::update()
 				float engineRPS = theCar->m_Engine.m_MainAxisW * theCar->m_Engine.getGearRatio();
 				float vol = 0.2 + 0.4 * theCar->m_Engine.m_Gas;
 				if(vol > 1.0) vol = 1.0;
-				chn->setFrequency(engineRPS / theCar->m_EngineSoundBaseRPS);
+				chn->setFrequency(fabsf(engineRPS / theCar->m_EngineSoundBaseRPS));
 				chn->setVolume(int(vol * m_SoundVolume));
 				break;
 			}
@@ -345,7 +360,6 @@ void CSound::update()
 
 				//printf("Intensity %f\n", intensity);
 				chn->setVolume(int(intensity * m_SoundVolume));
-
 				break;
 			}
 			case CSoundObj::eCrash:

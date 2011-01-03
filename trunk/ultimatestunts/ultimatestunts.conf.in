@@ -173,10 +173,10 @@ language = system
 dri_i815_pixeltransfer = false
 
 #meta Work around a bug in the pitch limits of OpenAL 0.0.8 from openal.org?|YESNO
-openal_008_pitch = true
+openal_008_pitch = false
 
-#meta Doppler factor for Working around a doppler effect bug of OpenAL 0.0.8 from openal.org:
-openal_008_dopplerfactor = 0.0
+#meta Doppler factor for Working around a doppler effect bug of OpenAL 0.0.8 from openal.org (0.0 = no doppler; 1.0 = full doppler):
+openal_008_dopplerfactor = 1.0
 
 
 #Files section
@@ -248,9 +248,10 @@ tire_slip_model = square
 [input_global]
 
 #meta |KEY
-exit = escape
-#meta |KEY
 nextsong = f1
+
+#meta |KEY
+pause = p
 
 #Player keys
 [input_player0]
@@ -272,7 +273,7 @@ horn = enter
 #meta |KEY
 camerachange = rshift
 #meta |KEY
-cameratoggle = ralt
+cameratoggle = rctrl
 
 [input_player3]
 

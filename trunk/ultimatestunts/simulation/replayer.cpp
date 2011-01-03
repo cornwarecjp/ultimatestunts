@@ -83,7 +83,10 @@ bool CReplayer::update()
 		while(now > m_PreviousTime)
 		{
 			m_PreviousTime = readl().toFloat();
-			if(!readData()) return false;
+			if(!readData())
+			{
+				return false;
+			}
 		}
 	}
 
@@ -202,16 +205,20 @@ bool CReplayer::readData()
 	for(unsigned int i=0; i < objs.size(); i++)
 	{
 		unsigned int pos = 0;
-		CBinBuffer header = readBytes(2); //16 bits
-		unsigned int dataSize = header.getUint16(pos);
 
+		CBinBuffer header = readBytes(2); //16 bits
+		if(header.size() < 2) //reached end of file
+			return false;
+
+		unsigned int dataSize = header.getUint16(pos);
 		CBinBuffer data = readBytes(dataSize);
 
 		CMovingObject *mo = (CMovingObject *)objs[i];
 		mo->m_AllCollisions.clear();
 
 		pos = 0;
-		if(!(mo->setData(data, pos))) return false;
+		if(!(mo->setData(data, pos)))
+			return false;
 	}
 
 	return true;

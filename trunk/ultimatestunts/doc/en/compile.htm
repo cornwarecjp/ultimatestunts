@@ -33,12 +33,16 @@ installed. The programs that use graphics need the openGL, SDL and SDL_image lib
 server) can also use SDL, but it may be possible to compile them without SDL.
 Sound support using the FMOD or the OpenAL library is optional: if you don't
 have FMOD or openAL, Ultimate Stunts will compile without sound support. if you
-have both, Ultimate Stunts will use OpenAL by default.<br>
+have both, Ultimate Stunts will use OpenAL by default. Additionally, if OpenAL is used
+for sound, Ultimate Stunts can use libvorbisfile for loading Ogg Vorbis sounds and
+music. Without libvorbisfile, Ultimate Stunts depends on an extension of the ALUT
+library for loading Ogg files, and this extension is often not present.
 <p>
 You can find the necessary libraries here:
 <ul>
 	<li><a href="http://www.fmod.org/ifmoddownload.html">FMOD</a></li>
 	<li><a href="http://www.openal.org/downloads.html">OpenAL</a></li>
+	<li><a href="http://www.xiph.org/ogg/vorbis/">Vorbisfile</a></li>
 	<li><a href="http://www.libsdl.org/download-1.2.php">SDL</a></li>
 	<li><a href="http://www.libsdl.org/projects/SDL_image/">SDL_image</a></li>
 </ul>
@@ -46,19 +50,21 @@ If you want to use OpenAL, don't forget to install the ALUT library too.
 <p>
 Most Linux distributions provide the necessary libraries as packages. Usually,
 FMOD is not included (as it is non-free software), but you can always use OpenAL
-as an alternative. If you install these libraries through a package-management system,
+instead. If you install these libraries through a package-management system,
 don't forget to install the development packages: they are necessary for compiling
 Ultimate Stunts (for running it, you only need the runtime packages). To give you an
-idea of what kind of packages to install, these are the package names in Kubuntu 6.06:
+idea of what kind of packages to install, these are the package names in Ubuntu 10.04:
 <ul>
 	<li>libsdl1.2debian</li>
 	<li>libsdl1.2-dev</li>
 	<li>libsdl-image1.2</li>
 	<li>libsdl-image1.2-dev</li>
-	<li>libopenal0a</li>
+	<li>libopenal1</li>
 	<li>libopenal-dev</li>
 	<li>libalut0</li>
 	<li>libalut-dev</li>
+	<li>libvorbisfile3</li>
+	<li>libvorbis-dev</li>
 </ul>
 
 <h3>Libraries for Cygwin</h3>

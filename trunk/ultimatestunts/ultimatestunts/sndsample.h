@@ -33,6 +33,12 @@
 #endif
 #endif
 
+//Vorbisfile library
+#ifdef HAVE_VORBISFILE
+#include "vorbis/codec.h"
+#include "vorbis/vorbisfile.h"
+#endif
+
 #include "cstring.h"
 #include "vector.h"
 #include "dataobject.h"
@@ -54,6 +60,15 @@ protected:
 #endif
 
 #ifdef HAVE_LIBOPENAL
+
+	void loadOgg(const CString &filename);
+	void loadMP3(const CString &filename);
+	void loadOther(const CString &filename);
+
+#ifdef HAVE_VORBISFILE
+	unsigned int loadVorbisChunk(OggVorbis_File *vf, char *buffer, unsigned int bufSize);
+#endif
+
 	unsigned int m_Buffer;
 	bool m_isLoaded;
 #endif

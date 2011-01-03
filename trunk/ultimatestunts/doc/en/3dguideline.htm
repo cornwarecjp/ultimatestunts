@@ -6,7 +6,7 @@
 Ultimate Stunts is a 3D game, and it uses 3D models to build the track from and
 for the cars. These 3D models can be created in external 3D modelling software,
 imported with the stunts3dedit program, transformed and colored, and saved in
-Ultimate Stunts' internal .gl format. This document does not describe how to do
+Ultimate Stunts' internal .glb format. This document does not describe how to do
 this. Instead, it describes what kind of 3D models fit the goals of Ultimate
 Stunts.
 
@@ -31,18 +31,17 @@ the z-buffer.
 <h3>Level Of Detail (LOD)</h3>
 For the 3D geometry designer, it is important to know that
 Ultimate Stunts uses different Levels Of Detail (LOD) in different situations.
-The 3D geometry of every LOD should be defined in the .gl file (of course you
-can use a single model in all LOD levels, but that's not the most optimal
-situation). Currently there are five LODs: 1 (most detail) to 4 (least detail),
-and c (for collision detection).
+The 3D geometry of every LOD should be defined in the .glb file (of course you
+can use a single model in each LOD, but that's not the optimal situation).
+Currently there are six LODs: 1 (most detail) to 4 (least detail),
+c (for collision detection) en s (for drivable surfaces).
 
 <h3>Polygon count</h3>
 Even on high-end hardware, the number of polygons in a model can make it too
 slow. Every polygon has a number of vertices, and for every vertex a number of
 transformations and tests has to be applied in order to project it onto the
 screen's surface. Actually, the vertex count is more important than the polygon
-count (there can be a difference if vertices are shared between polygons),
-but Ultimate Stunts is not yet optimised for shared vertices.
+count; there can be a difference if vertices are shared between polygons.
 <p>
 Of course a model with fewer polygons is always less detailed than a model with
 more polygons. Especially curved surfaces can look bad if they are made of too
@@ -98,7 +97,7 @@ operations are done by the video card processor instead of the main processor.
 The video card processor is optimised for doing the same thing many times
 simultaneously, so it can do the per-pixel operations many times faster than the
 main processor. The problem is that the video processor needs access to the
-texture data. With modern AGP ports the communication between video card and
+texture data. With modern AGP/PCIe ports the communication between video card and
 CPU/main memory is really fast, but transferring all texture images at a 25 fps
 rate would still to much bandwidth. That's why textures should be placed in the
 video card's memory, and that's why it's important to have enough video card
@@ -116,7 +115,7 @@ using a different grass texture on every tile, it's better to use the same
 grass texture.
 <p>
 Textures for Ultimate Stunts can also have an alpha layer, which can be used for
-transparency effects. For example, the leqaves of a tree can be drawn in a
+transparency effects. For example, the leaves of a tree can be drawn in a
 texture with an alpha layer, with the part of the texture outside the leaves
 being transparent. Then a tree can be made with very few polygons, while they
 are still very detailed. A disadvantage of textures with very large transparent
@@ -173,13 +172,18 @@ So, concluding, the following decisions have to be made:
 <h3>Collision detection</h3>
 I forgot to tell you about collision detection. Till now, we've only been
 talking about the graphics, but the geometry of objects also influences their
-physical interaction by collisions. There is a separate LOD level ("c") for
+physical interaction by collisions. There are separate LODs ("c" and "s") for
 the collision model.
 <p>
 The collision models for tiles, car bodies and car wheels are defined
 differently. Tile collision models are a set of polygons, just like the graphics
 model, so for many tiles the graphics model can also be used for collision
 detection.
+<p>
+The only special thing about tiles is that "surface" polygons should be in the "s"
+LOD, and not in the normal "c" LOD. This is because Ultimate Stunts treats
+drivable surfaces differently from collision surfaces. Water surfaces should be
+part of both "s" and "c".
 <p>
 The car's body collision model is a "bounding volume", which
 approximates the body's shape with a set of planes. Every plane splits the

@@ -78,8 +78,12 @@ bool CReplaceAction::doAction(CEditTrack *track) const
 			}
 			else
 			{
-				//If full, do nothing
-				if(track->m_Track[pilindex + track->m_H-1].m_Model != 0) return false;
+				//If full, increase the track height and try again:
+				if(track->m_Track[pilindex + track->m_H-1].m_Model != 0)
+				{
+					track->setHeight(track->m_H + 1);
+					return doAction(track);
+				}
 
 				//Determine lowest "other" tile
 				int h2=h;
@@ -98,16 +102,21 @@ bool CReplaceAction::doAction(CEditTrack *track) const
 		}
 		else if(tile.m_Z > newTile.m_Z)
 		{
-			//If full, do nothing
-			if(track->m_Track[pilindex + track->m_H-1].m_Model != 0) return false;
+			//If full, increase the track height and try again:
+			if(track->m_Track[pilindex + track->m_H-1].m_Model != 0)
+			{
+				track->setHeight(track->m_H + 1);
+				return doAction(track);
+			}
 
 			insertTile(track, pilindex, h, newTile);
 			return true;
 		}
 	}
 
-	//Full:
-	return false;
+	//Full: increase the track height and try again
+	track->setHeight(track->m_H + 1);
+	return doAction(track);
 }
 
 void CReplaceAction::insertTile(CEditTrack *track, unsigned int offset, int h, STile &tile) const

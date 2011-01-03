@@ -35,16 +35,20 @@ CMenu::~CMenu(){
 int CMenu::onKeyPress(int key)
 {
 	if(key == SDLK_DOWN)
+	{
 		if(m_Selected < m_Lines.size()-1)
 			{m_Selected++;}
 		else
 			{m_Selected = 0;}
+	}
 
 	if(key == SDLK_UP)
+	{
 		if(m_Selected > 0)
 			{m_Selected--;}
 		else
 			{m_Selected = m_Lines.size()-1;}
+	}
 
 	if(key == SDLK_RETURN) return WIDGET_QUIT;
 	if(key == SDLK_ESCAPE) return WIDGET_CANCELLED | WIDGET_QUIT;

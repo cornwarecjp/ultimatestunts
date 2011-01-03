@@ -88,16 +88,8 @@ int CInputBox::onRedraw()
 
 	glPopMatrix();
 
-	//glTranslatef(-0.5*theConsoleFont->getFontW()*m_Title.size(), 0.3*m_H, 0);
-
 	//the title
 	glColor3f(1,1,1);
-
-	/*
-	theConsoleFont->enable();
-	theConsoleFont->drawString(m_Title);
-	theConsoleFont->disable();
-	*/
 	drawTitle();
 
 	return 0;

@@ -8,7 +8,7 @@
 
 <h3>Inleiding</h3>
 De Ultimate Stunts track editor zal u in staat stellen om nieuwe banen te maken
-en bestaande banen te bewerken. Op dit moment (versie 0.7.4) is de track editor
+en bestaande banen te bewerken. Op dit moment (versie 0.7.6) is de track editor
 nog erg beperkt: het is slechts mogelijk om tiles te plaatsen/verwijderen op
 de baan, en om banen te importeren vanuit het originele spel Stunts.
 
@@ -17,11 +17,12 @@ de baan, en om banen te importeren vanuit het originele spel Stunts.
 	<li><a href="#navigation">Basis-navigatie</a></li>
 	<li><a href="#editing">De baan bewerken</a></li>
 	<li><a href="#tiles">Beheer van de tiles-verzameling</a></li>
+	<li><a href="#scenery">Veranderen van de omgevings-instellingen</a></li>
+	<li><a href="#resize">Veranderen van de baan-afmetingen</a></li>
 	<li><a href="#import">Stunts banen importeren</a></li>
 </ul>
 
-<a name="navigation"></a>
-<h1>Basis-navigatie</h1>
+<h1><a name="navigation"></a>Basis-navigatie</h1>
 Op dit moment is de gebruikersinterface nog vrij eenvoudig. In het hoofdvenster
 zijn de volgende items zichtbaar:
 <ul>
@@ -52,7 +53,7 @@ huidige toestand, en hoe het er uit ziet als u op de Enter toets drukt. Soms
 is er geen verschil, en in deze gevallen zult u geen geknipper zien.
 <p>
 Ultimate Stunts zal meerdere bewerkingsgereedschappen ondersteunen, maar op
-dit moment (versie 0.7.4) is er slechts ÈÈn gereedschap, die u in staat
+dit moment (versie 0.7.6) is er slechts ÈÈn gereedschap, die u in staat
 stelt om individuele tiles in te voegen / te verwijderen. De
 gebruikersinterface van dat gereedschap is te zien aan de linkerkant van het
 scherm, maar er zijn ook sneltoetsen.
@@ -83,14 +84,17 @@ De volgende toetsen kunnen als sneltoetsen gebruikt worden:
 	<li><b>Ctrl</b>+<b>Shift</b>+<b>z</b>: doe de laatste ongedaan gemaakte
 		actie opnieuw.</li>
 </ul>
-Op dit moment kunnen de afmetingen van de baan
-niet veranderd worden, route informatie kan niet veranderd worden, en
+Zodra u tiles op de baan plaatst, kunt u zien dat de route-informatie
+automatisch ververst wordt. Wanneer het programma een probleem detecteert
+in de route, zal het een vraagteken weergeven op de laatste correcte tile
+van de route.
+<p>
+Op dit moment kunnen de afmetingen van de baan niet veranderd worden, en
 omgevings-instellingen (achtergrond, belichting etc.) kunnen niet bewerkt
-worden. Bij de huidige versie (0.7.4) moeten deze dingen allemaal handmatig
+worden. Bij de huidige versie (0.7.5) moeten deze dingen allemaal handmatig
 gedaan worden in het track-bestand.
 
-<a name="tiles"></a>
-<h1>Beheer van de tiles-verzameling</h1>
+<h1><a name="tiles"></a>Beheer van de tiles-verzameling</h1>
 <img src="../nolanguage/trackedit-tilecollectiontool.jpg" align=right>
 Vroeg of laat zult u een bepaald tile-type willen gebruiken, maar kunt u het
 niet vinden in de tile-verzameling van uw baan. In deze sectie kunt u lezen
@@ -111,19 +115,45 @@ deze verzameling te veranderen:
 </ul>
 Een enkele tile verwijderen uit de verzameling kunt u doen door er op te klikken,
 en dan te kiezen voor de mogelijkheid om de tile te verwijderen.
-
+<br>
 <img src="../nolanguage/trackedit-tilecollection1.jpg">
 
+<h1><a name="scenery"></a>Veranderen van de omgevings-instellingen</h1>
+<img src="../nolanguage/trackedit-scenerytool.jpg" align=right>
+Met de omgevings-instellingen tool kunt u enkele instellingen veranderen die dingen
+bepalen zoals de achtergrond-afbeelding en de belichtings-omstandigheden. De
+omgevings-instellingen tool bevat een preview van hoe de instellingen er uit zien. De
+preview is niet een 100% nauwkeurige weergave, maar het zou u een idee moeten geven
+van hoe het er uit zal zien.
+<br>
+<img src="../nolanguage/trackedit-scenerytool2.jpg">
 
-<a name="import"></a>
-<h1>Stunts banen importeren</h1>
+<h1><a name="resize"></a>Veranderen van de baan-afmetingen</h1>
+<img src="../nolanguage/trackedit-resizetool.jpg" align=right>
+Het veranderen van de baan-afmetingen kan gedaan worden met de gelijknamige tool. Als
+u op deze tool klikt, dan vraagt de track editor hoeveel de baan-afmetingen veranderd
+moeten worden in alle kompasrichtingen (noord, zuid, oost, west). Merk op dat de
+'noord'-richting in rood wordt weergegeven in het kompas (linksonder in het scherm).
+U kunt de grootte van de baan in een bepaalde richting vergroten met een positief
+getal, of u kunt het verkleinen met een netatief getal.
+<p>
+Het effect van het vergroten van de baan is niet direct zichtbaar, doordat de nieuwe
+tile-posities nog steeds leeg zijn. U kunt echter de cursor naar de nieuw aangemaakte
+ruimte bewegen en deze met tiles vullen.
+
+<h1><a name="import"></a>Stunts banen importeren</h1>
+<img src="../nolanguage/trackedit-stuntsimporttool.jpg" align=right>
 …Èn van de opties in het track editor toolbar is om banen te importeren vanuit
 het originele "Stunts" (4D Sports Driving) spel. Als u vindt dat de huidige
 track editor nog te beperkt is, dan kunt u uw banen in Stunts maken en
 importeren in Ultimate Stunts. U kunt deze functie ook gebruiken om uw grote
 verzameling Stunts banen in Ultimate Stunts te importeren.
 
-<h3>Configureren van de Stunts importeer functie</h3>
+<h3>Configureren van de Stunts importeer-functie</h3>
+Opmerking: dit is een geavanceerd onderwerp. U kunt de importeer-functie gebruiken
+zonder te weten hoe u de instellingen ervan kunt veranderen. De standaard-instellingen
+zijn waarschijnlijk goed genoeg voor de meeste mensen.
+<p>
 De Stunts import functie kan geconfigureerd worden door een bestand te bewerken
 dat zich in de Ultimate Stunts data directory bevindt: misc/trackedit.conf.
 In dit configuratiebestand kan bijna het hele baan-importeer proces aangepast

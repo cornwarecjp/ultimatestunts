@@ -1,208 +1,231 @@
 <html>
 <body>
-<h1>Guideline for making 3D models for Ultimate Stunts</h1>
+<h1>Richtlijn voor het maken van 3D modellen voor Ultimate Stunts</h1>
 
-<h3>Introduction</h3>
-Ultimate Stunts is a 3D game, and it uses 3D models to build the track from and
-for the cars. These 3D models can be created in external 3D modelling software,
-imported with the stunts3dedit program, transformed and colored, and saved in
-Ultimate Stunts' internal .gl format. This document does not describe how to do
-this. Instead, it describes what kind of 3D models fit the goals of Ultimate
-Stunts.
+<h3>Inleiding</h3>
+Ultimate Stunts is een 3D-spel, en het gebruikt 3D-modellen om de baan uit op
+te bouwen en voor de auto's. Deze 3D-modellen kunnen in externe 3D
+modelleer-software gemaakt worden, geïmporteerd worden met het stunts3dedit
+programma, getransformeerd en gekleurd worden, en opgeslagen worden in
+Ultimate Stunts' interne .glb formaat. Dit document beschrijft niet hoe u dit
+kunt doen. In plaats daarvan beschrijft het wat voor soort 3D-modellen passen
+bij de doelstellingen van Ultimate Stunts.
 
-<h3>Goals for good 3D models</h3>
-A 3D model is good if it meets two objectives: it has to look good, and it has
-to be displayed fast. Of course, these objectives often have opposite effects on
-the 3D model: a good looking model is displayed slowly, and a fast displayed
-model often looks bad. In this document, some tricks will be given to make 3D
-models both fast and looking good.
+<h3>Doelstellingen voor goede 3D-modellen</h3>
+Een 3D-model is goed als het aan twee eisen voldoet: het moet er goed uit zien,
+en het moet snel weergegeven kunnen worden. Deze twee eisen hebben natuurlijk
+vaak een tegengesteld effect op het 3D-model: een model dat er goed uit ziet
+wordt vaak traag weergegeven, en een snel weergegeven model ziet er vaak slecht
+uit. In dit document worden enkele trucs vermeld om 3D-modellen zowel snel als
+mooi te laten zijn.
 
-<h3>Performance requirements, and target platforms</h3>
-Of course, the right equilibrium between performance and detail depends on the
-hardware. Ultimate Stunts uses openGL, which can be many times faster when it
-uses hardware acceleration. The Ultimate Stunts project tries to be very
-flexible in its hardware requirements: people with poor hardware should be able
-to get an acceptable frame rate (with poor graphics) , and people with good
-hardware should get high-quality graphics. The user can set various graphics
-settings in Ultimate Stunts, like the texture level of detail,
-enabling/disabling blending of translucent surfaces and even enabling/disabling
-the z-buffer.
+<h3>Snelheids-eisen, en doel-platforms</h3>
+Het juiste evenwicht tussen snelheid en detail hangt natuurlijk af van de
+hardware. Ultimate Stunts gebruikt OpenGL, en dat kan vele malen sneller zijn
+als het hardware-versnelling gebruikt. Het Ultimate Stunts project probeert
+erg flexibel te zijn in de hardware-eisen: mensen met slechte hardware moeten
+in staat zijn om een acceptabele frame rate te krijgen (met slechte graphics),
+en mensen met goede hardware moeten hoge kwaliteit graphics kunnen krijgen.
+De gebruiker kan verschillende grafische instellingen wijzigen in Ultimate
+Stunts, zoals de texture-Level-Of-Detail, aan/uitschakelen van blenden van
+doorschijnende oppervlakken, en zelfs aan/uitschakelen van de Z-buffer.
 
 <h3>Level Of Detail (LOD)</h3>
-For the 3D geometry designer, it is important to know that
-Ultimate Stunts uses different Levels Of Detail (LOD) in different situations.
-The 3D geometry of every LOD should be defined in the .gl file (of course you
-can use a single model in all LOD levels, but that's not the most optimal
-situation). Currently there are five LODs: 1 (most detail) to 4 (least detail),
-and c (for collision detection).
+Voor de 3D-geometrie ontwerper is het belangrijk om te weten dat Ultimate
+Stunts verschillende Levels Of Detail (LOD) gebruikt in verschillende
+situaties. De 3D-geometrie van elke LOD moet gedefinieerd worden in het
+.glb-bestand (natuurlijk kunt u een enkel model gebruiken in elke LOD,
+maar dat is niet de optimale situatie). Op dit moment zijn er zes LODs:
+1 (meeste detail) tot 4 (minste detail), c (voor botsings-detectie) en s (voor
+rij-oppervlaktes).
 
 <h3>Polygon count</h3>
-Even on high-end hardware, the number of polygons in a model can make it too
-slow. Every polygon has a number of vertices, and for every vertex a number of
-transformations and tests has to be applied in order to project it onto the
-screen's surface. Actually, the vertex count is more important than the polygon
-count (there can be a difference if vertices are shared between polygons),
-but Ultimate Stunts is not yet optimised for shared vertices.
+Zelfs op goede hardware kan het aantal polygonen in een model het te traag maken.
+Elke polygon heeft een aantal vertices, en voor elke vertex moet er een
+aantal transformaties en tests gedaan worden om het te projecteren op
+het scherm-oppervlak. In feite is de vertex count belangrijker dan de
+polygon count; er kan een verschil zijn als vertices gedeeld worden tussen
+polygonen.
 <p>
-Of course a model with fewer polygons is always less detailed than a model with
-more polygons. Especially curved surfaces can look bad if they are made of too
-few polygons. A number of tricks can be applied to hide the fact that a model
-has only a few polygons:
+Een model met minder polygonen is altijd minder gedetailleerd dan een model met
+meer polygonen. Vooral gekromde oppervlaktes kunnen er slecht uit zien als ze
+zijn opgebouwd uit te weinig polygonen. Er zijn een aantal trucs die toegepast
+kunnen worden om te verhullen dat een model maar een paar polygonen heeft:
 <ul>
-	<li>Curved surfaces can be made with smooth shading, or
-	"Gouraud shading". Normally the eye can see the boundary between the
-	faces because the faces have different colors intensities, which is
-	caused by the different orientations of the faces relative to the light
-	source. With "flat shading", every polygon has a uniform color, so at
-	the boundary between polygons of a curved surface, the user can see an
-	intensity difference. With "smooth shading", the shadow intensity is
-	not calculated per face, but per vertex. Within the polygon, the
-	intensity is interpolated between the vertices. Now, as two polygons of
-	a curved surface that are next to each other share vertices, their
-	color intensities at the boundary are also the same. The result is that
-	the user cannot see the boundary between the polygons.
+	<li>
+	Gekromde oppervlaktes kunne gemaakt worden met gladde schaduwen, of
+	"Gouraud shading". Normaal gesproken kan het oog alleen de grens tussen
+	de vlakken zien doordat de vlakken verschillende kleur-intensiteiten
+	hebben, wat veroorzaakt wordt door de verschillende oriëntaties van de
+	vlakken ten opzichte van de lichtbron. Met "flat shading" heeft elke
+	polygon een uniforme kleur, waardoor de gebruiker een intensiteitsverschil
+	kan zien op de grens tussen polygonen. Met "smooth shading" wordt de
+	schaduw-intensiteit niet berekend per vlak, maar per vertex. Binnen
+	een polygon wordt de intensiteit geïnterpoleerd tussen vertices.
+	Als nu twee polygonen van een gekromd oppervlak die naast elkaar liggen
+	vertices gemeenschappelijk hebben, dan wordt hun kleurintensiteit op
+	de grens ook het zelfde. Het resultaat is dat de gebruiker de grens tussen
+	de polygonen niet kan zien.
 	<p>
-	In order to let this work, a "normal vector" needs to be defined for
-	every vertex. The normal vector defines the direction of the surface at
-	the position of the vertex, which is used to calculate the shadow
-	intensity. Many 3D modelling programs can generate these normal vectors
-	automatically, by enabling "smooth shading" for a group of polygons.
+	Om dit te laten werken moet er een "normaalvector" gedefinieerd worden voor
+	elke vertex. De normaalvector definieert de richting van het oppervlak
+	op de positie van de vertex, die gebruikt wordt om de schaduw-intensiteit
+	te berekenen. Veel 3D-modelleerprogramma's kunnen deze normaalvectoren
+	automatisch genereren, als "smooth shading" wordt aangeschakeld voor een
+	groep polygonen.
 	<p>
-	The effect of smooth shading can really be spectacular. A cylinder can
-	be made with only 10 polygons, while the low number of polygons is only
-	visible at the flat sides of the cylinder. Generally, it's a good idea
-	to use more polygons for large and important objects, like loopings and
-	wheels, and less polygons for small and unimportant objects, like in
-	scenery. You could also make it different for different LODs.
+	Het effect van smooth shading kan echt spectaculair zijn. Een cylinder kan
+	gemaakt worden uit 10 polygonen, terwijl het aantal polygonen alleen
+	zichtbaar is aan de platte kanten van de cylinder. Meestal is het een goed
+	idee om meer polygonen te gebruiken voor grote en belangrijke objecten, zoals
+	loopings en wielen, en minder polygonen voor kleine onbelangrijke objecten,
+	zoals in scenery. U zou het ook verschillend kunnen maken in verschillende
+	LODs.
 	</li><li>
-	Many details can be done with textures instead of polygons. For
-	instance, a door of a building can be a single polygon with a door
-	texture on it. A fence can be built of many cylinders, each having many
-	polygons, but it can also be made of a single polygon with a fence
-	texture on top of it. Textures are mapped on polygons by defining
-	"texture coordinates" for every vertex. For every pixel of the polygon,
-	the texture coordinates are interpolated, and the color corresponding
-	to those coordinates is found in the texture image. These operations
-	do not really depend on the texture size, so they can be done much
-	faster than 3D vertex transformations for an equally detailed model made
-	of polygons instead of textures. So, if you want both speed and quality:
-	use textures.
+	Veel details kunnen gedaan worden met textures in plaats van polygonen.
+	Bijvoorbeeld, een deur van een gebouw kan een enkele polygon zijn met een
+	deur-texture erop. Een hek kan opgebouwd worden uit een groot aantal
+	cylinders, elk bestaande uit een groot aantal polygonen, maar het kan ook
+	gemaakt worden met een enkele polygon met een hek-texture erop.
+	Textures worden op polygonen geplakt door "texture coördinaten" te
+	definiëren voor elke vertex. Voor elke pixel in de polygon worden de
+	texture-coördinaten geïnterpoleerd, en de kleur die overeen komt met
+	die coördinaten wordt gevonden in de texture-afbeelding. Deze operaties
+	hangen niet zo sterk af van de texture-afmetingen, dus ze kunnen veel
+	sneller gedaan worden dan 3D vertex-transformaties voor een net zo
+	gedetailleerd model dat uit polygonen is opgebouwd in plaats van textures.
+	Dus, als u zowel snelheid als kwaliteit wilt: gebruik textures.
 	</li>
 </ul>
 
 <h3>Textures</h3>
-So, textures can be used to make highly detailed models with a low polygon
-count. The disadvantage is the extra number of per-pixel calculations required
-to find the texture color of that pixel. On hardware-accelerated systems, those
-operations are done by the video card processor instead of the main processor.
-The video card processor is optimised for doing the same thing many times
-simultaneously, so it can do the per-pixel operations many times faster than the
-main processor. The problem is that the video processor needs access to the
-texture data. With modern AGP ports the communication between video card and
-CPU/main memory is really fast, but transferring all texture images at a 25 fps
-rate would still to much bandwidth. That's why textures should be placed in the
-video card's memory, and that's why it's important to have enough video card
-memory.
+Textures kunnen dus gebruikt worden om gedetailleerde modellen te maken met
+een klein aantal polygonen. Het nadeel is het extra aantal per-pixel berekeningen
+dat nodig is om de kleur van de pixel te bepalen. Op hardware-versnelde systemen
+worden deze operaties gedaan door de videokaart-processor in plaats van de
+centrale processor. De videokaart-processor is geoptimaliseerd om de zelfde
+taak vele malen tegelijkertijd uit te voeren, en daardoor kan het de per-pixel
+berekeningen veel sneller uitvoeren dan de centrale processor. Het probleem is
+dat de video-processor toegang moet hebben tot de texture-data. Met moderne
+AGP/PCIe-poorten is de communicatie tussen videokaart en CPU / werkgeheugen erg snel,
+maar alle textures op een 25 fps snelheid versturen zou nog steeds te veel
+bandbreedte nodig hebben. Dat is waarom textures in het geheugen van de videokaart
+geplaatst moeten worden, en dat is waarom het belangrijk is om genoeg
+videokaart-geheugen te hebben.
 <p>
-For the 3D modeller, it's important to realise that the performance will drop
-down if not all textures fit in the video memory. Of course the memory usage
-can be reduced by using smaller textures (even the user can do this in
-Ultimate Stunts' settings: Ultimate Stunts resizes textures <i>before</i> it
-gives them to openGL). This resizing is so simple that it's not really
-important for the modeller. Another way to reduce texture memory <i>is</i>
-important to know: sharing textures between models. A texture that is used by
-many models is loaded only once, so it uses memory only once. So instead of
-using a different grass texture on every tile, it's better to use the same
-grass texture.
+Voor de 3D-modeller is het belangrijk om zich te realiseren dat de prestaties
+zullen dalen als niet alle textures in het videogeheugen passen. Het
+geheugengebruik kan natuurlijk beperkt worden door kleinere textures te
+gebruiken (zelfs de gebruiker kan dit doen in Ultimate Stunts' instellingen:
+Ultimate Stunts schaalt de textures <i>voordat</i> het ze aan OpenGL doorgeeft).
+Dit herschalen is zo eenvoudig dat het niet echt belangrijk is voor de modeller.
+Een andere manier om texture-geheugen te verminderen <i>is</i> belangrijk
+om te weten: het delen van textures tussen modellen. Een texture die door veel
+modellen gebruikt wordt, wordt maar één keer geladen, dus het gebruikt het
+geheugen maar één keer. Dus in plaats van op elke tile een andere gras-texture
+te gebruiken, is het beter om overal de zelfde gras-texture te gebruiken.
 <p>
-Textures for Ultimate Stunts can also have an alpha layer, which can be used for
-transparency effects. For example, the leqaves of a tree can be drawn in a
-texture with an alpha layer, with the part of the texture outside the leaves
-being transparent. Then a tree can be made with very few polygons, while they
-are still very detailed. A disadvantage of textures with very large transparent
-areas is that for many pixels, a lot of calculations are made to get to the
-conclusion that nothing has to be drawn. For large objects (that appear large
-on the screen, so that they take a lot of pixels) it could be better to define
-a more detailed polygon model and to reduce the number of unneccesary pixel
-operations. Another disadvantage is that for users who disable transparency
-blending, the transparent areas display as opaque. For these users, a more
-detailed polygon model might be a better solution.
+Textures voor Ultimate Stunts kunnen ook een alpha-kanaal hebben, dat gebruikt
+kan worden voor doorzichtigheids-effecten. Bijvoorbeeld, de bladeren van een
+boom kunnen getekend worden in een texture met een alpha-kanaal, waarbij het deel
+van de texture buiten de bladeren doorzichtig is. Een boom kan dan gemaakt worden
+met maar een paar polygonen, terwijl het nog steeds erg gedetailleerd kan zijn.
+Een nadeel van textures met grote doorzichtige gebieden is dat er voor veel pixels
+een hoop berekeningen gedaan worden om tot de conclusie te komen dat er niets
+getekend hoeft te worden. Voor grote objecten (die er groot uitzien op het scherm,
+zodat ze veel pixels bevatten) zou het beter kunnen zijn om een meer gedetailleerd
+polygon-model te maken om het aantal onnodige piexl-operaties te verminderen.
+Een ander nadeel is dat voor mensen die de doorzichtigheids-blending uitschakelen,
+de doorzichtige gebieden er ondoorzichtig uit zien. Voor deze gebruikers zou een
+meer gedetailleerd polygon-model een betere oplossing kunnen zijn.
 
-<h3>The z-buffer</h3>
-In a correctly rendered 3D image, objects that are in front of other objects
-cover those other objects, so that they are not visible. There are a couple of
-ways to reach this goal. One way is to sort the objects and draw them from back
-to front. When an object is drawn on top of another one, it replaces those
-pixels, and the result is correct. Another way to do it is to remember the
-depth of each drawn pixel (the z-coordinate) in a buffer, the z-buffer. When a
-new pixel is drawn, its depth is compared to the existing pixel, and the new
-pixel is only drawn if it is in front of the old one. This method is more
-accurate than the other one, because it compares per-pixel instead of
-per-object. In theory it should always give the correct result, but in reality
-there are some problems.
+<h3>De z-buffer</h3>
+In een correct gerenderd 3D-beeld bedekken objecten die voor andere objecten staan
+deze andere objecten, zodat ze niet zichtbaar zijn. Er zijn een aantal manieren
+om dit doel te bereiken. Één manier is om de objecten te sorteren en ze van achter
+naar voren te tekenen. Zodra een object bovenop een ander object getekend wordt,
+vervangt het de pixels, en het resultaat is correct. Een andere manier om het te
+doen is door de diepte van elke getekende pixel te onthouden (de z-coördinaat) te
+onthouden in een buffer, de z-buffer. Als een pixel getekend wordt, wordt de diepte
+vergeleken met de bestaande pixel, en de nieuwe pixel wordt alleen getekend als deze
+zich voor de oude bevindt. Deze methode is nauwkeuriger dan de andere, doordat het
+per-pixel vergelijkt in plaats van per-object. In theorie zou het altijd het juiste
+resultaat moeten geven, maar in werkelijkheid zijn er wat problemen.
 <p>
-One of these problems is that the z-buffer has a limited accuracy. Polygons that
-are very close together, like a window on top of a wall, sometimes get mixed
-together in an ugly way because the z-buffer cannot see which of them is closer
-to the camera.
+Één van deze problemen is dat de z-buffer een beperkte nauwkeurigheid heeft.
+Polygonen die vlak achter elkaar staan, zoals een raam bovenop een muur,
+worden soms op een lelijke manier samengevoegd, doordat de z-buffer niet kan
+bepalen welke van de twee dichter bij de camera staat.
 <p>
-Another problem has to do with translucent surfaces. When those surfaces
-are drawn before the objects behind the surface are drawn, then the objects
-behind the surface are not drawn because the z-buffer values are set to the
-depth of the translucent surface. Ultimate Stunts solves this by trying to
-render objects from back to front as much as possible, but inside an object it
-doesn't change the drawing order. This drawing order should be set in such a
-way that it gives a correct result from most viewpoints. The drawing order is
-also important if no translucent surfaces are in the object, because the
-z-buffer can be turned off for performance reasons. The only thing that keeps
-things right in such situations is the drawing order.
+Een ander probleem doet zich voor bij doorschijnende oppervlaktes.
+Als deze oppervlaktes getekend worden voordat de objecten achter de
+oppervlaktes getekend zijn, dan worden de objecten achter de oppervlaktes
+niet getekend, omdat de z-buffer waarden ingesteld zijn op de diepte van
+het doorschijnende oppervlak. Ultimate Stunts lost dit op door te proberen
+om objecten zo veel mogelijk van achter naar voren te tekenen, maar binnen
+een object verandert het de teken-volgorde niet. De tekenvolgorde zou op
+zo'n manier ingesteld moeten worden dat het een correct resultaat geeft vanuit
+de meeste standpunten. De tekenvolgorde is ook belangrijk als er geen
+doorschijnende oppervlaktes zijn in een object, omdat de z-buffer om
+performance-redenen uitgeschakeld kan worden. In zulke situaties is de
+tekenvolgorde het enige dat de dingen nog een beetje goed houdt.
 
-<h3>Design decisions</h3>
-So, concluding, the following decisions have to be made:
+<h3>Ontwerpbeslissingen</h3>
+Dus, ter conclusie, de volgende beslissingen moeten gemaakt worden:
 <ul>
-	<li>The number of faces for round shapes. You can vary this for
-	different LODs. Generally, a low number is good enough if you use
-	smooth shading.</li>
-	<li>The details that are in textures versus details that are in
-	geometry. Generally, texture is better if the player doesn't need to
-	see depth differences.</li>
-	<li>Recycling of textures: use textures that are already used in
-	Ultimate Stunts, or use textures that can be re-used in the future.</li>
+	<li>
+	Het aantal vlakken voor ronde vormen. U kunt dit variëren voor
+	verschillende LODs. In het algemeen is een klein aantal voldoende
+	als u gebruik maakt van smooth shading.
+	</li><li>
+	Details die in de textures zitten versus details die in de geometrie
+	zitten. Textures zijn meestal beter als de speler geen
+	diepte-verschil hoeft te zien.
+	</li><li>
+	Recycling van textures: gebruik textures die al vaker gebruikt zijn
+	in Ultimate Stunts, of gebruik textures die in de toekomst
+	hergebruikt kunnen worden.
+	</li>
 </ul>
 
-<h3>Collision detection</h3>
-I forgot to tell you about collision detection. Till now, we've only been
-talking about the graphics, but the geometry of objects also influences their
-physical interaction by collisions. There is a separate LOD level ("c") for
-the collision model.
+<h3>Botsingsdetectie</h3>
+Ik ben vergeten om over de botsingsdetectie te vertellen. Tot nu toe gebben we
+het alleen gehad over de graphics, maar de geometrie van objecten is ook
+van invloed op hun fysieke interactie via botsingen. Er zijn aparte LODs
+("c" en "s") voor het botsingsmodel.
 <p>
-The collision models for tiles, car bodies and car wheels are defined
-differently. Tile collision models are a set of polygons, just like the graphics
-model, so for many tiles the graphics model can also be used for collision
-detection.
+De botsingsmodellen voor tiles, auto-vormen en auto-wielen zijn op verschillende
+manieren gedefinieerd. Tile-botsingsmodellen zijn een set polygonen, net zoals
+het graphics-model, dus voor veel tiles kan het graphics-model ook gebruikt
+worden voor botsingsdetectie.
 <p>
-The car's body collision model is a "bounding volume", which
-approximates the body's shape with a set of planes. Every plane splits the
-entire space in two parts, and says "the car is on this side of the plane".
-With enough planes (with cleverly chosen orientations), only a small volume
-remains, and this volume should be an approximation to the shape of the car.
-The planes are defined with polygons in the "c" LOD. In the existing cars you
-can see examples of collision models, where the collision planes are usually
-translucent blue.
+Het enige bijzondere aan tiles is dat "oppervlakte"-polygonen in de "s" LOD
+geplaatst moeten worden, en niet in de normale "c" LOD. Dit is omdat Ultimate
+Stunts berijdbare oppervlaktes anders behandelt dan botsings-oppervlaktes.
+Water-oppervlaktes moeten onderdeel zijn van zowel "s" als "c".
 <p>
-The wheels have cylindrical collision models. The cylinder is defined by two
-polygons at the positions of the "end caps" of the cylinder. (the wheel's
-symmetry axis is the x-axis, so those polygons should be perpendicular to the
-x-axis.) The height (y-direction) of those polygons defines the diameter of the
-cylinder. Again, you can see examples in existing cars.
+Het botsingsmodel van een auto is een "bounding volume", dat de vorm van
+de auto benadert met een aantal vlakken. Elk vlak deelt de hele ruimte
+op in twee delen, en zegt "de auto is aan deze kant van het vlak".
+Met genoeg vlakken (met slim gekozen oriëntaties) blijft er maar een
+klein volume over, en dit volume zou een benadering moeten zijn voor de
+vorm van de auto.
+De vlakken zijn gedefinieerd met polygonen in de "c" LOD. In de bestaande
+auto's kunt u voorbeelden van botsingsmodellen zien, waarbij de
+botsingsvlakken meestal doorschijnend blauw zijn.
 <p>
-A very detailed collision model can make the collision detection very
-time-consuming, and luckily a detailed collision model is not needed as much as
-a detailed graphics model. Some complex shapes with many polygons can be
-approximated with a simpeler collision model, and some objects don't need a
-collision model because the cars wil never collide with them. In some situations
-it is even desirable that an object doesn't generate collision effects, e.g.
-with bushes or flowers.
+De wielen hebben cylindrische botsingsmodellen. De cylinder wordt gedefinieerd
+met twee polygonen op de posities van de "eindvlakken" van de cylinder.
+(de symmetrie-as van een wiel is de x-as, dus de polygonen moeten loodrecht
+op de x-as staan.) Ook hier kunt u voorbeelden vinden in bestaande auto's.
+<p>
+Een erg gedetailleerd botsingsmodel kan de botsingsdetectie erg tijdrovend
+maken, en gelukkig is een gedetailleerd botsingsmodel niet zo hard nodig als
+een gedetailleerd graphics-model. Sommige complexe vormen met veel polygonen
+kunnen benaderd worden met een eenvoudiger botsingsmodel, en sommige
+objecten hebben geen botsingsmodel nodig omdat auto's er nooit mee zullen
+botsen. In sommige situaties is het zelfs ongewenst dat een object
+botsingseffecten genereert, bijv. met struiken of bloemen.
 </body>
 </html>
 

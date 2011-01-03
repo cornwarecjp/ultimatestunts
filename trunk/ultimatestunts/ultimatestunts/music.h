@@ -22,6 +22,10 @@
   *@author CJP
   */
 
+#include <vector>
+namespace std {}
+using namespace std;
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -30,6 +34,11 @@
 #ifdef FMOD_HEADER
 #include <fmod/fmod.h>
 #endif
+#endif
+
+#ifdef HAVE_VORBISFILE
+#include "vorbis/codec.h"
+#include "vorbis/vorbisfile.h"
 #endif
 
 #include "cstring.h"
@@ -46,6 +55,8 @@ class CMusic : public CSndSample
 
 	virtual int attachToChannel(int c);
 
+	void update();
+
 	void setEndCallback(void (CALLBACKFUN *endfunc)());
 
 protected:
@@ -56,7 +67,16 @@ protected:
 
 #ifdef HAVE_LIBOPENAL
 	unsigned int m_Buffer;
+	unsigned int m_Source; //only used when streaming
 	bool m_isLoaded;
+	bool m_isStreaming;
+	bool m_streamIsFinished;
+	vector<unsigned int> m_StreamBuffers;
+
+#ifdef HAVE_VORBISFILE
+	OggVorbis_File m_VorbisFile;
+#endif
+
 #endif
 };
 

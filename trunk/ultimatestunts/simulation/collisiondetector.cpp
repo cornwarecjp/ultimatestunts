@@ -424,13 +424,24 @@ CCollisionData CCollisionDetector::ObjObjTest(const CBody &body1, const CBody &b
 	find the collision point
 	*/
 
+	float minDepth = 1000.0;
+	CVector minDepthDir;
+
 	//first try all faces of body 1
 	for(unsigned int i=0; i < b1->m_Faces.size(); i++)
 	{
 		CCollisionFace theFace = b1->m_Faces[i];
 		theFace *= o1;
 		theFace += p1;
-		if(!faceTest(p1, o1, b1, p2, o2, b2, theFace)) return ret;
+
+		float depth = -dirTest(p1, o1, b1, p2, o2, b2, theFace.nor);
+		if(depth < 0.0) return ret;
+
+		if(depth < minDepth)
+		{
+			minDepth = depth;
+			minDepthDir = theFace.nor;
+		}
 	}
 
 	//then try all faces of body 2
@@ -439,13 +450,34 @@ CCollisionData CCollisionDetector::ObjObjTest(const CBody &body1, const CBody &b
 		CCollisionFace theFace = b2->m_Faces[i];
 		theFace *= o2;
 		theFace += p2;
-		if(!faceTest(p1, o1, b1, p2, o2, b2, theFace)) return ret;
+
+		float depth = -dirTest(p1, o1, b1, p2, o2, b2, theFace.nor);
+		if(depth < 0.0) return ret;
+
+		if(depth < minDepth)
+		{
+			minDepth = depth;
+			minDepthDir = theFace.nor;
+		}
 	}
 
-	ret.nor = p1 - p2;
+	/*
+	At this point, no separating face was found, so the
+	bodies must be colliding.
+	*/
+
+	//Direction
+	ret.nor = minDepthDir;
+	if(ret.nor.dotProduct(p1 - p2) < 0.0) ret.nor = -ret.nor; //reconstruct right direction
 	ret.nor.normalise();
-	ret.pos = p1 - b1->m_BSphere_r * ret.nor;
-	ret.depth = 0.5 * (b1->m_BSphere_r + b2->m_BSphere_r - (p2-p1).abs());
+
+	//Penetration depth
+	ret.depth = minDepth;
+
+	//Position
+	//TODO: more accurate (mostly relevant for torques)
+	ret.pos = 0.5*(p1+p2);
+
 	ret.vdiff = vdiff;
 	ret.vmean = vmean;
 
@@ -592,7 +624,6 @@ void CCollisionDetector::tileRotate(CVector &v, int rot)
 }
 
 //generic tests:
-//return true if there could be a collision
 
 bool CCollisionDetector::sphereTest(const CVector &p1, const CCollisionModel *b1, const CVector &p2, const CCollisionModel *b2)
 {
@@ -601,54 +632,67 @@ bool CCollisionDetector::sphereTest(const CVector &p1, const CCollisionModel *b1
 	return abs2 < (rsum * rsum);
 }
 
-#define MINDDIFF 0.01 //1 cm
-
-bool CCollisionDetector::faceTest(const CVector &p1, const CMatrix &o1, const CBound *b1, const CVector &p2, const CMatrix &o2, const CBound *b2, const CCollisionFace &theFace)
+float CCollisionDetector::dirTest(
+	const CVector &p1, const CMatrix &o1, const CBound *b1,
+	const CVector &p2, const CMatrix &o2, const CBound *b2,
+	const CVector &dir)
 {
-	//0 = undetermined, 1 = front, -1 = back
-	int side1 = 0, side2 = 0;
+	float dmin1 = 0.0;
+	float dmax1 = 0.0;
+	float dmin2 = 0.0;
+	float dmax2 = 0.0;
 
-	//determine the side of the points of body 1
+	//determine the range of the points of body 1
 	for(unsigned int i=0; i < b1->m_Points.size(); i++)
 	{
 		CVector thePoint = b1->m_Points[i];
 		thePoint *= o1;
 		thePoint += p1;
-		float ddiff = thePoint.dotProduct(theFace.nor) - theFace.d;
+		float d = thePoint.dotProduct(dir);
 
-		if(ddiff > MINDDIFF)
+		if(i == 0) //initialization
 		{
-			if(side1 < 0) return true; //there could be a collision
-			side1 = 1;
+			dmin1 = d;
+			dmax1 = d;
 		}
-		else if(ddiff < -MINDDIFF)
-		{
-			if(side1 > 0) return true; //there could be a collision
-			side1 = -1;
-		}
+
+		if(d < dmin1) dmin1 = d;
+		if(d > dmax1) dmax1 = d;
 	}
-	
-	//determine the side of the points of body 2
+
+	//determine the range of the points of body 2
 	for(unsigned int i=0; i < b2->m_Points.size(); i++)
 	{
 		CVector thePoint = b2->m_Points[i];
 		thePoint *= o2;
 		thePoint += p2;
-		float ddiff = thePoint.dotProduct(theFace.nor) - theFace.d;
+		float d = thePoint.dotProduct(dir);
 
-		if(ddiff > MINDDIFF)
+		if(i == 0) //initialization
 		{
-			if(side2 < 0) return true; //there could be a collision
-			side2 = 1;
+			dmin2 = d;
+			dmax2 = d;
 		}
-		else if(ddiff < -MINDDIFF)
-		{
-			if(side2 > 0) return true; //there could be a collision
-			side2 = -1;
-		}
+
+		if(d < dmin2) dmin2 = d;
+		if(d > dmax2) dmax2 = d;
 	}
 
-	if(side1 == side2 && side1 != 0) return true; //both on the same side
+	if(dmin1 > dmax2) //no collision: positive distance
+		return dmin1 - dmax2;
 
-	return false; //separation plane -> no collision
+	if(dmin2 > dmax1) //no collision: positive distance
+		return dmin2 - dmax1;
+
+	//Collision: negative distance
+
+	float dx = (dmin1+dmax1) - (dmin2+dmax2);
+	if(dx > 0.0) //body 1 on the right side
+	{
+		return dmin1 - dmax2;
+	}
+	else //body 2 on the right side
+	{
+		return dmin2 - dmax1;
+	}
 }

@@ -16,7 +16,7 @@ Het kan ook gecompileerd worden op sommige andere systemen:
 
 	<li>Mac OS X is weliswaar gebaseerd op een UNIX-kernel, maar Apple heeft
 	een boel "features" toegevoegd die het minder compatible maken met
-	typische UNIX-systemen. Een aparte <a href="../en/macosx.htm">
+	typische UNIX-systemen. Een aparte <a href="macosx.htm">
 	compilatie-handleiding voor Mac OS X</a> is	beschikbaar.</li>
 </ul>
 
@@ -33,12 +33,17 @@ en SDL). De niet-grafische programma's (zoals de server) kunnen ook SDL gebruike
 maar het kan mogelijk zijn om ze zonder SDL te compileren.
 Geluidsondersteuning via de FMOD of de openAL bibliotheek is optioneel: als u geen
 FMOD of openAL heeft zal Ultimate Stunts compileren zonder geluidsondersteuning. Als
-u beide heeft zal Ultimate Stunts standaard openAL gebruiken.<br>
+u beide heeft zal Ultimate Stunts standaard openAL gebruiken. Als OpenAL gebruikt wordt
+voor geluid, dan kan Ultimate Stunts daarbij ook libvorbisfile gebruiken voor het laden van Ogg
+Vorbis geluiden en muziek. Zonder libvorbisfile is Ultimate Stunts afhankelijk van een
+extensie van de ALUT bibliotheek voor het laden van Ogg-bestanden, en deze extensie is
+vaak niet aanwezig.
 <p>
 U kunt hier de vereiste bibliotheken vinden:
 <ul>
 	<li><a href="http://www.fmod.org/ifmoddownload.html">FMOD</a></li>
 	<li><a href="http://www.openal.org/downloads.html">OpenAL</a></li>
+	<li><a href="http://www.xiph.org/ogg/vorbis/">Vorbisfile</a></li>
 	<li><a href="http://www.libsdl.org/download-1.2.php">SDL</a></li>
 	<li><a href="http://www.libsdl.org/projects/SDL_image/">SDL_image</a></li>
 </ul>
@@ -47,20 +52,22 @@ installeren.
 <p>
 De meeste Linux-distributies leveren de benodigde bibliotheken als packages. Normaal
 gesproken wordt FMOD niet geleverd (doordat het geen vrije software is), maar u kunt
-altijd OpenAL gebruiken als alternatief. Als u deze bibliotheken installeert door een
+in plaats daarvan altijd OpenAL gebruiken. Als u deze bibliotheken installeert door een
 package-management systeem, vergeet dan niet om de development packages te installeren:
 deze zijn nodig voor het compileren van Ultimate Stunts (om het te draaien heeft u
 alleen de runtime packages nodig). Om u een idee te geven van wat voor packages u
-moet installeren, dit zijn de package-namen in Kubuntu 6.06:
+moet installeren, dit zijn de package-namen in Ubuntu 10.04:
 <ul>
 	<li>libsdl1.2debian</li>
 	<li>libsdl1.2-dev</li>
 	<li>libsdl-image1.2</li>
 	<li>libsdl-image1.2-dev</li>
-	<li>libopenal0a</li>
+	<li>libopenal1</li>
 	<li>libopenal-dev</li>
 	<li>libalut0</li>
 	<li>libalut-dev</li>
+	<li>libvorbisfile3</li>
+	<li>libvorbis-dev</li>
 </ul>
 
 <h3>Bibliotheken voor Cygwin</h3>

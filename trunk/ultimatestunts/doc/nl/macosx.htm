@@ -1,0 +1,216 @@
+<html>
+<head>
+<title>Ultimate Stunts op Mac OS X - installatie-instructies</title>
+</head>
+<body>
+<h1>Ultimate Stunts op Mac OS X - installatie-instructies</h1>
+
+Opmerkingen:
+<ol>
+	<li>Dit is hoe ik het heb gedaan, er zijn andere manieren (namelijk frameworks
+	gebruiken en niet Unix bibliotheken, of macports of fink gebruiken)</li>
+	<li>U dient in ieder geval een beetje moeten begrijpen wat u doet, ik beweer
+	niet dat mijn instructies perfect zijn. Aan de andere kant: ze zouden u
+	wel in de juiste richting op weg moeten helpen.</li>
+</ol>
+
+<h3>Opzetten van de werk-omgeving</h3>
+
+<ul>
+	<li>Installeer developer tools, ofwel van de OS X installatie DVD, of van
+	de website van Apple</li>
+
+	<li>Voeg /usr/local/bin toe aan uw PATH, <b><i>voor</i></b> /usr/bin 
+	(<a href="http://www.troubleshooters.com/linux/prepostpath.htm">
+	http://www.troubleshooters.com/linux/prepostpath.htm</a>) zodat de nieuwe
+	versies van wat u installeert standaard gekozen worden in plaats van de
+	oudere versies</li>
+
+	<li>pkg-config<br>
+	Download van <a href="http://pkgconfig.freedesktop.org/releases/">
+	http://pkgconfig.freedesktop.org/releases/</a>. Bouw met:
+	<pre>
+    % cd /path/to/pkg-config-0.22
+    % ./configure
+    % make
+    % sudo make install
+	</pre>
+
+	<li>Autotools<br>
+	Alleen noodzakelijk als je de CVS versie hebt (denk ik)<br>
+	Installeer recentere autotools (de versie die met OS X 10.4 geleverd wordt
+	is te oud. Misschien hebben 10.5 gebruikers dit niet nodig.). Let hier voor op
+	dat /usr/local/bin in uw PATH is zoals hierboven beschreven, anders zal het niet
+	werken (het zal de oudere versie kiezen).</li>
+</ul>
+
+Alle volgende programma's kunnen gebouwd en geïnstalleerd worden met de volgende
+commando's op de terminal:
+<pre>
+    % cd /path/to/source_file
+    % ./configure
+    % make
+    % sudo make install
+</pre>
+
+<ul>
+	<li>haal M4 op van <a href="http://ftp.gnu.org/gnu/m4/">
+	http://ftp.gnu.org/gnu/m4/</a> en installeer het</li>
+
+	<li>symlink m4 naar gm4 omdat dat is hoe sommige programma's er naar verwijzen.
+	<pre>
+    % sudo ln -s /usr/local/bin/m4 /usr/local/bin/gm4
+	</pre></li>
+	<li>
+	Bouw en installeer daarna autoconf en automake van GNU op de zelfde manier
+	als hierboven beschreven
+	<ul>
+		<li><a href="http://www.gnu.org/software/autoconf/">
+			http://www.gnu.org/software/autoconf/</a></li>
+		<li><a href="http://www.gnu.org/software/automake/">
+			http://www.gnu.org/software/automake/</a></li>
+	</ul>
+	</li>
+</ul>
+
+<h3>OpenAL</h3>
+
+Het OpenAL framework dat door Apple wordt geleverd op OS X 10.04 is te oud.
+Ook hier hebben 10.5 gebruikers misschien een recentere versie - maar in
+ieder geval was het bouw-systeem van Ultimate Stunts niet gepatcht voor mac
+frameworks dus het bouwen van de bibliotheek in Unix-stijl is het eenvoudigst.
+<b>Dit deel is momenteen een beetje rommelig, en we compileren niet eens met
+.ogg-ondersteuning (wat betekent dat we geen muziek hebben) dus dit zal wat
+verbeterd moeten worden.</b>
+
+<ul>
+	<li>Checkout OpenAL SVN (of waarschijnlijk werkt de broncode van versie
+	1.1 ook maar dat heb ik niet getest)
+	<pre>
+    % svn checkout http://www.openal.org/repos/openal/trunk openal
+    % cd openal
+	</pre></li>
+	<li>Bouw OpenAL:
+	<ul>
+		<li>open folder OpenAL-MacOSX, open XCode project</li>
+		<li>selecteer target openal.dylib en build style "deployment"</li>
+		<li>build</li>
+		<li>vind /OpenAL-MacOSX/build/Deployment/openal.dylib en kopieer het naar
+		/usr/local/lib, waarbij u het hernoemt naar libopenal.dylib
+		<pre>
+            % sudo cp ./OpenAL-MacOSX/build/Deployment/openal.dylib /usr/local/lib/libopenal.dylib
+            % sudo install_name_tool -id /usr/local/lib/libopenal.dylib /usr/local/lib/libopenal.dylib
+		</pre></li>
+	</ul></li>
+	<li>kopieer headers in /OpenAL-MacOSXbuild/include/AL naar /usr/local/include/AL
+	<pre>
+    % sudo cp -r ./include/AL/  /usr/local/include/AL
+	</pre></li>
+	
+	
+    <li>creëer <i>openal.pc</i> in /usr/local/lib/pkgconfig 
+<pre>
+prefix=/usr/local
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: OpenAL
+Description: OpenAL blah blah blah not an official .pc file
+Requires:
+Version: 1.1.0
+Libs: -L${libdir} -lopenal
+Cflags: -I${includedir}
+<pre>
+
+	</li>
+	<li>bouw alut:
+	<pre>
+    % cd /openal/alut
+    % ./autogen.sh
+    % ./configure
+    % make
+    % sudo make install
+	</pre></li>
+</ul>
+
+<h3>Ophalen van de afhankelijkheden</h3>
+
+<ul>
+	<li>Haal libjpeg op van
+	<a href="http://people.imendio.com/richard/gtk-osx/files/jpeg-6b.tar.gz">
+	http://people.imendio.com/richard/gtk-osx/files/jpeg-6b.tar.gz</a> (op het
+	moment van schrijven van dit document begrijp ik dat de officiële versie van
+	libjpeg nog steeds geen bibliotheken kan maken voor mac)
+	<pre>
+    % ./configure --enable-static --enable-shared
+    % make
+    % sudo make install
+	</pre></li>
+	<li>Haal libpng op (<a href="http://libpng.sourceforge.net/">
+	http://libpng.sourceforge.net/</a>)
+	<pre>
+    % ./configure
+    % make
+    % sudo make install
+	</pre>
+	<li>Haal gettext broncode op (neem de gettext broncode van
+	<a href="ftp://mirrors.kernel.org/gnu/gettext">
+	ftp://mirrors.kernel.org/gnu/gettext</a>)
+	<pre>
+    % cd /path/to/gettext-0.16
+    % ./configure
+    % make
+    % sudo make install
+	</pre>
+</ul>
+Installeer SDL vanuit de broncode met de terminal, gebruik niet de binaries
+die ze leveren (ondersteuning voor de geleverde binaries kan in de toekomst
+toegevoegd worden, maar op dit moment is het makkelijker om ze zelf te bouwen
+vanaf de terminal omdat het minder patchen van het bouw-systeem van Ultimate Stunts
+vereist)
+<ul>
+	<li>Haal SDL broncode op (<a href="http://www.libsdl.org/download-1.2.php">
+	http://www.libsdl.org/download-1.2.php</a>)
+	<pre>
+    % cd /path/to/SDL-1.2.13
+    % ./configure --without-x --disable-x11-video
+    % make
+    % sudo make install
+	</pre></li>
+	<li>Haal de SDL_image broncode op
+	<pre>
+    % cd /path/to/SDL_image-1.2.6
+    % ./configure --enable-jpg-shared=false --enable-png-shared=false
+    % make
+    % sudo make install
+	</pre></li>
+	<li>symlink de include folder van het OpenGL framework naar /usr/local/include/GL 
+	(Unix programma's kunnen het op deze manier makkelijker vinden)
+	<pre>
+    % sudo ln -s /System/Library/Frameworks/OpenGL.framework/Versions/A/Headers/ /usr/local/include/GL
+	</pre></li>
+</ul>
+
+<h3>Bouwen van ultimate Stunts</h3>
+
+<ul>
+	<li>haal de broncode op</li>
+	<li>als je het configure script moet genereren (zoals wanneer je het
+	uit CVS gehaald hebt), doe "autoconf"</li>
+</ul>
+<pre>
+    %./configure
+    % make
+</pre>
+
+<h3>Starten van Ultimate Stunts</h3>
+
+<pre>
+    % ./ultimatestunts/ustunts
+</pre>
+
+veel plezier =)
+
+</body>
+</html>

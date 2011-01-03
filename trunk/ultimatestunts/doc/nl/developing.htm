@@ -1,574 +1,572 @@
 <html>
-<title>An introduction to programming Ultimate Stunts</title>
+<title>Een inleiding tot het programmeren van Ultimate Stunts</title>
 <body>
-<h1>An introduction to programming Ultimate Stunts</h1>
+<h1>Een inleiding tot het programmeren van Ultimate Stunts</h1>
 
-<h3>Contents</h3>
+<h3>Inhoud</h3>
 <ul>
-	<li><a href="#know">What you should already know</a></li>
-	<li><a href="#style">Coding habits</a></li>
-	<li><a href="#layout">Source code layout</a></li>
-	<li><a href="#follow">Following an Ultimate Stunts game in the source
+	<li><a href="#know">Wat u al moet weten</a></li>
+	<li><a href="#style">Programmeergewoonten</a></li>
+	<li><a href="#layout">Layout van de broncode</a></li>
+	<li><a href="#follow">Een Ultimate Stunts spel in de broncode volgen
 	</a></li>
 </ul>
 
-<h3>Introduction</h3>
-This document is written for people who are interested in reading the Ultimate
-Stunts sourcecode, or who want to contribute to Ultimate Stunts by programming
-new features into it. The reason to write this is to attract new Ultimate Stunts
-developers, and to make it new developers as easy as possible to get started.
+<h3>Inleiding</h3>
+Dit document is geschreven voor mensen die geïnteresseerd zijn in het lezen van de
+Ultimate Stunts broncode, of die willen bijdragen aan Ultimate Stunts door nieuwe
+features te programmeren. De reden om dit te schrijven is om nieuwe Ultimate Stunts
+ontwikkelaars aan te trekken, en om het nieuwe ontwikkelaars zo makkelijk mogelijk
+te maken om aan de slag te gaan.
 
-<h3>Before you start adding code</h3>
-Remember that Ultimate Stunts is released under the GNU General Public License.
-You should also release your code changes under this license. Make sure that
-all terms of this license are acceptable to you, before you commit any code.
-It can be useful to read this license at least once. You can find this license
-in your Ultimate Stunts package as a text file with the name 'COPYING'. You can
-also get it from the website of the Free Software Foundation.
+<h3>Voordat u code begint toe te voegen</h3>
+Wees u ervan bewust dat Ultimate Stunts wordt uitgegeven onder de GNU General Public
+License. U hoort uw code-veranderingen ook onder deze licentie uit te geven. Let
+er op dat alle voorwaarden in deze licentie aanvaardbaar zijn voor u, voordat u
+code uitgeeft. Het kan nuttig zijn om deze licentie minimaal één keer door te lezen.
+U kunt deze licentie vinden in uw Ultimate Stunts pakket als een tekst-bestand met
+de naam 'COPYING'. U kunt het ook verkrijgen op de website van de Free Software
+Foundation.
 
-<a name="know"></a><h1>What you should already know</h1>
-If you are only going to work on a limited part of Ultimate Stunts, then you
-may not need to have experience with all of these subjects. I'd suggest that
-you read this chapter entirely, and then decide for yourself how useful you are
-for the Ultimate Stunts project, and if necessary get some extra experience
-before joining the project.
+<a name="know"></a><h1>Wat u al moet weten</h1>
+Als u slechts aan een beperkt deel van Ultimate Stunts gaat werken, dan hoeft u
+misschien geen ervaring te hebben met al deze onderwerpen. Ik stel voor dat u dit
+hele hoofdstuk doorleest, en dan voor uzelf beslist hoe bruikbaar u bent voor het
+Ultimate Stunts project, en indien noodzakelijk, zorg dan eerst voor wat extra
+ervaring voordat u zich bij het project aansluit.
 
-<h3>C and C++</h3>
-Almost all of the Ultimate Stunts sourcecode is written in the programming
-language C++, and the rest is written in C. If you want to edit the sourcecode,
-then you definitely need experience with these languages. There are enough
-online courses available for free on the internet, and there are also free
-compilers available for these languages. Make sure that you have experience
-(not only knowledge) with subjects like derived classes, virtual functions and
-overloading them, operator overloading, and C++ templates. If you need to
-choose between different compilers for training, then I'd suggest to use the
-same compiler as Ultimate Stunts: the GNU Compiler Collection (gcc).
-In windows, you can get it by installing Cygwin, but it is recommended to use
-Linux, or another free UNIX-like operating system.
+<h3>C en C++</h3>
+Bijna de hele Ultimate Stunts broncode is geschreven in de programmeertaal C++, en
+de rest is geschreven in C. Als u de broncode wilt bewerken, dan heeft u beslist
+ervaring nodig met deze talen. Er zijn voldoende gratis online cursussen beschikbaar
+op het internet, en er zijn ook vrij verkrijgbare compilers voor deze talen.
+Zorg ervoor dat u ervaring heeft (niet alleen kennis) met onderwerpen zoals afgeleide
+klassen, virtuele functies en het overloaden daarvan, operator overloading, en C++
+templates. Als u om te oefenen moet kiezen tussen verschillende compilers, dan stel ik
+voor om de zelfde compiler te gebruiken als Ultimate Stunts: de GNU Compiler Collection
+(gcc). In windows kunt u deze verkrijgen door Cygwin te installeren, maar het is
+aan te bevelen om Linux te gebruiken, of een ander vrij UNIX-achtig besturingssysteem.
 
 <h3>UNIX/Linux</h3>
-Ultimate Stunts is designed to work primarily on UNIX-like platforms, like
-Linux; the windows-version is compiled by using the UNIX emulation program
-Cygwin. Therefore, it is useful to know how to work with these systems.
-The build process of Ultimate Stunts is based on programs like
-autoconf and automake, so if you need to change anything there (e.g. for linking
-with a new library, or for fixing the build system for some platform), you need
-to know how to use them. Even when you add new source files to Ultimate Stunts,
-you need to know how to update the correct Makefile.am (though that is not
-really difficult).
+Ultimate Stunts is ontworpen om voornamelijk op UNIX-achtige platforms te werken,
+zoals Linux; de windows-versie wordt gecompileerd door de UNIX-emulatiesoftware Cygwin
+te gebruiken. Het is daarom nuttig om te weten hoe u kunt werken met deze systemen.
+Het bouw-proces van Ultimate Stunts is gebaseerd op programma's als autoconf en
+automake, dus als u daaraan iets moet veranderen (bijv. voor het linken met een
+nieuwe bibliotheek, of voor het fixen van het bouwsysteem voor een bepaald platform),
+dan moet u weten hoe u deze programma's kunt gebruiken. Zelfs als u nieuwe
+broncodebestanden toe voegt aan Ultimate Stunts, dan moet u weten hoe de juiste
+Makefile.am aangepast moet worden (maar dat is niet echt moeilijk).
 <p>
-For translation of the user interface to other languages, Ultimate Stunts uses
-the GNU gettext library. When configured properly, using gettext is not really
-difficult, but you should be aware that gettext is being used.
+Voor het vertalen van de gebruikersinterface in andere talen gebruikt Ultimate Stunts
+de GNU gettext bibliotheek. Als het goed is ingesteld, dan is het niet zo moeilijk
+om gettext te gebruiken, maar u moet zich ervan bewust zijn dat gettext gebruikt
+wordt.
 
 <h3>OpenGL</h3>
-All graphics output in Ultimate Stunts (2D and 3D graphics, menus, texts, etc.)
-are based on OpenGL. So, if you want to modify anything in Ultimate Stunts that
-has something to do with graphics output, then you need OpenGL experience.
-Even when working on a higher level, where you don't have to give direct
-OpenGL calls, it can be useful to know the behavior of OpenGL. You need to
-have some basic theoretical knowledge of how 3D rendering works in OpenGL,
-what the different transformation matrices do, and of course how to draw some
-lines and triangles. Also it is very useful to have some experience writing
-your own OpenGL programs.
+Alle grafische uitvoer in Ultimate Stunts (2D en 3D graphics, menus, teksten, enz.)
+zijn gebaseerd op OpenGL. Dus, als u iets in Ultimate Stunts wilt aanpassen dat te
+maken heeft met grafische uitvoer, dan heeft u OpenGL ervaring nodig. Zelfs als u
+op een hoger niveau werkt, waar u niet direct OpenGL-aanroepen hoeft te doen, kan
+het handig zijn om het gedrag van OpenGL te kennen. U heeft wat basale theoretische
+kennis nodig over hoe 3D rendering werkt in OpenGL, wat de verschillende
+transformatiematrices doen, en natuurlijk hoe u wat lijnen en driehoeken kunt tekenen.
+Het is ook nuttig om wat ervaring te hebben met het schrijven van uw eigen OpenGL
+programma's.
 
 <h3>SDL</h3>
-SDL is used for creating a window for the OpenGL context, for user input
-(keyboard/mouse/joystick) and for multithreading. If your work is not directly
-related to these subjects, then you don't need to learn SDL. Even when you
-need to do something with SDL in a later stage, this is not a big problem,
-because SDL is quite easy to learn.
+SDL wordt gebruikt voor het maken van een venster voor de OpenGL context, voor
+gebruikers-invoer (toetsenbord/muis/joystick) en voor multithreading. Als uw werk
+niet direct is gerelateerd aan deze onderwerpen, dan hoeft u SDL niet te leren. Zelfs
+als u in een later stadium iets met SDL moet doen, dan is dit geen groot probleem,
+omdat SDL vrij eenvoudig te leren is.
 <p>
-The additional library SDL_image is also used. This library has an even simpler
-programming interface, but if you are not involved in the functions that load
-textures from files, then you do not need to know it.
+De extra bibliotheek SDL_image wordt ook gebruikt. Deze bibliotheek heeft zelfs een
+nog eenvoudigere programmeerinterface, maar als u niet betrokken bent bij de functies
+die textures uit bestanden laden, dan hoeft u het niet te kennen.
 
 <h3>FMOD / OpenAL</h3>
-The libraries FMOD and OpenAL are both used for sound output. If you don't
-work on the soundsubsystem you don't need to know them, but if you do, you need
-knowledge of both of them. The reason is that on some platforms FMOD is used,
-and on others OpenAL is used, so if anything changes to the sound system, you
-need to be sure that both of them still work. It is also useful to be able to
-compile with both of them (and to know something about autoconf to be able to
-choose between them).
+De bibliotheken FMOD en OpenAL worden beide gebruikt voor geluids-uitvoer. Als u niet
+aan het geluids-subsysteem werkt, dan hoeft u ze niet te kennen, maar als u er wel
+aan werkt, dan heeft u kennis van beide nodig. De reden is dat op sommige platforms
+FMOD wordt gebruikt, en op andere OpenAL, zodat als er iets verandert aan het
+geluidssysteem, u er voor moet zorgen dat beide nog steeds werken. Het is ook nuttig
+om in staat te zijn om met beide te compileren (en iets af te weten van autoconf om
+tussen de twee te kunnen kiezen).
 
-<h3>Math</h3>
-Ultimate Stunts is a very threedimensional program, so in most parts of the
-sourcecode you will have to work with 3D vectors and their operations, and
-often also with 3*3 transformation matrices. So, make sure that your linear
-algebra knowledge is up-to-date, and that you understand the concept of a
-rotation matrix (you can search for that on the internet). For some parts of
-the sourcecode, especially the physics engine, you also need to know other
-math concepts, like calculus, or numerical integration.
+<h3>Wiskunde</h3>
+Ultimate Stunts is een erg driedimensionaal programma, dus in het grootste deel van
+de broncode zult u moeten werken met 3D vectoren en hun operatoren, en vaak ook met
+3*3 transformatiematrices. Dus, zorg ervoor dat uw kennis van lineaire algebra
+up-to-date is, en dat u het concept van een rotatiematrix begrijpt (dat kunt u op het
+internet opzoeken). Voor enkele delen van de broncode, vooral de physics engine,
+heeft u ook kennis nodig van andere wiskundige concepten, zoals analyse, of
+numerieke integratie.
 
-<h3>(Car) Physics</h3>
-You need detailed knowledge of physics, if and only if you are going to work on
-the physics engine. Ultimate Stunts uses a lot of tricks and shortcuts in the
-simulation to make it easier to play, but there is still a lot of real-world
-physics involved in the simulation. You need to know the basic laws of
-newtonian mechanics (you know, about velocities, acceleration, mass, forces
-etc.), and of rotational mechanics (torques, moments of inertia etc.). Also,
-it is useful to have some knowledge of how a car works, with things like
-engine torque curves, gear ratios, suspension, weight transfer, tire behavior,
-etc..
+<h3>Natuurkunde (van de auto)</h3>
+U heeft dan en slechts dan gedetailleerde kennis van natuurkunde nodig, als u gaat
+werken aan de physics engine. Ultimate Stunts gebruikt veel trucs en benaderingen
+in de simulatie om het makkelijker te spelen te maken, maar er wordt nog steeds een
+boel echte fysica gebruikt in de simulatie. U moet de wetten van Newtoniaanse mechanica
+kennen (u weet wel, over snelheden, acceleratie, massa, krachten enz.). en
+rotatie-mechanica (krachtmomenten, traagheidsmomenten enz.). Het is ook handig om iets
+te weten van hoe een auto werkt, met dingen als de motorkoppel-curve,
+versnellings-verhoudingen, wielophanging, gewichtsverdeling tussen de wielen, het
+gedrag van de banden, enz..
 
 <h3>Ultimate Stunts</h3>
-It is essential to know what is already present in Ultimate Stunts. This
-document will help you find your way in the sourcecode, but it is not detailed
-enough to explain everything. Make sure that you played the game enough to know
-all its features, play a bit with the configuration options, maybe make your
-own track to get some feeling of how Ultimate Stunts tracks 'work', and
-read on the Ultimate Stunts website about its history and its planned features.
-The way how things are implemented will be clearer to you if you know what it
-has to do, and what it will have to do in the future.
+Het is essentieel om te weten wat er al aanwezig is in Ultimate Stunts. Dit document
+zal u helpen om uw weg te vinden in de broncode, maar het bevat niet genoeg detail om
+alles uit te leggen. Zorg ervoor dat u het spel genoeg gespeeld heeft om alle
+mogelijkheden te kennen, speel een beetje met de instellingen, maak misschien uw
+eigen tracks om wat gevoel te krijgen voor hoe Ultimate Stunts tracs 'werken', en
+lees op de Ultimate Stunts website over de geschiedenis van het project, en de
+geplande features. De manier hoe dingen geïmplementeerd zijn zal duidelijker zijn als
+u weet wat het moet doen, en wat het zal moeten doen in de toekomst.
 
-<a name="style"></a><h1>Coding habits</h1>
-When different programmers work on the same piece of code, it is often
-frustrating when other people's code does not follow you own habits. Therefore,
-this section describes some things you should do in order not to frustrate
-other programmers. The rules given below are meant to be general guidelines,
-not rules that should always be followed even when the result looks stupid.
-Examples are not given: the existing sourcecode should provide enough examples.
+<a name="style"></a><h1>Programmeergewoonten</h1>
+Als verschillende programmeurs aan het zelfde stuk code werken, dan is het vaak
+frustrerend wanneer de code van anderen niet je eigen gewoonten volgt. Daarom
+beschrijft deze sectie enkele dingen die u moet doen om geen ergernis te veroorzaken
+bij andere programmeurs. De onderstaande regels zijn bedoeld als algemene richtlijnen,
+niet als regels die altijd gevolgd moeten worden, zelfs als het resultaat er dom uit
+ziet. Er worden geen voorbeelden gegeven: de bestaande broncode bevat voldoende
+voorbeelden.
 
-<h3>File format</h3>
-All source-files should be UNIX-style text files, not DOS/windows-style or
-Macintosh-style. If you work in windows (not recommended), make sure that
-your text editor saves UNIX-style text files. Most text editors in windows
-don't. The character set should be ASCII as much as possible, so only the
-lower 128 characters of a character set should be used, and no unicode should
-be used. In the rare cases that other characters are needed, the ISO 8859-1
-standard is followed. All variable names, function names, comments etc. should
-be written in english. An exception are of course short variable names like
-x, y or i. As a rule, don't use any other natural language in your sourcecode.
+<h3>Bestandsformaat</h3>
+Alle broncode-bestanden moeten UNIX-stijl tekstbestanden zijn, niet DOS/windows-stijl
+of Macintosh-stijl. Als u in windows werkt (niet aanbevolen), zorg er dan voor dat
+uw tekst-editor documenten opslaat als UNIX-stijl tekstbestanden. De meeste tekst
+editors in windows doen dat niet. De tekenset zou zo veel mogelijk ASCII moeten zijn,
+dus alleen de eerste 128 tekens mogen gebruikt worden, en unicode dient niet
+gebruikt te worden. In de enkele gevallen dat andere tekens nodig zijn, wordt de
+ISO 8859-1 standaard gevolgd. Alle variabele-namen, functienamen, commentaar enz.
+moeten in het engels geschreven zijn. Een uitzondering zijn natuurlijk korte
+variabele-namen zoals x, y of i. Houd als regel aan dat er geen andere natuurlijke
+talen gebruikt mogen worden in de broncode.
 
-<h3>Indentation</h3>
-Indentation is done with tabs, not with spaces. Be sure not to use a text editor
-that converts tabs to spaces. For every indentation level one extra tab is
-used. No assumption is made on the width of a tab. A possible exception to the
-rule of using tabs is for aligning expressions that are on lines next to each
-other, and which share a similarity. Aligning such expressions can make it
-easier to see the similarity, which makes the code easier to read. As no
-assumption is made on the width of a tab, such an alignment can often only be
-done with spaces.
+<h3>Indentatie</h3>
+Indentatie wordt gedaan met tabs, niet met spaties. Zorg ervoor dat u geen
+tekst-editor gebruikt die tabs omzet in spaties. Voor elk indentatie-niveau wordt
+één extra tab gebruikt. Er wordt geen aanname gedaan over de breedte van een tab.
+Een mogelijke uitzondering op de regel voor het gebruik van tabs is er voor het
+uitlijnen van expressies die in op elkaar volgende regels staan, en die een
+overeenkomst hebben. Het uitlijnen van zulke expressies maakt het duidelijker om
+de overeenkomst te zien, wat de code leesbaarder maakt. Omdat er geen aanname gedaan
+wordt over de breedte van een tab, kan zulke uitlijning vaak alleen gedaan worden
+met spaties.
 <p>
-The placing of the acollade characters ('{' and '}') should be done in the
-same way as the existing code does. So, the opening and closing acollade
-should each be placed on their own line, containing nothing but the acollade
-and possibly a comment. The indentation should be the same as the indentation
-of the statement of which the code block is a part; the code inside the
-acollades should have one indentation more. An exception is made for very
-small code blocks that fit on a single line. See the source code on how this
-is handled.
+De plaatsing van accolades ('{' en '}') moet op de zelfde manier gedaan worden als
+in de bestaande code. Dus, de openende en de sluitende acollade moeten beide op
+hun eigen regel geplaatst worden, die niets bevat behalve de acollade en mogelijk
+een commentaartekst. De indentatie hoort het zelfde te zijn als die van het statement
+waar het code-blok onderdeel van uit maakt; de code binnen de acollades moet
+een indentatie meer krijgen. Er wordt een uitzondering gemaakt voor erg kleine
+code-blokken die op een enkele regel passen. Zie de broncode hoe dit gedaan wordt.
 
-<h3>Identifier names</h3>
-For identifier names, like function names, class names and variable names,
-the following conventions are used:
+<h3>Namen van identifiers</h3>
+Voor namen van identifiers, zoals functienamen, class namen en variable-namen, worden
+de volgende conventies gebruikt:
 <ul>
-	<li>Class names have a 'C' prefix, but the corresponding source
-	filenames don't have this prefix.</li>
-	<li>Struct names have an 'S' prefix. When methods are added to a
-	struct, it is converted to a class and its prefix is changed to a
-	'C'.</li>
-	<li>Member variables of classes have an "m_" prefix.</li>
-	<li>Enum types have an 'e' prefix</li>
-	<li>If possible, function and method names contain a verb. So it is
-	CTrack::getWidth() and not CTrack::width(). Function and method names
-	always start lowercase. Uppercase is used for the first character of
-	every word in the name except for the first word.</li>
+	<li>Class namen hebben een 'C' prefix, maar de overeenkomstige bestandsnamen
+	van de broncode hebben deze prefix niet.</li>
+	<li>Struct namen hebben een 'S' prefix. Wanneer methods worden toegevoegd aan een
+	struct, wordt het geconverteerd naar een class, en wordt de prefix veranderd in
+	een 'C'.</li>
+	<li>Member variabelen van classes hebben een "m_" prefix.</li>
+	<li>Enum typen hebben een 'e' prefix</li>
+	<li>Indien mogelijk, bevatten functie- en method-namen een werkwoord. Dus het is
+	CTrack::getWidth() en niet CTrack::width(). Functie- and method-namen
+	beginnen altijd met een kleine letter. Hoofdletters worden gebruikt voor de eerste
+	letter van elk woord in de naam, behalve het eerste woord.</li>
 </ul>
 
-<h3>Re-using code</h3>
-A lot of classes in Ultimate Stunts have been made with the purpose of being
-re-usable. Using these classes will make your code look cleaner, and your
-code will be easier to understand for Ultimate Stunts developers who are
-familiar with those classes. Also, it can save you time because you don't
-have to re-invent the wheel, and future improvements on these classes like
-bugfixes and performance improvements will also improve your code.
+<h3>Hergebruik van code</h3>
+Veel classes in Ultimate Stunts zijn gemaakt met als doel om herbruikbaar te zijn.
+Het gebruik van deze classes zal uw code er netter uit laten zien, en uw code zal
+makkelijker te begrijpen zijn voor Ultimate Stunts ontwikkelaars die bekend zijn met
+deze classes. Het kan u ook tijd besparen omdat u niet het wiel opnieuw hoeft uit te
+vinden, en toekomstige verbeteringen aan deze classes, zoals bug fixes en
+snelheidsverbeteringen zullen ook uw code verbeteren.
 <p>
-If you want to use a class that seems to be useful, but in the end it turns
-out that it misses some functionality that is essential to your code, then it
-may still be useful to use that class and to implement the missing functionality
-by making a derived class or by modifying the class itself. That last
-possibility is encouraged when there is a high possibility that the new
-functionality will also be useful to other parts of the program. When in
-doubt about where to place new functionality, please ask the project
-administrator. It is <u>much</u> better to ask too much about architecture
-decisions than to ask too few.
+Als u een class wilt gebruiken die nuttig lijkt te zijn, maar uiteindelijk blijkt dat
+er wat functionaliteit mist die essentieel is voor uw code, dan kan het nog steeds
+nuttig zijn om de class te gebruiken, en de missende functionaliteit te implementeren
+door een afgeleide class te maken of door de class zelf aan te passen. Die laatste
+mogelijkheid wordt aangemoedigd als er een goede mogelijkheid is dat de nieuwe
+functionaliteit ook nuttig zal zijn in andere delen van het programma. Als u
+twijfelt over waar u nieuwe functionaliteit moet plaatsen, vraag het aan de
+project-beheerder. Het is <u>veel</u> beter om te veel te vragen over
+architectuurbeslissingen dan om te weinig te vragen.
 <p>
-There are a number of general-purpose classes that should always be used
-whenever that is appropriate:
+Er zijn een aantal algemene classes die altijd gebruikt moeten worden wanneer ze
+van toepassing zijn:
 <ul>
-	<li>The CString class. Don't even <i>think</i> of using <b>char *</b>
-	strings internally in Ultimate Stunts. <b>char *</b> strings should only
-	be used inside CString and in calls to external libraries.</li>
-	<li>The CVector and CMatrix classes. Use them for any 3D vector
-	and 3*3 transformation matrix. Even colors (red/green/blue components)
-	can be handled as CVector objects.</li>
-	<li>The standard template library (STL) classes. Using std::vector
-	templates instead of arrays can save you a lot of memory management
-	trouble.</li>
+	<li>De CString class. Haal het niet in uw hoofd om <b>char *</b> strings intern
+	in Ultimate Stunts te gebruiken! <b>char *</b> strings mogen alleen gebruikt
+	worden binnen CString en in aanroepen naar externe bibliotheken.</li>
+	<li>De CVector en CMatrix classes. Gebruikze voor elke 3D vector en 3*3
+	transformatie-matrix. Zelfs kleuren (rood/groen/blauw componenten) kunnen
+	behandeld worden als CVector objecten.</li>
+	<li>De standard template library (STL) classes. Het gebruik van std::vector
+	templates in plaats van arrays kan u een boel geheugenbeheer-problemen
+	besparen.</li>
 </ul>
 
-<h3>Adding new source files</h3>
-For most parts of the Ultimate Stunts sourcecode, every class is placed in its
-own files. Every class has two files, a header file containing the class
-definition without member function implementations (except for the most
-trivial member functions), and a .cpp file containing the member function
-implementations. It is appreciated if you follow this habit. C++ source files
-have the .cpp extension, not .cxx, .c++, .cc or anything else. Header files
-(both C and C++) have the .h extension. When adding new files, give them the
-same format as the existing source files, with the filename, a short
-description, author name etc. (you can fill in your own name).
+<h3>Toevoegen van nieuwe broncode-bestanden</h3>
+In het grootste deel van de Ultimate Stunts broncode is elke class in zijn eigen
+bestanden geplaatst. Elke class heeft twee bestanden: een headerbestand dat de
+class definitie zonder memberfunctie-implementaties bevat (behalve voor de meest
+triviale functies), en een .cpp bestand dat de memberfunctie-implementaties bevat.
+Het wordt op prijs gesteld als u deze gewoonte volgt. C++ broncodebestanden hebben
+de .cpp extensie, niet .cxx, .c++, .cc of wat dan ook. Headerbestanden (zowel C als
+C++) hebben de .h extensie. Geef bij het toevoegen de nieuwe bestanden de zelfde
+opmaak als de bestaande broncodebestanden, met een bestandsnaam, een korte
+beschrijving, de auteursnaam enz. (u kunt uw eigen naam invullen).
 <p>
-Whenever new source files are added, make sure that they are added to the
-Makefile.am file in the source file's directory, and to the
-ultimatestunts.kdevelop.filelist file in the top directory of the Ultimate
-Stunts sources. Adding them to Makefile.am will add them to the build
-process, so that they are actually compiled, and adding them to
-ultimatestunts.kdevelop.filelist will show users of the KDevelop environment
-that these files are part of the sources.
+Let er elke keer op bij het toevoegen van nieuwe broncodebestanden dat ze toegevoegd
+worden aan het Makefile.am bestand in de directory van het broncodebestand, en aan
+het ultimatestunts.kdevelop.filelist bestand in de hoofddirectory van de Ultimate
+Stunts broncode. Toevoegen aan de Makefile.am voegt ze toe aan het bouwproces, zodat
+ze daadwerkelijk gecompileerd worden, en toevoegen aan ultimatestunts.kdevelop.filelist
+laat gebruikers van de KDevelop omgeving zien dat deze bestanden onderdeel zijn van
+de broncode.
 
-<h3>Keeping your code clean</h3>
-There are some general guidelines for C++ programmers to keep their code
-clean. Using well-structured code will make it better readable and
-understandable to you and other programmers in the future, and it will help
-you not to make bugs. There are already lots of guidelines out there: I will
-not repeat every single one. These are some important ones:
+<h3>Schoon houden van de code</h3>
+Er zijn wat algemene richtlijnen voor C++ programmeurs voor het schoon houden van
+hun code. Het gebruik van goed gestructureerde code houdt het beter leesbaar en
+begrijpelijk voor uzelf en andere programmeurs in de toekomst, en het helpt u om
+geen bugs te maken. Er zijn door anderen al een boel richtlijnen geschreven: ik zal
+niet elke herhalen. Er zijn een paar belangrijke:
+
 <ul>
-	<li>Memory corruptions are an important category of bugs in C and C++
-	programs. Make sure that for every dynamically allocated thing in
-	your code it is perfectly clear which code is responsible for
-	allocating and for freeing that memory. It is very common to make a
-	class responsible for the memory management of all its member
-	variables. This way, calling constructor and/or destructor of
-	instances of a class will automatically generate the correct memory
-	management behavior. If you ever want to do memory management in a
-	different way (like one object modifying the memory allocation of
-	members of another object), make sure that you have a <i>very</i> good
-	excuse to do so.</li>
-	<li>Protect member variables of classes by making them protected or
-	private. In the perfect case, an object's data can never be corrupted
-	by calling its public member functions. In reality in the Ultimate
-	Stunts source, a lot of consistency checks are not done, and member
-	variables are made public. This is often done for preformance reasons,
-	or out of laziness.</li>
-	<li>Protect as many things as possible with the const keyword. This
-	will make it easier to reduce possibilities when debugging.</li>
+	<li>Geheugencorrupties zijn een belangrijke categorie van bugs in C en C++
+	programma's. Zorg ervoor dat voor elk dynamisch gealloceerd ding in uw code
+	het helemaal duidelijk is welke code verantwoordelijk is voor het alloceren en
+	voor het vrijgeven van dat geheugen. Het is gebruikelijk om een class
+	verantwoordelijk te maken voor het geheugenbeheer van al zijn membervariabelen.
+	Op deze manier zorgt het aanroepen van de constructor en/of destructor van
+	instanties van een class automatisch voor het juiste geheugenbeheer-gedrag.
+	Als u ooit het geheugenbeheer op een andere manier wilt doen (zoals het ene
+	object aanpassingen laten doen aan de geheugenallocatie van members van een
+	ander object), zorg er dan voor dat u een <i>erg</i> goed excuus heeft.</li>
+	<li>Bescherm membervariabelen van classes door ze protected of private te maken.
+	In het ideale geval kan de data van een object nooit gecorrumpeerd raken door het
+	aanroepen van publieke memberfuncties. In de praktijk van de Ultimate Stunts
+	broncode worden veel consistentie-controles niet gedaan, en membervariabelen
+	zijn soms public. Dit is vaak gedaan om snelheidsredenen, of uit luiheid.</li>
+	<li>Bescherm zo veel mogelijk dingen met het const keyword. Dit maakt het
+	makkelijker om mogelijkheden te reduceren bij het debuggen.</li>
 </ul>
 
-<a name="layout"></a><h1>Source code layout</h1>
-By now you should be ready to get an introduction on how the Ultimate Stunts
-sourcecode is organized, so that you can find your way in it.
+<a name="layout"></a><h1>Layout van de broncode</h1>
+Op dit punt zou u klaar moeten zijn om een inleiding te krijgen in hoe de Ultimate
+Stunts broncode is georganiseerd, zodat u uw weg er in kunt vinden.
 
 <h3>Directories</h3>
-The Ultimate Stunts sourcecode is placed into separate directories. The reason
-for this is that Ultimate Stunts consists of several programs (the main
-program, the server program, the track editor, the 3D editor and the AI client).
-While it would have been possible to put all their sources in a single
-directory, this would not have made it easy to find the right file you are
-looking for. Some of these directories contain code that is specific for one
-of these programs, and the orher directories contain code that is shared
-between programs. This shared code is compiled into static libraries, and the
-programs which use this code are linked against those libraries.
+De Ultimate Stunts broncode is opgedeeld in verschillende directories. De reden
+hiervoor is dat Ultimate Stunts bestaat uit meerdere programma's bestaat (het
+hoofdprogramma, het server-programma, de track editor, de 3D editor en de AI client).
+Het was mogelijk om al hun broncode in een enkele directory te stoppen, maar dit zou
+het niet makkelijk gemaakt hebben om de juiste bestanden te vinden waar je naar op
+zoek bent. Sommige van deze directories bevatten code die specifiek is voor één van
+deze programma's, en de andere directories bevatten code die gedeeld wordt tussen
+programma's. Deze gedeelde code wordt gecompileerd naar statische bibliotheken, en de
+programma's die deze code gebruiken worden gelinkt tegen deze bibliotheken.
 <p>
-These are the source directories:
+Dit zijn de broncode-directories:
 <ul>
-	<li><b>shared</b>: these source files are shared between all programs.
-	They contain general-purpose classes e.g. for string manipulation,
-	file loading or saving, or data management.</li>
-	<li><b>simulation</b>: these source files are shared between all
-	programs that do something with simulation. As the CTrack class is also
-	in this directory, the track editor is also linked with these sources.
-	This directory also contains much of the network communication
-	code.</li>
-	<li><b>graphics</b>: these source files are shared between all programs
-	that do something with graphics. Only the AI client and the server
-	program don't use these sources. These sources contain both 3D
-	graphics classes (like textures or 3D geometry objects) and 2D
-	objects like menu interface widgets.</li>
-	<li><b>stuntsserver</b>: these source files are specific to the
-	ustuntsserver program. This contains many parts of the server-side
-	handling of the network communication, and also the multi-threaded model
-	of the server.</li>
-	<li><b>stuntsai</b>: these source files are specific to the ustuntsai
-	program.</li>
-	<li><b>stunts3dedit</b>: these source files are specific to the
-	ustunts3dedit program. Contains many functions for modifying 3D
-	geometry, and some import functions for various 3D file formats.</li>
-	<li><b>trackedit</b>: these source files are specific to the
-	ustuntstrackedit program.</li>
-	<li><b>ultimatestunts</b>: these source files are specific to the
-	ustunts program. This includes all the sound code.</li>
+	<li><b>shared</b>: deze code wordt gedeeld tussen alle programma's.
+	Ze bevatten classes voor algemeen gebruik, bijv. voor string-manipulatie,
+	bestanden laden of opslaan, of data management.</li>
+	<li><b>simulation</b>: deze code wordt gedeeld tussen alle programma's die iets
+	doen met simulatie. Aangezien de CTrack class ook in deze directory staat, wordt
+	de track editor ook gelinkt met deze code. Deze directory bevat ook veel van de
+	netwerkcommunicatie-code.</li>
+	<li><b>graphics</b>: deze code wordt gedeeld tussen alle programma's die iets met
+	graphics doen. Alleen de AI client en het serverprogramma gebruiken deze code
+	niet. Deze code bevat zowel 3D graphics classes (zoals textures of 3D geometrie)
+	en 2D objecten zoals menu interface widgets.</li>
+	<li><b>stuntsserver</b>: deze code is specifiek voor het ustuntsserver programma.
+	Dit bevat veel delen van de server-kant van de netwerkcommunicatie, en ook het
+	multi-threaded model van de server.</li>
+	<li><b>stuntsai</b>: deze code is specifiek voor het ustuntsai programma.</li>
+	<li><b>stunts3dedit</b>: deze code is specifiek voor het ustunts3dedit programma.
+	Bevat veel functies voor het bewerken van 3D geometrie, en wat importeer-functies
+	voor verschillende 3D formaten.</li>
+	<li><b>trackedit</b>: deze code is specifiek voor het ustuntstrackedit programma.
+	</li>
+	<li><b>ultimatestunts</b>: deze code is specifiek voor het ustunts programma. Dit
+	bevat ook alle broncode voor het geluids-subsysteem.</li>
 </ul>
 
 <h3>Classes</h3>
-Ultimate Stunts contains a lot of classes, and during its development, new
-classes are created continuously, and sometimes classes are renamed or removed.
-Therefore, it is not possible to give a complete list of all classes in the
-latest Ultimate Stunts version. In this section, the most important classes
-will be mentioned.
+Ultimate Stunts bevat veel classes, en tijdens de ontwikkeling worden voortdurend
+nieuwe classes gemaakt, en soms worden classes hernoemd of verwijderd. Daardoor is
+het niet mogelijk om een complete lijst te geven van alle classes in de meest recente
+Ultimate Stunts versie. In deze sectie worden een paar belangrijke classes genoemd.
 
 <h5>CGameCore/CUSCore</h5>
-CGameCore is probably the most important class to understand if you are
-going to work within the "game loop". This class provides an easy-to-use
-programming interface to other code for initializing a game, starting it,
-stopping it, unloading it, etc.. The CGameCore class itself only handles
-the simulation, and it is located in simulation/gamecore.*. The CUSCore
-class in ultimatestunts/uscore.*, which is derived from CGameCore, also
-handles sound and graphics.
+CGameCore is waarschijnlijk de belangrijkste class om te begrijpen als u gaat werken
+binnen de "game loop". Deze class levert een eenvoudige programmeerinterface aan andere
+code voor het initialiseren van een spel, het starten ervan, stoppen, unloading enz..
+De CGameCore class zelf behandelt alleen de simulatie, en is aanwezig in
+simulation/gamecore.*. De CUSCore class in ultimatestunts/uscore.*, die is afgeleid
+van CGameCore, behandelt ook geluid en graphics.
 
 <h5>CFile/CDataFile/CFileControl</h5>
-CFile is a generic file-loading and -saving class. It can handle both text files
-and binary files. When reading text files with the readl() method, it is able
-to read both UNIX-style and windows-style text files correctly. The
-shared/cfile.h header also defines some filesystem utility functions.
+CFile is een generieke class voor het laden en opslaan van bestanden. Het kan zowel
+tekstbestanden als binaire bestanden aan. Bij het lezen van tekstbestanden met de
+readl() method kan het zowel UNIX-stijl als windows-stijl tekstbestanden inlezen.
+De shared/cfile.h header definieert ook een paar bestandssysteem-hulpfuncties.
 <p>
-CDataFile, derived from CFile, provides the same programming interface. The
-difference is that CDataFile does not take the absolute filename as a parameter.
-Instead, the programmer gives the path relative to the Ultimate Stunts datadir.
-Then, CDataFile automatically determines the real location of the file, and
-gets it from there. It is able to search on different locations on the local
-directory system, but it may also download the file from an Ultimate Stunts
-game server. The actual behavior may be quite complicated, so it is important
-that this is implemented only once. As almost every data file is located
-somewhere in the datadir, CDataFile should be involved somehow in the loading
-of all these files. When the loading of a file is done with a library call,
-so that a physical path is required instead of a CDataFile object, the
-useExtern() method is useful.
+CDataFile, afgeleid van CFile, levert de zelfde programmeerinterface. Het verschil is
+dat CDataFile niet de absolute bestandsnaam als parameter krijgt. In plaats daarvan
+geeft de programmeur het pad relatief t.o.v. de Ultimate Stunts datadir. Daarna
+bepaalt CDataFile automatisch de echt locatie van het bestand, en haalt het daar
+vandaan. Het is in staat om op meerdere locaties op het locale bestandssysteem te
+zoeken, maar het kan ook het bestand downloaden van een Ultimate Stunts game server.
+Het uiteindelijke gedrag kan aardig ingewikkeld zijn, dus het is belangrijk dat dit
+maar één keer geïmplementeerd wordt. Aangezien bijna elk databestand zich ergens in
+de datadir bevindt, zou CDataFile bij het laden van al deze bestanden op de één of
+andere manier betrokken moeten zijn. Als het laden van een bestand wordt gedaan met
+een library call, zodat het fysieke pad nodig is i.p.v. een CDataFile object, dan
+is de useExtern method nuttig.
 <p>
-The behavior of CDataFile is controlled by an instance of the CFileControl
-class. There should be only one instance of this class. The behavior needs to
-be changed e.g. when a connection is made with an Ultimate Stunts gameserver,
-to enable the possibility of automatic file downloads.
+Het gedrag van CDataFile wordt aangestuurd door een instantie van de CFileControl
+class. Er hoort maar één instantie te zijn van deze class. Het gedrag moet veranderd
+worden bijv. als er een verbinding gemaakt wordt met een Ultimate Stunts game server,
+om het mogelijk te maken om automatisch bestanden te downloaden.
 
 <h5>CDataObject/CDataManager/CWorld/CGraphicWorld</h5>
-Ultimate Stunts has to load a lot of different data objects: tracks, textures,
-tiles, cars etc., and there are a lot of dependencies between them. In order
-to manage these dependencies efficiently, and to make sure that objects are not
-loaded twice, all object types are derived from CDataObject
-(shared/dataobject.*). Classes like CTexture or CTrack are all derived from
+Ultimate Stunts moet een boel verschillende data objecten laden: tracks, textures,
+tiles, auto's enz., en er zijn veel afhankelijkheden tussen deze bestanden. Om deze
+afhankelijkheden efficiënt te beheren, en om er voor te zorgen dat objecten niet
+twee keer geladen worden, zijn alle object typen afgeleid van CDataObject
+(shared/dataobject.*). Classes zoals CTexture of CTrack zijn allemaal afgeleid van
 CDataObject.
 <p>
-A CDataObject object is identified by its type (an enum-type variable), its
-filename and a number of parameters. Usually, CDataObject objects are connected
-to a CDataManager object. The object is created by it when the CDataMamager
-object receives a request for the object, a pointer to the object is stored in
-the CDataManager object, and it is deleted by the CDataManager object when
-necessary. Also, a pointer to the CDataManager object is passed to the
-CDataObject constructor, so that the CDataObject object can ask the CDataManager
-to loaded dependency files. When the requested object is already loaded, a
-pointer to the already-loaded object is returned, so objects are never loaded
-twice.
+Een CDataObject object wordt geïdentificeerd met het type (een enum-type variabele),
+de bestandsnaam en een aantal parameters. Normaal gesproken zijn CDataObject objecten
+verbonden aan een CDataManager object. Het object wordt aangemaakt door het
+CDataManager object als het een aanvraag krijgt voor het object, en het wordt
+verwijderd door het CDataManager object wanneer dat nodig is. Ook wordt er een pointer
+naar het CDataManager object meegegeven aan de CDataObject constructor, zodat het
+CDataObject object aan het CDataManager object kan vragen om bestanden waar het van
+afhankelijk is. Als de opgevraagde bestanden al geladen zijn, dan wordt een pointer
+naar het al eerder geladen object teruggegeven, zodat objecten nooit twee keer geladen
+worden.
 <p>
-There are different instances of CDataManager-derived classes in an Ultimate
-Stunts game-session. The most central one is the instance of CWorld
-(simulation/world.*). In CWorld::createObject you can see how the type enum
-is connected to class types in CWorld. Most of them are connected to some
-class, but for instance the eSample type is connected to a clean CDataObject.
-This is because, at this level, Ultimate Stunts does nothing with the sound
-file information, it only stores the file information so that the sound
-subsystem knows which files to load in a later stage.
+Er zijn verschillende instanties van CDataManager-afgeleide classes in een Ultimate
+Stunts spel-sessie. De meest centrale is de instantie van CWorld (simulation/world.*).
+In CWorld::createObject kunt u zien hoe het type-enum verbonden wordt aan class typen
+in CWorld. De meeste zijn verbonden met een bepaalde class, maar bijv. het eSample
+type is verbonden met een leeg CDataObject. Dit is zo omdat Ultimate Stunts op dit
+niveau niets doet met de informatie uit geluidsbestanden, het slaat alleen de
+bestandsinformatie op zodat het geluids-subsysteem weet welke bestanden in een later
+stadium geladen kunnen worden.
 <p>
-Another CDataManager-derived instance is of the type CGraphicWorld
-(graphics/graphicworld.*). While CWorld only loads the data necessary for the
-simulation subsystem, CGraphicWorld loads all data necessary for the graphics
-subsystem. That is why the enum type of objects in CGraphicWorld is connected
-to different classes than in CWorld: in CWorld, eTileModel would be connected
-to a tile collision model, while in CGraphicsWorld it is connected to a
-CGraphObj, containing the graphic mesh data of the tile. Because of this
-separation, it is possible for the server program to load all simulation data
-without the need to load all graphic data.
+Een andere CDataManager-afgeleide instantie is van het type CGraphicWorld
+(graphics/graphicworld.*). Terwijl CWorld alleen de data laadt die nodig is voor het
+simulatie-subsysteem, laadt CGraphicWorld alle data die nodig is voor het
+graphics-subsysteem. Dat is waarom het enum-type van objecten in CGraphicWorld is
+verbonden met andere classes dan in CWorld: in CWorld zou eTileModel verbonden zijn
+met een tile botsings-model, maar in CGraphicsWorld is het verbonden met een
+CGraphObj, dat de grafische mesh-data van een tile bevat. Vanwege deze scheiding is
+het mogelijk om het server-programma alle simulatie-data te laten laden zonder
+dat het nodig is om alle grafische data te laden.
 
 <h5>CWinSystem</h5>
-In Ultimate Stunts, the CWinSystem class (graphics/winsystem.*) encapsulates
-the graphics window. It initialises the window, and manages a number of
-events, like resize events, keyboard and mouse input events, and joystick
-input. It has two methods called runLoop; both of them start a loop which
-responds to events. One of them interacts with the rest of the program
-through a callback function: this one is used in the game itself. The other
-one is based on a CWidget object, and is used in the menu user interface.
+In Ultimate Stunts levert de CWinSystem class (graphics/winsystem.*) een interface
+naar het graphics venster. Het initialiseert het venster en beheert een aantal events,
+zoals resize events, toetsenbord- en muis-invoer events, en joystick invoer. Het
+heeft twee methods met de naam runLoop; beide starten een loop die reageert op events.
+Één van deze communiceert met de rest van het programma via een callback-functie: dez
+wordt gebruikt in het spel zelf. De andere is gebaseerd op een CWidget object, en wordt
+gebruikt in de menu-gebruikersinterface.
 <p>
-CWinSystem also has two systems for determining the keyboard state (three, if
-we also count the widget-system, but that one should not be used at the same
-time with the other two systems). One method, the getKeyState(..) method,
-returns the actual state of a key (pressed down or released), which is useful
-for keys that are used as game input, like the arrow keys for controlling a car.
-The other method, wasPressed(..), returns whether the key has been pressed since
-the last call of wasPressed. This is useful for keys that have a more event-like
-nature, like the escape-key for leaving a game. And, to make things even more
-difficult, there is a derived class CGameWinSystem
-(ultimatestunts/gamewinsystem.*) which provides a number of functions for
-getting the state of user-defined keys.
+CWinSystem heeft ook twee systemen voor het bepalen van de toestenbord-toestand (drie
+als we het widget-systeem meetellen, maar die hoort niet op het zelfde moment gebruikt
+te worden als de andere twee systemen). Één methode, de getKeyState(..) method,
+geeft de huidige toestand van een toets (ingedrukt of losgelaten), wat handig is
+voor toetsen die gebruikt worden als spel-invoer, zoals de pijltjestoetsen voor het
+besturen van een auto. De andere method, wasPressed(..), geeft terug of een toets was
+ingedrukt sinds de laatste aanroep van wasPressed. Dit is handig voor toetsen die een
+meer event-achtige aard hebben, zoals de escape-toets voor het verlaten van een spel.
+En, om dingen nog wat ingewikkelder te maken, er is een afgeleide class CGameWinsystem
+(ultimatestunts/gamewinsystem.*) die een aantal functies levert voor het bepalen van
+de toestand van gebruiker-gedefinieerde toetsen.
 
 <h5>CWidget/CGUIPage/CGUI</h5>
-The menu user interface is based on an event-based widget system. Every user
-interface component, like a list of options, or a message box, is based on
-classes derived from CWidget. Such a widget is responsible for updating its
-part of the screen, and for handling input events in the right way. Events are
-passed to a widget by calling methods of the object, and a widget can handle
-those events by having overloaded versions of these methods. For instance,
-most widget types will have an overloaded onRedraw method, which will be called
-when the widget needs to be redrawn. When a widget contains sub-widgets, the
-widget is responsible for calling the event handling methods of the sub-widgets.
-All graphics output is done with openGL, all input parameters (e.g. keyboard
-key values) are done with SDL constants.
+De menu-gebruikersinterface is gebaseerd op een event-gebaseerd widget-systeem.
+Elg gebruikersinterface-element, zoals een lijst van opties, of een message box,
+is gebaseerd op een van CWidget afgeleide class. Zo'n widget is verantwoordelijk
+voor het updaten van zijn deel van het scherm, en voor het op de juiste manier
+afhandelen van invoer-events. Events worden aan een widget doorgegeven door methods
+van het object aan te roepen, en een widget kan deze events afhandelen door
+overloaded versies van deze methods te hebben. Bijvoorbeeld, de meeste widget-types
+zullen een overloaded onRedraw method hebben, die aangeroepen zal worden als de
+widget opnieuw getekend moet worden. Als een widget sub-widgets bevat, dan is de
+widget verantwoordelijk voor het aanroepen van de event-methods van de sub-widgets.
+Alle grafische uitvoer wordt gedaan met OpenGL, alle invoer-parameters (bijv.
+toetsenbord toetsen-waarden) worden gedaan met SDL constanten.
 <p>
-A commonly used widget-type is the CGUIPage class. It contains a
-background and a title, and a number of sub-widgets. The sub-widgets are
-ordered and drawn bottom-to-top, and the widget on the top has the keyboard
-and mouse input focus. Usually the top-level widget is of the CGUI type, and
-its only sub-widget is of the CGUIPage type.
+Een veelgebruikt widget-type is de CGUIPAge class. Het bevat een achtergrond en
+een titel, en een aantal sub-widgets. De sub-widgets zijn van onder naar boven
+gesorteerd en worden in die volgorde getekend, en de bovenste widhet heeft de
+toetsenbord- en muis-invoerfocus. Meestal is de top-level widget van het CGUI type,
+en zijn enige sub-widget is van het CGUIPage type.
 <p>
-CGUI is a widget-type, containing just a single, full-screen CGUIPage
-sub-widget. It has some features that make it useful as a top-level widget. For
-instance, it contains methods for switching between 2D and 3D mode in
-OpenGL, and it contains methods for the easy creation of message boxes and other
-commonl used user interface components.
+CGUI is een widget-type dat slechts één enkele full-screen CGUIPage sub-widget heeft.
+Het heeft enkele features die het nuttig maken als een top-level widget. Bijvoorbeeld,
+het bevat methods om te switchen tussen 2D en 3D mode in OpenGL, en het bevat methods
+voor het eenvoudig maken van message boxes en andere veelgebruikte
+gebruikersinterfacecomponenten.
 
 <h5>CLConfig</h5>
-The CLConfig class (shared/lconfig.*) is used for the .ini-style configuration
-files in Ultimate Stunts, like ultimatestunts.conf and the car configuration
-files. Because of the early development stage of Ultimate Stunts when it was
-implemented, it is not based on CFile. It is also not based on CDataFile because
-ultimatestunts.conf has to be loaded before it is known where the datadir
-locations are, as this information is stored in ultimatestunts.conf.
+De CLConfig class (shared/lconfig.*) wordt gebruikt voor .ini-stijl
+configuratiebestanden in Ultimate Stunts, zoals ultimatestunts.conf en de
+auto-configuratiebestanden. Doordat Ultimate Stunts in een vroeg ontwikel-stadium
+was toen dit werd geïmplementeerd, is het niet gebaseerd op CFile. Het is ook niet
+gebaseerd op CDataFile, omdat ultimatestunts.conf geladen moet worden voordat bekend
+is waar de datadir locaties zijn, omdat deze informatie in ultimatestunts.conf is
+opgeslagen.
 
-<a name="follow"></a><h1>Following an Ultimate Stunts game in the source</h1>
-You'll probably learn a lot about the Ultimate Stunts sourcecode by seeing
-which functions are called where in an Ultimate Stunts game session. The
-scenario followed in this section is as follows: a player starts Ultimate
-Stunts, clicks on "drive!" to start a race, races until he/she finishes, and
-then quits the program. It is strongly recommended to read the corresponding
-source files while reading this text.
+<a name="follow"></a><h1>Een Ultimate Stunts spel in de broncode volgen</h1>
+U zult waarschijnlijk veel leren over de Ultimate Stunts broncode door te zien
+welke functies waar aangeroepen worden in een Ultimate Stunts spelsessie. Het
+scenario dat in deze sectie gevolgd wordt is als volgt: een speler start Ultimate
+Stunts, klikt op "Race!" om een spel te starten, speelt totdat hij/zij finisht, en
+verlaat dan het programma. Het is sterk aangeraden om de bijbehorende broncodebestanden
+te lezen bij het lezen van deze tekst.
 
 <h3>ultimatestunts/main.cpp</h3>
-Like in any C/C++ program, execution starts in the main function. For the
-ustunts program, it is located in ultimatestunts/main.cpp. You can see that
-it is actually quite short:
+Net zoals bij elk ander C/C++ programma begint de uitvoering in de main functie. Voor
+het ustunts-programma bevindt deze zich in ultimatestunts/main.cpp. U kunt zien dat
+het in feite vrij kort is:
 <ul>
-	<li>shared_main is called</li>
-	<li>a CGameWinSystem and CGameGUI object are created</li>
-	<li>The start method of the CGameGUI object is called</li>
-	<li>The CGameWinSystem and CGameGUI objects are deleted</li>
-	<li>main function is terminated</li>
+	<li>shared_main wordt aangeroepen</li>
+	<li>een CGameWinSystem en CGameGUI object worden gemaakt</li>
+	<li>De start method van het CGameGUI object wordt aangeroepen</li>
+	<li>De CGameWinSystem en CGameGUI objecten worden vernietigd</li>
+	<li>main functie wordt verlaten</li>
 </ul>
-The shared_main function (in shared/usmisc.cpp) sets up some generic things.
-For instance, it finds ultimatestunts.conf and loads it, and it sets up the
-gettext localization settings. Creating the CGameWinSystem object (derived
-from CWinSystem in graphics/winsystem.cpp) creates a window for Ultimate Stunts,
-according to the settings in the theMainConfig object, which is a CLConfig
-object loaded from ultimatestunts.conf. This window will be deleted when
-the CGameWinSystem object is deleted, at the end of the main function.
+De shared_main functie (in shared/usmisc.cpp) stelt een paar algemene dingen in.
+Bijvoorbeeld, het vindt ultimatestunts.conf en het laadt het, en het stelt de
+gettext localisatie-instellingen in. Het maken van het CGameWinSystem object
+(afgeleid van CWinSystem in graphics/winsystem.cpp) creëert een venster voor
+Ultimate Stunts, overeenkomstig de instellingen in het theMainConfig object, dat
+een CLConfig object is dat geladen is van ultimatestunts.conf. Het venster zal
+vernietigd worden zodra het CGameWinSystem object vernietigd wordt, aan het einde
+van de main functie.
 <p>
-All the interesting stuff happens in the CGameGUI::start method. This function
-will only return when the player decides to leave Ultimate Stunts.
+Al het interessante werk gebeurt in de CGameGUI::start method. Deze functie zal pas
+verlaten worden wanneer de speler beslist om Ultimate Stunts af te sluiten.
 
 <h3>ultimatestunts/gamegui.cpp</h3>
-The first thing we did with the CGameGUI object was to call its constructor.
-CGameGUI::CGameGUI(..) does different things, but most of it has to do with
-initializing the different pages of the game menu and the menu texts. Another
-important thing to see is that it creates an instance of the CUSCore class,
-which will only be deleted when the CGameGUI object is deleted.
+Het eerste dat we deden met het CGameGUI object was het aanroepen van de constructor.
+CGameGUI::CGameGUI(..) doet verschillende dingen, maar het meeste heeft te maken met
+het initialiseren van de verschillende pagina's van het spel-menu en de menu-teksten.
+Een ander belangrijk ding om te zien is dat het een instantie maakt van de CUSCore
+class, die pas zal worden vernietigd wanneer het CGameGUI object wordt vernietigd.
 <p>
-Next, we called CGameGUI::start(). This method first puts OpenGL into 2D
-mode by calling CGUI::enter2DMode(). Then, it executes a while-loop. Inside
-this loop, various parts of the menus are identified by string values, and
-they are all implemented by their own CGameGUI method. Each menu method
-returns the string identifier of the next menu that should be displayed.
-In our example, section is initially "mainmenu", so viewMainMenu() is called.
-When the player selects the "Drive!" button, viewMainMenu() returns "playgame",
-so the playGame() method is called. When the game is finished, playGame()
-returns "hiscore", etc., until the player selects "exit" in the main menu and
-viewMainMenu() returns "exit". When the player confirms that he/she really
-wants to quit, the loop is left, leave2DMode() is called, and the start()
-method returns.
+Het tweede wat we deden was het aanroepen van CGameGUI::start(). Deze method brengt
+OpenGL eerst in 2D mode door CGUI::enter2DMode() aan te roepen. Daarna voert het een
+while-loop uit. Binnen deze loop worden de verschillende delen van de menus
+geïdentificeerd met string-waarden, en ze zijn allemaal geïmplementeerd met hun eigen
+CGameGUI method. Elke menu-method retourneert de string identifier van het volgende
+menu dat moet worden weergegeven. In ons voorbeeld is section in eerste instantie
+"mainmenu", zodat viewMainMenu() aangeroepen wordt. Wanneer de speler de "Race!"
+knop selecteert, geeft viewMainMenu() het resultaat "playgame" terug, zodat de
+playGame() method aangeroepen wordt. Zodra het spel is afgelopen, komt playGame()
+terug met de waarde "hiscore", enz., totdat de speler "Afsluiten" selecteert in het
+hoofdmenu. Als de speler dan bevestigt dat hij/zij echt wil afsluiten, dan wordt de
+loop verlaten, leave2DMode() wordt aangeroepen, en start() method wordt verlaten.
 <p>
-CGameGUI::viewMainMenu() shows a simple implementation of a game menu.
-First, the right child widget is selected, then the CGameWinSystem object is
-intructed to start an event loop, and when that is done, the results are
-inspected and processed. The CWinSystem::runLoop(CWidget *widget) method that
-is used here, contains a loop which continuously polls for SDL events, and
-calls the event handler methods of the widget when they occur. The loop is
-terminated whenever an event handler returns a value containing the
-WIDGET_QUIT flag. This happens, for instance, when the player clicks on the
-"drive!" menu option. Then, runLoop returns and execution continues in
-viewMainMenu where this choice is processed.
+CGameGUI::viewMainMenu() laat een eenvoudige implementatie van een spelmenu zien.
+Eerst wordt het juiste child widget geselecteerd, dan wordt het CGameWinSystem object
+geïnstrueerd om de event loop te starten, en wanneer die klaar is, wordt het
+resultaat geïnspecteerd en verwerkt. De CWinSystem::runLoop(CWidget *widget) method
+die hier gebruikt wordt bevat een loop die continu pollt naar SDL events, en die de
+event handler methods van de widget aanroept wanneer ze zich voor doen. De loop wordt
+verlaten als een event handler een return-waarde terug geeft die de WIDGET_QUIT vlag
+bevat. Dit gebeurt bijvoorbeeld als de speler op de "Race!" menu-optie klikt. Dan
+wordt runLoop verlaten, en de uitvoering gaat verder in viewMainMenu, waar deze keuze
+verwerkt wordt.
 <p>
-CGameGUI::playGame() is a bit different from the other menus because it sets
-up the game, lets it run and then unloads the game. The method itself is
-quite simple:
+CGameGUI::playGame() is wat anders dan de andere menus, omdat het een spel opzet,
+het spel laat draaien, en dan het spel weer opruimt. De method zelf is vrij eenvoudig:
 <ul>
-	<li>CGameGUI::load() is called</li>
-	<li>CGUI::leave2DMode() is called</li>
-	<li>The game runs through the CWinSystem::runLoop method</li>
-	<li>CGUI::enter2DMode() is called</li>
-	<li>CGameGUI::unload() is called</li>
+	<li>CGameGUI::load() wordt aangeroepen</li>
+	<li>CGUI::leave2DMode() wordt aangeroepen</li>
+	<li>Het spel draait door de CWinSystem::runLoop method</li>
+	<li>CGUI::enter2DMode() wordt aangeroepen</li>
+	<li>CGameGUI::unload() wordt aangeroepen</li>
 </ul>
-CGameGUI::load() does the dirty work of setting up the game, based on the input
-of the player in the different sub-menus. It calls a lot of things in the
-m_GameCore object, and sometimes also in the m_Server object (this is not the
-case in our scenario, because we play a local game). CGameGUI::unload() does
-the less-dirty job of unloading everything.
+CGameGUI::load() doet het vuile werk van het opzetten van het spel, gebaseerd op
+de invoer van de speler in de verschillende sub-menus. Het roept een boel andere
+dingen aan in het m_GameCore object, en soms ook in het m_Server object (dit is in
+ons scenario niet het geval, omdat we een lokaal spel spelen). CGameGUI::unload()
+doet het minder vuile werk van het opruimen van alles.
 <p>
-We enter deeper and deeper into the core of Ultimate Stunts. The call of
-CWinSystem::runLoop in playGame() gets the small function game_mainloop() as
-a callback-parameter. game_mainloop() (in ultimatestunts/gamegui.cpp) does
-nothing else than call the update() method of the CUSCore object. As long as
-this function returns true, CWinSystem::runLoop continues polling for events
-and calling game_mainloop(). So, now all control is in the hands of the
+We dalen steeds dieper af in de kern van Ultimate Stunts. De aanroep van
+CWinSystem::runLoop in playGame() krijgt de kleine functie game_mainloop() mee als
+een callback-parameter. game_mainloop() (in ultimatestunts/gamegui.cpp) doet niets
+anders dan het aanroepen van de update() method in het CUSCore object. Zolang deze
+functie true teruggeeft, gaat CWinSystem::runLoop verder mett het pollen naar events
+en het aanroepen van game_mainloop(). Dus, nu is alle controle in handen van het
 CUSCore object.
 
 <h3>ultimatestunts/uscore.cpp</h3>
-The loading of all files is done by a call of CUSCore::readyAndLoad() from
-CGameGUI::load(). First, CUSCore::readyAndLoad() calls the same method of
-the base class, CGameCore::readyAndLoad(). This method initializes things like
-network communication, and then loads all data by calling
-loadTrackData and loadMovObjData. These methods, also overloaded in CUSCore,
-load the track and moving object data. In the overloaded versions of
-CUSCore, the corresponding graphics and sound data is also loaded. Loading the
-track data in CGameCore::loadTrackData() is simply done by instructing m_World
-to load the track object. All dependencies, like tiles, are solved
-automatically because CWorld is derived from CDatamanager. Loading the moving
-objects is a bit more complicated, because in a multiplayer game, remote
-players can also add cars. Managing the loading of moving objects is the
-responsibility of CPlayerControl and its derived classes. In our scenario,
-only a local game is played, so m_PCtrl is of the type CPlayerControl, and
-the implementation of CPlayerControl::loadObjects() is relatively simple.
-Again, the loading of objects is based on the CDataManager::loadObject method
-of the CWorld class.
+Het laden van alle bestanden wordt gedaan door een aanroep van CUSCore::readyAndLoad()
+vanuit CGameGUI::load(). Als eerste roept CUSCore::readyAndLoad() de zelfde method
+aan van de base class, CGameCore::readyAndLoad(). Deze method initialiseert dingen
+zoals netwerk-communicatie, en laadt dan alle data door loadTrackData en loadMovObjData
+aan te roepen. Deze methods, die ook overloaded zijn in CUSCore, laden de data van de
+track en de bewegende objecten. In de overloaded versies van CUSCore wordt de
+bijbehorende graphics en geluids-data ook geladen. Het laden van de track data in
+CGameCore::loadTrackData() wordt eenvoudigweg gedaan door het m_World object de
+opdracht te geven om het track-object te laden. Alle afhankelijkheden, zoals tiles,
+worden automatisch opgelost doordat CWorld is afgeleid van CDataManager. Het laden
+van bewegende objecten is iets gecompliceerder, omdat in een multiplayer-spel de
+remote spelers ook auto's kunnen toevoegen. Het managen van het laden van bewegende
+objecten is de verantwoordelijkheid van CPlayerControl en de daarvan afgeleide classes.
+In ons scenario wordt alleen een lokaal spel gespeeld, dus m_PCtrl is van het type
+CPlayerControl, en de implementatie van CPlayerControl::loadObjects() is vrij
+eenvoudig. Ook hier is het laden van objecten weer gebaseerd op de
+CDataManager::loadObject method van de CWorld class.
 <p>
-Loading of the graphics data is done when CUSCore::loadTrackData() and
-CUSCore::loadMovObjData() are finished calling their CGameCore equivalents, and
-call the methods loadTrackdata() and loadObjData() of the m_Renderer object.
-As you can see in ultimatestunts/gamerenderer.cpp, these call similar methods
-in a CGraphicWorld object. And in graphics/graphicworld.cpp you can see how
-these methods load all graphics data based on the already loaded data in the
+Het laden van de grafische data wordt gedaan wanneer CUSCore::loadTrackData() en
+CUSCore::loadMovObjData() klaar zijn met het aanroepen van hun CGameCore equivalenten,
+en de methods loadTrackdata() en loadObjData() van het m_Renderer object aanroepen.
+Zoals u kunt zien in ultimatestunts/gamerenderer.cpp, roepen deze vergelijkbare methods
+aan in een CGraphicWorld object. En in graphics/graphicworld.cpp ziet u hoe deze
+methods alle grafische data laden op basis van de al eerder geladen data in het
 CWorld object.
 <p>
-When everything is loaded, CUSCore::update() will be called repeatedly.
-CUSCore::update() does all things that are necessary in a game cycle. It
-checks the state of some keys, it updates the game simulation by calling
-CGameCore::update(), and finally it updates all output elements, like
-graphics and sound. So, the core of the simulation is in CGameCore::update().
+Zodra alles is geladen, zal CUSCore::update() herhaald worden aangeroepen.
+CUSCore::update() doet alle dingen die nodig zijn in een spel-periode. Het
+controleert de toestand van sommige toetsen, het updatet de spel-simulatie door
+CGameCore::update() aan te roepen, en tot slot updatet het alle uitvoer-elementen,
+zoals graphics en geluid. Dus, de kern van de simulatie is in CGameCore::update().
 <p>
-CGameCore::update() does a lot of things that are only relevant for network
-communication in multiplayer games, but its core activities are the calling of
-the update() methods of all objects in m_Players and m_Simulations. The
-method of the m_Players-objects causes different players to do some actions.
-For instance, this may involve the routines of an AI player, or checking the
-state of input devices for a human player. The update() methods of objects in
-m_Simulations control the behavior of the moving objects. In our scenario,
-there are three simulation objects: one CRuleControl object, which implements
-all the game rules, like penalty time or finishing, one CPhysics object which
-does all the physics calculations, and a CReplayer object which records the
-states of all objects into a replay file.
+CGameCore::update() doet veel dingen die alleen relevant zijn voor netwerkcommunicatie
+in multiplayer-spellen, maar de kern-activiteiten zijn het aanroepen van de update()
+methods van alle objecten in m_Players en m_Simulations. De methods van de m_Player
+objecten zorgen er voor dat de verschillende spelers hun acties toepassen.
+Dit kan bijvoorbeeld de routines van een AI speler bevatten, of het controleren van
+de toestand van invoer-apparaten voor een menselijke speler. De update() methods van
+objecten in m_Simulations bepalen het gedrag van de bewegende objecten. In ons
+scenario zijn er drie simulatie-objecten: één CRuleControl object, dat alle
+spelregels implementeert, zoals penalty-tijd of finishen, één CPhysics object dat
+alle fysische berekeningen doet, en een CReplayer object dat de toestanden van alle
+objecten vastlegt in een replay-bestand.
 <p>
-When the player finishes, this is detected by the CRuleControl object
-(simulation/rulecontrol.*), and some time after finishing its update method will
-return false. This causes CGameCore::update() and CUSCore::update() to return
-false. This causes the CWinSystem object to terminate the runLoop function,
-and the player will return to the menu interface.
-
+Als de speler finisht, wordt dit gedetecteerd door het CRuleControl object
+(simulation/rulecontrol.*), en een korte tijd na het finishen zal zijn update method
+false terug geven. Dit zorgt er voor dat CGameCore::update() en CUSCore::update()
+false terug geven. Dit zorgt er voor dat het CWinSystem object de runLoop-functie
+verlaat, en de speler zal terug keren in de menu interface.
 </body>
 </html>
 

@@ -26,24 +26,16 @@ A detailed description of the track file format is available
 <a href="fileformats.htm#track">here</a>. You will need all that information,
 so I reccomend reading it.
 
-<h1>Some tiles and textures we're going to use</h1>
-A track is built of tiles, which use textures (images that are mapped on the
-3D geometry). We need to define which tiles and textures will be used. There
-are some tiles and textures available in the standard data files, and we'll use
-some of them. First of all the textures:
+<h1>Some tiles we're going to use</h1>
+A track is built of tiles. We need to define which tiles will be used. There
+are some tiles available in the standard data files, and we'll use
+some of them:
 <ul>
-	<li>textures/grass2.jpg: Grass texture</li>
-	<li>textures/road2.jpg: Road texture</li>
-	<li>textures/concrete1.jpg: Concrete texture</li>
-	<li>textures/startfinish.jpg: Start/Finish flag</li>
-</ul>
-Next, the tiles:
-<ul>
-	<li>tiles/empty.glb: Empty tile</li>
-	<li>tiles/hjoriz.glb: Horizontal plane without roads</li>
-	<li>tiles/corner.glb: Sharp corner</li>
-	<li>tiles/roadhoriz.glb: Straight road</li>
-	<li>tiles/startfinish.glb: Start/Finish tile</li>
+	<li>tiles/empty.conf: Empty tile</li>
+	<li>tiles/hjoriz.conf: Horizontal plane without roads</li>
+	<li>tiles/corner.conf: Sharp corner</li>
+	<li>tiles/roadhoriz.conf: Straight road</li>
+	<li>tiles/startfinish.conf: Start/Finish tile</li>
 </ul>
 
 <h1>A simple track</h1>
@@ -72,15 +64,11 @@ write anything here, because the loader will ignore anything until it reads
 BEGIN.
 <pre>
 BEGIN
-textures/grass2.jpg
-textures/road2.jpg
-textures/concrete1.jpg
-textures/startfinish.jpg
 END
 </pre>
-This section describes which textures are loaded. Textures should always be of
-a recognised file format (e.g. *.jpg or *.png), and their sizes should always
-be powers of 2 (4, 8, 16 etc.). Textures with alpha channel are also supported.
+This first section allows you to pre-load certain textures. We will not use it
+here, as we'll only use the default textures on the tiles. Therefore, this
+section remains empty.
 <pre>
 BEGIN
 sky = environment/clouds.rgba
@@ -102,30 +90,15 @@ documentation</a>. You can find examples in existing track files, and you
 can experiment with different values.
 <pre>
 BEGIN
-tiles/empty.glb 0
-tiles/horiz.glb 0
-tiles/corner.glb 0 1
-tiles/roadhoriz.glb 0 1
-tiles/startfinish.glb:sf 0 1 2 3
+tiles/empty.conf
+tiles/horiz.conf
+tiles/corner.conf
+tiles/roadhoriz.conf
+tiles/startfinish.conf
 END
 </pre>
-Here, the tiles are loaded. Every line consists of the tile filename and a list
-of numbers. These numbers refer to the textures that should be used by the
-tile. 0 is the first texture, 1 the second etc.. For example, the horizontal
-plane tiles/horiz.glb is loaded with the grass texture on it. The straight road
-tile tiles/roadhoriz.glb is loaded with a grass and a road texture. The order in
-which you refer to the textures does matter. For instance, if you change
-"tiles/roadhoriz.glb 0 1" to "tiles/roadhoriz.glb 1 0", then it would become a
-completely asphalted tile with a band of grass in the middle of it.
-<p>
-Be aware that if you point to too few textures for a tile, that a memory access
-fault, or a segmentation fault, can occur. The same thing can happen if you
-point to a texture that does not exist, for example if you point to nr 10 while
-you only loaded 5 textures.
-<p>
-The last line of this section shows something interesting: after the tile
-filename, it says ":sf". This means that this tile is used as a start/finish
-tile.
+Here, the tiles are loaded. On each line, there is the filename of a tile's
+.conf file. The first file should always be the empty tile.
 <pre>
 #tile_id/rotation/heigth
 </pre>
@@ -216,16 +189,16 @@ We're going to create a hill. In order to do that, we need some new tile types
 for the slopes. Change the tile section to this:
 <pre>
 BEGIN
-tiles/empty.glb 0
-tiles/horiz.glb 0
-tiles/corner.glb 0 1
-tiles/roadhoriz.glb 0 1
-tiles/startfinish.glb:sf 0 1 2 3
-tiles/diag2.glb 0
-tiles/roaddiag.glb 0 1
+tiles/empty.conf
+tiles/horiz.conf
+tiles/corner.conf
+tiles/roadhoriz.conf
+tiles/startfinish.conf
+tiles/diag2.conf
+tiles/roaddiag.conf
 END
 </pre>
-diag2.glb is a slope without a road, and roaddiag.glb is a slope with a road on it.
+diag2.conf is a slope without a road, and roaddiag.conf is a slope with a road on it.
 Now we can change the track section to:
 <pre>
 BEGIN
@@ -243,7 +216,7 @@ END
 </pre>
 This has a lot of changes compared to the previous example, so I'll try to
 explain it here. First of all, the tile ID numbers. The new numbers 5 and 6
-refer to the new tiles diag2.glb and roaddiag.glb. You can see that I replaced
+refer to the new tiles diag2.conf and roaddiag.conf. You can see that I replaced
 the 1's with 5's and the 3's with 6's to get the slopes. Next, the rotation
 number. The "south" slope has rotation 0, because the slope tiles just happen
 to have the right orientation for that slope. The "north" slope has exactly the
@@ -281,10 +254,6 @@ width
 heigth
 
 BEGIN
-textures/grass2.jpg
-textures/road2.jpg
-textures/concrete1.jpg
-textures/startfinish.jpg
 END
 
 BEGIN
@@ -298,11 +267,11 @@ skycol = 0.1,0.1,0.5
 END
 
 BEGIN
-tiles/empty.glb 0
-tiles/horiz.glb 0
-tiles/corner.glb 0 1
-tiles/roadhoriz.glb 0 1
-tiles/startfinish.glb:sf 0 1 2 3
+tiles/empty.conf
+tiles/horiz.conf
+tiles/corner.conf
+tiles/roadhoriz.conf
+tiles/startfinish.conf
 END
 
 #tile_id/rotation/heigth
@@ -338,7 +307,7 @@ now 2, because we have 2 layers. In your own tracks, you can use any number of
 layers, as long as it matches the number at the beginning of the file.
 <p>
 As you can see, I've filled the second layer with empty tiles (0 referring to
-tiles/empty.glb). When you work with multiple layers, you will use the empty tile
+tiles/empty.conf). When you work with multiple layers, you will use the empty tile
 many times, because you'll only need the extra layers at some locations.
 Recent Ultimate Stunts versions have an optimalisation that stops rendering once
 a tile ID of 0 is found. This means that the track builder needs to take care
@@ -357,42 +326,21 @@ of the same location in the first layer. Ultimate Stunts does not yet check
 this, so you might get (rendering) errors if you don't follow this rule.
 <p>
 We will use this knowledge to build a tunnel. But before we can do that, we need
-to load a texture for the walls of the tunnel, and the tunnel tiles themselves:
+to load the tunnel tiles themselves:
 <pre>
 BEGIN
-textures/grass2.jpg
-textures/road2.jpg
-textures/concrete1.jpg
-textures/startfinish.jpg
-textures/bricks2.jpg
-textures/road1.jpg
-END
-
-BEGIN
-sky = environment/sky3.rgb
-horizon = environment/kyoto-horizon.png
-envmap = environment/spheremap.rgb
-lightdir = -0.69,-0.7,-0.2
-lightcol = 0.2,0.2,0.5
-ambientcol = 0.0,0.0,0.0
-skycol = 0.1,0.1,0.5
-END
-
-BEGIN
-tiles/empty.glb 0
-tiles/horiz.glb 0
-tiles/corner.glb 0 1
-tiles/roadhoriz.glb 0 1
-tiles/startfinish.glb:sf 0 1 2 3
-tiles/tunnelin1.glb 0 5 4 2
-tiles/tunnelhoriz.glb 5 4 2
-tiles/diag2.glb 0
+tiles/empty.conf
+tiles/horiz.conf
+tiles/corner.conf
+tiles/roadhoriz.conf
+tiles/startfinish.conf
+tiles/tunnelin1.conf
+tiles/tunnelhoriz.conf
+tiles/diag2.conf
 END
 </pre>
-We've loaded an extra texture for the walls (bricks2.jpg), and one for the road
-inside the tunnel (road1.jpg), which is slightly different from the one used
-outside the tunnel. The new tiles are tunnelin1.glb, which is the tunnel entrance
-tile, tunnelhoriz.glb, which is a normal straight tunnel tile, and diag2.glb,
+The new tiles are tunnelin1.conf, which is the tunnel entrance
+tile, tunnelhoriz.conf, which is a normal straight tunnel tile, and diag2.conf,
 which we already know. Now we can define the first layer:
 <pre>
 BEGIN

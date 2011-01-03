@@ -35,6 +35,9 @@ public:
 
 	bool tileIsUsed(int ID) const;
 
+	void setHeight(unsigned int newHeight); //number of layers
+	void minimizeHeight();
+
 	void sortPillars();
 	void sortPillar(unsigned int x, unsigned int z);
 
