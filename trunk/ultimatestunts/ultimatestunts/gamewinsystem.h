@@ -86,6 +86,9 @@ protected:
 	bool keyCodeWasPressed(unsigned int code);
 	float getControlCodeState(unsigned int code);
 
+	//Overloaded: this one really implements it
+	virtual unsigned int getJoystickKeyCode(unsigned int joystick, unsigned int button);
+	unsigned int getJoystickAxisCode(unsigned int joystick, unsigned int axis, bool positive);
 private:
 
 	static void initKeyNameTranslationTable();

@@ -18,6 +18,10 @@
 #ifndef WINSYSTEM_H
 #define WINSYSTEM_H
 
+#include <vector> //STL vector template
+namespace std {}
+using namespace std;
+
 #include "SDL.h"
 
 #include "cstring.h"
@@ -42,7 +46,7 @@ public:
 
 	bool getKeyState(int c) const;
 	bool wasPressed(int c);
-	bool joyBtnWasPressed(int c);
+	bool joyBtnWasPressed(int js, int c);
 
 	void showMouseCursor(bool show=true);
 
@@ -76,11 +80,20 @@ protected:
 	int m_NumKeys;
 
 	//joystick
-	bool *m_JoyButtonWasPressed;
-	int m_NumJoyBtns;
+	struct SJoystick
+	{
+		SDL_Joystick *joystick;
+		unsigned int numButtons;
+		bool *buttonWasPressed;
+	};
+	vector<SJoystick> m_Joysticks;
 
-	int m_NumJoysticks;
-	SDL_Joystick *m_Joystick;
+	/*
+	Emulation of normal keys for joystick buttons.
+	Actual implementation is only in CGameWinsystem.
+	*/
+	virtual unsigned int getJoystickKeyCode(unsigned int joystick, unsigned int button);
+	virtual unsigned int getJoystickAxisCode(unsigned int joystick, unsigned int axis, bool positive);
 };
 
 extern CWinSystem *theWinSystem;

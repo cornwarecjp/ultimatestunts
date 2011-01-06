@@ -27,20 +27,26 @@
 Key codes used in SDL implementation:
 
 0 .. SDLK_LAST-1:			SDL keyboard
-SDLK_LAST .. SDLK_LAST+256:	First joystick
+SDLK_LAST .. SDLK_LAST+255:	First joystick
 ... other joysticks
+(max. 8 joysticks)
 
+So, with the defines below:
+joystick x button y = JOYSTICK + JOY_NUMCODES*x + JOY_BTN + y
+joystick x lefy     = JOYSTICK + JOY_NUMCODES*x + JOY_LEFT
 */
 
-#define JOY0_LEFT (SDLK_LAST)
-#define JOY0_RIGHT (SDLK_LAST+1)
-#define JOY0_UP (SDLK_LAST+2)
-#define JOY0_DOWN (SDLK_LAST+3)
+#define JOYSTICK  (SDLK_LAST)
+#define JOY_LEFT  (0)
+#define JOY_RIGHT (1)
+#define JOY_UP    (2)
+#define JOY_DOWN  (3)
+#define JOY_BTN   (4)
 
-#define JOY0_BTN0 (SDLK_LAST+4)
-#define JOY0_BTN1 (SDLK_LAST+5)
-#define JOY0_BTN2 (SDLK_LAST+6)
-#define JOY0_BTN3 (SDLK_LAST+7)
+#define JOY_NUMCODES (256)
+#define MAX_NUM_JOYBUTTONS (JOY_NUMCODES - JOY_BTN)
+
+#define MAX_NUM_JOYSTICKS (8)
 
 vector<CGameWinSystem::SKeyName> CGameWinSystem::m_KeyNames;
 
@@ -215,15 +221,28 @@ void CGameWinSystem::initKeyNameTranslationTable()
 	m_KeyNames.push_back(SKeyName(SDLK_LEFT , "left"));
 	m_KeyNames.push_back(SKeyName(SDLK_RIGHT, "right"));
 
-	//first joystick
-	m_KeyNames.push_back(SKeyName(JOY0_UP   , "joy0up"));
-	m_KeyNames.push_back(SKeyName(JOY0_DOWN , "joy0down"));
-	m_KeyNames.push_back(SKeyName(JOY0_LEFT , "joy0left"));
-	m_KeyNames.push_back(SKeyName(JOY0_RIGHT, "joy0right"));
-	m_KeyNames.push_back(SKeyName(JOY0_BTN0 , "joy0button0"));
-	m_KeyNames.push_back(SKeyName(JOY0_BTN1 , "joy0button1"));
-	m_KeyNames.push_back(SKeyName(JOY0_BTN2 , "joy0button2"));
-	m_KeyNames.push_back(SKeyName(JOY0_BTN3 , "joy0button3"));
+	//joysticks
+	for(unsigned int i=0; i < MAX_NUM_JOYSTICKS; i++)
+	{
+		m_KeyNames.push_back(SKeyName(
+			JOYSTICK + JOY_NUMCODES*i + JOY_UP,
+			CString().format("joy%dup", 16, i)));
+		m_KeyNames.push_back(SKeyName(
+			JOYSTICK + JOY_NUMCODES*i + JOY_DOWN,
+			CString().format("joy%ddown", 16, i)));
+		m_KeyNames.push_back(SKeyName(
+			JOYSTICK + JOY_NUMCODES*i + JOY_LEFT,
+			CString().format("joy%dleft", 16, i)));
+		m_KeyNames.push_back(SKeyName(
+			JOYSTICK + JOY_NUMCODES*i + JOY_RIGHT,
+			CString().format("joy%dright", 16, i)));
+
+		for(unsigned int j=0; j < MAX_NUM_JOYBUTTONS; j++)
+			m_KeyNames.push_back(SKeyName(
+				JOYSTICK + JOY_NUMCODES*i + JOY_BTN+j ,
+				CString().format("joy%dbutton%d", 32, i, j)
+				));
+	}
 }
 
 CString CGameWinSystem::key2name(unsigned int key) const
@@ -273,21 +292,26 @@ unsigned int CGameWinSystem::getPlayerControlCode(ePlayerControl ctl, unsigned i
 
 bool CGameWinSystem::getKeyCodeState(unsigned int code)
 {
+	//SDL keys
 	if(code < SDLK_LAST)
 	{
 		return getKeyState(code);
 	}
 
-	if(m_NumJoysticks > 0)
+	//Joysticks
+	int joyID = (code - JOYSTICK) / JOY_NUMCODES;
+	if(
+		joyID >= 0 &&
+		joyID < MAX_NUM_JOYSTICKS &&
+		(unsigned int)joyID < m_Joysticks.size() &&
+		m_Joysticks[joyID].joystick != NULL
+		)
 	{
-		if(code == JOY0_BTN0)
-			return SDL_JoystickGetButton(m_Joystick, 0);
-		if(code == JOY0_BTN1)
-			return SDL_JoystickGetButton(m_Joystick, 1);
-		if(code == JOY0_BTN2)
-			return SDL_JoystickGetButton(m_Joystick, 2);
-		if(code == JOY0_BTN3)
-			return SDL_JoystickGetButton(m_Joystick, 3);
+		int button = code - JOYSTICK - JOY_NUMCODES*joyID - JOY_BTN;
+		if(button < 0)
+			return false;
+
+		return SDL_JoystickGetButton(m_Joysticks[joyID].joystick, button);
 	}
 
 	return false;
@@ -295,53 +319,87 @@ bool CGameWinSystem::getKeyCodeState(unsigned int code)
 
 bool CGameWinSystem::keyCodeWasPressed(unsigned int code)
 {
+	//SDL keys
 	if(code < SDLK_LAST)
 		return wasPressed(code);
-	if(code == JOY0_BTN0)
-		return joyBtnWasPressed(0);
-	if(code == JOY0_BTN1)
-		return joyBtnWasPressed(1);
-	if(code == JOY0_BTN2)
-		return joyBtnWasPressed(2);
-	if(code == JOY0_BTN3)
-		return joyBtnWasPressed(3);
+
+	//Joysticks
+	int joyID = (code - JOYSTICK) / JOY_NUMCODES;
+	if(joyID >= 0 && joyID < MAX_NUM_JOYSTICKS)
+	{
+		int button = code - JOYSTICK - JOY_NUMCODES*joyID - JOY_BTN;
+		if(button < 0)
+			return false;
+
+		return joyBtnWasPressed(joyID, button);
+	}
 
 	return false;
 }
 
 float CGameWinSystem::getControlCodeState(unsigned int code)
 {
+	//SDL keys
 	if(code < SDLK_LAST)
 	{
 		return (float)(getKeyState(code));
 	}
-	else if(m_NumJoysticks > 0)
+
+	//Joysticks
+	int joyID = (code - JOYSTICK) / JOY_NUMCODES;
+	if(
+		joyID >= 0 &&
+		joyID < MAX_NUM_JOYSTICKS &&
+		(unsigned int)joyID < m_Joysticks.size() &&
+		m_Joysticks[joyID].joystick != NULL
+		)
 	{
-		if(code == JOY0_LEFT)
+		SDL_Joystick *js = m_Joysticks[joyID].joystick;
+		int direction = code - JOYSTICK - JOY_NUMCODES*joyID;
+		if(direction == JOY_LEFT)
 		{
-			float val = (float)-SDL_JoystickGetAxis(m_Joystick, 0) / 32767;
+			float val = (float)-SDL_JoystickGetAxis(js, 0) / 32767;
 			if(val < 0.0) val = 0.0;
 			return val;
 		}
-		else if(code == JOY0_RIGHT)
+		else if(direction == JOY_RIGHT)
 		{
-			float val = (float)SDL_JoystickGetAxis(m_Joystick, 0) / 32767;
+			float val = (float)SDL_JoystickGetAxis(js, 0) / 32767;
 			if(val < 0.0) val = 0.0;
 			return val;
 		}
-		else if(code == JOY0_UP)
+		else if(direction == JOY_UP)
 		{
-			float val = (float)-SDL_JoystickGetAxis(m_Joystick, 1) / 32767;
+			float val = (float)-SDL_JoystickGetAxis(js, 1) / 32767;
 			if(val < 0.0) val = 0.0;
 			return val;
 		}
-		else if(code == JOY0_DOWN)
+		else if(direction == JOY_DOWN)
 		{
-			float val = (float)SDL_JoystickGetAxis(m_Joystick, 1) / 32767;
+			float val = (float)SDL_JoystickGetAxis(js, 1) / 32767;
 			if(val < 0.0) val = 0.0;
 			return val;
 		}
+		//TODO: support joystick buttons for controls
 	}
 
 	return 0.0;
 }
+
+unsigned int CGameWinSystem::getJoystickKeyCode(unsigned int joystick, unsigned int button)
+{
+	return JOYSTICK + JOY_NUMCODES*joystick + JOY_BTN + button;
+}
+
+unsigned int CGameWinSystem::getJoystickAxisCode(unsigned int joystick, unsigned int axis, bool positive)
+{
+	unsigned int offset = JOYSTICK + JOY_NUMCODES*joystick;
+
+	if(axis == 0 &&  positive) return offset + JOY_RIGHT;
+	if(axis == 0 && !positive) return offset + JOY_LEFT;
+	if(axis == 1 && !positive) return offset + JOY_UP;
+	if(axis == 1 &&  positive) return offset + JOY_DOWN;
+
+	return 0;
+}
+

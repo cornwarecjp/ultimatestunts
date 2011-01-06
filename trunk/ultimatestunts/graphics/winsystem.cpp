@@ -19,9 +19,11 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <cmath>
 
 #include "lconfig.h"
 #include "usmacros.h"
+#include "timer.h"
 
 #include "mousecursor.h"
 
@@ -90,28 +92,39 @@ CWinSystem::CWinSystem(const CString &caption)
 
 	SDL_WM_SetCaption(caption.c_str(), "ultimatestunts");
 
-	m_NumJoysticks = SDL_NumJoysticks();
-	printf("   Found %d joysticks\n", m_NumJoysticks);
+	unsigned int numJoysticks = SDL_NumJoysticks();
+	printf("   Found %d joysticks\n", numJoysticks);
 
-	if(m_NumJoysticks > 0)
+	if(numJoysticks > 0)
 	{
 		SDL_JoystickEventState(SDL_ENABLE);
-		m_Joystick = SDL_JoystickOpen(0);
 
-		if(m_Joystick)
-		{
-			printf("   Opened Joystick 0\n");
-			printf("   Name: %s\n", SDL_JoystickName(0));
-			printf("   Number of Axes: %d\n", SDL_JoystickNumAxes(m_Joystick));
-			printf("   Number of Buttons: %d\n", SDL_JoystickNumButtons(m_Joystick));
-			printf("   Number of Balls: %d\n", SDL_JoystickNumBalls(m_Joystick));
-		}
-		else
-		{
-			printf("   Couldn't open Joystick 0\n");
-			m_NumJoysticks = 0;
-		}
+		m_Joysticks.resize(numJoysticks);
 
+		//Open joysticks:
+		for(unsigned int i=0; i < numJoysticks; i++)
+		{
+			SDL_Joystick *js = SDL_JoystickOpen(i);
+			m_Joysticks[i].joystick = js;
+			if(m_Joysticks[i].joystick)
+			{
+				printf("   Opened Joystick %d\n", i);
+				printf("   Name: %s\n", SDL_JoystickName(i));
+				printf("   Number of Axes: %d\n", SDL_JoystickNumAxes(js));
+				printf("   Number of Buttons: %d\n", SDL_JoystickNumButtons(js));
+				printf("   Number of Balls: %d\n", SDL_JoystickNumBalls(js));
+
+				m_Joysticks[i].numButtons = SDL_JoystickNumButtons(js);
+				m_Joysticks[i].buttonWasPressed = new bool[m_Joysticks[i].numButtons];
+			}
+			else
+			{
+				printf("   Couldn't open Joystick %d\n", i);
+
+				m_Joysticks[i].numButtons = 0;
+				m_Joysticks[i].buttonWasPressed = NULL;
+			}
+		}
 	}
 
 	runLoop(dummy_loopfunc, true); //catch startup-events
@@ -121,15 +134,9 @@ CWinSystem::CWinSystem(const CString &caption)
 	for(int i=0; i<m_NumKeys; i++)
 		m_WasPressed[i] = false;
 
-	if(m_NumJoysticks > 0)
-		{m_NumJoyBtns = SDL_JoystickNumButtons(m_Joystick);}
-	else
-		{m_NumJoyBtns = 0;}
-		
-
-	m_JoyButtonWasPressed = new bool[m_NumJoyBtns];
-	for(int i=0; i<m_NumJoyBtns; i++)
-		m_JoyButtonWasPressed[i] = false;
+	for(unsigned int i = 0; i < m_Joysticks.size(); i++)
+		for(unsigned int j = 0; j < m_Joysticks[i].numButtons; j++)
+			m_Joysticks[i].buttonWasPressed[j] = false;
 }
 
 bool CWinSystem::reloadConfiguration()
@@ -225,10 +232,13 @@ bool CWinSystem::reloadConfiguration()
 CWinSystem::~CWinSystem()
 {
 	delete [] m_WasPressed;
-	delete [] m_JoyButtonWasPressed;
 
-	if(m_NumJoysticks > 0)
-		SDL_JoystickClose(m_Joystick);
+	for(unsigned int i=0; i < m_Joysticks.size(); i++)
+		if(m_Joysticks[i].joystick != NULL)
+		{
+			delete [] m_Joysticks[i].buttonWasPressed;
+			SDL_JoystickClose(m_Joysticks[i].joystick);
+		}
 
 	SDL_Quit();
 }
@@ -284,8 +294,12 @@ int CWinSystem::runLoop( bool (CALLBACKFUN *loopfunc)(), bool swp)
 
 				//Joystick
 				case SDL_JOYBUTTONDOWN:
-					m_JoyButtonWasPressed[event.jbutton.button] = true;
+				{
+					SJoystick &js = m_Joysticks[event.jbutton.which];
+					if(js.buttonWasPressed != NULL)
+						js.buttonWasPressed[event.jbutton.button] = true;
 					break;
+				}
 			}
 		}
 
@@ -387,6 +401,51 @@ bool CWinSystem::runLoop(CWidget *widget)
 					widgetmessages |= widget->onMouseClick(event.button.x, m_H - event.button.y, event.button.button);
 					break;
 
+				//Joystick events, emulating key events:
+				case SDL_JOYBUTTONDOWN:
+				{
+					unsigned int keycode = getJoystickKeyCode(
+						event.jbutton.which, event.jbutton.button);
+					if(keycode != 0)
+						widgetmessages |= widget->onKeyPress(keycode);
+					break;
+				}
+				case SDL_JOYAXISMOTION:
+				{
+					float x = 0.0, y = 0.0;
+					if(event.jaxis.axis == 0) x = float(event.jaxis.value) / 32768.0;
+					if(event.jaxis.axis == 1) y = float(event.jaxis.value) / 32768.0;
+
+					static bool wasDownX = false, wasDownY = false;
+
+					if(fabsf(x) > 0.75)
+					{
+						if(!wasDownX)
+						{
+							wasDownX = true;
+							unsigned int keycode = getJoystickAxisCode(
+								event.jaxis.which, 0, x > 0.0);
+							widgetmessages |= widget->onKeyPress(keycode);
+						}
+					}
+					else
+						{wasDownX = false;}
+
+					if(fabsf(y) > 0.75)
+					{
+						if(!wasDownY)
+						{
+							wasDownY = true;
+							unsigned int keycode = getJoystickAxisCode(
+								event.jaxis.which, 1, y > 0.0);
+							widgetmessages |= widget->onKeyPress(keycode);
+						}
+					}
+					else
+						{wasDownY = false;}
+
+					break;
+				}
 			}
 		}
 
@@ -458,9 +517,24 @@ bool CWinSystem::wasPressed(int c)
 	return ret;
 }
 
-bool CWinSystem::joyBtnWasPressed(int c)
+bool CWinSystem::joyBtnWasPressed(int js, int c)
 {
-	bool ret = m_JoyButtonWasPressed[c];
-	m_JoyButtonWasPressed[c] = false;
+	if((unsigned int)js >= m_Joysticks.size() ||
+		m_Joysticks[js].buttonWasPressed == NULL ||
+		(unsigned int)c >= m_Joysticks[js].numButtons)
+			return false;
+
+	bool ret = m_Joysticks[js].buttonWasPressed[c];
+	m_Joysticks[js].buttonWasPressed[c] = false;
 	return ret;
+}
+
+unsigned int CWinSystem::getJoystickKeyCode(unsigned int joystick, unsigned int button)
+{
+	return 0; //to be overloaded in a derived class
+}
+
+unsigned int CWinSystem::getJoystickAxisCode(unsigned int joystick, unsigned int axis, bool positive)
+{
+	return 0; //to be overloaded in a derived class
 }
