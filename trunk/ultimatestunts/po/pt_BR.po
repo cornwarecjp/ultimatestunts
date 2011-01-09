@@ -2,12 +2,12 @@
 # Copyright (C) 2006 CJP
 # This file is distributed under the same license as the Ultimate Stunts package.
 # FIRST AUTHOR Marcelo De Nardin , 2005.
-# 
+#
 msgid ""
 msgstr ""
-"Project-Id-Version: Ultimate Stunts 0.7.5\n"
+"Project-Id-Version: Ultimate Stunts 0.7.6\n"
 "Report-Msgid-Bugs-To: cornware-cjp@users.sourceforge.net\n"
-"POT-Creation-Date: 2010-12-31 16:01+0100\n"
+"POT-Creation-Date: 2011-01-08 12:02+0100\n"
 "PO-Revision-Date: 2008-06-09 15:00-0300\n"
 "Last-Translator: Marcelo De Nardin \n"
 "Language-Team: Brazilian Portuguese \n"
@@ -42,7 +42,7 @@ msgstr "Dirija!"
 
 #: ultimatestunts/gamegui.cpp:486
 msgid "Set the game type"
-msgstr "Selecionar um tipo de jogo"
+msgstr "Selecionar o tipo de jogo"
 
 #: ultimatestunts/gamegui.cpp:487
 msgid "Select the track"
@@ -80,7 +80,7 @@ msgstr " [Rodando servidor %s]"
 #: ultimatestunts/gamegui.cpp:507
 #, c-format
 msgid " [Joining game on server %s]"
-msgstr " [Juntando-se ao jogo em %s]"
+msgstr " [Juntando-se ao jogo no servidor %s]"
 
 #: ultimatestunts/gamegui.cpp:508
 msgid " [server will choose one]"
@@ -103,11 +103,11 @@ msgstr "Jogo local"
 
 #: ultimatestunts/gamegui.cpp:522
 msgid "Join an existing LAN/network game"
-msgstr "Juntar-se a um jogo de rede existente"
+msgstr "Juntar-se a um jogo de rede local existente"
 
 #: ultimatestunts/gamegui.cpp:523
 msgid "Start a new LAN/network game"
-msgstr "Iniciar um novo jogo de rede"
+msgstr "Iniciar um novo jogo de rede local"
 
 #: ultimatestunts/gamegui.cpp:524
 msgid "Join an existing online game"
@@ -122,7 +122,7 @@ msgid "Select a server:"
 msgstr "Selecione um servidor:"
 
 #: ultimatestunts/gamegui.cpp:538 ultimatestunts/gamegui.cpp:544
-#: trackedit/tegui.cpp:65
+#: trackedit/tegui.cpp:65 trackedit/tegui.cpp:246
 msgid "Select a track"
 msgstr "Selecionar uma pista"
 
@@ -136,7 +136,7 @@ msgstr "Ver replay do melhor tempo"
 
 #: ultimatestunts/gamegui.cpp:541 ultimatestunts/gamegui.cpp:568
 #: ultimatestunts/gamegui.cpp:599 ultimatestunts/gamegui.cpp:617
-#: trackedit/tegui.cpp:145 trackedit/tegui.cpp:163
+#: trackedit/tegui.cpp:146 trackedit/tegui.cpp:164
 msgid "Return to main menu"
 msgstr "Retornar ao menu principal"
 
@@ -178,18 +178,18 @@ msgstr "Carro           : "
 
 #: ultimatestunts/gamegui.cpp:582
 msgid "Gearbox    : "
-msgstr "Caixa de marchas    : "
+msgstr "Câmbio    : "
 
 #: ultimatestunts/gamegui.cpp:583
 msgid "Choose a car color"
-msgstr "Selecionar uma cor de carro"
+msgstr "Selecione uma cor de carro"
 
 #: ultimatestunts/gamegui.cpp:584
 msgid "Delete this player"
 msgstr "Apagar este jogador"
 
 #: ultimatestunts/gamegui.cpp:585 ultimatestunts/gamegui.cpp:1067
-#: simulation/gamecore.cpp:221 trackedit/tegui.cpp:151
+#: simulation/gamecore.cpp:221 trackedit/tegui.cpp:152
 msgid "Ready"
 msgstr "Pronto"
 
@@ -222,7 +222,7 @@ msgstr "Salvar replay"
 msgid "Play again"
 msgstr "Jogar novamente"
 
-#: ultimatestunts/gamegui.cpp:664 trackedit/tegui.cpp:196
+#: ultimatestunts/gamegui.cpp:664 trackedit/tegui.cpp:197
 msgid "Do you really want to quit?"
 msgstr "Você realmente quer sair?"
 
@@ -326,7 +326,7 @@ msgstr "Jogador %s foi recusado"
 #: ultimatestunts/uscore.cpp:119
 #, c-format
 msgid "Frame rate: %.1f FPS"
-msgstr "Taxa de quadros por segundo: %.1f FPS"
+msgstr "Taxa de quadros por segundo: %.1f QPS"
 
 #: stuntsserver/gamecorethread.cpp:70
 msgid "Waiting for the server to start"
@@ -375,7 +375,7 @@ msgstr "Não"
 
 #: graphics/keyinputbox.cpp:62
 msgid "<press a key>"
-msgstr ""
+msgstr "<pressione uma tecla>"
 
 #: graphics/gui.cpp:170
 msgid "System's default language"
@@ -391,19 +391,19 @@ msgstr "Modo de tela cheia?"
 
 #: graphics/gui.cpp:204
 msgid "Enter window width:"
-msgstr "Escreva a largura da janela"
+msgstr "Escreva a largura da janela:"
 
 #: graphics/gui.cpp:206
 msgid "Enter window height:"
-msgstr "Escreva a altura da janela"
+msgstr "Escreva a altura da janela:"
 
 #: graphics/gui.cpp:213
 msgid "Enter screen resolution width:"
-msgstr "Escreva a resolução da largura da tela"
+msgstr "Escreva a resolução da largura da tela:"
 
 #: graphics/gui.cpp:215
 msgid "Enter screen resolution height:"
-msgstr "Escreva a resolução da altura da tela"
+msgstr "Escreva a resolução da altura da tela:"
 
 #: graphics/gui.cpp:229
 msgid "Default resolution"
@@ -474,7 +474,7 @@ msgstr "Carregando arquivos"
 
 #: simulation/gamecore.cpp:294
 msgid "Game paused"
-msgstr ""
+msgstr "Jogo pausado"
 
 #: trackedit/tegui.cpp:77 trackedit/mainpage.cpp:90
 msgid "Change tiles collection"
@@ -486,157 +486,155 @@ msgstr "Editar este tile"
 
 #: trackedit/tegui.cpp:111 trackedit/mainpage.cpp:91
 msgid "Change scenery settings"
-msgstr ""
+msgstr "Mudar configurações de cenário"
 
-#: trackedit/tegui.cpp:143
+#: trackedit/tegui.cpp:144
 msgid "Add a new tile"
 msgstr "Adicionar um novo tile"
 
-#: trackedit/tegui.cpp:144
+#: trackedit/tegui.cpp:145
 msgid "Remove unused tiles"
 msgstr "Remover tiles não utilizados"
 
-#: trackedit/tegui.cpp:149
+#: trackedit/tegui.cpp:150
 msgid "Change the tile model"
 msgstr "Mudar o modelo do tile"
 
-#: trackedit/tegui.cpp:150
+#: trackedit/tegui.cpp:151
 msgid "Delete this tile"
 msgstr "Apagar este tile"
 
-#: trackedit/tegui.cpp:155
-#, fuzzy
-msgid "Change the cloud image"
-msgstr "Mudar o modelo do tile"
-
 #: trackedit/tegui.cpp:156
-msgid "Change the background image"
-msgstr ""
+msgid "Change the cloud image"
+msgstr "Mudar a imagem da nuvem"
 
 #: trackedit/tegui.cpp:157
-#, fuzzy
-msgid "Change the sky color"
-msgstr "Mudar coleção de tiles"
+msgid "Change the background image"
+msgstr "Mudar a imagem do fundo"
 
 #: trackedit/tegui.cpp:158
-#, fuzzy
-msgid "Change the horizon sky color"
-msgstr "Mudar o modelo do tile"
+msgid "Change the sky color"
+msgstr "Mudar cor do céu"
 
 #: trackedit/tegui.cpp:159
-msgid "Change the cloud and background color"
-msgstr ""
+msgid "Change the horizon sky color"
+msgstr "Mudar cor do horizonte"
 
 #: trackedit/tegui.cpp:160
-#, fuzzy
-msgid "Change the fog color"
-msgstr "Mudar o modelo do tile"
+msgid "Change the cloud and background color"
+msgstr "Mudar cor da nuvem e fundo"
 
 #: trackedit/tegui.cpp:161
-#, fuzzy
-msgid "Change the light color"
-msgstr "Mudar o modelo do tile"
+msgid "Change the fog color"
+msgstr "Mudar cor da neblina"
 
 #: trackedit/tegui.cpp:162
-#, fuzzy
-msgid "Change the light direction"
-msgstr "Mudar coleção de tiles"
+msgid "Change the light color"
+msgstr "Mudar cor da luz"
 
-#: trackedit/tegui.cpp:255 trackedit/tegui.cpp:285
+#: trackedit/tegui.cpp:163
+msgid "Change the light direction"
+msgstr "Mudar direção da luz"
+
+#: trackedit/tegui.cpp:257 trackedit/tegui.cpp:287
 #, c-format
 msgid "Error: %s could not be loaded"
 msgstr "Erro: %s não pôde ser carregado"
 
-#: trackedit/tegui.cpp:269
+#: trackedit/tegui.cpp:271
 msgid "Select the Stunts track"
 msgstr "Selecionar a pista de Stunts"
 
-#: trackedit/tegui.cpp:297
+#: trackedit/tegui.cpp:299
 msgid "Tracks:"
 msgstr "Pistas:"
 
-#: trackedit/tegui.cpp:316
+#: trackedit/tegui.cpp:318
 msgid "Enter the filename:"
 msgstr "Escreva o nome do arquivo:"
 
-#: trackedit/tegui.cpp:331
-#, fuzzy, c-format
+#: trackedit/tegui.cpp:333
+#, c-format
 msgid ""
 "File %s already exists. Overwrite? The hiscore of the track will be reset."
-msgstr "Arquivo %s já existe. Sobrescrever?"
+msgstr ""
+"Arquivo %s já existe. Sobrescrever? O recorde da pista vai ser apagado."
 
-#: trackedit/tegui.cpp:346
+#: trackedit/tegui.cpp:348
 #, c-format
 msgid "Saving of %s failed"
 msgstr "Salvamento de %s falhou"
 
-#: trackedit/tegui.cpp:373
+#: trackedit/tegui.cpp:375
 msgid "This tile is in use in the track. Do you really want to change it?"
 msgstr "Este tile está em uso na pista. Você realmente deseja mudá-lo?"
 
-#: trackedit/tegui.cpp:433
+#: trackedit/tegui.cpp:435
 msgid "This tile is in use in the track. Do you really want to delete it?"
 msgstr "Este tile está em uso na pista. Você realmente deseja apagá-lo?"
 
-#: trackedit/tegui.cpp:456
+#: trackedit/tegui.cpp:458
 msgid "Tiles:"
 msgstr "Tiles:"
 
-#: trackedit/tegui.cpp:532
-#, fuzzy
+#: trackedit/tegui.cpp:534
 msgid "Cloud image file:"
-msgstr "Carregando arquivos"
+msgstr "Arquivo de imagem da nuvem:"
 
-#: trackedit/tegui.cpp:537
+#: trackedit/tegui.cpp:539
 msgid "Background image file:"
-msgstr ""
+msgstr "Arquivo de imagem do fundo:"
 
-#: trackedit/tegui.cpp:542
-#, fuzzy
+#: trackedit/tegui.cpp:544
 msgid "Sky color:"
-msgstr "Cor do carro:"
+msgstr "Cor do céu:"
 
-#: trackedit/tegui.cpp:547
+#: trackedit/tegui.cpp:549
 msgid "Horizon sky color:"
-msgstr ""
+msgstr "Cor do céu do horizonte:"
 
-#: trackedit/tegui.cpp:552
+#: trackedit/tegui.cpp:554
 msgid "Cloud and background color:"
-msgstr ""
+msgstr "Cor da nuvem e fundo:"
 
-#: trackedit/tegui.cpp:557
-#, fuzzy
+#: trackedit/tegui.cpp:559
 msgid "Fog color:"
-msgstr "Cor do carro:"
+msgstr "Cor da neblina:"
 
-#: trackedit/tegui.cpp:562
-#, fuzzy
+#: trackedit/tegui.cpp:564
 msgid "Light color:"
-msgstr "Cor do carro:"
+msgstr "Cor da luz:"
 
-#: trackedit/tegui.cpp:583
+#: trackedit/tegui.cpp:585
 msgid "Light compass direction (degrees):"
-msgstr ""
+msgstr "Direção da luz conforme bússola (graus):"
 
-#: trackedit/tegui.cpp:587
+#: trackedit/tegui.cpp:589
 msgid "Light angle above the horizon (degrees):"
-msgstr ""
+msgstr "Ângulo da luz acima do horizonte (graus):"
 
-#: trackedit/tegui.cpp:634
+#: trackedit/tegui.cpp:636
 msgid "Number of tiles to add on the west side (negative = remove tiles): "
 msgstr ""
+"Número de tiles a serem adicionados no lado oeste (negativo = remover "
+"tiles): "
 
-#: trackedit/tegui.cpp:638
+#: trackedit/tegui.cpp:640
 msgid "Number of tiles to add on the east side (negative = remove tiles): "
 msgstr ""
+"Número de tiles a serem adicionados no lado leste (negativo = remover "
+"tiles): "
 
-#: trackedit/tegui.cpp:642
+#: trackedit/tegui.cpp:644
 msgid "Number of tiles to add on the north side (negative = remove tiles): "
 msgstr ""
+"Número de tiles a serem adicionados no lado norte (negativo = remover "
+"tiles): "
 
-#: trackedit/tegui.cpp:646
+#: trackedit/tegui.cpp:648
 msgid "Number of tiles to add on the south side (negative = remove tiles): "
 msgstr ""
+"Número de tiles a serem adicionados no lado sul (negativo = remover tiles): "
 
 #: trackedit/mainpage.cpp:84
 msgid "Load track"
@@ -659,9 +657,8 @@ msgid "Redo"
 msgstr "Refazer"
 
 #: trackedit/mainpage.cpp:92
-#, fuzzy
 msgid "Resize the track"
-msgstr "Selecionar a pista"
+msgstr "Redimensionar a pista"
 
 #~ msgid "Top speed in this session: %.1f km/h"
 #~ msgstr "Velocidade máxima nesta sessão: %.1f km/h"

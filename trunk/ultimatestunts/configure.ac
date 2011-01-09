@@ -64,18 +64,12 @@ if test "x$ac_cv_header_windows_h" != "xyes" ; then
     AM_CONDITIONAL(ENABLE_XMESA_FX, test "no" = "yes")
   fi
 
-  if test "x`uname -s`" != "xDarwin"; then
-    AC_CHECK_LIB(GLU, gluLookAt, graphlibs="-lGLU $graphlibs" ,,$graphlibs)
-    if test "x$ac_cv_lib_GLU_gluLookAt" = "xno" ; then
-      dnl if no GLU, check for MesaGLU
-      AC_CHECK_LIB(MesaGLU, gluLookAt, graphlibs="-lMesaGLU $graphlibs" ,,$graphlibs)
-    fi
-  fi
-
 else
   dnl CygWin under Windoze.
 
-  graphlibs="-lm -lwinmm -lglu32 -lopengl32 -luser32 -lgdi32"
+  graphlibs="-lm -lopengl32"
+  CFLAGS="$CFLAGS -I/usr/include/opengl"
+  CXXFLAGS="$CXXFLAGS -I/usr/include/opengl"
 
   dnl force a failed check
   AM_CONDITIONAL(ENABLE_XMESA_FX, test "no" = "yes")

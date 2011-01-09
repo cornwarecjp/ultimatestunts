@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Ultimate Stunts 0.7.6\n"
 "Report-Msgid-Bugs-To: cornware-cjp@users.sourceforge.net\n"
-"POT-Creation-Date: 2010-12-31 16:01+0100\n"
+"POT-Creation-Date: 2011-01-08 12:02+0100\n"
 "PO-Revision-Date: 2008-01-13 20:45+0100\n"
 "Last-Translator: CJP <cornware-cjp@users.sourceforge.net>\n"
 "Language-Team: Dutch <cornware-cjp@users.sourceforge.net>\n"
@@ -122,7 +122,7 @@ msgid "Select a server:"
 msgstr "Selecteer een server:"
 
 #: ultimatestunts/gamegui.cpp:538 ultimatestunts/gamegui.cpp:544
-#: trackedit/tegui.cpp:65
+#: trackedit/tegui.cpp:65 trackedit/tegui.cpp:246
 msgid "Select a track"
 msgstr "Selecteer een baan"
 
@@ -136,7 +136,7 @@ msgstr "Bekijk de beste-tijd replay"
 
 #: ultimatestunts/gamegui.cpp:541 ultimatestunts/gamegui.cpp:568
 #: ultimatestunts/gamegui.cpp:599 ultimatestunts/gamegui.cpp:617
-#: trackedit/tegui.cpp:145 trackedit/tegui.cpp:163
+#: trackedit/tegui.cpp:146 trackedit/tegui.cpp:164
 msgid "Return to main menu"
 msgstr "Terug naar het hoofdmenu"
 
@@ -189,7 +189,7 @@ msgid "Delete this player"
 msgstr "Verwijder deze speler"
 
 #: ultimatestunts/gamegui.cpp:585 ultimatestunts/gamegui.cpp:1067
-#: simulation/gamecore.cpp:221 trackedit/tegui.cpp:151
+#: simulation/gamecore.cpp:221 trackedit/tegui.cpp:152
 msgid "Ready"
 msgstr "Klaar"
 
@@ -222,7 +222,7 @@ msgstr "Sla de replay op"
 msgid "Play again"
 msgstr "Speel opnieuw"
 
-#: ultimatestunts/gamegui.cpp:664 trackedit/tegui.cpp:196
+#: ultimatestunts/gamegui.cpp:664 trackedit/tegui.cpp:197
 msgid "Do you really want to quit?"
 msgstr "Wilt u echt afsluiten?"
 
@@ -487,146 +487,148 @@ msgstr "Bewerk deze tile"
 msgid "Change scenery settings"
 msgstr "Verander omgevings-instellingen"
 
-#: trackedit/tegui.cpp:143
+#: trackedit/tegui.cpp:144
 msgid "Add a new tile"
 msgstr "Voeg een nieuwe tile toe"
 
-#: trackedit/tegui.cpp:144
+#: trackedit/tegui.cpp:145
 msgid "Remove unused tiles"
 msgstr "Verwijder ongebruikte tiles"
 
-#: trackedit/tegui.cpp:149
+#: trackedit/tegui.cpp:150
 msgid "Change the tile model"
 msgstr "Verander het tile-model"
 
-#: trackedit/tegui.cpp:150
+#: trackedit/tegui.cpp:151
 msgid "Delete this tile"
 msgstr "Verwijder deze tile"
 
-#: trackedit/tegui.cpp:155
+#: trackedit/tegui.cpp:156
 msgid "Change the cloud image"
 msgstr "Verander de wolken-afbeelding"
 
-#: trackedit/tegui.cpp:156
+#: trackedit/tegui.cpp:157
 msgid "Change the background image"
 msgstr "Verander de achtergrond-afbeelding"
 
-#: trackedit/tegui.cpp:157
+#: trackedit/tegui.cpp:158
 msgid "Change the sky color"
 msgstr "Verander de luchtkleur"
 
-#: trackedit/tegui.cpp:158
+#: trackedit/tegui.cpp:159
 msgid "Change the horizon sky color"
 msgstr "Verander de horizon-luchtkleur"
 
-#: trackedit/tegui.cpp:159
+#: trackedit/tegui.cpp:160
 msgid "Change the cloud and background color"
 msgstr "Verander de wolken- en achtergrondkleur"
 
-#: trackedit/tegui.cpp:160
+#: trackedit/tegui.cpp:161
 msgid "Change the fog color"
 msgstr "Verander de mistkleur"
 
-#: trackedit/tegui.cpp:161
+#: trackedit/tegui.cpp:162
 msgid "Change the light color"
 msgstr "Verander de lichtkleur"
 
-#: trackedit/tegui.cpp:162
+#: trackedit/tegui.cpp:163
 msgid "Change the light direction"
 msgstr "Verander de lichtrichting"
 
-#: trackedit/tegui.cpp:255 trackedit/tegui.cpp:285
+#: trackedit/tegui.cpp:257 trackedit/tegui.cpp:287
 #, c-format
 msgid "Error: %s could not be loaded"
 msgstr "Fout: %s kon niet geladen worden"
 
-#: trackedit/tegui.cpp:269
+#: trackedit/tegui.cpp:271
 msgid "Select the Stunts track"
 msgstr "Selecteer de Stunts baan"
 
-#: trackedit/tegui.cpp:297
+#: trackedit/tegui.cpp:299
 msgid "Tracks:"
 msgstr "Banen:"
 
-#: trackedit/tegui.cpp:316
+#: trackedit/tegui.cpp:318
 msgid "Enter the filename:"
 msgstr "Geef de bestandsnaam:"
 
-#: trackedit/tegui.cpp:331
+#: trackedit/tegui.cpp:333
 #, c-format
 msgid ""
 "File %s already exists. Overwrite? The hiscore of the track will be reset."
-msgstr "Bestand %s bestaat al. Overschrijven? De hiscore van de track zal gewist worden."
+msgstr ""
+"Bestand %s bestaat al. Overschrijven? De hiscore van de track zal gewist "
+"worden."
 
-#: trackedit/tegui.cpp:346
+#: trackedit/tegui.cpp:348
 #, c-format
 msgid "Saving of %s failed"
 msgstr "Opslaan van %s is mislukt"
 
-#: trackedit/tegui.cpp:373
+#: trackedit/tegui.cpp:375
 msgid "This tile is in use in the track. Do you really want to change it?"
 msgstr "Deze tile is in gebruik in de track. Wilt u deze echt veranderen?"
 
-#: trackedit/tegui.cpp:433
+#: trackedit/tegui.cpp:435
 msgid "This tile is in use in the track. Do you really want to delete it?"
 msgstr "Deze tile is in gebruik in de track. Wilt u deze echt verwijderen?"
 
-#: trackedit/tegui.cpp:456
+#: trackedit/tegui.cpp:458
 msgid "Tiles:"
 msgstr "Tiles:"
 
-#: trackedit/tegui.cpp:532
+#: trackedit/tegui.cpp:534
 msgid "Cloud image file:"
 msgstr "Afbeeldingsbestand voor de wolken:"
 
-#: trackedit/tegui.cpp:537
+#: trackedit/tegui.cpp:539
 msgid "Background image file:"
 msgstr "Afbeeldingsbestand voor de achtergrond:"
 
-#: trackedit/tegui.cpp:542
+#: trackedit/tegui.cpp:544
 msgid "Sky color:"
 msgstr "Luchtkleur:"
 
-#: trackedit/tegui.cpp:547
+#: trackedit/tegui.cpp:549
 msgid "Horizon sky color:"
 msgstr "Horizon-luchtkleur:"
 
-#: trackedit/tegui.cpp:552
+#: trackedit/tegui.cpp:554
 msgid "Cloud and background color:"
 msgstr "Wolken- en achtergrondkleur:"
 
-#: trackedit/tegui.cpp:557
+#: trackedit/tegui.cpp:559
 msgid "Fog color:"
 msgstr "Mistkleur:"
 
-#: trackedit/tegui.cpp:562
+#: trackedit/tegui.cpp:564
 msgid "Light color:"
 msgstr "Lichtkleur:"
 
-#: trackedit/tegui.cpp:583
+#: trackedit/tegui.cpp:585
 msgid "Light compass direction (degrees):"
 msgstr "Kompasrichting van het licht (graden):"
 
-#: trackedit/tegui.cpp:587
+#: trackedit/tegui.cpp:589
 msgid "Light angle above the horizon (degrees):"
 msgstr "Hoek van het licht boven de horizon (graden):"
 
-#: trackedit/tegui.cpp:634
+#: trackedit/tegui.cpp:636
 msgid "Number of tiles to add on the west side (negative = remove tiles): "
 msgstr ""
 "Aantal tiles om aan de westkant toe te voegen (negatief = verwijderen):"
 
-#: trackedit/tegui.cpp:638
+#: trackedit/tegui.cpp:640
 msgid "Number of tiles to add on the east side (negative = remove tiles): "
 msgstr ""
 "Aantal tiles om aan de oostkant toe te voegen (negatief = verwijderen):"
 
-#: trackedit/tegui.cpp:642
+#: trackedit/tegui.cpp:644
 msgid "Number of tiles to add on the north side (negative = remove tiles): "
 msgstr ""
 "Aantal tiles om aan de noordkant toe te voegen (negatief = verwijderen):"
 
-#: trackedit/tegui.cpp:646
+#: trackedit/tegui.cpp:648
 msgid "Number of tiles to add on the south side (negative = remove tiles): "
 msgstr ""
 "Aantal tiles om aan de zuidkant toe te voegen (negatief = verwijderen):"
