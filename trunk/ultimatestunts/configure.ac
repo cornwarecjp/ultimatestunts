@@ -94,11 +94,9 @@ AC_CHECK_LIB(SDL_image, IMG_Load, graphlibs="-lSDL_image $graphlibs";AC_DEFINE([
 
 dnl -------------
 dnl added "-mconsole" for stdio in windows
-dnl added "-D_WIN32" for correct setting of included libintl in windows
 dnl -------------
 if test "x$ac_cv_header_windows_h" = "xyes" ; then
   sdllibs="$sdllibs -mconsole"
-  CFLAGS="$CFLAGS -D_WIN32"
 fi
 
 dnl ---------------------

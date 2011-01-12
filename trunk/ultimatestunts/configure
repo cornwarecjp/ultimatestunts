@@ -6744,7 +6744,6 @@ fi
 
 if test "x$ac_cv_header_windows_h" = "xyes" ; then
   sdllibs="$sdllibs -mconsole"
-  CFLAGS="$CFLAGS -D_WIN32"
 fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for socket in -lsocket" >&5

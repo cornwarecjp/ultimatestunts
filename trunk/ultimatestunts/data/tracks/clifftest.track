@@ -15,14 +15,14 @@ END
 
 BEGIN
 sky = environment/clouds.rgba
-horizon = environment/kyoto-horizon.png
+horizon = environment/tropical-horizon.png
 envmap = environment/spheremap.rgb
 lightdir = -0.690000,-0.200000,-0.700000
 lightcol = 1.000000,0.800000,0.300000
 ambientcol = 0.000000,0.000000,0.000000
 skycol = 0.300000,0.300000,0.800000
 horizonskycol = 0.900000,0.900000,0.900000
-fogcol = 0.350000,0.280000,0.300000
+fogcol = 0.548559,0.554825,0.354323
 envcol = 1.000000,1.000000,1.000000
 END
 
