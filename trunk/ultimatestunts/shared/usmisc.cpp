@@ -72,6 +72,25 @@ bool setPathIfInBundle(CString& returnpath)
 }
 #endif
 
+#ifdef __CYGWIN__
+
+CString getSystemLocale()
+{
+	CString ret;
+
+	FILE *localeProcess = popen("locale -u", "r");
+
+	char c;
+	while(fread(&c, 1, 1, localeProcess) == 1 && c != '\n')
+		ret += c;
+
+	pclose(localeProcess);
+
+	return ret;
+}
+
+#endif
+
 bool copyConfiguration(CString &conffile)
 {
 	printf("File %s not found. Searching on alternative locations...\n", conffile.c_str());
@@ -134,6 +153,7 @@ bool inDevelopmentTree()
 
 CFileControl *fctl = NULL;
 CString originalLANGUAGEenv;
+CString originalSystemLocale;
 
 void shared_main(int argc, char *argv[])
 {
@@ -175,6 +195,9 @@ void shared_main(int argc, char *argv[])
 		if(env != NULL)
 			originalLANGUAGEenv = env;
 	}
+#ifdef __CYGWIN__
+	originalSystemLocale = getSystemLocale();
+#endif
 
 	//Find the conf file location, if not given on commandline
 	if(conffile=="")
@@ -280,20 +303,29 @@ void update_shared_configuration()
 	CString conf_lang = theMainConfig->getValue("user_interface", "language");
 	if(conf_lang == "system")
 	{
+
+#ifdef __CYGWIN__
+		printf("System locale: %s\n", originalSystemLocale.c_str());
+		char *retval = setlocale(LC_MESSAGES, originalSystemLocale.c_str());
+#else
 		char *retval = setlocale(LC_MESSAGES, "");
+#endif
+
 		if(retval == NULL)
 		{
-			printf("Setting the LC_MESSAGES locale to \"\" failed\n");
+			printf("Setting the system LC_MESSAGES locale failed\n");
 		}
 		else
 		{
 			printf("Locale LC_MESSAGES is set to \"%s\"\n", retval);
 		}
 
-		if(originalLANGUAGEenv != "")
-		{
-			setenv("LANGUAGE", originalLANGUAGEenv.c_str(), 1);
-		}
+#ifdef __CYGWIN__
+		//F* Cygwin doesn't set the locale correctly
+		setenv("LC_MESSAGES", originalSystemLocale.c_str(), 1);
+#endif
+
+		setenv("LANGUAGE", originalLANGUAGEenv.c_str(), 1);
 	}
 	else
 	{
