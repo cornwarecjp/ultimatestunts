@@ -53,7 +53,20 @@ void CConsoleThread::startConsole()
 CString CConsoleThread::getInput(CString question)
 {
 	printf("%s", question.c_str());
+	fflush(stdout);
+
 	CString out;
+
+	while(1)
+	{
+		char c;
+		ssize_t count = read(0, &c, 1);
+		if(count <= 0) continue;
+		if(c == '\n') break;
+		out += c;
+	}
+	
+	/*
 	char input[80];
 	while(true)
 	{
@@ -67,6 +80,8 @@ CString CConsoleThread::getInput(CString question)
 		if(c == '\n') break;
 		out += c;
 	}
+	*/
+
 	return out;
 }
 

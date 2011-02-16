@@ -1,7 +1,6 @@
-; example2.nsi
+; ultimatestunts.nsi
 ;
-; This script is based on example1.nsi, but it remember the directory, 
-; has uninstall support and (optionally) installs start menu shortcuts.
+; This script is based on example2.nsi 
 ;
 ; It will install makensisw.exe into a directory that the user selects,
 
@@ -48,10 +47,7 @@ Section "Ultimate Stunts (required)"
   SetOutPath $INSTDIR
   
   ; Put file there
-  File ustunts3dedit.exe
-  File ustuntsserver.exe
-  File ustuntstrackedit.exe
-  File ustunts.bat
+  File *.bat
   File *.dll
   File *.ico
   File *.conf
@@ -73,15 +69,29 @@ Section "Ultimate Stunts (required)"
   
 SectionEnd
 
-; Optional section (can be disabled by the user)
-Section "Start Menu Shortcuts"
+; The stuff to install
+Section "OpenAL (required)"
+  SectionIn RO
 
+  SetOutPath $INSTDIR
+  File oalinst.exe
+  Exec '"$INSTDIR\oalinst.exe"'
+SectionEnd
+
+; Optional sections (can be disabled by the user)
+
+Section "Start Menu Shortcuts"
   CreateDirectory "$SMPROGRAMS\Ultimate Stunts"
   CreateShortCut "$SMPROGRAMS\Ultimate Stunts\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
   CreateShortCut "$SMPROGRAMS\Ultimate Stunts\Ultimate Stunts.lnk" "$INSTDIR\ustunts.bat" "" "$INSTDIR\ultimatestunts.ico" 0
-  CreateShortCut "$SMPROGRAMS\Ultimate Stunts\Track Editor.lnk" "$INSTDIR\ustuntstrackedit.exe" "" "$INSTDIR\ultimatestunts.ico" 0
-  
+  CreateShortCut "$SMPROGRAMS\Ultimate Stunts\Track Editor.lnk" "$INSTDIR\ustuntstrackedit.bat" "" "$INSTDIR\ultimatestunts.ico" 0
+  CreateShortCut "$SMPROGRAMS\Ultimate Stunts\Manual.lnk" "$INSTDIR\doc\index.htm"
 SectionEnd
+
+Section "Desktop Shortcut"
+  CreateShortCut "$DESKTOP\Ultimate Stunts.lnk" "$INSTDIR\ustunts.bat" "" "$INSTDIR\ultimatestunts.ico" 0
+SectionEnd
+
 
 ;--------------------------------
 
@@ -101,13 +111,18 @@ Section "Uninstall"
   Delete $INSTDIR\*.ico
   Delete $INSTDIR\*.dll
   Delete $INSTDIR\*.exe
+  Delete $INSTDIR\*.bat
+  Delete $INSTDIR\*.log
 
   ; Remove shortcuts, if any
   Delete "$SMPROGRAMS\Ultimate Stunts\*.*"
 
   ; Remove directories used
-  RMDir /r $INSTDIR\data
   RMDir "$SMPROGRAMS\Ultimate Stunts"
+  Delete "$DESKTOP\Ultimate Stunts.lnk"
+  RMDir /r $INSTDIR\data
+  RMDir /r $INSTDIR\doc
+  RMDir /r $INSTDIR\bin
   RMDir "$INSTDIR"
 
 SectionEnd

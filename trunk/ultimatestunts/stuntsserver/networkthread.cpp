@@ -182,6 +182,8 @@ Uint8 CNetworkThread::processMessage(const CMessageBuffer &buffer)
 		{
 			CTextMessage t;
 			t.setBuffer(buffer);
+			//printf("Received text message: %s\n", t.m_Message.c_str());
+
 			if(t.m_Message == USNET_JOIN)
 			{
 				addClient(buffer.getIP(), buffer.getPort());
@@ -198,6 +200,7 @@ Uint8 CNetworkThread::processMessage(const CMessageBuffer &buffer)
 				b2.setIP(buffer.getIP());
 				b2.setPort(buffer.getPort());
 				m_Net->sendDataReliable(b2);
+				//printf("Sent reply: %s\n", t2.m_Message.c_str());
 
 				return 0;
 			}

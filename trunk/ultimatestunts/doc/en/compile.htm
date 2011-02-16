@@ -24,8 +24,8 @@ can also be compiled on some other systems:
 
 To compile UltimateStunts, you'll need a UNIX-compatible
 system with a c/c++ compiler. You'll also need the
-program 'make', and a shell-program able to execute the
-configure-script.
+programs 'make' and 'pkg-config', and a shell-program able to
+execute the configure-script.
 <p>
 Of course you should also have the right library's and development-packages
 installed. The programs that use graphics need the openGL, SDL and SDL_image libraries
@@ -69,13 +69,15 @@ idea of what kind of packages to install, these are the package names in Ubuntu 
 
 <h3>Libraries for Cygwin</h3>
 Because getting the libraries for Cygwin can be difficult, I
-decided to help you by providing Cygwin-packages for
+decided to help you by providing Cygwin packages for
 <a href="http://www.ultimatestunts.nl/documentation/nolanguage/sdlcygwin.tgz">SDL and SDL_image</a>, and for
-<a href="http://www.ultimatestunts.nl/documentation/nolanguage/fmod-3.73-cygwin.tgz">FMOD</a>.
+<a href="http://www.ultimatestunts.nl/documentation/nolanguage/openalcygwin.tgz">OpenAL</a>.
 They should be extracted in the Cygwin root directory, and then they will be
-ready to be used by Ultimate Stunts.
+ready to be used by Ultimate Stunts. In order to use vorbisfile in Cygwin, you should not
+only install the libvorbis-devel package, but also pkg-config.
 
 <h3>FMOD header files</h3>
+(Only relevant if you want to use FMOD instead of OpenAL)<br>
 Ultimate Stunts assumes that the FMOD header files can be found in a
 subdirectory "fmod" somewhere in the default include search path. A good place
 to put fmod.h etc. would be /usr/include/fmod. The FMOD shared object file can
@@ -122,7 +124,7 @@ as super-user (root). The default locations for the files are
 Windows users who want to start their binary's from the explorer,
 from the start menu or any other usual way, should know that all
 cygwin programs need cygwin1.dll. The ultimatestunts binary also
-needs SDL.dll and fmod.dll. Find those files, and place them e.g.
+needs additional DLLs, like SDL.dll. Find those files, and place them e.g.
 in the same directory as the binaries. For starting a networked
 multiplaying game, some tweaking of the PATH variable may be
 necessary. See the windows binary package for how I solved it.

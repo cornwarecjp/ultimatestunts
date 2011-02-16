@@ -123,10 +123,11 @@ vector<CClientNet::SBroadcastResult> CClientNet::broadcast(int port)
 	//Temporary network for broadcasting purpose
 	CStuntsNet tmpnet(0);
 	tmpnet.sendData(sendbuf);
+	//printf("Sent message: %s\n", tm.m_Message.c_str());
 
 	while(true)
 	{
-		printf("Receiving (again)...\n");
+		//printf("Receiving (again)...\n");
 		if(!(tmpnet.receiveData(3000)) ) //we don't expect big lag times on a LAN
 		{
 			printf("No more data after 3 seconds\n");
@@ -144,6 +145,7 @@ vector<CClientNet::SBroadcastResult> CClientNet::broadcast(int port)
 				CTextMessage tm2;
 				tm2.setBuffer(buf);
 				CString msg = tm2.m_Message;
+				//printf("Received message: %s\n", tm2.m_Message.c_str());
 
 				CString smsg = USNET_ULTIMATESTUNTS_SERVER;
 				if(msg.mid(0, smsg.length()) == smsg) //it is a response to our broadcast

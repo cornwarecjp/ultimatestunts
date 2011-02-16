@@ -15,6 +15,10 @@
  *                                                                         *
  ***************************************************************************/
 
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
 #include <cstdio>
 #include <cstdlib>
 
@@ -78,13 +82,65 @@ CString getSystemLocale()
 {
 	CString ret;
 
-	FILE *localeProcess = popen("locale -u", "r");
+	const char *cmd1 = "locale";
+	const char *cmd2 = "-u";
 
+	//Create a pipe
+	int pipe_fds[2]; //[0] = reading [1] = writing
+	if(pipe(pipe_fds) < 0)
+		return ""; //failed
+	int out = pipe_fds[1];
+	int in  = pipe_fds[0];
+
+	//Fork this process
+	pid_t PID = fork(); //is vfork allowed?
+	if(PID == 0)
+	{
+		//we are the child process
+
+		close(in); //we don't need this side in this process
+
+		//set the output to the pipe
+		if(out != 1)
+		{
+			dup2(out, 1);
+			close(out);
+		}
+
+		//Jump to the server binary
+		execlp(cmd1, cmd1, cmd2, NULL);
+
+		printf("Error: locale program could not be started\n");
+		fflush(stdout);
+
+		_exit(1); //failed to start the server process
+	}
+
+	//we are in the original process
+
+	close(out); //we don't need this side in this process
+
+	if(PID < 0) //fork failed
+	{
+		close(in);
+		return "";
+	}
+
+	//Read from the pipe
 	char c;
-	while(fread(&c, 1, 1, localeProcess) == 1 && c != '\n')
+	while(read(in, &c, 1) == 1 && c != '\n')
 		ret += c;
 
-	pclose(localeProcess);
+	close(in);
+
+	//wait until the process stops
+	int wstatus;
+	int wait_pid = -1;
+	do
+	{
+		wait_pid = waitpid(PID, &wstatus, 0);
+	}
+	while(wait_pid == -1 && errno == EINTR);
 
 	return ret;
 }

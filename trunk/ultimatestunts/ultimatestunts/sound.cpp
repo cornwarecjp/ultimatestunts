@@ -236,9 +236,7 @@ void CSound::playNextSong()
 	m_Music->load(m_Playlist[m_PlaylistItem], CParamList());
 
 	m_MusicObject->setSample(m_Music);
-#ifndef __CYGWIN__
 	m_Music->setEndCallback(musicEndCallback);
-#endif
 	m_MusicObject->setVolume(m_MusicVolume);
 	m_MusicObject->playOnce();
 	_song_has_ended = false;

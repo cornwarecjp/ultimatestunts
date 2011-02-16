@@ -23,21 +23,23 @@ Het kan ook gecompileerd worden op sommige andere systemen:
 <h3>Vereisten</h3>
 
 Om Ultimate Stunts te compileren heeft u een UNIX-compatible systeem
-nodig met een c/c++ compiler. U heeft ook het programma 'make' nodig,
-en een shell-programma dat in staat is om het configure-script uit te voeren.
+nodig met een c/c++ compiler. U heeft ook de programma's 'make' en
+'pkg-config' nodig, en een shell-programma dat in staat is om het
+configure-script uit te voeren.
 <p>
 Natuurlijk moet u ook de juiste bibliotheken en ontwikkelings-packages
 geinstalleerd hebben. De programma's die graphics gebruiken hebben de
-openGL, SDL en SDL_image bibliotheken nodig (en dingen die nodig zijn voor openGL
-en SDL). De niet-grafische programma's (zoals de server) kunnen ook SDL gebruiken,
-maar het kan mogelijk zijn om ze zonder SDL te compileren.
-Geluidsondersteuning via de FMOD of de openAL bibliotheek is optioneel: als u geen
-FMOD of openAL heeft zal Ultimate Stunts compileren zonder geluidsondersteuning. Als
-u beide heeft zal Ultimate Stunts standaard openAL gebruiken. Als OpenAL gebruikt wordt
-voor geluid, dan kan Ultimate Stunts daarbij ook libvorbisfile gebruiken voor het laden van Ogg
-Vorbis geluiden en muziek. Zonder libvorbisfile is Ultimate Stunts afhankelijk van een
-extensie van de ALUT bibliotheek voor het laden van Ogg-bestanden, en deze extensie is
-vaak niet aanwezig.
+openGL, SDL en SDL_image bibliotheken nodig (en dingen die nodig zijn
+voor openGL en SDL). De niet-grafische programma's (zoals de server) kunnen
+ook SDL gebruiken, maar het kan mogelijk zijn om ze zonder SDL te compileren.
+Geluidsondersteuning via de FMOD of de openAL bibliotheek is optioneel:
+als u geen FMOD of openAL heeft zal Ultimate Stunts compileren zonder
+geluidsondersteuning. Als u beide heeft zal Ultimate Stunts standaard openAL
+gebruiken. Als OpenAL gebruikt wordt voor geluid, dan kan Ultimate Stunts
+daarbij ook libvorbisfile gebruiken voor het laden van Ogg Vorbis geluiden
+en muziek. Zonder libvorbisfile is Ultimate Stunts afhankelijk van een
+extensie van de ALUT bibliotheek voor het laden van Ogg-bestanden, en deze
+extensie is vaak niet aanwezig.
 <p>
 U kunt hier de vereiste bibliotheken vinden:
 <ul>
@@ -50,13 +52,14 @@ U kunt hier de vereiste bibliotheken vinden:
 Als u OpenAL wilt gebruiken, vergeet dan niet om ook de ALUT bibliotheek te
 installeren.
 <p>
-De meeste Linux-distributies leveren de benodigde bibliotheken als packages. Normaal
-gesproken wordt FMOD niet geleverd (doordat het geen vrije software is), maar u kunt
-in plaats daarvan altijd OpenAL gebruiken. Als u deze bibliotheken installeert door een
-package-management systeem, vergeet dan niet om de development packages te installeren:
-deze zijn nodig voor het compileren van Ultimate Stunts (om het te draaien heeft u
-alleen de runtime packages nodig). Om u een idee te geven van wat voor packages u
-moet installeren, dit zijn de package-namen in Ubuntu 10.04:
+De meeste Linux-distributies leveren de benodigde bibliotheken als packages.
+Normaal gesproken wordt FMOD niet geleverd (doordat het geen vrije software
+is), maar u kunt in plaats daarvan altijd OpenAL gebruiken. Als u deze
+bibliotheken installeert door een package-management systeem, vergeet dan
+niet om de development packages te installeren: deze zijn nodig voor het
+compileren van Ultimate Stunts (om het te draaien heeft u alleen de runtime
+packages nodig). Om u een idee te geven van wat voor packages u moet
+installeren, dit zijn de package-namen in Ubuntu 10.04:
 <ul>
 	<li>libsdl1.2debian</li>
 	<li>libsdl1.2-dev</li>
@@ -74,11 +77,14 @@ moet installeren, dit zijn de package-namen in Ubuntu 10.04:
 Omdat het verkrijgen van de bibliotheken voor Cygwin lastig kan zijn, heb
 ik besloten om u te helpen door Cygwin-packages te leveren voor
 <a href="http://www.ultimatestunts.nl/documentation/nolanguage/sdlcygwin.tgz">SDL en SDL_image</a>, en voor
-<a href="http://www.ultimatestunts.nl/documentation/nolanguage/fmod-3.73-cygwin.tgz">FMOD</a>.
+<a href="http://www.ultimatestunts.nl/documentation/nolanguage/openalcygwin.tgz">OpenAL</a>.
 Ze horen uitgepakt te worden in de Cygwin root directory, en dan zijn ze
-klaar om gebruikt te worden door Ultimate Stunts.
+klaar om gebruikt te worden door Ultimate Stunts. Om vorbisfile te gebruiken
+in Cygwin, moet u niet alleen het libvorbisfile-devel pakket installeren,
+maar ook pkg-config.
 
 <h3>FMOD headerbestanden</h3>
+(Alleen van toepassing als u FMOD wilt gebruiken in plaats van OpenAL)<br>
 Ultimate Stunts neemt aan dat de FMOD headerbestanden gevonden kunnen worden in
 een subdirectory "fmod" ergens in het standaard include search path. Een goede
 plaats om fmod.h etc. te plaatsen zou /usr/include/fmod kunnen zijn. Het FMOD
@@ -87,8 +93,9 @@ verwacht dat libfmod.so aanwezig is, dus misschien is het nodig om een symlink
 te maken (zoals "ln -s libfmod-371.so libfmod.so").
 
 <h3>Compileren</h3>
-Problemen tijdens de compilatie kunnen erg lastig zijn om op te lossen als u geen
-ontwikkelaar bent, maar zolang het geen problemen geeft, is compileren eenvoudig.
+Problemen tijdens de compilatie kunnen erg lastig zijn om op te lossen als u
+geen ontwikkelaar bent, maar zolang het geen problemen geeft, is compileren
+eenvoudig.
 <p>
 In de eerste plaats zou u het broncode pakket gedownload moeten hebben,
 en het uitgepakt hebben in een directory. Vervolgens moet Ultimate Stunts
@@ -97,9 +104,9 @@ configure-script:
 <pre>
 ./configure
 </pre>
-Als alles goed gegaan is, dan heeft het configure-script enkele bestanden gemaakt
-met de naam "Makefile". Dit stelt "make" in staat om de compilatie automatisch
-voor u te doen. Start make met het volgende commando:
+Als alles goed gegaan is, dan heeft het configure-script enkele bestanden
+gemaakt met de naam "Makefile". Dit stelt "make" in staat om de compilatie
+automatisch voor u te doen. Start make met het volgende commando:
 <pre>
 make
 </pre>
@@ -126,10 +133,11 @@ staat natuurlijk).
 Windows-gebruikers die hun binaries vanuit de verkenner willen starten,
 vanuit het Start-menu, of op andere gebruikelijke manieren, moeten weten
 dat alle cygwin-programma's cygwin1.dll nodig hebben. De Ultimate Stunts
-binaries hebben daarnaast ook SDL.dll en fmod.dll nodig. Vind deze bestanden,
-en plaats ze bijv. in de zelfde directory als de binaries. Voor het starten van
-een netwerk-multiplaying spel kan er wat tweaken van de PATH variabele nodig zijn.
-Zie ook de windows binary package voor hoe ik het opgelost heb.
+binaries hebben daarnaast ook andere DLLs nodig, zoals SDL.dll. Vind deze
+bestanden, en plaats ze bijv. in de zelfde directory als de binaries. Voor het
+starten van een netwerk-multiplaying spel kan er wat tweaken van de PATH
+variabele nodig zijn. Zie ook de windows binary package voor hoe ik het
+opgelost heb.
 </p>
 </body>
 </html>
