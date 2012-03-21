@@ -184,11 +184,15 @@ void CGameRenderer::updateReflections()
 	if(currentSide >= 6) currentSide = 0;
 
 	if(currentSide == 0 || m_Settings.m_UpdRefAllSides)
-	{
 		currentObject++;
-		if(currentObject >= (int)(m_NumCameras * theWorld->getNumObjects(CDataObject::eMovingObject)))
-			currentObject = 0;
-	}
+
+	/*
+	The following lines are OUTSIDE the previous if, because the number of
+	objects can decrease, e.g. between different game sessions.
+	*/
+	if(currentObject >= (int)(m_NumCameras * theWorld->getNumObjects(CDataObject::eMovingObject)))
+		currentObject = 0;
+
 
 	/*
 	//initialising reflections if they don't exist
