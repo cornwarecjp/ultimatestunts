@@ -696,7 +696,7 @@ uninstall-info: uninstall-info-recursive
 	uninstall uninstall-am uninstall-info-am uninstall-sysconfDATA
 
 
-ultimatestunts.conf: ultimatestunts.conf.in
+ultimatestunts.conf: ultimatestunts.conf.in Makefile
 	sed 's,@usdatadir\@,$(usdatadir),;s,@PACKAGE_VERSION\@,$(PACKAGE_VERSION),' < $< > $@
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
