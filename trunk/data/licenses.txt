@@ -34,6 +34,36 @@ Original license:
 ------------------------
 
 ./cars:
+alfa6c_2500.conf
+------------------------
+Original author:
+	Guido Consogno
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+countach.conf
+------------------------
+Original author:
+	Guido Consogno
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+db4gt.conf
+------------------------
+Original author:
+	Guido Consogno
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
 diablo.conf
 ------------------------
 Original author:
@@ -144,6 +174,266 @@ Original license:
 	GPL
 ------------------------
 
+./cars/alfa6c_2500:
+body.glb
+------------------------
+Original author:
+	Guido Consogno
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+dash.png
+------------------------
+Original author:
+	??
+Original project:
+	??
+Original license:
+	??
+UStunts author:
+	Guido Consogno
+UStunts modifications:
+	??
+------------------------
+
+readme.txt
+------------------------
+Original author:
+	Guido Consogno
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+rpm.png
+------------------------
+Original author:
+	??
+Original project:
+	??
+Original license:
+	??
+UStunts author:
+	Guido Consogno
+UStunts modifications:
+	??
+------------------------
+
+steeringwheel.png
+------------------------
+Original author:
+	??
+Original project:
+	??
+Original license:
+	??
+UStunts author:
+	Guido Consogno
+UStunts modifications:
+	??
+------------------------
+
+tacho.png
+------------------------
+Original author:
+	??
+Original project:
+	??
+Original license:
+	??
+UStunts author:
+	Guido Consogno
+UStunts modifications:
+	??
+------------------------
+
+wheel.glb
+------------------------
+Original author:
+	Guido Consogno
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+./cars/countach:
+body.glb
+------------------------
+Original author:
+	Guido Consogno
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+dash.png
+------------------------
+Original author:
+	??
+Original project:
+	??
+Original license:
+	??
+UStunts author:
+	Guido Consogno
+UStunts modifications:
+	??
+------------------------
+
+readme.txt
+------------------------
+Original author:
+	Guido Consogno
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+rpm.png
+------------------------
+Original author:
+	??
+Original project:
+	??
+Original license:
+	??
+UStunts author:
+	Guido Consogno
+UStunts modifications:
+	??
+------------------------
+
+steeringwheel.png
+------------------------
+Original author:
+	??
+Original project:
+	??
+Original license:
+	??
+UStunts author:
+	Guido Consogno
+UStunts modifications:
+	??
+------------------------
+
+tacho.png
+------------------------
+Original author:
+	??
+Original project:
+	??
+Original license:
+	??
+UStunts author:
+	Guido Consogno
+UStunts modifications:
+	??
+------------------------
+
+wheel.glb
+------------------------
+Original author:
+	Guido Consogno
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+./cars/db4gt:
+body.glb
+------------------------
+Original author:
+	Guido Consogno
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+dash.png
+------------------------
+Original author:
+	??
+Original project:
+	??
+Original license:
+	??
+UStunts author:
+	Guido Consogno
+UStunts modifications:
+	??
+------------------------
+
+readme.txt
+------------------------
+Original author:
+	Guido Consogno
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+rpm.png
+------------------------
+Original author:
+	??
+Original project:
+	??
+Original license:
+	??
+UStunts author:
+	Guido Consogno
+UStunts modifications:
+	??
+------------------------
+
+steer.png
+------------------------
+Original author:
+	??
+Original project:
+	??
+Original license:
+	??
+UStunts author:
+	Guido Consogno
+UStunts modifications:
+	??
+------------------------
+
+tacho.png
+------------------------
+Original author:
+	??
+Original project:
+	??
+Original license:
+	??
+UStunts author:
+	Guido Consogno
+UStunts modifications:
+	??
+------------------------
+
+wheel.glb
+------------------------
+Original author:
+	Guido Consogno
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
 
 ./cars/diablo:
 body.glb
