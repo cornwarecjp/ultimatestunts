@@ -8,6 +8,7 @@
 	ret.push_back("");
 	ret.push_back(_("Art designers:"));
 	ret.push_back("  Borbola Balazs");
+	ret.push_back("  Guido Consogno");
 	ret.push_back("  Corné Plooy");
 	ret.push_back("");
 	ret.push_back(_("Music:"));
