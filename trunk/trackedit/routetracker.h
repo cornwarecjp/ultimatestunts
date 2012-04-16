@@ -70,7 +70,7 @@ protected:
 	bool isFinish(const CTrack::CCheckpoint &pos) const;
 
 	bool tileExists(const CTrack::CCheckpoint &pos) const;
-	STile &getTile(const CTrack::CCheckpoint &pos) const;
+	STile getTile(const CTrack::CCheckpoint &pos) const;
 	const CTETile *getModel(const STile &tile) const;
 };
 

@@ -445,7 +445,7 @@ bool CRouteTracker::findNextTile(CTrack::CCheckpoint &pos, unsigned int &route, 
 	unsigned int currentRoute = route;
 	bool currentForward = forward;
 
-	STile &currentTile = getTile(currentPos);
+	STile currentTile = getTile(currentPos);
 	const CTETile *currentModel = getModel(currentTile);
 	
 	//The route on the current tile:
@@ -637,32 +637,41 @@ bool CRouteTracker::tileExists(const CTrack::CCheckpoint &pos) const
 	return false;
 }
 
-STile &CRouteTracker::getTile(const CTrack::CCheckpoint &pos) const
+STile CRouteTracker::getTile(const CTrack::CCheckpoint &pos) const
 {
 	unsigned int n = m_Track->m_H * (pos.z+m_Track->m_W*pos.x);
 
-	/*
+	vector<STile> candidates;
 	for(int i=0; i < m_Track->m_H; i++)
 	{
-		printf("%d: %d\n", m_Track->m_Track[n+i].m_Z, m_Track->m_Track[n+i].m_Model);
+		STile &t = m_Track->m_Track[n+i];
+		if(t.m_Model != 0 && getModel(t)->m_Routes.size() != 0)
+			candidates.push_back(t);
 	}
+
+	//No candidates: return lowest tile
+	if(candidates.size() == 0)
+		return m_Track->m_Track[n];
+
+	/*
+	for(unsigned int i=0; i < candidates.size(); i++)
+		printf("%d: %d\n", candidates[i].m_Z, candidates[i].m_Model);
 	*/
 
 	//Below lowest: return lowest
-	if(pos.y < m_Track->m_Track[n].m_Z)
+	if(pos.y < candidates[0].m_Z)
 	{
-		//printf("Below: %d < %d\n", pos.y, m_Track->m_Track[n].m_Z);
-		return m_Track->m_Track[n];
+		//printf("Below: %d < %d\n", pos.y, candidates[0].m_Z);
+		return candidates[0];
 	}
 
-	int i = 0;
-	for(; i < m_Track->m_H; i++)
+	for(unsigned int i=0; i < candidates.size(); i++)
 	{
 		//Return exact match:
-		if(m_Track->m_Track[n+i].m_Z == pos.y && m_Track->m_Track[n+i].m_Model != 0)
+		if(candidates[i].m_Z == pos.y)
 		{
 			//printf("Exact match\n");
-			return m_Track->m_Track[n+i];
+			return candidates[i];
 		}
 
 		//TODO: between
@@ -670,7 +679,7 @@ STile &CRouteTracker::getTile(const CTrack::CCheckpoint &pos) const
 
 	//Above highest: return highest
 	//printf("Above\n");
-	return m_Track->m_Track[n+i-1];
+	return candidates[candidates.size()-1];
 }
 
 const CTETile *CRouteTracker::getModel(const STile &tile) const
