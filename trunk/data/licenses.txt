@@ -44,6 +44,16 @@ Original license:
 	GPL
 ------------------------
 
+chrysler_tc_46.conf
+------------------------
+Original author:
+	Guido Consogno
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
 countach.conf
 ------------------------
 Original author:
@@ -94,10 +104,30 @@ Original license:
 	GPL
 ------------------------
 
+ferrari512bb.conf
+------------------------
+Original author:
+	Guido Consogno
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
 ferrarispider.conf
 ------------------------
 Original author:
 	CJP
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+frazernash.conf
+------------------------
+Original author:
+	Guido Consogno
 Original project:
 	Ultimate Stunts
 Original license:
@@ -259,6 +289,69 @@ Original project:
 	Ultimate Stunts
 Original license:
 	GPL
+------------------------
+
+./cars/chrysler_tc_46:
+body.glb
+------------------------
+Original author:
+	Guido Consogno
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+dash.png
+------------------------
+Original author:
+	??
+Original project:
+	??
+Original license:
+	??
+UStunts author:
+	Guido Consogno
+UStunts modifications:
+	??
+------------------------
+
+tacho.png
+------------------------
+Original author:
+	??
+Original project:
+	??
+Original license:
+	??
+UStunts author:
+	Guido Consogno
+UStunts modifications:
+	??
+------------------------
+
+wheel.glb
+------------------------
+Original author:
+	Guido Consogno
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+wheel.png
+------------------------
+Original author:
+	??
+Original project:
+	??
+Original license:
+	??
+UStunts author:
+	Guido Consogno
+UStunts modifications:
+	??
 ------------------------
 
 ./cars/countach:
@@ -656,6 +749,82 @@ UStunts modifications:
 	Different material settings
 ------------------------
 
+./cars/ferrari512bb:
+body.glb
+------------------------
+Original author:
+	Guido Consogno
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+dash.png
+------------------------
+Original author:
+	??
+Original project:
+	??
+Original license:
+	??
+UStunts author:
+	Guido Consogno
+UStunts modifications:
+	??
+------------------------
+
+rpm.png
+------------------------
+Original author:
+	??
+Original project:
+	??
+Original license:
+	??
+UStunts author:
+	Guido Consogno
+UStunts modifications:
+	??
+------------------------
+
+tacho.png
+------------------------
+Original author:
+	??
+Original project:
+	??
+Original license:
+	??
+UStunts author:
+	Guido Consogno
+UStunts modifications:
+	??
+------------------------
+
+wheel.glb
+------------------------
+Original author:
+	Guido Consogno
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+wheel.png
+------------------------
+Original author:
+	??
+Original project:
+	??
+Original license:
+	??
+UStunts author:
+	Guido Consogno
+UStunts modifications:
+	??
+------------------------
 
 ./cars/ferrarispider:
 body.glb
@@ -724,6 +893,83 @@ UStunts modifications:
 	Fileformat conversion
 	Separated wheels from body
 	Different material settings
+------------------------
+
+./cars/frazernash:
+body.glb
+------------------------
+Original author:
+	Guido Consogno
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+dash.png
+------------------------
+Original author:
+	??
+Original project:
+	??
+Original license:
+	??
+UStunts author:
+	Guido Consogno
+UStunts modifications:
+	??
+------------------------
+
+rpm.png
+------------------------
+Original author:
+	??
+Original project:
+	??
+Original license:
+	??
+UStunts author:
+	Guido Consogno
+UStunts modifications:
+	??
+------------------------
+
+tacho.png
+------------------------
+Original author:
+	??
+Original project:
+	??
+Original license:
+	??
+UStunts author:
+	Guido Consogno
+UStunts modifications:
+	??
+------------------------
+
+wheel.glb
+------------------------
+Original author:
+	Guido Consogno
+Original project:
+	Ultimate Stunts
+Original license:
+	GPL
+------------------------
+
+wheel.png
+------------------------
+Original author:
+	??
+Original project:
+	??
+Original license:
+	??
+UStunts author:
+	Guido Consogno
+UStunts modifications:
+	??
 ------------------------
 
 ./cars/generic:
