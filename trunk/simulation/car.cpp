@@ -930,7 +930,6 @@ void CCar::calculateNormalForces()
 	{
 		//y difference:
 		float y = m_Wheel[i].m_Height, dy = m_Wheel[i].m_dHeight;
-		//printf("Wheel %d: y = %.3f dy = %.3f\n", i, y, dy);
 
 		m_Wheel[i].m_Fnormal = m_Wheel[i].m_suspk * y + m_Wheel[i].m_suspd * dy;
 		if(m_Wheel[i].m_Fnormal < 0.0) m_Wheel[i].m_Fnormal = 0.0; //no "glue" forces

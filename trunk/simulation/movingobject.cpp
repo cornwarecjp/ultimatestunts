@@ -96,7 +96,11 @@ void CMovingObject::update(CPhysics *simulator, float dt)
 	m_Velocity += dt*accel;
 
 	//angular things:
-	CVector angaccel = m_InvInertia * m_Mtot; //TODO: inertia tensor
+
+	//inverse inertia tensor, corrected for body orientation
+	CMatrix invInertia = m_OrientationMatrix.transpose() * m_InvInertia * m_OrientationMatrix;
+
+	CVector angaccel = invInertia * m_Mtot;
 
 	CMatrix dM;
 	dM.setRotation((m_AngularVelocity + 0.5*dt*angaccel)*dt);
