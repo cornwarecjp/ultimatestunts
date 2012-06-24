@@ -223,6 +223,10 @@ void CDashboard::draw(unsigned int w, unsigned int h, eShowMode mode)
 		glColor3f(1,1,1);
 	}
 
+	//printf("Velocity: %.f km/h\n", theCar->m_Velocity.abs() * 3.6);
+	//printf("RPM: %.f RPM\n", theCar->m_Engine.m_MainAxisW * theCar->m_Engine.getGearRatio() * 9.54929);
+
+
 	if(m_Info.analog_rpm_pos.abs2() > 0.01)
 	{
 		float x = m_Info.analog_rpm_pos.x;
