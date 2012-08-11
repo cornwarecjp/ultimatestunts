@@ -148,7 +148,7 @@ void CDashboard::draw(unsigned int w, unsigned int h, eShowMode mode)
 	}
 
 	//Switch from full to timer mode at a certain aspect ratio
-	if(mode == eFull && h < 0.5*w)
+	if(mode == eFull && h < 0.6*w)
 		mode = eGauges;
 
 	glPushMatrix();
