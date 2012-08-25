@@ -1,0 +1,187 @@
+<html>
+<head>
+<title>Het maken van een auto voor Ultimate Stunts</title>
+</head>
+<body>
+<h1>Het maken van een auto voor Ultimate Stunts</h1>
+
+Dit bestaat uit de volgende stappen:
+<ul>
+	<li><a href="#model">Maak een 3D model</a></li>
+	<li><a href="#convert">Converteer het bestandsformaat</a></li>
+	<li><a href="#3dedit">Aanpassingen met ustunts3dedit</a></li>
+	<li><a href="#settings">De physics instellingen van de auto</a></li>
+	<li><a href="#"></a></li>
+</ul>
+
+<a name="model"></a><h1>Maak een 3D model</h1>
+U kunt uw 3D model maken met elk 3D modelleerprogramma dat export-mogelijkheden
+heeft naar gebruikelijke formaten zoals 3DS. Merk op dat het niet altijd
+mogelijk is om dingen zoals kleur en textures te behouden tijdens het
+conversieproces naar Ultimate Stunts: dit is alleen mogelijk als u kunt
+exporteren naar formaten die direct ondersteund worden door ustunts3dedit,
+zoals 3DS en LWO.
+<p>
+De schaal is niet echt belangrijk omdat alles in een later stadium geschaald
+wordt, maar als u het wilt weten: de basis-eenheid in Ultimate Stunts is de
+meter. Het is belangrijker om het model exact op te lijnen met de
+coördinaatassen.
+<p>
+Ultimate Stunts kan op dit moment slechts één texturebestand per auto
+gebruiken, dus denk eraan om de textures van elk onderdeel in de zelfde
+afbeelding te stoppen.
+
+<a name="convert"></a><h1>Converteer het bestandsformaat</h1>
+Exporteer uw modellen naar een formaat dat ofwel door ustunts3dedit
+ondersteund wordt, ofwel door de 3dto3d utility. De eerste optie verdient de
+voorkeur: ustunts3dedit ondersteunt op dit moment 3DS en LWO bestanden. Als u
+het 3dto3d conversieprogramma heeft, dan kunt u het bestand converteren naar
+het "smoothed raw" formaat, en dat importeren in Ultimate Stunts.
+Merk op dat in dit proces kleuren en texture coördinaten niet behouden
+blijven.
+<pre>
+3dto3d /if1 /of1 /dbody.raw body.3ds
+</pre>
+Kopieer het bestand dat geïmporteerd moet worden naar de root of een
+subdirectory van de Ultimate Stunts data directory.
+
+<a name="3dedit"></a><h1>Aanpassingen met ustunts3dedit</h1>
+<h3>Laad het bestand</h3>
+(Leer a.u.b. eerst hoe het ustunts3dedit programma gebruikt moet worden!)
+Start het ustunts3dedit programma. Laad het bestand dat u heeft voorbereid met
+de Load functie (shift-F). Antwoord 'n' op de vraag of u het als een LOD wilt
+toevoegen aan de bestaande scene, kies dan het juiste bestandsformaat en
+geef de bestandsnaam. De ingevulde bestandsnaam moet relatief zijn ten opzichte
+van de ultimatestunts data directory (dat is waarom u het bestand ergens in
+deze directory moest plaatsen).
+<p>
+Als het importeren goed gegaan is, dan kunt u het tijdelijke resultaat
+opslaan met de Save (f) functie. U kunt dit elke keer doen om een backup te
+maken van uw werk. Het .glt bestandsformaat is hiervoor geschikt, omdat het
+een hogere precisie heeft dan het .glb formaat. U moet als .glb opslaan
+zodra u het wilt gebruiken als voltooid model in Ultimate Stunts.
+
+<h3>Schaal het model</h3>
+Als u alles tot nu to opgevolgd heeft, dan heeft u met succes uw bestand
+geladen. De afmetingen van het model zijn waarschijnlijk niet goed, dus schaal
+het rond de oorsprong met een afmeting van 5 (de toets 's'). Als alternatief,
+als u met een exacte schaalfactor wilt schalen, doe een 'rotatie' ('r'), en
+geef deze antwoorden (voorbeeld: schaalfactor 0.5):
+<pre>
+Rotate entire scene: y
+Rotate around x: n
+Rotate around y: n
+Rotate around z: n
+Give new x axis: 0.5,0,0
+Give new y axis: 0,0.5,0
+Give new z axis: 0,0,0.5
+</pre>
+Nu zou u in staat moeten zijn om uw model te bekijken en te controleren.
+
+<h3>Stel de juiste oriëntatie in</h3>
+De juiste oriëntatie voor de body is: neus naar de negatieve z-richting,
+bovenkant naar de positieve y-richting. Als u in een auto zou zitten, dan
+zou u de standaard OpenGL oriëntatie hebben: x naar rechts, y naar boven,
+z naar achteren. Dit is ook de camera-oriëntatie van ustunts3dedit bij het
+opstarten, dus misschien wilt u ustunts3dedit herstarten om opnieuw
+geöriënteerd te worden.
+<p>
+Nadat u de vorige zinnen een paar keer gelezen heeft, en u enkele tekeningen
+heeft gemaakt om het te begrijpen, kunt u controleren of uw model de juiste
+oriëntatie heeft. Dit is waarschijnlijk niet het geval, aangezien 3D modellers
+meestal de z-as omhoog hebben staan. Roteer uw body ('r') om het juist te
+krijgen, en sla het op.
+
+<h3>Verplaats uw model</h3>
+Het is nuttig voor het tunen van de auto om het zwaartepunt van het model
+in de oorsprong van het automodel te hebben. Dus moet u het model
+verplaatsen ('t') op zo'n manier dat de oorsprong ligt waar u het zwaartepunt
+wilt. Verwar dit zwaartepunt niet met het zwaartepunt (CG) dat soms gebruikt
+wordt in ustunts3dedit: ik bedoel hier het fysieke zwaartepunt in Ultimate
+Stunts' physics simulatie, terwijl ustunts3dedit een pseudo-zwaartepunt
+gebruikt in sommige operaties, dat het gemiddelde is van de vertexposities.
+<p>
+Sinds versie 0.6.1 kan het zwaartepunt van een auto ingesteld worden op een
+positie die niet overeenkomt met de oorsprong van het body-model, dus deze
+stap is niet echt noodzakelijk. Het is echter <i>wel</i> noodzakelijk om de
+oorsprong in het midden tussen het linker- en rechterwiel te hebben.
+
+<h3>Stel de juiste schaal in</h3>
+Als u niet zeker weet of de huidige schaal juist is, dan kunt u nu uw model
+schalen. Met de autoscale functie ('s') kunt u de grootte van het model
+instellen. Voor de grootte kunt u de lengte van de auto opgeven. U moet
+altijd de grootste afmeting van de auto gebruiken, dus als u een exotische
+auto heeft die hoger is dan lang, dan moet u de hoogte invullen.
+
+<h3>Stel de kleuren in</h3>
+U kunt de kleur, doorzichtigheid en reflectie instellen voor elke primitieve.
+Selecteer eerst de primitieve ('p'), en verander deze dan ('C'). Als
+texture-coördinaten niet verloren zijn gegaan in het conversieproces, dan
+kunt u ook een texture toewijzen aan een primitieve in dit stadium. Als u
+een mooi resultaat heeft, vergeet dan niet op te slaan.
+
+<h3>Splits het model in een body en wielen</h3>
+Zodra het model er uit ziet zoals u het wilt in het spel, kunt u het
+opsplitsen in een body-model en wiel-modellen. Om het body-model te maken,
+wis alle primitieven die de wielen vormen, en sla de rest op (vergeet niet om
+een andere bestandsnaam te gebruiken, anders gaat het model <i>met</i>
+wielen verloren). Om het wielmodel te maken, wis alle primitieven die niet
+bij het wiel horen. Het resultaat zou één van de <i>linker</i>wielen moeten
+zijn.  Als de voor- en achterwielen verschillend zijn, dan moet u één model
+voor elk maken, en anders heeft u maar één model nodig.
+<p>
+Als alternatief voor het verwijderen van primitieven kunt u een .glt
+bestand in een teksteditor, en alles wissen dat bij andere primitieven hoort.
+Dit is nuttig als er veel primitieven in een automodel zitten. Lees de .glt
+formaatbeschrijving voor meer informatie.
+<p>
+Een wielmodel moet zijn oorsprong op zijn rotatie-assen hebben, dus moet u
+het verplaatsen. Indien mogelijk, onthoud de verplaatsingen die u doet, of
+schrijf ze op. Dit zal u helpen om de wielen terug te krijgen op de juiste
+posities als u de auto gaat tunen.
+
+<h3>Volgorde van de primitieven</h3>
+[TODO]
+
+<h3>Botsingsmodel</h3>
+Voor de auto-body en -wielen kan het botsingsmodel niet gelijk zijn aan het
+grafische model. Dus, voor alle grafische primitieven moet u "c" uit de LODs
+verwijderen, en u moet primitieven toevoegen voor het botsingsmodel. Dit is
+niet gemakkelijk uit te leggen (misschien kunt u de ustunts3dedit documentatie
+lezen). U kunt de bestaande auto's bekijken om een idee te hebben van wat
+verwacht wordt.
+<p>
+Een eenvoudige manier om botsingsvlakken toe te voegen is het toevoegen van
+het bestand cars/generic/bodycollision.glb als een LOD (de c LOD) aan de
+auto. Pas dan de botsingsprimitieve-functie ('l') toe op deze primitieve,
+zodat het past op uw model. U kunt hetzelfde doen voor het wielmodel en
+cars/generic/wheelcollision.glb, maar hier moet u de vlakken ook schalen
+zodat hun bovenste en onderste vertices op de buitenkant van de band zitten.
+Ze worden gebruikt voor het berekenen van de straal van de wielen.
+
+<h3>LODs</h3>
+[TODO]
+
+<a name="settings"></a><h1>De physics instellingen van de auto</h1>
+Nadat u de voltooide .glb bestanden ergens in de ultimatestunts data directory
+heeft opgeslagen (een aparte directory voor uw auto zou goed zijn), kunt u
+het physics-instellingen-bestand maken. Een .conf-bestand van een bestaande
+auto kan als een startpunt dienen: maak er gewoon een kopie van. U kunt
+het veranderen met een teksteditor. Het eerste dat veranderd moet worden is
+de locatie van de .glb bestanden voor de body en de wielen: vul de locatie
+van uw eigen bestanden in. Nu kunt u het al testen met Ultimate Stunts.
+<p>
+Het eerste dat u wilt veranderen is de positie van de wielen. Zodra
+deze positie is ingesteld voor uw auto, kunt u er al in rijden. Daarna kunt
+u de fysische eigenschappen van uw auto fine-tunen. U zou waarden in kunnen
+vullen van de auto in de echte wereld, als u deze heeft. Na een tijdje te spelen
+met de instellingen zult u merken dat het niet eenvoudig is om een
+"superauto" te maken. Bijvoorbeeld, een lagere massa zal de accelleratie
+verbeteren, maar het zal ook de kracht op de wielen verminderen, wat ze
+sneller zal laten slippen.
+
+<a name=""></a><h1></h1>
+
+</body>
+</html>
+

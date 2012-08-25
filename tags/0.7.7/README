@@ -1,0 +1,42 @@
+---------------------------------------------------------------------
+                Ultimate Stunts source code
+---------------------------------------------------------------------
+
+This package contains the sourcecode of the 3D racing game 
+"Ultimate Stunts". You can configure it and compile it according
+to the instructions in the documentation.
+
+Ultimate Stunts, data files for Ultimate Stunts and the documentation
+of Ultimate Stunts are available on its website:
+http://www.ultimatestunts.nl
+
+The source code in this package is divided in several directories.
+The code in the directories "shared", "filetransfer", "graphics" and
+"simulation" is compiled into *.a static libraries. The code in the
+directories "stunts3dedit", "stuntsai", "stuntsserver", "trackedit" and
+"ultimatestunts" will be linked with those static libraries, generating
+a different binary executable in each directory.
+
+The source code can be edited with kdevelop. The kdevelop-file is available
+in this directory.
+
+
+-----------------
+Configure options
+-----------------
+
+Sound libraries:
+Ultimate Stunts can compile with either OpenAL or FMOD as sound target. By
+default, configure first tries to find OpenAL, and and if that fails, it
+tries to find FMOD. You can bypass the default behavior with the following
+options:
+
+--with-openal
+--with-fmod
+
+--with-openal always tries to use OpenAL, and completely ignores the presence of
+FMOD. If OpenAL is not found, Ultimate Stunts is configured without sound support.
+
+--with-fmod always tries to use FMOD, and completely ignores the presence of
+OpenAL. If FMOD is not found, Ultimate Stunts is configured without sound support.
+

@@ -1,0 +1,54 @@
+<html><head></head><body>
+<h1>Ultimate Stunts 0.6.x kompilieren</h1>
+
+<h3>Anforderungen</h3>
+
+Um Ultimate Stunts zu kompilieren braucht ihr eins UNIX-&auml;hnlichnes Betriebssystem mit einem C/C++ Compiler. Zus&auml;tzlich ben&ouml;tigt ihr das Programm 'make' und eine Shell-Programm um das Konfigurationsscript auszuf&uuml;hren. F&uuml;r alle Linux- und Unixbenutzer (oder vergleichbare Betriebssysteme) sollte das kein Problem sein. Windowsbenutzer k&ouml;nnen <a href="http://www.cygwin.com/">Cygwin</a> herunterladen, um den Anforderungen zu gen&uuml;gen. Ultimate Stunts wird w&auml;hrend der Entwicklung immer f&uuml;r Cygwin portierbar gehalten.
+<p>
+Nat&uuml;rlich solltet ihr auch noch die entsprechenden Bibliotheken und Entwicklungs-Pakete installiert haben. Der Grafikteil ben&ouml;tigt die openGL- und SDL-Bibliotheken (und deren Anforderungen). Die anderen Unterprogramme (wie der Server) k&ouml;nnen auch SDL benutzen, aber sie k&ouml;nnen auch ohne SDL kompiliert werden. F&uuml;r die Audiounters&uuml;tzung braucht ihr FMOD oder openAL: wenn ihr weder FMOD noch openAL habt, wird UlitimateStunts ohne Audiounterst&uuml;tzung kompiliert. Falls ihr beides habt, benutzt UlitmateStunts standardm&auml;&szlig;ing openAl.
+<br>
+</p><p>
+Die n&ouml;tigen Bibliotheken findet ihr hier.
+</p><ul>
+	<li><a href="http://www.fmod.org/ifmoddownload.html">FMOD</a></li>
+	<li><a href="http://www.openal.org/downloads.html">openAL</a></li>
+	<li><a href="http://www.libsdl.org/download-1.2.php">SDL</a></li>
+</ul>
+
+<h3>Bibilotheken f&uuml;r Cygwin</h3>
+Da die Cygwin-Bibliotheken manchmal schwer zu bekommen sind, habe ich mich entschieden, euch die Cygwin-Pakete hier bereitzustellen:
+<a href="http://www.ultimatestunts.nl/documentation/nolanguage/sdlcygwin.tgz">SDL</a> und
+<a href="http://www.ultimatestunts.nl/documentation/nolanguage/fmod-3.73-cygwin.tgz">FMOD</a>.
+Die Pakete sollten ins Cygwin-Verzeichnis extrahiert werden. Dann k&ouml;nnen sie direkt von Ultimate Stunts benutzt werden.
+
+<h3>FMOD Kopfdateien</h3>
+Ultimate Stunts sucht die FMOD Kopfdateien im Unterverzeichnis "fmod" irgendwo im Standardsuchpfad (include search path). Am besten ihr legt die Dateien fmod.h usw. nach /usr/include/fmod. Die FMOD-Objebtdatei (.so) legt ihr z.B. nach /usr/lib. UltimateSunts sucht nach libfmod.so, also m&uuml;sst ihr vielleicht eine symbolische Verkn&uuml;pfung (z.B. "ln -s libfmod-371.so libfmod.so") anlegen.
+
+<h3>Kompilieren</h3>
+Wenn ihr keine Entwickler seid, k&ouml;nnen Probleme w&auml;hrend des Kompilierens schwer zu l&ouml;sen sein. Ohne auftretende Probleme sollte das Kompilieren jedoch einfach sein.
+<p>
+Zuerst solltet ihr das Quellpaket herunterladen und es in ein neues Verzeichnis extrahieren. Um Ultimate Stunts f&uuml;r euer System zu konfigurieren, m&uuml;sst ihr das Konfigurationsscript ausf&uuml;hren:
+</p><pre>./configure
+</pre>
+Wenn alles funktioniert hat, erstellt das Konfigurationsscript einige Dateien mit dem Namen "Makefile". Damit kann "make" die Kompilierung automatisch ausf&uuml;hren. Startet make mit folgendem Befehl:
+<pre>make
+</pre>
+Make kompiliert zuerst den Quelltext, der von allen Programmteilen benutzt wird. Danach werden die programmteilspezifischen Quelltexte kompiliert, verkn&uuml;pft und ausf&uuml;hrbaren Dateien verarbeitet. Diese befinden sich in den jeweiligen Unterprogrammverzeichnissen.
+<pre>make install
+</pre>
+"make install" ist nicht unbedingt notwendig und das Spiel zu testen: Mit ./execselect.sh
+oder ./ultimatestunts/ustunts aus dem Quelltextverzeichnis (./src) k&ouml;nnt ihr Ultimate Stunts bereits starten.
+"make install" geht von einer UNIX-&auml;hnlichen Verzeichnisstruktur aus, deswegen ist eine eigenh&auml;ndige Installation bei anderen Betriebssystemen wahrscheinlich besser. Der Befehl muss als Administrator (root) ausgef&uuml;hrt werden. Die Standardverzeichnise f&uuml;r die ausf&uuml;hrbaren Dateien sind /usr/local/bin und /usr/local/share/ultimatestunts. Danach k&ouml;nnt ihr Ultimate Stunts mit dem Befehl ustunts starten (vorrausgesetzt die Verzeichnisse mit den ausf&uuml;hrbaren Dateien sind in der Pfad-Variable des Anwenders).
+
+<h3>DLL-Dateien</h3>
+<p>
+Windowsbenutzer, die die Programme &uuml;ber den Explorer, das Startmen&uuml;
+oder anderen &uuml;blichen Wegen ausf&uuml;hren m&ouml;chten, sollten wissen,
+das Cygwin-Programme immer die cygwin1.dll ben&ouml;tigen. Ultimate Stunts
+braucht ebenfalls die SDL.dll und fmod.dll. Sucht die Dateien (in den Paketen)
+und kopiert sie beispielsweise in das Verzeichnis der ausf&uuml;hrbaren Dateien
+von Ultimate Stunts. Um ein Mehrspielernetzwerkspiel zu starten, m&uuml;sst
+ihr vielleicht die Pfad-Variable ver&auml;ndern (im Windows-Paket k&ouml;nnt
+ihr sehen, wie ich es gemacht habe).
+</p>
+</body></html>

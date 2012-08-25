@@ -1,0 +1,224 @@
+<html>
+<head>
+<title>De Ultimate Stunts track editor</title>
+</head>
+<body>
+
+<h1>De Ultimate Stunts track editor (ustuntstrackedit)</h1>
+
+<h3>Inleiding</h3>
+De Ultimate Stunts track editor zal u in staat stellen om nieuwe banen te maken
+en bestaande banen te bewerken. Op dit moment (versie 0.7.6) is de track editor
+nog erg beperkt: het is slechts mogelijk om tiles te plaatsen/verwijderen op
+de baan, en om banen te importeren vanuit het originele spel Stunts.
+
+<h3>Inhoud</h3>
+<ul>
+	<li><a href="#navigation">Basis-navigatie</a></li>
+	<li><a href="#editing">De baan bewerken</a></li>
+	<li><a href="#tiles">Beheer van de tiles-verzameling</a></li>
+	<li><a href="#scenery">Veranderen van de omgevings-instellingen</a></li>
+	<li><a href="#resize">Veranderen van de baan-afmetingen</a></li>
+	<li><a href="#import">Stunts banen importeren</a></li>
+</ul>
+
+<h1><a name="navigation"></a>Basis-navigatie</h1>
+Op dit moment is de gebruikersinterface nog vrij eenvoudig. In het hoofdvenster
+zijn de volgende items zichtbaar:
+<ul>
+	<li>Een 3D view van de baan</li>
+	<li>De naam van de baan boven de 3D view</li>
+	<li>Een Statusbalk onder de 3D view</li>
+	<li>Een toolbar bovenin het scherm</li>
+	<li>Het bewerkgereedschap aan de linkerkant</li>
+</ul>
+De meeste items kunnen gebruikt worden met de muis. Voor het rondbewegen
+in de 3D view kunnen de volgende controls gebruikt worden:
+<ul>
+	<li>"Slepen" met de linker muisknop: roteren van de camerapositie</li>
+	<li>"Slepen" met de rechter muisknop: inzoomen / uitzoomen</li>
+	<li>Pijltjestoetsen: verplaats de cursor naar
+		links/rechts/voor/achter</li>
+	<li>PgUp/PgDn toetsen: verplaats de cursor naar boven/beneden</li>
+</ul>
+De "cursor"positie is zichtbaar als de positie van de knipperende tile. De
+vertikale kolom van tiles op de cursorpositie is ook zichtbaar als een
+witte balk van lijnen:
+<br>
+<img src="../nolanguage/trackedit1.jpg">
+
+<h1><a name="editing"></a>De baan bewerken</h1>
+Het "knipperen" van de cursor laat twee toestanden van de baan zien: de
+huidige toestand, en hoe het er uit ziet als u op de Enter toets drukt. Soms
+is er geen verschil, en in deze gevallen zult u geen geknipper zien.
+<p>
+Ultimate Stunts zal meerdere bewerkingsgereedschappen ondersteunen, maar op
+dit moment (versie 0.7.6) is er slechts ÈÈn gereedschap, die u in staat
+stelt om individuele tiles in te voegen / te verwijderen. De
+gebruikersinterface van dat gereedschap is te zien aan de linkerkant van het
+scherm, maar er zijn ook sneltoetsen.
+<p>
+De standaardmodus van dit gereedschap is om de tile op de cursorpositie te
+vervangen door de geselecteerde tile. Dus, als u op de OK-button in
+de gereedschaps-interface klikt (of op Enter drukt), dan wordt de
+geselecteerde tile op de cursorpositie geplaatst. Bestaande tiles op die
+positie worden daarbij verwijderd.
+<p>
+De "+"-knop is vergelijkbaar met de OK-knop, maar het vervangt niet de tile
+op de cursorpositie. In plaats daarvan combineert het de bestaande en de
+geselecteerde tile. De andere twee knoppen kunnen gebruikt worden om de
+geselecteerde tile te roteren, en om de bestaande tile op de cursorpositie
+te wissen.
+<p>
+De volgende toetsen kunnen als sneltoetsen gebruikt worden:
+<ul>
+	<li><b>Enter</b>: plaats de tile (zoals de OK-knop).</li>
+	<li><b>Insert</b>: plaats de tile (zoals de "+"-knop).</li>
+	<li><b>Delete</b>: verwijder alle bestaande tiles op de cursorpositie
+		(zoals de gum-knop).</li>
+	<li><b>Tab</b>: selecteer een ander tilemodel.</li>
+	<li><b>Shift</b>+<b>Tab</b>: selecteer een ander tilemodel (doorloopt
+		tilemodellen in omgekeerde volgorde).</li>
+	<li><b>r</b>: roteer het tilemodel (zoals de roteer-knop).</li>
+	<li><b>Ctrl</b>+<b>z</b>: maak de laatste actie ongedaan.</li>
+	<li><b>Ctrl</b>+<b>Shift</b>+<b>z</b>: doe de laatste ongedaan gemaakte
+		actie opnieuw.</li>
+</ul>
+Zodra u tiles op de baan plaatst, kunt u zien dat de route-informatie
+automatisch ververst wordt. Wanneer het programma een probleem detecteert
+in de route, zal het een vraagteken weergeven op de laatste correcte tile
+van de route.
+<p>
+Op dit moment kunnen de afmetingen van de baan niet veranderd worden, en
+omgevings-instellingen (achtergrond, belichting etc.) kunnen niet bewerkt
+worden. Bij de huidige versie (0.7.5) moeten deze dingen allemaal handmatig
+gedaan worden in het track-bestand.
+
+<h1><a name="tiles"></a>Beheer van de tiles-verzameling</h1>
+<img src="../nolanguage/trackedit-tilecollectiontool.jpg" align=right>
+Vroeg of laat zult u een bepaald tile-type willen gebruiken, maar kunt u het
+niet vinden in de tile-verzameling van uw baan. In deze sectie kunt u lezen
+hoe u tiles kunt toevoegen aan/verwijderen van uw tiles-verzameling. Het
+tile-verzameling gereedschap kan bereikt worden door op de bijbehorende knop
+in de toolbar te klikken (zie afbeelding).
+<p>
+Het hoofd-scherm van het de tiles-verzameling tool ziet eruit als in de
+onderstaande afbeelding. Alle tiles die op dit moment beschikbaar zijn in
+iw verzameling zijn zichtbaar, en u heeft verschillende mogelijkheden om
+deze verzameling te veranderen:
+<ul>
+	<li>U kunt de installingen van een bestaande tile veranderen door er op te klikken</li>
+	<li>U kunt een nieuwe tile toevoegen aan uw verzameling</li>
+	<li>U kunt alle ongebruikte tiles verwijderen. Het is slim on dit te doen zodra
+	uw baan af is, omdat de baan er sneller door laadt.</li>
+	<li>Tot slot kunt u de tiles-verzameling tool verlaten en terugkeren naar het hoofdmenu</li>
+</ul>
+Een enkele tile verwijderen uit de verzameling kunt u doen door er op te klikken,
+en dan te kiezen voor de mogelijkheid om de tile te verwijderen.
+<br>
+<img src="../nolanguage/trackedit-tilecollection1.jpg">
+
+<h1><a name="scenery"></a>Veranderen van de omgevings-instellingen</h1>
+<img src="../nolanguage/trackedit-scenerytool.jpg" align=right>
+Met de omgevings-instellingen tool kunt u enkele instellingen veranderen die dingen
+bepalen zoals de achtergrond-afbeelding en de belichtings-omstandigheden. De
+omgevings-instellingen tool bevat een preview van hoe de instellingen er uit zien. De
+preview is niet een 100% nauwkeurige weergave, maar het zou u een idee moeten geven
+van hoe het er uit zal zien.
+<br>
+<img src="../nolanguage/trackedit-scenerytool2.jpg">
+
+<h1><a name="resize"></a>Veranderen van de baan-afmetingen</h1>
+<img src="../nolanguage/trackedit-resizetool.jpg" align=right>
+Het veranderen van de baan-afmetingen kan gedaan worden met de gelijknamige tool. Als
+u op deze tool klikt, dan vraagt de track editor hoeveel de baan-afmetingen veranderd
+moeten worden in alle kompasrichtingen (noord, zuid, oost, west). Merk op dat de
+'noord'-richting in rood wordt weergegeven in het kompas (linksonder in het scherm).
+U kunt de grootte van de baan in een bepaalde richting vergroten met een positief
+getal, of u kunt het verkleinen met een netatief getal.
+<p>
+Het effect van het vergroten van de baan is niet direct zichtbaar, doordat de nieuwe
+tile-posities nog steeds leeg zijn. U kunt echter de cursor naar de nieuw aangemaakte
+ruimte bewegen en deze met tiles vullen.
+
+<h1><a name="import"></a>Stunts banen importeren</h1>
+<img src="../nolanguage/trackedit-stuntsimporttool.jpg" align=right>
+…Èn van de opties in het track editor toolbar is om banen te importeren vanuit
+het originele "Stunts" (4D Sports Driving) spel. Als u vindt dat de huidige
+track editor nog te beperkt is, dan kunt u uw banen in Stunts maken en
+importeren in Ultimate Stunts. U kunt deze functie ook gebruiken om uw grote
+verzameling Stunts banen in Ultimate Stunts te importeren.
+
+<h3>Configureren van de Stunts importeer-functie</h3>
+Opmerking: dit is een geavanceerd onderwerp. U kunt de importeer-functie gebruiken
+zonder te weten hoe u de instellingen ervan kunt veranderen. De standaard-instellingen
+zijn waarschijnlijk goed genoeg voor de meeste mensen.
+<p>
+De Stunts import functie kan geconfigureerd worden door een bestand te bewerken
+dat zich in de Ultimate Stunts data directory bevindt: misc/trackedit.conf.
+In dit configuratiebestand kan bijna het hele baan-importeer proces aangepast
+worden met de variabelen in de [trkimport] sectie. Dit importeerproces heeft
+de volgende stappen:
+
+<h5>1: Laad een template baan</h5>
+Ultimate Stunts laadt een normaal Ultimate Stunts baanbestand, dat zal dienen
+als uitgangspunt voor de geconverteerde baan. Deze baan zal later bewerkt
+worden, afhankelijk van de inhoud van het .trk bestand. De bestandsnaam van
+deze templatebaan kan ingesteld worden met de templatefile variabele,
+bijvoorbeeld:
+<pre>
+templatefile = misc/trackedit.template
+</pre>
+De template baan moet minimaal 30*30 tiles breed en lang zijn, en minimaal
+2 tiles hoog, of meer, afhankelijk van de configuratie van de rest van
+het importeerproces. Alle tiles en textures die ooit gebruikt zullen worden in
+de rest van het proces moeten aanwezig zijn in de template baan. De
+begintoestand van de tiles moet een vlakke, horizontale grond zijn.
+
+<h5>2: Laad het terrein</h5>
+Vervolgens worden de terrein en tile item bytes in het .trk bestand verwerkt.
+Alle bytewaarden zijn hier hexadecimale waarden, maar zonder de gebruikelijke
+0x prefix. Wat hier gebeurt hangt in de eerste plaats af van het terrein:
+
+<ul>
+	<li>Als de terrein byte 00 is (vlakke grond), wordt alleen de item byte
+		verwerkt</li>
+	<li>Als de terrein byte tussen (inclusief) 01 en 05 zit (water), dan
+		wordt eerst een water tile geplaatst door de terrein byte
+		te verwerken, en dan wordt de item byte verwerkt.</li>
+	<li>Als de terrein byte 06 is (hoge vlakke grond), dan wordt de item
+		byte verwerkt, en daarna wordt de tile hoogte vergroot.</li>
+	<li>Als de terrein byte tussen (inclusief) 07 en 0a zit (diagonale
+		grond), dan wordt een tile geplaatst afhankelijk van de
+		combinatie van terrein en tile bytes.</li>
+	<li>Voor andere tiles wordt alleen de terrein byte verwerkt (op
+		andere tiles heeft een Stunts baan nooit een item)</li>
+</ul>
+Als een terrein byte met hexadecimale waarde <i>xy</i> wordt verwerkt, dan
+wordt dat gedaan volgens de variabele <i>terrain_xy</i> in het
+configuratiebestand. Als een item byte met de waarde <i>pq</i> wordt verwerkt,
+dan wordt dat gedaan volgens de variabele <i>tile_pq</i>. Tot slot, voor de
+terrein bytes tussen 07 en 0a, het verwerken van een combinatie van terrein
+byte <i>xy</i> en item byte <i>pq</i> wordt gedaan volgens de variabele
+<i>terrain_xy_pq</i>.
+<p>
+Alle waarden van de variabelen <i>terrain_xy</i>, <i>terrain_xy_pq</i> en
+<i>tile_pq</i> hebben het zelfde formaat. Deze waarden bevatten nul of meer
+eenheden van de volgende vorm:
+<pre>
+x,y,z:tileID/rotatie/hoogte;
+</pre>
+Elk van deze eenheden zorgt ervoor dat ÈÈn tile veranderd wordt. De waarden
+x,y,z zeggen welke tile veranderd zal worden. tileID/rotatie/hoogte zijn
+de nieuwe instellingen van de tile, met de zelfde betekenis als de drie waarden
+in het baan-bestandsformaat. x,y en z zijn positie-relatief ten opzichte van de
+tile die verwerkt wordt. x en y zijn de relatieve horizontale positie in de
+baan, en z is de laag in de baan (de vertikale positie). Dus, 0,0,0 is de
+laagste tile op de verwerkte positie, 0,0,1 is de tweede-laag tile op die
+positie, enz.. Posities zoals 1,0,0 of 0,1,2 zijn buiten de tile die verwerkt
+wordt, maar hen veranderen is toegestaan voor grote tiles.
+<p>
+De "grote tile" item waarden fd, fe en ff worden niet verwerkt.
+</body>
+</html>
+

@@ -1,0 +1,216 @@
+<html>
+<head>
+<title>The Ultimate Stunts track editor</title>
+</head>
+<body>
+
+<h1>The Ultimate Stunts track editor (ustuntstrackedit)</h1>
+
+<h3>Introduction</h3>
+The Ultimate Stunts track editor will allow you to make new tracks and edit
+existing tracks. Currently (version 0.7.6), the track editor is still very
+limited: it is only possible to place/remove tiles on the track,
+and to import tracks from the original Stunts game.
+
+<h3>Contents</h3>
+<ul>
+	<li><a href="#navigation">Basic navigation</a></li>
+	<li><a href="#editing">Track editing</a></li>
+	<li><a href="#tiles">Managing the tiles collection</a></li>
+	<li><a href="#scenery">Changing the scenery settings</a></li>
+	<li><a href="#resize">Resizing the track</a></li>
+	<li><a href="#import">Importing Stunts tracks</a></li>
+</ul>
+
+<h1><a name="navigation"></a>Basic navigation</h1>
+Currently, the user interface is still quite simple. In the main window, the
+following items are visible:
+<ul>
+	<li>A 3D view of the track</li>
+	<li>The name of the track on top of the 3D view</li>
+	<li>A Statusbar below the 3D view</li>
+	<li>A tool bar on the top of the screen</li>
+	<li>The edit tool on the left</li>
+</ul>
+The tool bar contains buttons for things like loading and saving tracks.
+<p>
+Most items can be used with the mouse. For moving around in the 3D
+view, the following controls can be used:
+<ul>
+	<li>"Dragging" with the left mouse button: rotate the camera view</li>
+	<li>"Dragging" with the right mouse button: zoom in / zoom out</li>
+	<li>Arrow keys: move the cursor left/right/forward/backward</li>
+	<li>PgUp/PgDn keys: move the cursor up/down</li>
+</ul>
+The "cursor" position is visible as the position of the blinking tile. The
+vertical column of tiles on the cursor position is also visible as a white box
+of lines:
+<br>
+<img src="../nolanguage/trackedit1.jpg">
+
+<h1><a name="editing"></a>Track editing</h1>
+The "blinking" of the cursor shows two states of the track: the current state,
+and what it will look like when you press the Enter key. Sometimes there will
+be no difference, and in those cases, you won't see the blinking.
+<p>
+Ultimate Stunts will support multiple editing tools, but currently (version
+0.7.6) there is only one tool, which allows you to insert/remove individual
+tiles. The user interface of that tool can be seen in the left part of the
+screen, but there are also keyboard shortcuts.
+<p>
+The default mode of this tool is to replace the tile on the cursor position
+with the selected tile. So, when you click on the OK button in the tool
+interface (or press Enter), the selected tile is placed on the
+cursor position. Any existing tile on that position will be removed in the
+action.
+<p>
+The "+"-button is similar to the OK-button, but it does not replace the tile
+on the cursor position. Instead, it Combines the existing and selected tile.
+The other two buttons can be used for rotating the selected tile, and for
+erasing the existing tile on the cursor position.
+<p>
+The following keys can be used as shortcuts:
+<ul>
+	<li><b>Enter</b>: place the tile (like the OK button).</li>
+	<li><b>Insert</b>: place the tile (like the "+"-button).</li>
+	<li><b>Delete</b>: remove tiles on the cursor position (like the eraser
+		button).</li>
+	<li><b>Tab</b>: select another tile model.</li>
+	<li><b>Shift</b>+<b>Tab</b>: select another tile model (browses tile
+		models in opposite direction).</li>
+	<li><b>r</b>: rotate the tile model (like the rotate button).</li>
+	<li><b>Ctrl</b>+<b>z</b>: undo the last action.</li>
+	<li><b>Ctrl</b>+<b>Shift</b>+<b>z</b>: redo the last undone action.</li>
+</ul>
+When you place tiles on the track, you can see that the route information is
+automatically updated. Whenever the program detects a problem in the route,
+it will display a question mark at the last correct tile of the route.
+<p>
+Currently, the sizes of the track cannot be changed, and environment settings
+(background, lighting etc.) cannot be edited. With the current version (0.7.5),
+all those things need to be done manually in the track file.
+
+<h1><a name="tiles"></a>Managing the tiles collection</h1>
+<img src="../nolanguage/trackedit-tilecollectiontool.jpg" align=right>
+Sooner or later, you'll want to use a certain tile type, but you can't find it
+in the tile collection of your track. In this section, you can read how to add
+and remove tiles to/from your tile collection. The tile collection tool can be
+accessed by clicking on its button in the toolbar (see image).
+<p>
+The main screen of the tiles collection tool looks like the image below. All
+tiles currently available in your collection are visible, and you have several
+options for changing this collection:
+<ul>
+	<li>You can change the settings of an existing tile by clicking on it</li>
+	<li>You can add a new tile to your collection</li>
+	<li>You can remove all unused tiles. It's a smart thing to do this once your
+	track is finished, because it will make the track load faster.</li>
+	<li>Finally, you can leave the tile collection tool and return to the main menu</li>
+</ul>
+Removing a single tile from the collection can be done by clicking on that tile,
+and then choose the option to delete it.
+<br>
+<img src="../nolanguage/trackedit-tilecollection1.jpg">
+
+<h1><a name="scenery"></a>Changing the scenery settings</h1>
+<img src="../nolanguage/trackedit-scenerytool.jpg" align=right>
+With the scenery settings tool, some settings can be changed that control things like
+the background image and the lighting conditions. The scenery settings tool contains a
+preview of what the settings look like. The preview is not a 100% accurate
+representation, but it should give you a rough idea of what it will look like.
+<br>
+<img src="../nolanguage/trackedit-scenerytool2.jpg">
+
+<h1><a name="resize"></a>Resizing the track</h1>
+<img src="../nolanguage/trackedit-resizetool.jpg" align=right>
+Resizing the track can be done with the resize tool. When you click on this tool,
+the track editor asks you how much the track needs to be resized in each of the
+compass directions (north, south, east, west). Note that the 'north' direction is
+displayed in red in the compass (bottom left of the screen). You can increase the size
+of the track in a certain direction by entering a positive number, or you can decrease
+it by giving a negative number.
+<p>
+The effect of increasing the size of the track is not immediately visible, because the
+new tile positions are still empty. However, you can move the cursor into the newly
+created space and fill it with tiles.
+
+<h1><a name="import"></a>Importing Stunts tracks</h1>
+<img src="../nolanguage/trackedit-stuntsimporttool.jpg" align=right>
+One of the options in the track editor toolbar is to import a track from the
+original "Stunts" (4D Sports Driving) game. If you feel like the current track
+editor is still too limited, you can make your tracks in Stunts and import
+them in Ultimate Stunts. You can also use this function to import your large
+collection of Stunts tracks.
+
+<h3>Configuring the Stunts import function</h3>
+Note: this is an advanced topic. You can use the import function without knowing
+how to change its settings. The default settings are probably good enough for most
+people.
+<p>
+The Stunts import function can be configured by modifying a file that is
+located in the Ultimate Stunts data directory: misc/trackedit.conf. In this
+configuration file, almost the entire track import process can be customized
+with the variables in the [trkimport] section.
+This import process has the following steps:
+
+<h5>1: Load a template track</h5>
+Ultimate Stunts loads an ordinary Ultimate Stunts track file, which will act
+as a starting point for the converted track. This track will be modified later
+depending on the contents of the .trk file. The filename of this template
+track can be set with the templatefile variable, for instance:
+<pre>
+templatefile = misc/trackedit.template
+</pre>
+The template track has to be at least 30*30 tiles wide and long, and at least
+2 tiles high, or more, depending on the configuration of the rest of the
+import process. All the tiles and textures that will ever be used in the rest
+of the process should be present in the template track. The initial state of
+the tiles should be a flat, horizontal ground.
+
+<h5>2: Load the terrain</h5>
+next, the terrain and tile item bytes in the .trk file are processed. All the
+byte values here are hexadecimal values, but without the usual 0x prefix.
+What happens here, depends first on the terrain:
+
+<ul>
+	<li>If the terrain byte is 00 (flat ground), only the item byte is
+		processed</li>
+	<li>If the terrain byte is is between (including) 01 and 05
+		(water), then first a water tile is placed by processing the
+		terrain byte, and then the item byte is processed.</li>
+	<li>If the terrain byte is 06 (high flat ground), then the item
+		byte is processed, and afterwards the tile height is
+		increased.</li>
+	<li>If the terrain byte is between (including) 07 and 0a
+		(diagonal ground), then a tile is placed depending on the
+		combination of terrain and tile byte</li>
+	<li>For other tiles, only the terrain byte is processed (on other
+		tiles a Stunts track never has any item</li>
+</ul>
+When a terrain byte with the hexadecimal value <i>xy</i> is processed, it is
+done according to the variable <i>terrain_xy</i> in the conf file. When an
+item byte with the value <i>pq</i> is processed, it is done according to the
+variable <i>tile_pq</i>. Finally, for the terrain bytes between 07 and 0a,
+processing a combination of terrain byte <i>xy</i> and item byte <i>pq</i> is
+done according to the variable <i>terrain_xy_pq</i>.
+<p>
+All values of the variables  <i>terrain_xy</i>, <i>terrain_xy_pq</i> and
+<i>tile_pq</i> have the same format. This value contains zero or more units
+of the following form:
+<pre>
+x,y,z:tileID/rotation/altitude;
+</pre>
+Every of these units causes one tile to be changed. The values x,y,z tell which
+tile will be changed. tileID/rotation/altitude are the new settings of the
+tile, with the same meaning as the three values in the track file format.
+x,y and z are a position relative to the tile that is being processed. x and y
+are the relative horizontal position in the track, and z is the layer in the
+track (the vertical position). So, 0,0,0 is the lowest tile on the processed
+position, 0,0,1 is the second-layer tile on that position, etc.. Positions
+like 1,0,0 or 0,1,2 are outside the tile that is being processed, but changing
+them is allowed to support for large tiles.
+<p>
+The "large tile" item values fd, fe and ff are not processed.
+</body>
+</html>
+
