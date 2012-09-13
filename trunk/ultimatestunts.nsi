@@ -56,6 +56,8 @@ Section "Ultimate Stunts (required)"
   File /r data
   File /r doc
   File /r bin
+  CreateDirectory $INSTDIR\saveddata
+  SetFileAttributes saveddata NORMAL
   
   ; Write the installation path into the registry
   WriteRegStr HKLM SOFTWARE\Ultimate_Stunts "Install_Dir" "$INSTDIR"
