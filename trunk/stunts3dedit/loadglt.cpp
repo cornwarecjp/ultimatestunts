@@ -105,6 +105,39 @@ bool loadGLT(const CString &filename, CEditGraphObj &obj)
 					}
 				}
 
+			if(lhs == "TextureAnimation")
+				if(obj.m_Primitives.size()>0)
+				{
+					int pos = rhs.inStr(';');
+					if(pos > 0)
+					{
+						float period = rhs.mid(0, pos).toFloat();
+
+						obj.m_Primitives.back().m_Animation.textureEnabled  = true;
+						obj.m_Primitives.back().m_Animation.texturePeriod   = period;
+						obj.m_Primitives.back().m_Animation.textures.clear();
+
+						CString rest = rhs;
+						while(1)
+						{
+							rest = rest.mid(pos+1);
+							pos = rest.inStr(',');
+							if(pos < 0)
+							{
+								int texture = rest.toInt();
+								obj.m_Primitives.back().m_Animation.textures.push_back(texture);
+								break;
+							}
+							else
+							{
+								int texture = rest.mid(0, pos).toInt();
+								obj.m_Primitives.back().m_Animation.textures.push_back(texture);								
+							}
+						}
+
+					}
+				}
+
 			if(lhs == "Quads")
 			{
 				CPrimitive pr;

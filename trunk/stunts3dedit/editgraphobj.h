@@ -54,6 +54,7 @@ public:
 		m_Material.reflectance = m_Material.emissivity = 0.0;
 
 		m_Animation.rotationEnabled = false;
+		m_Animation.textureEnabled = false;
 	}
 
 	enum eType
@@ -82,16 +83,17 @@ public:
 	//Animation:
 	struct {
 		bool rotationEnabled; CVector rotationOrigin, rotationVelocity;
+		bool textureEnabled; float texturePeriod; vector<int> textures;
 	} m_Animation;
 };
 
 class CEditGraphObj  { //no longer derived from CGraphObj
 public: 
 	CEditGraphObj();
-	virtual ~CEditGraphObj();
+	~CEditGraphObj();
 
-	virtual bool loadGLTFile(CString filename);
-	virtual bool loadGLBFile(CString filename);
+	bool loadGLTFile(CString filename);
+	bool loadGLBFile(CString filename);
 	bool loadRAWFile(CString filename);
 	bool load3DSFile(CString filename);
 	bool loadLWOFile(CString filename);

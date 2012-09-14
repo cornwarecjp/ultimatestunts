@@ -26,6 +26,7 @@ using namespace std;
 #include "dataobject.h"
 #include "graphicsettings.h"
 #include "reflection.h"
+#include "lodtexture.h"
 
 class CGraphObj : public CDataObject
 {
@@ -69,6 +70,7 @@ class CGraphObj : public CDataObject
 			struct
 			{
 				bool rotationEnabled; CVector rotationOrigin, rotationVelocity;
+				bool textureEnabled; float texturePeriod; vector<CLODTexture *> textures;
 			} animation;
 		};
 		vector<SPrimitive> m_Primitives;
@@ -88,6 +90,7 @@ class CGraphObj : public CDataObject
 		float m_WaterLevel;
 
 		void animateRotation(SPrimitive &pr, float t);
+		void animateTexture(SPrimitive &pr, float t);
 };
 
 #endif

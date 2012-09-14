@@ -36,6 +36,19 @@ void changePrimitiveFunc()
 	{
 		printf("Rotation animation disabled\n");
 	}
+	if(p.m_Animation.textureEnabled)
+	{
+		printf("Texture animation enabled:\n");
+		printf("  Period  : %.3f s\n", p.m_Animation.texturePeriod);
+		printf("  textures: ");
+		for(unsigned int i=0; i < p.m_Animation.textures.size(); i++)
+			printf("%d, ", p.m_Animation.textures[i]);
+		printf("\n");
+	}
+	else
+	{
+		printf("Texture animation disabled\n");
+	}
 	printf("\n");
 	printf("Entering \"-\" will leave a property unchanged\n");
 
@@ -87,6 +100,42 @@ void changePrimitiveFunc()
 		answ = getInput("Rotation animation velocity: ");
 		if(answ != "-")
 			p.m_Animation.rotationVelocity = answ.toVector();
+	}
+
+	answ = getInput("Enable texture animation (y/n): ");
+	if(answ != "-")
+		p.m_Animation.textureEnabled = answ == "y";
+
+	if(p.m_Animation.textureEnabled)
+	{
+		answ = getInput("Texture animation period: ");
+		if(answ != "-")
+			p.m_Animation.texturePeriod = answ.toFloat();
+
+		answ = getInput("Texture animation indices: ");
+		if(answ != "-")
+		{
+			p.m_Animation.textures.clear();
+
+			CString rest = answ;
+			int pos = -1;
+			while(1)
+			{
+				rest = rest.mid(pos+1);
+				pos = rest.inStr(',');
+				if(pos < 0)
+				{
+					int texture = rest.toInt();
+					p.m_Animation.textures.push_back(texture);
+					break;
+				}
+				else
+				{
+					int texture = rest.mid(0, pos).toInt();
+					p.m_Animation.textures.push_back(texture);								
+				}
+			}
+		}
 	}
 
 	graphobj->render(VisibleLODs);

@@ -65,6 +65,7 @@ public:
 		{
 			unsigned int AnimationFlags;
 			CVector rotationOrigin, rotationVelocity;
+			float texturePeriod; vector<int> textures;
 		} animation;
 	};
 	vector<SPrimitive> m_Primitives;

@@ -531,6 +531,12 @@ is <i>not</i> a state variable, so rotation animation is not enabled
 automatically for following primitives. Origin and velocity are settings
 for the rotation animation.
 
+<h3>TextureAnimation <i>period</i>;<i>texture_id1</i>,<i>texture_id2</i>,...</h3>
+Enables the texture animation for the most recently added primitive. This
+is <i>not</i> a state variable, so texture animation is not enabled
+automatically for following primitives. Period and the texture indices are settings
+for the texture animation.
+
 <a name="glb"></a>
 <h1>The new 3D model (*.glb) format</h1>
 This fileformat has replaced the *.gl file format since version 0.5.3. It is
@@ -644,7 +650,11 @@ coefficients have been removed from the material data.
 Animation flags (4 byte)
 Rotation origin x,y,z (3*4 byte, signed int, unit = millimeter)
 Rotation velocity x,y,z (3*4 byte, signed int, range -1000..1000)
-future additions (aligned to 4 byte size)
+Optional: texture animation data (presence is determined by animation flags)
+  Texture animation period (4 byte, unsigned int, unit = millisecond)
+  Texture animation number of textures (4 byte)
+  Texture animation textures (each one is null-terminated, aligned to 4 byte size)
+Optional: future additions (aligned to 4 byte size)
 </pre>
 The animation flags contain a number of flags to describe which animation
 types are enabled for this object. The rest of the animation data contains
@@ -652,13 +662,19 @@ parameters for these animation types. The flags variable is an OR'ed combination
 of values that correspond to animation types in the following way:
 <ul>
     <li>0x1: rotation animation</li>
-    <li>0x2, 0x4, etc..: future animation types</li>
+    <li>0x2: texture animation</li>
+    <li>0x4, 0x8 etc..: future animation types</li>
 </ul>
 <p>
 The rotation animation has the rotation origin and velocity as parameters. The
 object is rotated around the axis that goes through the rotation origin
 point, and has the direction of the rotation velocity. The rotation speed
 (in rad/second) is equal to the size of the velocity vector.
+<p>
+The texture animation has the period and the texture names as parameters.
+The period is the time difference between two frames of the texture animation.
+In each frame, a new texture from the list is used. When finishing the texture
+list, the animation restarts at the start of the list (so it is "looping").
 
 <h4>Material data</h4>
 <pre>

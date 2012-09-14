@@ -28,7 +28,6 @@
 //#include "graphicworld.h"
 #include "datafile.h"
 #include "glbfile.h"
-#include "lodtexture.h"
 
 #include "graphobj.h"
 
@@ -106,8 +105,23 @@ bool CGraphObj::load(const CString &filename, const CParamList &list)
 
 		//Animation
 		pr2.animation.rotationEnabled  = (pr1.animation.AnimationFlags & 0x1) != 0;
+		pr2.animation.textureEnabled   = (pr1.animation.AnimationFlags & 0x2) != 0;
 		pr2.animation.rotationOrigin   = pr1.animation.rotationOrigin;
 		pr2.animation.rotationVelocity = pr1.animation.rotationVelocity;
+		pr2.animation.texturePeriod    = pr1.animation.texturePeriod;
+		pr2.animation.textures.clear();
+		for(unsigned int i=0; i < pr1.animation.textures.size(); i++)
+		{
+			int texture = pr1.animation.textures[i];
+			if(texture >= 0)
+			{
+				pr2.animation.textures.push_back((CLODTexture *)matarray[texture]);
+			}
+			else
+			{
+				pr2.animation.textures.push_back(NULL);
+			}
+		}
 
 		//For water animation:
 		if(waterTesselation != 0 && (pr1.material.LODs & 16) != 0 && (pr1.material.LODs & 32) != 0)
@@ -327,6 +341,9 @@ void CGraphObj::animate(float t)
 
 		if(pr.animation.rotationEnabled)
 			animateRotation(pr, t);
+
+		if(pr.animation.textureEnabled)
+			animateTexture(pr, t);
 	}
 }
 
@@ -413,6 +430,27 @@ void CGraphObj::animateRotation(SPrimitive &pr, float t)
 		*(offset+5) = pos.x;
 		*(offset+6) = pos.y;
 		*(offset+7) = pos.z;
+	}
+}
+
+void CGraphObj::animateTexture(SPrimitive &pr, float t)
+{
+	float period = pr.animation.texturePeriod;
+	unsigned int index = (unsigned int)(t / period);
+	index = index % pr.animation.textures.size();
+
+	CLODTexture *tex = pr.animation.textures[index];
+
+	if(tex == NULL)
+	{
+		//TODO
+		return;
+	}
+
+	for(unsigned int lod=0; lod < 4; lod++)
+	{
+		if(tex->getSizeX(lod+1) > 4 && tex->getSizeY(lod+1) > 4)
+			pr.texture[lod] = tex->getTextureID(lod+1);
 	}
 }
 

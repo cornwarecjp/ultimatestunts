@@ -74,8 +74,11 @@ bool CEditGraphObj::loadGLBFile(CString filename)
 		pr2.m_Material.emissivity = pr1.material.Emissivity;
 
 		pr2.m_Animation.rotationEnabled = (pr1.animation.AnimationFlags & 0x1) != 0;
+		pr2.m_Animation.textureEnabled = (pr1.animation.AnimationFlags & 0x2) != 0;
 		pr2.m_Animation.rotationOrigin = pr1.animation.rotationOrigin;
 		pr2.m_Animation.rotationVelocity = pr1.animation.rotationVelocity;
+		pr2.m_Animation.texturePeriod = pr1.animation.texturePeriod;
+		pr2.m_Animation.textures = pr1.animation.textures;
 
 		for(unsigned int v=0; v < pr1.vertex.size(); v++)
 		{
@@ -254,6 +257,21 @@ void CEditGraphObj::saveGLTFile(const CString &filename)
 				pr.m_Animation.rotationOrigin + ";" +
 				pr.m_Animation.rotationVelocity);
 		}
+
+		if(pr.m_Animation.textureEnabled)
+		{
+			CString line = CString("TextureAnimation ");
+			line += CString(pr.m_Animation.texturePeriod);
+			line += ";";
+			if(pr.m_Animation.textures.size() > 0)
+			{
+				line += CString(pr.m_Animation.textures[0]);
+				if(pr.m_Animation.textures.size() > 1)
+					for(unsigned int i=1; i < pr.m_Animation.textures.size(); i++)
+						line += CString(",") + pr.m_Animation.textures[i];
+			}
+			f.writel(line);
+		}
 		
 		for(unsigned int j=0; j<pr.m_Vertex.size(); j++)
 		{
@@ -299,8 +317,11 @@ void CEditGraphObj::saveGLBFile(const CString &filename)
 		//Animation
 		pr2.animation.AnimationFlags = 0;
 		if(pr1.m_Animation.rotationEnabled) pr2.animation.AnimationFlags |= 0x1;
+		if(pr1.m_Animation.textureEnabled)  pr2.animation.AnimationFlags |= 0x2;
 		pr2.animation.rotationOrigin   = pr1.m_Animation.rotationOrigin;
 		pr2.animation.rotationVelocity = pr1.m_Animation.rotationVelocity;
+		pr2.animation.texturePeriod = pr1.m_Animation.texturePeriod;
+		pr2.animation.textures = pr1.m_Animation.textures;
 
 		//Material
 		pr2.material.LODs = 0;

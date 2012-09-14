@@ -175,6 +175,30 @@ bool CGLBFile::processGeometry_07(const CString &name, CBinBuffer &data)
 	pr.animation.AnimationFlags = anibuf.getUint32(pos);
 	pr.animation.rotationOrigin = anibuf.getVector32(pos, 0.001);
 	pr.animation.rotationVelocity = anibuf.getVector32(pos, (1000.0 / 128.0) / 65536.0);
+	if(pr.animation.AnimationFlags & 0x2)
+	{
+		pr.animation.texturePeriod = float(anibuf.getUint32(pos)) / 1000;
+		unsigned int numTextures = anibuf.getUint32(pos);
+		pr.animation.textures.clear();
+		for(unsigned int j=0; j < numTextures; j++)
+		{
+			CString texname;
+			for(unsigned int i=pos; i < anibuf.size(); i++)
+			{
+				if(anibuf[i] == '\0')
+				{
+					pos = i;
+					while((pos & 0x3) != 0) pos++;
+					break;
+				}
+				texname += char(anibuf[i]);
+			}
+			if(texname == "")
+				{pr.animation.textures.push_back(-1);}
+			else
+				{pr.animation.textures.push_back(texname.toInt());} //TODO: texture names
+		}
+	}
 
 	//Material
 	CBinBuffer matbuf = data.getBuffer(datapos, materialsize);
@@ -286,6 +310,30 @@ void CGLBFile::save(const CString &filename)
 				animationdata += Uint32(pr.animation.AnimationFlags);
 				animationdata.addVector32(pr.animation.rotationOrigin, 0.001);
 				animationdata.addVector32(pr.animation.rotationVelocity, (1000.0 / 128.0) / 65536.0);
+				if(pr.animation.AnimationFlags & 0x2)
+				{
+					animationdata += Uint32(pr.animation.texturePeriod * 1000);
+					animationdata += Uint32(pr.animation.textures.size());
+					for(unsigned int i=0; i < pr.animation.textures.size(); i++)
+					{
+						int texture = pr.animation.textures[i];
+						if(texture < 0)
+						{
+							animationdata += (Uint8)'\0';
+							animationdata += (Uint8)'\0';
+							animationdata += (Uint8)'\0';
+							animationdata += (Uint8)'\0';
+						}
+						else
+						{
+							//TODO: more than 1000 textures
+							animationdata += (Uint8)('0' + (texture/100) % 10);
+							animationdata += (Uint8)('0' + (texture/10 ) % 10);
+							animationdata += (Uint8)('0' + (texture    ) % 10);
+							animationdata += (Uint8)'\0';
+						}
+					}
+				}
 			}
 
 			CBinBuffer materialdata;
@@ -312,10 +360,10 @@ void CGLBFile::save(const CString &filename)
 				}
 				else
 				{
-					//TODO: more than 10 textures
-					materialdata += (Uint8)('0' + pr.material.Texture);
-					materialdata += (Uint8)'\0';
-					materialdata += (Uint8)'\0';
+					//TODO: more than 1000 textures
+					materialdata += (Uint8)('0' + (pr.material.Texture/100) % 10);
+					materialdata += (Uint8)('0' + (pr.material.Texture/10 ) % 10);
+					materialdata += (Uint8)('0' + (pr.material.Texture    ) % 10);
 					materialdata += (Uint8)'\0';
 				}
 			}
