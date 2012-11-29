@@ -1,6 +1,6 @@
 bin_PROGRAMS = ustuntstrackedit
 ustuntstrackedit_SOURCES = main.cpp
-ustuntstrackedit_LDADD = $(top_builddir)/trackedit/libtrackedit.a \
+ustuntstrackedit_LDADD = libtrackedit.a \
 	$(top_builddir)/graphics/libgraphics.a $(top_builddir)/simulation/libsimulation.a \
 	$(top_builddir)/shared/libshared.a @sdllibs@ @graphlibs@ @LIBINTL@
 

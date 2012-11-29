@@ -1,8 +1,8 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT([Ultimate Stunts], 0.7.7, [cornware-cjp@users.sourceforge.net], [ultimatestunts])
+AC_INIT([Ultimate Stunts],[0.7.7],[cornware-cjp@users.sourceforge.net],[ultimatestunts])
 AC_CONFIG_SRCDIR([ultimatestunts/main.cpp])
-AM_CONFIG_HEADER(config.h)
+AC_CONFIG_HEADERS([config.h])
 AC_CANONICAL_TARGET
 
 AM_INIT_AUTOMAKE
@@ -119,10 +119,10 @@ try_openal="yes"
 try_fmod="yes"
 
 AC_ARG_WITH([openal],
-    AC_HELP_STRING([--with-openal], [Only use OpenAL (don't try to use FMOD)]),
+    AS_HELP_STRING([--with-openal],[Only use OpenAL (don't try to use FMOD)]),
     [try_fmod="no"], [])
 AC_ARG_WITH([fmod],
-    AC_HELP_STRING([--with-fmod], [Only use FMOD (don't try to use OpenAL)]),
+    AS_HELP_STRING([--with-fmod],[Only use FMOD (don't try to use OpenAL)]),
     [try_openal="no"], [])
 
 if test "$try_openal" = "yes" ; then
@@ -185,7 +185,7 @@ if test "$try_fmod" = "yes" ; then
   AC_MSG_CHECKING(for FSOUND_Close in -lfmod)
   OLDLIBS=$LIBS
   LIBS="$LIBS $fmodlibs"
-  AC_LINK_IFELSE(
+  AC_LINK_IFELSE([AC_LANG_SOURCE(
   [
   #include <fmod/fmod.h>
 
@@ -194,7 +194,7 @@ if test "$try_fmod" = "yes" ; then
       FSOUND_Close();
       return 0;
   }
-  ]
+  ])]
   ,soundlibs="$fmodlibs $soundlibs";result="yes";AC_DEFINE([HAVE_LIBFMOD], [], [FMOD lib]), result="no")
   LIBS=$OLDLIBS
   AC_MSG_RESULT($result)
