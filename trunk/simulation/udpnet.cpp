@@ -155,7 +155,8 @@ bool CUDPNet::sendData(CMessageBuffer &data)
 	Uint8 num8[4];
 	for(unsigned int i=0; i<4; i++)
 		num8[i] = ipnum[i];
-	Uint32 num32 = *((Uint32 *)num8);
+	Uint32 num32;
+	memcpy(&num32, num8, sizeof(num32));
 
 	//printf("Sending to %d.%d.%d.%d port %d\n", num8[0], num8[1], num8[2], num8[3], data.getPort());
 

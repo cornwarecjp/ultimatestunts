@@ -23,6 +23,7 @@ Modified by CJP
 
 #include "lw.h"
 
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -63,8 +64,11 @@ static Uint32 read_long(FILE *f)
 
 static float read_float(FILE *f)
 {
+  float r;
   Uint32 x = read_long(f);
-  return *((float*)(void*)(&x)); /* CJP note: possibly doesn't work on every architecture */
+  assert(sizeof(float) == sizeof(Uint32));
+  memcpy(&r, &x, sizeof(r));
+  return r;
 }
 
 static int read_string(FILE *f, char *s)
