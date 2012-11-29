@@ -192,14 +192,16 @@ bool loadOBJ(const CString &filename, CEditGraphObj &obj)
 				if(vi >= v_arr.size())
 				{
 					printf("In line \"%s\":\n", line.c_str());
-					printf("Error: vertex index %d exceeds array size %d\n", vi+1, v_arr.size());
+					printf("Error: vertex index %d exceeds array size %lu\n", vi+1, static_cast<unsigned long>(v_arr.size()));
 					return false;
 				}
 
 				if(pr.m_Vertex.size() != v_index.size() || pr.m_Vertex.size() != vn_index.size())
 				{
-					printf("Error: array sizes %d, %d and %d do not match\n",
-						pr.m_Vertex.size(), v_index.size(), vn_index.size());
+					printf("Error: array sizes %lu, %lu and %lu do not match\n",
+						static_cast<unsigned long>(pr.m_Vertex.size()),
+						static_cast<unsigned long>(v_index.size()),
+						static_cast<unsigned long>(vn_index.size()));
 					return false;
 				}
 

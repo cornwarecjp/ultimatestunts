@@ -141,7 +141,7 @@ void CRouteTracker::trackSingleRoute(unsigned int routenr)
 	{
 		printf("Error: currentTileRoute >= number of tile routes\n");
 		printf("    Tile: %s\n", currentModel->getFilename().c_str());
-		printf("    %d >= %d\n", currentTileRoute, currentModel->m_Routes.size());
+		printf("    %d >= %lu\n", currentTileRoute, static_cast<unsigned long>(currentModel->m_Routes.size()));
 		return;
 	}
 

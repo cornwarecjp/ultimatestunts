@@ -273,9 +273,11 @@ bool CGLBFile::processIndices(SPrimitive &pr, CBinBuffer &data, unsigned int num
 		unsigned int index = data.getUint32(pos);
 		if(index >= pr.vertex.size())
 		{
-			printf("Index %d exceeds vertex array size %d in %s\n",
-				index, pr.vertex.size(), pr.Name.c_str());
-			
+			printf("Index %d exceeds vertex array size %lu in %s\n",
+				index,
+				static_cast<unsigned long>(pr.vertex.size()),
+				pr.Name.c_str());
+
 			return false;
 		}
 		

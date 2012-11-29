@@ -209,8 +209,8 @@ void CMusic::update()
 			if (ret == 0)
 			{
 				m_streamIsFinished = true;
-				printf("Finished loading Ogg music file (used %d buffers)\n",
-					m_StreamBuffers.size());
+				printf("Finished loading Ogg music file (used %lu buffers)\n",
+					static_cast<unsigned long>(m_StreamBuffers.size()));
 			}
 			else
 			{

@@ -521,7 +521,7 @@ void CEditTrack::followTRKRoutes(const CTRKFile &file, CTrack::CCheckpoint start
 		{
 			if(altdir == -2) //found a join
 			{
-				printf("Stopping route %d on a join\n", m_Routes.size()-1);
+				printf("Stopping route %lu on a join\n", static_cast<unsigned long>(m_Routes.size()) - 1);
 				m_Routes.back().push_back(start);
 				break;
 			}
@@ -538,7 +538,7 @@ void CEditTrack::followTRKRoutes(const CTRKFile &file, CTrack::CCheckpoint start
 						dir = splitDirs.back();
 						splitPoints.resize(splitPoints.size()-1);
 						splitDirs.resize(splitDirs.size()-1);
-						printf("  %d splits remaining on this route\n", splitPoints.size());
+						printf("  %lu splits remaining on this route\n", static_cast<unsigned long>(splitPoints.size()));
 						continue;
 					}
 					else
@@ -550,7 +550,7 @@ void CEditTrack::followTRKRoutes(const CTRKFile &file, CTrack::CCheckpoint start
 		}
 
 		//Add tile to current route
-		printf("Following route %d: %d %d %d\n", m_Routes.size()-1, start.x, start.y, start.z);
+		printf("Following route %lu: %d %d %d\n", static_cast<unsigned long>(m_Routes.size()) - 1, start.x, start.y, start.z);
 		if(altdir != -3 && //-3 means skip
 			( m_Routes.back().size()==0 || !(start == m_Routes.back().back()) ) //is different
 			)
@@ -604,7 +604,8 @@ void CEditTrack::followTRKRoutes(const CTRKFile &file, CTrack::CCheckpoint start
 			)
 		{
 			start.y = (file.m_Track[start.z][start.x].terrain==0x06);
-			printf("Stopping route %d on finish %d %d %d\n", m_Routes.size()-1,
+			printf("Stopping route %lu on finish %d %d %d\n",
+				static_cast<unsigned long>(m_Routes.size()) - 1,
 				start.x, start.y, start.z);
 			m_Routes.back().push_back(start);
 			break;

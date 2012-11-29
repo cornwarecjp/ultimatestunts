@@ -48,9 +48,10 @@ CDataObject *CDataManager::getObject(CDataObject::eDataType type, unsigned int I
 		if(type == CDataObject::eTexture)        name = "Texture";
 		if(type == CDataObject::eSample)         name = "Sample";
 		printf("Errror in CDataManager::getObject (shared/datamanager.cpp):\n"
-			"  Object requested with ID %d, but there are only %d"
-			"  objects of type %d (%s)\n",
-			ID, (m_Objects[type]).size(), type, name.c_str());
+			"  Object requested with ID %d, but there are only %lu"
+ 			"  objects of type %d (%s)\n",
+			ID, static_cast<unsigned long>(m_Objects[type].size()),
+			type, name.c_str());
 		return NULL;
 	}
 
@@ -72,9 +73,10 @@ const CDataObject *CDataManager::getObject(CDataObject::eDataType type, unsigned
 		if(type == CDataObject::eTexture)        name = "Texture";
 		if(type == CDataObject::eSample)         name = "Sample";
 		printf("Errror in CDataManager::getObject (shared/datamanager.cpp):\n"
-			"  Object requested with ID %d, but there are only %d"
-			"  objects of type %d (%s)\n",
-			ID, (m_Objects[type]).size(), type, name.c_str());
+			"  Object requested with ID %d, but there are only %lu"
+ 			"  objects of type %d (%s)\n",
+			ID, static_cast<unsigned long>(m_Objects[type].size()),
+			type, name.c_str());
 		return NULL;
 	}
 

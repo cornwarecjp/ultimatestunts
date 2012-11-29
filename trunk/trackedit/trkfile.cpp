@@ -43,7 +43,7 @@ bool CTRKFile::load(const CString &filename)
 
 	if(bytes.size() != TRKLENGTH)
 	{
-		printf("Expected %d bytes, got %d bytes\n", TRKLENGTH, bytes.size());
+		printf("Expected %d bytes, got %lu bytes\n", TRKLENGTH, static_cast<unsigned long>(bytes.size()));
 		return false;
 	}
 
