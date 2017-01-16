@@ -7,7 +7,7 @@ ustuntsserver_LDADD = $(top_builddir)/simulation/libsimulation.a \
 EXTRA_DIST = consolethread.cpp consolethread.h gamecorethread.cpp gamecorethread.h main.cpp networkthread.cpp networkthread.h uploadmanager.cpp uploadmanager.h
 
 # set the include path found by configure
-INCLUDES = -I$(top_srcdir)/intl -I$(top_srcdir)/shared \
+AM_CPPFLAGS = -I$(top_srcdir)/intl -I$(top_srcdir)/shared \
 	-I$(top_srcdir)/simulation $(all_includes)
 
 # the library search path.

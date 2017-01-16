@@ -8,7 +8,7 @@ ustunts_LDADD = $(top_builddir)/trackedit/libtrackedit.a \
 
 EXTRA_DIST = carviewer.cpp carviewer.h gamecamera.cpp gamecamera.h gamegui.cpp gamegui.h gamerenderer.cpp gamerenderer.h gamewinsystem.cpp gamewinsystem.h humanplayer.cpp humanplayer.h main.cpp music.cpp music.h sndsample.cpp sndsample.h sound.cpp sound.h soundobj.cpp soundobj.h soundtools.cpp soundtools.h soundworld.cpp soundworld.h uscore.cpp uscore.h usserver.cpp usserver.h
 # set the include path found by configure
-INCLUDES = -I$(top_srcdir)/graphics -I$(top_srcdir)/intl -I$(top_srcdir)/shared \
+AM_CPPFLAGS = -I$(top_srcdir)/graphics -I$(top_srcdir)/intl -I$(top_srcdir)/shared \
 	-I$(top_srcdir)/simulation -I$(top_srcdir)/trackedit $(all_includes)
 
 # the library search path.

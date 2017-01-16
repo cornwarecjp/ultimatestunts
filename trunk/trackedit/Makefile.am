@@ -8,7 +8,7 @@ ustuntstrackedit_LDADD = libtrackedit.a \
 EXTRA_DIST = action.h edittrack.cpp edittrack.h main.cpp mainpage.cpp mainpage.h replaceaction.cpp replaceaction.h tecamera.cpp tecamera.h tegui.cpp tegui.h temanager.cpp temanager.h terenderer.cpp terenderer.h trackdocument.cpp trackdocument.h trkfile.cpp trkfile.h
 
 # set the include path found by configure
-INCLUDES = -I$(top_srcdir)/graphics -I$(top_srcdir)/intl -I$(top_srcdir)/shared \
+AM_CPPFLAGS = -I$(top_srcdir)/graphics -I$(top_srcdir)/intl -I$(top_srcdir)/shared \
 	-I$(top_srcdir)/simulation $(all_includes)
 
 # the library search path.

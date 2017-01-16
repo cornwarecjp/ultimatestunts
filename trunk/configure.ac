@@ -106,6 +106,11 @@ AC_CHECK_LIB(socket, socket,netlibs="-lsocket $netlibs")
 AC_CHECK_LIB(nsl, gethostbyname,netlibs="-lnsl $netlibs")
 AC_CHECK_LIB(resolv, inet_aton,netlibs="-lresolv $netlibs")
 
+dnl ---------------------
+dnl Check pthread library
+dnl ---------------------
+AC_CHECK_LIB(pthread, pthread_create,netlibs="-lpthread $netlibs")
+
 
 dnl -----------------------
 dnl Checks for header files
@@ -277,7 +282,7 @@ AC_SUBST(sdllibs)
 dnl usdatadir is used as the data file install location
 AC_SUBST(usdatadir)
 
-AC_CONFIG_FILES([Makefile intl/Makefile po/Makefile.in data/Makefile shared/Makefile simulation/Makefile graphics/Makefile stuntsserver/Makefile stuntsai/Makefile stunts3dedit/Makefile trackedit/Makefile ultimatestunts/Makefile])
+AC_CONFIG_FILES([Makefile po/Makefile.in data/Makefile shared/Makefile simulation/Makefile graphics/Makefile stuntsserver/Makefile stuntsai/Makefile stunts3dedit/Makefile trackedit/Makefile ultimatestunts/Makefile intl/Makefile])
 AC_OUTPUT
 
 
